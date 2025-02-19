@@ -31,7 +31,7 @@ export default clientPromise;
 // Connect to the database
 export async function connectToDatabase() {
   const client = await clientPromise;
-  return client.db("ecocsr"); // Return the 'ecoshift' database
+  return client.db("ecoshift"); // Return the 'ecoshift' database
 }
 
 // Function to broadcast new posts
