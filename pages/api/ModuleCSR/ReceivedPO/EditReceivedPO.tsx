@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { connectToDatabase } from "@/app/ModuleCSR/lib/MongoDB"; // Import connectToDatabase
+import { connectToDatabase } from "@/app/ModuleCSR/lib/mongodb"; // Import connectToDatabase
 import { ObjectId } from 'mongodb';
 
 export default async function editAccount(req: NextApiRequest, res: NextApiResponse) {

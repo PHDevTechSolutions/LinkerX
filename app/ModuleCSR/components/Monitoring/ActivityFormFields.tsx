@@ -179,9 +179,9 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 <h1 className="text-lg font-bold mb-2">Account Information</h1>
                 <div className="flex flex-wrap -mx-4">
                     <div className="w-full sm:w-1/2 md:w-1/3 px-4 mb-4">
-                        <input type="text" id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
-                        <input type="text" id="UserId" value={UserId || ""} onChange={(e) => setUserId(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
-                        <input type="text" id="Username" value={userName || ""} onChange={(e) => setuserName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
+                        <input type="hidden" id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
+                        <input type="hidden" id="UserId" value={UserId || ""} onChange={(e) => setUserId(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
+                        <input type="hidden" id="Username" value={userName || ""} onChange={(e) => setuserName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                         <label className="block text-xs font-bold mb-2" htmlFor="CompanyName">Company Name</label>
                         {editPost ? (
                             <input type="text" id="CompanyName" value={CompanyName} readOnly className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" />

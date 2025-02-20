@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { connectToDatabase } from "@/app/ModuleCSR/lib/MongoDB"; 
+import { connectToDatabase } from "@/app/ModuleCSR/lib/mongodb"; 
 
 export default async function fetchCompanies(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'GET') {
