@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   title: "Ecoshift Corporation",
   description: "Created in NextJs Developed By Leroux Y Xchire",
   icons: {
-    icon: "/react.svg", // Path to your SVG logo in the public folder
+    icon: "/ecoico.png", // Corrected: This should be an object, not an array
   },
 };
 

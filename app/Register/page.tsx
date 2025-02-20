@@ -68,7 +68,6 @@ const Register: React.FC = () => {
             <ToastContainer className="text-xs" />
 
             <div className="relative z-10 w-full max-w-md p-8 bg-white bg-opacity-20 backdrop-blur-lg rounded-lg shadow-xl text-center">
-                <h2 className="text-2xl font-bold text-white mb-6">Ecoshift Corporation</h2>
                 <form onSubmit={handleSubmit} className="text-left">
                     <div className="mb-4">
                         <label className="block text-xs font-medium text-white mb-1">Username</label>
