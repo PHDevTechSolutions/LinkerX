@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { connectToDatabase } from "@/app/ModuleCSR/lib/mongodb"; // Import connectToDatabase
+import { connectToDatabase } from "../../../../app/ModuleCSR/lib/mongodb"; // Import connectToDatabase
 
 // Function to add an account directly in this file
 async function addAccount({ CompanyName, CustomerName, Gender, ContactNumber, Email, CityAddress, CustomerSegment, CustomerType }: {
