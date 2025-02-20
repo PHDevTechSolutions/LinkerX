@@ -252,7 +252,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="Channel">Channel</label>
-                    <select id="Channel" value={Channel || ""} onChange={(e) => setChannel(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
+                    <select id="Channel" value={Channel || ""} onChange={(e) => setChannel(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" required>
                         <option value="">Select Channel</option>
                         <option value="Google Maps">Google Maps</option>
                         <option value="Website">Website</option>
@@ -269,7 +269,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
 
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="WrapUp">Wrap-Up</label>
-                    <select id="WrapUp" value={WrapUp || ""} onChange={(e) => setWrapUp(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
+                    <select id="WrapUp" value={WrapUp || ""} onChange={(e) => setWrapUp(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" required>
                         <option value="">Select Wrap Up</option>
                         <option value="Customer Order">Customer Order</option>
                         <option value="Customer Inquiry Sales">Customer Inquiry Sales</option>
@@ -341,7 +341,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="Status">Status</label>
-                    <select id="Status" value={Status || ""} onChange={(e) => setStatus(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
+                    <select id="Status" value={Status || ""} onChange={(e) => setStatus(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" required>
                         <option value="">Select Status</option>
                         <option value="Closed">Closed</option>
                         <option value="Endorsed">Endorsed</option>
