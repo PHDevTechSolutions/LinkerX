@@ -57,8 +57,9 @@ const DailyTransactionCards: React.FC<DailyTransactionCardProps> = ({ posts }) =
                   <p><strong>Contact:</strong> {post.contact_person} ({post.contact_number})</p>
                   <p><strong>Email:</strong> {post.email}</p>
 
-                  <p className="mt-2"><strong>Call Type:</strong> {post.type_of_call}</p>
-                  <p><strong>Status:</strong> {post.call_status}</p>
+                  <p className="mt-2"><strong>Wrap Up:</strong> </p>
+                  <div className="border-t border-gray-800 pb-4 mt-4"></div>
+                  <p><strong>Inquiry / Concern:</strong> </p>
                   <div className="border-t border-gray-800 pb-4 mt-4"></div>
                   <p><strong>Remarks:</strong> {post.remarks}</p>
                 </div>
@@ -68,11 +69,6 @@ const DailyTransactionCards: React.FC<DailyTransactionCardProps> = ({ posts }) =
                 <span>TSA: {post.agent_fullname}</span>
                 <span>TSM: {post.tsm_fullname}</span>
               </div>
-              <div className="border-t border-gray-900 mt-3 pt-2 text-xs flex gap-2">
-                <span className="italic capitalize">
-                  <strong>Call Duration:</strong> {post.start_date} - {post.end_date} / {timeConsumed}
-                  </span>
-                </div>
             </div>
           );
         })

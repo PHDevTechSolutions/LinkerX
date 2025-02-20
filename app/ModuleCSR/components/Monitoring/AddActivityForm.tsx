@@ -101,6 +101,8 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
         TicketReferenceNumber,
         Amount,
         QtySold,
+        WrapUp,
+        Inquiries,
       }),
     });
 
