@@ -28,6 +28,7 @@ interface Post {
 interface AccountsCardsProps {
   posts: Post[];
   handleEdit: (post: Post) => void;
+  Role: string;
 }
 
 const DTrackingCards: React.FC<AccountsCardsProps> = ({ posts, handleEdit }) => {
