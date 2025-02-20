@@ -172,6 +172,7 @@ const SKUListing: React.FC = () => {
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}
                                                 handleDelete={confirmDelete}
+                                                setPosts={setPosts}
                                                 Role={user ? user.Role : ""}
                                             />
                                             <Pagination

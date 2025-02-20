@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { connectToDatabase } from "@/app/ModuleCSR/lib/mongodb"; // Import connectToDatabase
+import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectToDatabase
 
 // Function to add an account directly in this file
 async function AddReceivedPO({ UserID, userName, DateTime, CompanyName, ContactNumber, PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, PaymentDate, DeliveryPickupDate, POStatus, POSource }: {

@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   // Validate user credentials
-  const result = await validateUser({ Email, Password });
+  const result = await validateUser({ Email, Password, Department });
 
   if (!result.success || !result.user) {
     return res.status(401).json({ message: result.message || "Invalid credentials." });
