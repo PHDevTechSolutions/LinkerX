@@ -54,12 +54,12 @@ const DailyTransactionCards: React.FC<DailyTransactionCardProps> = ({ posts }) =
               {expandedCards[post._id] && (
                 <div className="mt-4 text-xs capitalize">
                   <p><strong>Ticker Number:</strong> {post.ticket_reference_number}</p>
-                  <p><strong>Contact:</strong> {post.contact_person} ({post.contact_number})</p>
-                  <p><strong>Email:</strong> {post.email}</p>
+                  <p><strong>Contact:</strong> {post.contact_person} / {post.contact_number}</p>
+                  <p><strong>Email:</strong><span className="lowercase"> {post.email}</span></p>
 
-                  <p className="mt-2"><strong>Wrap Up:</strong> </p>
+                  <p className="mt-2"><strong>Wrap Up: </strong> {post.wrapup}</p>
                   <div className="border-t border-gray-800 pb-4 mt-4"></div>
-                  <p><strong>Inquiry / Concern:</strong> </p>
+                  <p><strong>Inquiry / Concern:</strong> {post.inquiries}</p>
                   <div className="border-t border-gray-800 pb-4 mt-4"></div>
                   <p><strong>Remarks:</strong> {post.remarks}</p>
                 </div>

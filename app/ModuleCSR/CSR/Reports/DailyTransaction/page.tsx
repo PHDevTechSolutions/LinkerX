@@ -5,7 +5,7 @@ import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 
-import SearchFilters from "../../../components/Outbound/SearchFilters";
+import SearchFilters from "../../../components/DailyTransaction/SearchFilters";
 import DailyTransactionTable from "../../../components/DailyTransaction/DailyTransactionTable";
 import Pagination from "../../../components/Outbound/Pagination";
 

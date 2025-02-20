@@ -430,7 +430,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="SalesManager">Sales Manager</label>
-                    <select id="SalesManager" value={SalesManager || ""} onChange={(e) => setSalesManager(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
+                    <select id="SalesManager" value={SalesManager || ""} onChange={(e) => setSalesManager(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" required>
                         <option value="">Select Manager</option>
                         <option value="AB-NCR-000">Angie Baldugo</option>
                         <option value="RT-NCR-000">Roy Tayuman</option>
@@ -449,7 +449,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="SalesAgent">Sales Agent</label>
-                    <select id="SalesAgent" value={SalesAgent || ""} onChange={(e) => setSalesAgent(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
+                    <select id="SalesAgent" value={SalesAgent || ""} onChange={(e) => setSalesAgent(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" required>
                         <option value="">Select Agent</option>
                         <option value="">Airish Echanes</option>
                         <option value="RME-CDO-001">Andrew Banaglorosio</option>
@@ -501,7 +501,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="Remarks">Remarks</label>
-                    <select id="Remarks" value={Remarks || ""} onChange={(e) => setRemarks(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
+                    <select id="Remarks" value={Remarks || ""} onChange={(e) => setRemarks(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" >
                         <option value="">Select Remarks</option>
                         <option value="No Stocks / Insufficient Stocks">No Stocks / Insufficient Stocks</option>
                         <option value="Item Not Carried">Item Not Carried</option>
