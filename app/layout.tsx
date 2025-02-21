@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { StackProvider, StackTheme } from "@stackframe/stack";
-import { stackServerApp } from "../stack";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ToastContainer } from "react-toastify"; // Import ToastContainer
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for react-toastify
@@ -34,13 +32,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      ><StackProvider app={stackServerApp}><StackTheme>
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ToastContainer /> {/* This makes sure toasts show up */}
         {children}
         <Analytics />
         <SpeedInsights />
-      </StackTheme></StackProvider></body>
+      </body>
     </html>
   );
 }
