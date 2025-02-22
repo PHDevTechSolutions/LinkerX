@@ -30,6 +30,8 @@ const ListofUser: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(10);
     const [selectedClientType, setSelectedClientType] = useState("");
+    const [startDate, setStartDate] = useState(""); // Default to null
+    const [endDate, setEndDate] = useState(""); // Default to null
 
     const [userDetails, setUserDetails] = useState({
         UserId: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
@@ -248,17 +250,29 @@ const ListofUser: React.FC = () => {
     }, []);
 
     // Filter users by search term (firstname, lastname)
-    const filteredAccounts = Array.isArray(posts) 
+    const filteredAccounts = Array.isArray(posts)
     ? posts.filter((post) => {
-        const matchesSearchTerm = [post?.companyname].some((field) => 
-            field?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+        // Check if the company name matches the search term
+        const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesClientType = selectedClientType 
-        ? post?.typeclient === selectedClientType 
-        : true;
-        return matchesSearchTerm && matchesClientType;
-    }) : [];
+        // Parse the date_created field
+        const postDate = post.date_created ? new Date(post.date_created) : null;
+
+        // Check if the post's date is within the selected date range
+        const isWithinDateRange = (
+            (!startDate || (postDate && postDate >= new Date(startDate))) &&
+            (!endDate || (postDate && postDate <= new Date(endDate)))
+        );
+
+        // Check if the post matches the selected client type
+        const matchesClientType = selectedClientType
+            ? post?.typeclient === selectedClientType
+            : true;
+
+        // Return the filtered result
+        return matchesSearchTerm && isWithinDateRange && matchesClientType;
+    })
+    : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -407,6 +421,10 @@ const ListofUser: React.FC = () => {
                                             setPostsPerPage={setPostsPerPage}
                                             selectedClientType={selectedClientType}
                                             setSelectedClientType={setSelectedClientType}
+                                            startDate={startDate}
+                                            setStartDate={setStartDate}
+                                            endDate={endDate}
+                                            setEndDate={setEndDate}
                                         />
                                         <UsersTable
                                             posts={currentPosts}
