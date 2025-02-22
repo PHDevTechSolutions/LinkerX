@@ -29,6 +29,7 @@ const ListofUser: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(10);
+    const [selectedClientType, setSelectedClientType] = useState("");
 
     const [userDetails, setUserDetails] = useState({
         UserId: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
@@ -49,6 +50,7 @@ const ListofUser: React.FC = () => {
     const [selectedTSM, setSelectedTSM] = useState<{ value: string; label: string } | null>(null);
     const [TSAOptions, setTSAOptions] = useState<{ value: string; label: string }[]>([]);
     const [selectedReferenceID, setSelectedReferenceID] = useState<{ value: string; label: string } | null>(null);
+    
 
     const handleFileUpload = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -246,10 +248,17 @@ const ListofUser: React.FC = () => {
     }, []);
 
     // Filter users by search term (firstname, lastname)
-    const filteredAccounts = Array.isArray(posts) ? posts.filter((post) =>
-        [post?.companyname].some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()))
-    ) : [];
+    const filteredAccounts = Array.isArray(posts) 
+    ? posts.filter((post) => {
+        const matchesSearchTerm = [post?.companyname].some((field) => 
+            field?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
+    const matchesClientType = selectedClientType 
+        ? post?.typeclient === selectedClientType 
+        : true;
+        return matchesSearchTerm && matchesClientType;
+    }) : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -376,14 +385,14 @@ const ListofUser: React.FC = () => {
                             ) : (
                                 <>
                                     <div className="flex justify-between items-center mb-4">
-                                        <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
+                                        <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
                                             <CiSquarePlus size={16} /> Add Companies
                                         </button>
                                         <div className="flex gap-2">
-                                            <button onClick={exportToExcel} className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-green-600 hover:text-white transition">
+                                            <button onClick={exportToExcel} className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
                                                 <CiExport size={16} /> Export
                                             </button>
-                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-green-600 hover:text-white transition" onClick={() => setShowImportForm(true)}>
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-800 hover:text-white transition" onClick={() => setShowImportForm(true)}>
                                                 <CiImport size={16} /> Import Account
                                             </button>
                                         </div>
@@ -396,6 +405,8 @@ const ListofUser: React.FC = () => {
                                             setSearchTerm={setSearchTerm}
                                             postsPerPage={postsPerPage}
                                             setPostsPerPage={setPostsPerPage}
+                                            selectedClientType={selectedClientType}
+                                            setSelectedClientType={setSelectedClientType}
                                         />
                                         <UsersTable
                                             posts={currentPosts}

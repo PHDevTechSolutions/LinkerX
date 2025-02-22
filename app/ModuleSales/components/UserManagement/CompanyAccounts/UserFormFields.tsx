@@ -297,7 +297,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
       <select id="typeclient" value={typeclient} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
         <option value="">Select Client</option>
         <option value="Top 50">Top 50</option>
-        <option value=">Next 30">Next 30</option>
+        <option value="Next 30">Next 30</option>
         <option value="Below 20">Below 20</option>
         <option value="Revived Account - Existing">Revived Account - Existing</option>
         <option value="Revived Account - Resigned Agent">Revived Account - Resigned Agent</option>
