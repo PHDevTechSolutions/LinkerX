@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import io from "socket.io-client";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { CiTrash, CiEdit  } from "react-icons/ci";
+import { BiTransfer, BiRefresh } from "react-icons/bi";
 import { Menu } from "@headlessui/react";
+import axios from "axios";
 
 const socketURL = "http://localhost:3001";
 
@@ -12,7 +15,7 @@ interface UsersCardProps {
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
   const socketRef = useRef(io(socketURL));
-  const [updatedUser, setUpdatedUser] = useState(posts);
+  const [updatedUser, setUpdatedUser] = useState<any[]>([]);
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
   const [bulkEditMode, setBulkEditMode] = useState(false);
   const [bulkTransferMode, setBulkTransferMode] = useState(false);
@@ -137,19 +140,39 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
     }
   }, [selectedUsers, selectedTsm]);
 
+  const handleRefresh = async () => {
+    try {
+      const response = await axios.get("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
+      if (response.data.success) {
+        setUpdatedUser(response.data.data); // Update the state with the new data
+      } else {
+        console.error("Failed to fetch accounts");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  
   return (
     <div className="mb-4">
       {/* Bulk Action Buttons */}
       <div className="flex gap-2 mb-3">
-        <button onClick={toggleBulkDeleteMode} className="px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-green-900 hover:text-white">
+        <button onClick={toggleBulkDeleteMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-red-700 hover:text-white">
+          <CiTrash size={16} />
           {bulkDeleteMode ? "Cancel Bulk Delete" : "Bulk Delete"}
         </button>
-        <button onClick={toggleBulkEditMode} className="px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-900 hover:text-white">
+        <button onClick={toggleBulkEditMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-900 hover:text-white">
+          <CiEdit size={16} />
           {bulkEditMode ? "Cancel Bulk Edit" : "Bulk Edit"}
         </button>
-        <button onClick={toggleBulkTransferMode} className="px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
+        <button onClick={toggleBulkTransferMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
+          <BiTransfer size={16} />
           {bulkTransferMode ? "Cancel Bulk Transfer" : "Bulk Transfer"}
         </button>
+        <button onClick={handleRefresh} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-gray-900 hover:text-white">
+          <BiRefresh size={16} />
+        Refresh
+      </button>
       </div>
 
       {/* Bulk Action Panel */}
