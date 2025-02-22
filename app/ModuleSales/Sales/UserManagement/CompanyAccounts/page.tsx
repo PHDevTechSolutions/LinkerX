@@ -24,8 +24,6 @@ const ListofUser: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(10);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
     const [userDetails, setUserDetails] = useState({
         UserId: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
@@ -69,31 +67,33 @@ const ListofUser: React.FC = () => {
     }, []);
 
     // Fetch all users from the API
-    const fetchUsers = async () => {
+    const fetchAccount = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/UserManagement/ManagerDirector/FetchUser");
+            const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
             const data = await response.json();
-            setPosts(data);
+            console.log("Fetched data:", data); // Debugging line
+            setPosts(data.data); // Make sure you're setting `data.data` if API response has `{ success: true, data: [...] }`
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
         }
     };
 
+    useEffect(() => {
+        fetchAccount();
+    }, []);
+
     // Filter users by search term (firstname, lastname)
-    const filteredAccounts = posts.filter((post) =>
-        [post?.Firstname, post?.Lastname]
-            .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const filteredAccounts = Array.isArray(posts) ? posts.filter((post) =>
+        [post?.companyname].some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()))
+    ) : [];
+    
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
     const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
 
-    useEffect(() => {
-        fetchUsers();
-    }, []);
 
     // Handle editing a post
     const handleEdit = (post: any) => {
@@ -101,39 +101,6 @@ const ListofUser: React.FC = () => {
         setShowForm(true);
     };
 
-    // Show delete modal
-    const confirmDelete = (postId: string) => {
-        setPostToDelete(postId);
-        setShowDeleteModal(true);
-    };
-
-    // Handle deleting a post
-    const handleDelete = async () => {
-        if (!postToDelete) return;
-        try {
-            const response = await fetch(`/api/ModuleSales/UserManagement/ManagerDirector/DeleteUser`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ id: postToDelete }),
-            });
-
-            if (response.ok) {
-                setPosts(posts.filter((post) => post._id !== postToDelete));
-                toast.success("Post deleted successfully.");
-            } else {
-                toast.error("Failed to delete post.");
-            }
-        } catch (error) {
-            console.error("Error deleting post:", error);
-            toast.error("Failed to delete post.");
-        } finally {
-            setShowDeleteModal(false);
-            setPostToDelete(null);
-        }
-    };
-    
     return (
         <SessionChecker>
             <ParentLayout>
@@ -146,9 +113,8 @@ const ListofUser: React.FC = () => {
                                         setShowForm(false);
                                         setEditUser(null);
                                     }}
-                                    refreshPosts={fetchUsers}  // Pass the refreshPosts callback
-                                    userName={user ? user.userName : ""}  // Ensure userName is passed properly
-                                    userDetails={{ id: editUser ? editUser._id : userDetails.UserId }}  // Ensure id is passed correctly
+                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
+                                    userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
                                     editUser={editUser}
                                 />
 
@@ -171,9 +137,6 @@ const ListofUser: React.FC = () => {
                                         <UsersTable
                                             posts={currentPosts}
                                             handleEdit={handleEdit}
-                                            handleDelete={confirmDelete}
-                                            Role={user ? user.Role : ""}
-                                            Department={user ? user.Department : ""}
                                         />
                                         <Pagination
                                             currentPage={currentPage}
@@ -188,29 +151,6 @@ const ListofUser: React.FC = () => {
                                         </div>
                                     </div>
                                 </>
-                            )}
-
-                            {showDeleteModal && (
-                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                                    <div className="bg-white p-4 rounded shadow-lg">
-                                        <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
-                                        <p className="text-xs">Are you sure you want to delete this post?</p>
-                                        <div className="mt-4 flex justify-end">
-                                            <button
-                                                className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2"
-                                                onClick={handleDelete}
-                                            >
-                                                Delete
-                                            </button>
-                                            <button
-                                                className="bg-gray-300 text-xs px-4 py-2 rounded"
-                                                onClick={() => setShowDeleteModal(false)}
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
                             )}
 
                             <ToastContainer className="text-xs" autoClose={1000} />
