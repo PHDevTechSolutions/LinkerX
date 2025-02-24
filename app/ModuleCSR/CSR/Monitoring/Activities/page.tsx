@@ -20,7 +20,7 @@ const ActivityPage: React.FC = () => {
     const [TicketReceived, setTicketReceived] = useState("");
     const [TicketEndorsed, setTicketEndorsed] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(200);
+    const [postsPerPage, setPostsPerPage] = useState(500);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
