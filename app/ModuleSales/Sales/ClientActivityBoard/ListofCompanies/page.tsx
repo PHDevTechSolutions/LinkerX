@@ -5,27 +5,31 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../components/UserManagement/TerritorySalesAssociates/AddUserForm";
-import SearchFilters from "../../../components/UserManagement/TerritorySalesAssociates/SearchFilters";
-import UsersTable from "../../../components/UserManagement/TerritorySalesAssociates/UsersTable";
-import Pagination from "../../../components/UserManagement/TerritorySalesAssociates/Pagination";
+import AddPostForm from "../../../components/ClientActivityBoard/ListofCompanies/AddUserForm";
+import SearchFilters from "../../../components/ClientActivityBoard/ListofCompanies/SearchFilters";
+import UsersTable from "../../../components/ClientActivityBoard/ListofCompanies/UsersTable";
+import Pagination from "../../../components/ClientActivityBoard/ListofCompanies/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import ExcelJS from "exceljs";
+
 
 // Icons
-import { CiSquarePlus } from "react-icons/ci";
+import { CiExport  } from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
+    const [showImportForm, setShowImportForm] = useState(false);
     const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(10);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [postToDelete, setPostToDelete] = useState<string | null>(null);
+    const [selectedClientType, setSelectedClientType] = useState("");
+    const [startDate, setStartDate] = useState(""); // Default to null
+    const [endDate, setEndDate] = useState(""); // Default to null
 
     const [userDetails, setUserDetails] = useState({
         UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
@@ -70,45 +74,64 @@ const ListofUser: React.FC = () => {
     }, []);
 
     // Fetch all users from the API
-    const fetchUsers = async () => {
+    const fetchAccount = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/UserManagement/TerritorySalesAssociates/FetchUser");
+            const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
             const data = await response.json();
-            setPosts(data);
+            console.log("Fetched data:", data); // Debugging line
+            setPosts(data.data); // Make sure you're setting `data.data` if API response has `{ success: true, data: [...] }`
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
         }
     };
 
+    useEffect(() => {
+        fetchAccount();
+    }, []);
+
     // Filter users by search term (firstname, lastname)
-    const filteredAccounts = posts.filter((post) => {
-        // Check if the user's name matches the search term
-        const matchesSearchTerm = [post?.Firstname, post?.Lastname]
-            .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+    const filteredAccounts = Array.isArray(posts)
+    ? posts.filter((post) => {
+        // Check if the company name matches the search term
+        const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+
+        // Parse the date_created field
+        const postDate = post.date_created ? new Date(post.date_created) : null;
+
+        // Check if the post's date is within the selected date range
+        const isWithinDateRange = (
+            (!startDate || (postDate && postDate >= new Date(startDate))) &&
+            (!endDate || (postDate && postDate <= new Date(endDate)))
+        );
+
+        // Check if the post matches the selected client type
+        const matchesClientType = selectedClientType
+            ? post?.typeclient === selectedClientType
+            : true;
+
         // Get the reference ID from userDetails
-        const referenceID = userDetails.ReferenceID; // TSM's ReferenceID from MongoDB
-    
+        const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
+
         // Check role-based filtering
         const matchesRole = userDetails.Role === "Super Admin"
-            ? post?.Role === "Territory Sales Associate" // Super Admin only sees TSAs
+            ? true // Super Admin sees all
+            : userDetails.Role === "Manager"
+            ? post?.manager === referenceID // Manager sees only assigned companies
             : userDetails.Role === "Territory Sales Manager"
-            ? post?.TSM === referenceID // TSM sees only assigned TSAs
+            ? post?.tsm === referenceID // Territory Sales Manager sees assigned companies
             : false; // Default false if no match
-    
+
         // Return the filtered result
-        return matchesSearchTerm && matchesRole;
-    });
+        return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
+    })
+    : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
     const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
 
-    useEffect(() => {
-        fetchUsers();
-    }, []);
 
     // Handle editing a post
     const handleEdit = (post: any) => {
@@ -116,39 +139,44 @@ const ListofUser: React.FC = () => {
         setShowForm(true);
     };
 
-    // Show delete modal
-    const confirmDelete = (postId: string) => {
-        setPostToDelete(postId);
-        setShowDeleteModal(true);
-    };
+    const exportToExcel = () => {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("Company Accounts");
+      
+        // Set column headers
+        worksheet.columns = [
+          { header: 'companyname', key: 'companyname', width: 20 },
+          { header: 'contactperson', key: 'contactperson', width: 20 },
+          { header: 'contactnumber', key: 'contactnumber', width: 20 },
+          { header: 'emailaddress', key: 'emailaddress', width: 20 },
+          { header: 'typeclient', key: 'typeclient', width: 20 },
+          { header: 'address', key: 'address', width: 20 },
+          { header: 'area', key: 'area', width: 20 },
+        ];
+      
+        // Loop through all filtered posts to ensure the full set of data is exported
+        filteredAccounts.forEach((post) => {
+          worksheet.addRow({
+            companyname: post.companyname,
+            contactperson: post.contactperson,
+            contactnumber: post.contactnumber,
+            emailaddress: post.emailaddress,
+            typeclient: post.typeclient,
+            address: post.address,
+            area: post.area
+          });
+        });
+      
+        // Save to file
+        workbook.xlsx.writeBuffer().then((buffer) => {
+          const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "CompanyAccounts.xlsx";
+          link.click();
+        });
+      };
 
-    // Handle deleting a post
-    const handleDelete = async () => {
-        if (!postToDelete) return;
-        try {
-            const response = await fetch(`/api/ModuleSales/UserManagement/TerritorySalesAssociates/DeleteUser`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ id: postToDelete }),
-            });
-
-            if (response.ok) {
-                setPosts(posts.filter((post) => post._id !== postToDelete));
-                toast.success("Post deleted successfully.");
-            } else {
-                toast.error("Failed to delete post.");
-            }
-        } catch (error) {
-            console.error("Error deleting post:", error);
-            toast.error("Failed to delete post.");
-        } finally {
-            setShowDeleteModal(false);
-            setPostToDelete(null);
-        }
-    };
-    
     return (
         <SessionChecker>
             <ParentLayout>
@@ -161,34 +189,37 @@ const ListofUser: React.FC = () => {
                                         setShowForm(false);
                                         setEditUser(null);
                                     }}
-                                    refreshPosts={fetchUsers}  // Pass the refreshPosts callback
-                                    userName={user ? user.userName : ""}  // Ensure userName is passed properly
-                                    userDetails={{ id: editUser ? editUser._id : userDetails.UserId }}  // Ensure id is passed correctly
+                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
+                                    userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
                                     editUser={editUser}
                                 />
-
                             ) : (
                                 <>
                                     <div className="flex justify-between items-center mb-4">
-                                        <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
-                                            <CiSquarePlus size={20} />Add Account
-                                        </button>
+                                        <div className="flex gap-2">
+                                            <button onClick={exportToExcel} className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
+                                                <CiExport size={16} /> Export
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Territory Sales Associates</h2>
+                                        <h2 className="text-lg font-bold mb-2">Company Accounts</h2>
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}
                                             postsPerPage={postsPerPage}
                                             setPostsPerPage={setPostsPerPage}
+                                            selectedClientType={selectedClientType}
+                                            setSelectedClientType={setSelectedClientType}
+                                            startDate={startDate}
+                                            setStartDate={setStartDate}
+                                            endDate={endDate}
+                                            setEndDate={setEndDate}
                                         />
                                         <UsersTable
                                             posts={currentPosts}
                                             handleEdit={handleEdit}
-                                            handleDelete={confirmDelete}
-                                            Role={user ? user.Role : ""}
-                                            Department={user ? user.Department : ""}
                                         />
                                         <Pagination
                                             currentPage={currentPage}
@@ -203,29 +234,6 @@ const ListofUser: React.FC = () => {
                                         </div>
                                     </div>
                                 </>
-                            )}
-
-                            {showDeleteModal && (
-                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                                    <div className="bg-white p-4 rounded shadow-lg">
-                                        <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
-                                        <p className="text-xs">Are you sure you want to delete this post?</p>
-                                        <div className="mt-4 flex justify-end">
-                                            <button
-                                                className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2"
-                                                onClick={handleDelete}
-                                            >
-                                                Delete
-                                            </button>
-                                            <button
-                                                className="bg-gray-300 text-xs px-4 py-2 rounded"
-                                                onClick={() => setShowDeleteModal(false)}
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
                             )}
 
                             <ToastContainer className="text-xs" autoClose={1000} />

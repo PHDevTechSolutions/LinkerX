@@ -28,7 +28,7 @@ const ListofUser: React.FC = () => {
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
     const [userDetails, setUserDetails] = useState({
-        UserId: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
+        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -46,6 +46,7 @@ const ListofUser: React.FC = () => {
                     const data = await response.json();
                     setUserDetails({
                         UserId: data._id, // Set the user's id here
+                        ReferenceID: data.ReferenceID,
                         Firstname: data.Firstname || "",
                         Lastname: data.Lastname || "",
                         Email: data.Email || "",
@@ -81,10 +82,22 @@ const ListofUser: React.FC = () => {
     };
 
     // Filter users by search term (firstname, lastname)
-    const filteredAccounts = posts.filter((post) =>
-        [post?.Firstname, post?.Lastname]
-            .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const filteredAccounts = posts.filter((post) => {
+        // Check if the user's name matches the search term
+        const matchesSearchTerm = [post?.Firstname, post?.Lastname]
+            .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+        // Get the reference ID from userDetails
+        const referenceID = userDetails.ReferenceID; // TSM's ReferenceID from MongoDB
+    
+        // Check role-based filtering
+        const matchesRole = userDetails.Role === "Super Admin"
+            ? (post?.Role === "Territory Sales Manager") && post?.Department === "Sales"
+            : false; // Default false if no match
+    
+        // Return the filtered result
+        return matchesSearchTerm && matchesRole;
+    });    
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;

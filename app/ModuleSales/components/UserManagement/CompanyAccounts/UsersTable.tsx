@@ -19,9 +19,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
   const [bulkEditMode, setBulkEditMode] = useState(false);
   const [bulkTransferMode, setBulkTransferMode] = useState(false);
+  const [bulkTransferTSAMode, setBulkTransferTSAMode] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [tsmList, setTsmList] = useState<any[]>([]);
   const [selectedTsm, setSelectedTsm] = useState("");
+  const [tsaList, setTsaList] = useState<any[]>([]);
+  const [selectedTsa, setSelectedTsa] = useState("");
   const [newTypeClient, setNewTypeClient] = useState("");
 
   useEffect(() => {
@@ -44,6 +47,22 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
     }
   }, [bulkTransferMode]);
 
+  useEffect(() => {
+    if (bulkTransferTSAMode) {
+      fetch("/api/tsa?Role=Territory Sales Associate")
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setTsaList(data);
+          } else {
+            console.error("Invalid TSM list format:", data);
+            setTsaList([]);
+          }
+        })
+        .catch((err) => console.error("Error fetching TSM list:", err));
+    }
+  }, [bulkTransferTSAMode]);
+
   const toggleBulkDeleteMode = useCallback(() => {
     setBulkDeleteMode((prev) => !prev);
     setSelectedUsers(new Set());
@@ -59,6 +78,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
     setBulkTransferMode((prev) => !prev);
     setSelectedUsers(new Set());
     setSelectedTsm("");
+  }, []);
+
+  const toggleBulkTransferTSAMode = useCallback(() => {
+    setBulkTransferTSAMode((prev) => !prev);
+    setSelectedUsers(new Set());
+    setSelectedTsa("");
   }, []);
 
   const handleSelectUser = useCallback((userId: string) => {
@@ -140,6 +165,25 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
     }
   }, [selectedUsers, selectedTsm]);
 
+  const handleBulkTSATransfer = useCallback(async () => {
+    if (selectedUsers.size === 0 || !selectedTsa) return;
+    try {
+      const response = await fetch(`/api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Transfer-TSA`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userIds: Array.from(selectedUsers), tsaReferenceID: selectedTsa }),
+      });
+      if (response.ok) {
+        setSelectedUsers(new Set());
+        setBulkTransferTSAMode(false);
+      } else {
+        console.error("Failed to transfer users");
+      }
+    } catch (error) {
+      console.error("Error transferring users:", error);
+    }
+  }, [selectedUsers, selectedTsa]);
+
   const handleRefresh = async () => {
     try {
       const response = await axios.get("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
@@ -167,7 +211,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
         </button>
         <button onClick={toggleBulkTransferMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
           <BiTransfer size={16} />
-          {bulkTransferMode ? "Cancel Bulk Transfer" : "Bulk Transfer"}
+          {bulkTransferMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Territory Sales Manager"}
+        </button>
+        <button onClick={toggleBulkTransferTSAMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
+          <BiTransfer size={16} />
+          {bulkTransferTSAMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Another Agent"}
         </button>
         <button onClick={handleRefresh} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-gray-900 hover:text-white">
           <BiRefresh size={16} />
@@ -176,7 +224,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
       </div>
 
       {/* Bulk Action Panel */}
-      {(bulkDeleteMode || bulkEditMode || bulkTransferMode) && (
+      {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode) && (
         <div className="mb-4 p-3 bg-gray-100 rounded-md text-xs">
           {/* Select All Checkbox */}
           <div className="flex items-center justify-between">
@@ -189,6 +237,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
             {/* Bulk Transfer */}
             {bulkTransferMode && (
               <div className="flex items-center gap-2">
+                <label className="text-xs font-medium">Territory Sales Manager:</label>
                 <select value={selectedTsm} onChange={(e) => setSelectedTsm(e.target.value)} className="px-2 py-1 border rounded-md capitalize">
                   <option value="">Select Territory Sales Manager</option>
                   {tsmList.map((tsm) => (
@@ -198,6 +247,22 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                   ))}
                 </select>
                 <button onClick={handleBulkTransfer} className="px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-xs" disabled={!selectedTsm}>Transfer</button>
+              </div>
+            )}
+            
+            {/* Bulk Transfer to TSA */}
+            {bulkTransferTSAMode && (
+              <div className="flex items-center gap-2">
+                <label className="text-xs font-medium">Territory Sales Associates:</label>
+                <select value={selectedTsa} onChange={(e) => setSelectedTsa(e.target.value)} className="px-2 py-1 border rounded-md capitalize">
+                  <option value="">Select Territory Sales Associates</option>
+                  {tsaList.map((tsa) => (
+                    <option key={tsa._id || tsa.ReferenceID} value={tsa.ReferenceID}>
+                      {tsa.Firstname} {tsa.Lastname}
+                    </option>
+                  ))}
+                </select>
+                <button onClick={handleBulkTSATransfer} className="px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-xs" disabled={!selectedTsa}>Transfer</button>
               </div>
             )}
 
@@ -242,6 +307,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                   <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4 text-blue-600"/>
                 )}
                 {bulkTransferMode && (
+                  <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4 text-purple-600"/>
+                )}
+                {bulkTransferTSAMode && (
                   <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4 text-purple-600"/>
                 )}
                 <h3 className="text-xs font-semibold uppercase">{post.companyname}</h3>

@@ -173,7 +173,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
 
   // Filter menu items based on the user's role
   const filteredMenuItems = userDetails.Role === "Admin" || userDetails.Role === "Super Admin" ? menuItems: menuItems.filter((item) => {
-    if (userDetails.Role === "Manager" || userDetails.Company === "Ecoshift Corporation") {
+    if (userDetails.Role === "Manager") {
       return [
         "Sales Performance",
         "Conversion Rates",

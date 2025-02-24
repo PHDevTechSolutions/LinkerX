@@ -100,7 +100,7 @@ const ListofUser: React.FC = () => {
         // Return the filtered result
         return matchesSearchTerm && matchesRole;
     });
-
+    
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
