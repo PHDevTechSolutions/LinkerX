@@ -21,25 +21,16 @@ export async function GET(req: Request) {
             );
         }
 
-        // Fetch accounts filtered by referenceid
-        const accounts = await sql`SELECT * FROM accounts WHERE referenceid = ${referenceid};`;
+        // Fetch company data (companyname and contactperson) filtered by referenceid
+        const companies = await sql`SELECT * FROM accounts WHERE referenceid = ${referenceid};`;
 
-        console.log("Fetched accounts:", accounts); // Debugging line
+        console.log("Fetched companies:", companies); // Debugging line
 
-        // If the query returns no accounts, return an empty array
-        if (accounts.length === 0) {
-            return NextResponse.json(
-                { success: false, error: "No company found with the provided reference ID." },
-                { status: 404 }
-            );
-        }
-
-        // Return the result inside a "data" field (always an array)
-        return NextResponse.json({ success: true, data: accounts }, { status: 200 });
+        return NextResponse.json({ success: true, data: companies }, { status: 200 });
     } catch (error: any) {
-        console.error("Error fetching accounts:", error);
+        console.error("Error fetching companies:", error);
         return NextResponse.json(
-            { success: false, error: error.message || "Failed to fetch accounts." },
+            { success: false, error: error.message || "Failed to fetch companies." },
             { status: 500 }
         );
     }

@@ -22,6 +22,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   //
   const [companyname, setcompanyname] = useState("");
   const [contactperson, setcontactperson] = useState("");
+  const [contactnumber, setcontactnumber] = useState("");
+  const [emailaddress, setemailaddress] = useState("");
+  const [typeclient, settypeclient] = useState("");
 
   useEffect(() => {
     if (editUser) {
@@ -30,6 +33,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       setTsm(editUser.tsm || "");
       setcompanyname(editUser.companyname || "");
       setcontactperson(editUser.contactperson || "");
+      setcontactnumber(editUser.contactnumber || "");
+      setemailaddress(editUser.emailaddress || "");
+      settypeclient(editUser.typeclient || "");
     }
   }, [editUser]);
 
@@ -42,7 +48,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: editUser?.id, referenceid, manager, tsm, companyname }),
+      body: JSON.stringify({ id: editUser?.id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, }),
     });
 
     if (response.ok) {
@@ -74,6 +80,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         //
         companyname={companyname} setcompanyname={setcompanyname} 
         contactperson={contactperson} setcontactperson={setcontactperson}
+        contactnumber={contactnumber} setcontactnumber={setcontactnumber}
+        emailaddress={emailaddress} setemailaddress={setemailaddress}
+        typeclient={typeclient} settypeclient={settypeclient}
         />
         <div className="flex justify-between">
           <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs">
