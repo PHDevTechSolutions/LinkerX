@@ -95,6 +95,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
         { title: 'Daily Call Ranking', href: `/ModuleSales/Sales/Agents/DailyCallRanking${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'List of Sales Associate', href: `/ModuleSales/Sales/Agents/ListSalesAssociate${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Sales Associate Activity', href: `/ModuleSales/Sales/Agents/SalesAssociateActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Deletion', href: `/ModuleSales/Sales/Agents/Deletion${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Quota', href: `/ModuleSales/Sales/Agents/Quota${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },

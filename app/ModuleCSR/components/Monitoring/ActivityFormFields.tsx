@@ -451,7 +451,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="SalesAgent">Sales Agent</label>
-                    <select id="SalesAgent" value={SalesAgent || ""} onChange={(e) => setSalesAgent(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" required>
+                    <select id="SalesAgent" value={SalesAgent || ""} onChange={(e) => setSalesAgent(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
                         <option value="">Select Agent</option>
                         <option value="">Airish Echanes</option>
                         <option value="RME-CDO-001">Andrew Banaglorosio</option>
