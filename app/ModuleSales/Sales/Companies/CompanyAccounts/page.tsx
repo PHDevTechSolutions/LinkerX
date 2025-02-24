@@ -232,16 +232,20 @@ const ListofUser: React.FC = () => {
                         <div className="container mx-auto p-4">
                             {showForm ? (
                                 <AddPostForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditUser(null);
-                                    }}
-                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
-                                    userDetails={{ 
-                                        id: editUser ? editUser.id : userDetails.UserId
-                                    }}  // Ensure id is passed correctly
-                                    editUser={editUser}
-                                />
+                                onCancel={() => {
+                                  setShowForm(false);
+                                  setEditUser(null);
+                                }}
+                                refreshPosts={fetchAccount} // Pass the refreshPosts callback
+                                userDetails={{
+                                  id: editUser ? editUser.id : userDetails.UserId,
+                                  referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
+                                  manager: editUser ? editUser.manager : userDetails.Manager,
+                                  tsm: editUser ? editUser.tsm : userDetails.TSM,
+                                }} 
+                                editUser={editUser}
+                              />
+                              
                             ) : showImportForm ? (
                                 <div className="bg-white p-4 shadow-md rounded-md">
                                     <h2 className="text-lg font-bold mb-2">Import Accounts</h2>

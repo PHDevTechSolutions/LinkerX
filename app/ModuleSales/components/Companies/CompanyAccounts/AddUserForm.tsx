@@ -4,16 +4,21 @@ import "react-toastify/dist/ReactToastify.css";
 import FormFields from "./UserFormFields";
 
 interface AddUserFormProps {
-  userDetails: { id: string};
   onCancel: () => void;
   refreshPosts: () => void;
+  userDetails: {
+    id: string;
+    referenceid: string;
+    manager: string;
+    tsm: string;
+  };
   editUser?: any;
 }
 
-const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refreshPosts, editUser,}) => {
-  const [referenceid, setreferenceid] = useState("");
-  const [manager, setmanager] = useState("");
-  const [tsm, settsm] = useState("");
+const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userDetails, editUser,}) => {
+  const [referenceid, setReferenceid] = useState(userDetails.referenceid || "");
+  const [manager, setManager] = useState(userDetails.manager || "");
+  const [tsm, setTsm] = useState(userDetails.tsm || "");
   //
   const [companyname, setcompanyname] = useState("");
   const [contactperson, setcontactperson] = useState("");
@@ -26,9 +31,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
 
   useEffect(() => {
     if (editUser) {
-      setreferenceid(editUser.referenceid || "");
-      setmanager(editUser.manager || "");
-      settsm(editUser.tsm || "");
+      setReferenceid(editUser.referenceid || "");
+      setManager(editUser.manager || "");
+      setTsm(editUser.tsm || "");
       setcompanyname(editUser.companyname || "");
       setcontactperson(editUser.contactperson || "");
       setcontactnumber(editUser.contactnumber || "");
@@ -75,9 +80,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
           {editUser ? "Edit Account Information" : "Add New Account"}
         </h2>
         <FormFields 
-        referenceid={referenceid} setreferenceid={setreferenceid}
-        manager={manager} setmanager={setmanager}
-        tsm={tsm} settsm={settsm}
+        referenceid={referenceid} setreferenceid={setReferenceid}
+        manager={manager} setmanager={setManager}
+        tsm={tsm} settsm={setTsm}
         //
         companyname={companyname} setcompanyname={setcompanyname} 
         contactperson={contactperson} setcontactperson={setcontactperson}

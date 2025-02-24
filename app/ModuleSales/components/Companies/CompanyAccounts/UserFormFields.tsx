@@ -124,10 +124,9 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     <>
     <div className="flex flex-wrap -mx-4">
       <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-          <label className="block text-xs font-bold mb-2" htmlFor="referenceid">Territory Sales Associate</label>
-          <input type="text" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize"/>
-          <input type="text" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize"/>
-          <input type="text" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize"/>
+          <input type="hidden" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize"/>
+          <input type="hidden" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize"/>
+          <input type="hidden" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize"/>
         </div>
     </div>
     <div className="flex flex-wrap -mx-4">
