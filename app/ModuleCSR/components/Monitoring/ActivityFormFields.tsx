@@ -62,15 +62,15 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     UserId, setUserId,
 
     TicketReferenceNumber, setTicketReferenceNumber,
-    userName, setuserName, Role, setRole, 
-    
+    userName, setuserName, Role, setRole,
+
     CompanyName, setCompanyName, CustomerName, setCustomerName,
     Gender, setGender, ContactNumber, setContactNumber, Email, setEmail, CustomerSegment, setCustomerSegment,
     CityAddress, setCityAddress, Channel, setChannel,
     WrapUp, setWrapUp, Source, setSource,
     CustomerType, setCustomerType, CustomerStatus, setCustomerStatus,
     Status, setStatus,
-    Amount, setAmount, 
+    Amount, setAmount,
     QtySold, setQtySold,
     SalesManager, setSalesManager, SalesAgent, setSalesAgent,
     TicketReceived, setTicketReceived, TicketEndorsed, setTicketEndorsed,
@@ -152,27 +152,29 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
         setCityAddress('');
     };
 
+    const [isEditing, setIsEditing] = useState(false);
+
     const generateTicketReferenceNumber = () => {
         const randomNumber = Math.floor(Math.random() * 1000); // Generates a random number between 0 and 999
         return `CSR-Ticket-${randomNumber.toString().padStart(10, '0')}`;
     };
 
     useEffect(() => {
-        setTicketReferenceNumber(generateTicketReferenceNumber());
-    }, []);
+        if (editPost) {
+            setIsEditing(true);
+            setTicketReferenceNumber(editPost.TicketReferenceNumber); // Set the existing value in edit mode
+        } else {
+            setIsEditing(false);
+            setTicketReferenceNumber(generateTicketReferenceNumber()); // Generate only in create mode
+        }
+    }, [editPost, setTicketReferenceNumber]);
 
     return (
         <>
             <div className="flex flex-wrap -mx-4">
-                <div className="w-full sm:w-1/1 md:w-1/6 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="TicketReferenceNumber">Ticket Reference Number</label>
-                    <input
-                        type="text"
-                        id="TicketReferenceNumber"
-                        value={TicketReferenceNumber || ""}
-                        onChange={(e) => setTicketReferenceNumber(e.target.value)}
-                        className="w-full px-3 py-2 border rounded text-xs" readOnly
-                    />
+            <div className="w-full sm:w-1/1 md:w-1/6 px-4 mb-4">
+                <label className="block text-xs font-bold mb-2" htmlFor="ticketReferenceNumber">Ticket Reference Number</label>
+                <input type="text" id="ticketReferenceNumber" value={TicketReferenceNumber} className="w-full px-3 py-2 border rounded text-xs bg-gray-100"readOnly/>
                 </div>
             </div>
             <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
