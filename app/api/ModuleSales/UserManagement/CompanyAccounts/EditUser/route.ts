@@ -18,6 +18,7 @@ async function editUser(
     contactnumber: string,
     emailaddress: string,
     typeclient: string,
+    companygroup: string,
     address: string,
     area: string,
     status: string
@@ -38,6 +39,7 @@ async function editUser(
                 contactnumber = ${contactnumber},
                 emailaddress = ${emailaddress},
                 typeclient = ${typeclient},
+                companygroup = ${companygroup},
                 address = ${address},
                 area = ${area},
                 status = ${status}
@@ -65,6 +67,7 @@ export async function PUT(req: Request) {
             contactnumber, 
             emailaddress, 
             typeclient, 
+            companygroup,
             address, 
             area, 
             status 
@@ -72,7 +75,7 @@ export async function PUT(req: Request) {
 
         const result = await editUser(
             id, referenceid, manager, tsm, companyname, contactperson, 
-            contactnumber, emailaddress, typeclient, address, area, status
+            contactnumber, emailaddress, typeclient, companygroup, address, area, status
         );
 
         return NextResponse.json(result);

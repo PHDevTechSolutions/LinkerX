@@ -12,6 +12,7 @@ interface FormFieldsProps {
   contactnumber: string; setcontactnumber: (value: string) => void;
   emailaddress: string; setemailaddress: (value: string) => void;
   typeclient: string; settypeclient: (value: string) => void;
+  companygroup: string; setcompanygroup: (value: string) => void;
   address: string; setaddress: (value: string) => void;
   area: string; setarea: (value: string) => void;
   status: string; setstatus: (value: string) => void;
@@ -30,6 +31,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   contactnumber, setcontactnumber,
   emailaddress, setemailaddress,
   typeclient, settypeclient,
+  companygroup, setcompanygroup,
   address, setaddress,
   area, setarea,
   status, setstatus,
@@ -174,7 +176,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           </div>
         ))}
       </div>
-    <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
       <label className="block text-xs font-bold mb-2" htmlFor="typeclient">Type of Client</label>
       <select id="typeclient" value={typeclient} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
         <option value="">Select Client</option>
@@ -186,6 +188,10 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         <option value="New Account - Client Development">New Account - Client Development</option>
         <option value="Transferred Account">Transferred Account</option>
       </select>
+    </div>
+    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+      <label className="block text-xs font-bold mb-2" htmlFor="companygroup">Affiliate or Group</label>
+      <input type="text" id="companygroup" value={companygroup} onChange={(e) => setcompanygroup(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" />
     </div>
     <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
       <label className="block text-xs font-bold mb-2" htmlFor="address">Address</label>

@@ -25,6 +25,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [contactnumber, setcontactnumber] = useState("");
   const [emailaddress, setemailaddress] = useState("");
   const [typeclient, settypeclient] = useState("");
+  const [companygroup, setcompanygroup] = useState("");
   const [address, setaddress] = useState("");
   const [area, setarea] = useState("");
   const [status, setstatus] = useState("");
@@ -39,6 +40,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       setcontactnumber(editUser.contactnumber || "");
       setemailaddress(editUser.emailaddress || "");
       settypeclient(editUser.typeclient || "");
+      setcompanygroup(editUser.companygroup || "");
       setaddress(editUser.address || "");
       setarea(editUser.area || "");
       setstatus(editUser.status || "");
@@ -54,7 +56,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: editUser?.id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area, status }),
+      body: JSON.stringify({ id: editUser?.id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, companygroup, address, area, status }),
     });
 
     if (response.ok) {
@@ -89,6 +91,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         contactnumber={contactnumber} setcontactnumber={setcontactnumber}
         emailaddress={emailaddress} setemailaddress={setemailaddress}
         typeclient={typeclient} settypeclient={settypeclient}
+        companygroup={companygroup} setcompanygroup={setcompanygroup}
         address={address} setaddress={setaddress}
         area={area} setarea={setarea}
         status={status} setstatus={setstatus}

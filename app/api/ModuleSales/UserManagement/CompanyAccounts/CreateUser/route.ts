@@ -19,6 +19,7 @@ async function addUser(
     contactnumber: string,
     emailaddress: string,
     typeclient: string,
+    companygroup: string,
     address: string,
     area: string,
     status: string,
@@ -29,8 +30,8 @@ async function addUser(
         }
 
         const result = await sql`
-            INSERT INTO accounts (referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area, status, date_created) 
-            VALUES (${referenceid}, ${manager}, ${tsm}, ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${address}, ${area}, ${status}, NOW()) 
+            INSERT INTO accounts (referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, companygroup, address, area, status, date_created) 
+            VALUES (${referenceid}, ${manager}, ${tsm}, ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${companygroup}, ${address}, ${area}, ${status}, NOW()) 
             RETURNING *;
         `;
 
@@ -45,10 +46,10 @@ export async function POST(req: Request) {
     try {
         // Ensure request body is valid JSON
         const body = await req.json();
-        const { referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area, status } = body;
+        const { referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, companygroup, address, area, status } = body;
 
         // Call the addUser function
-        const result = await addUser(referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area, status);
+        const result = await addUser(referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, companygroup, address, area, status);
 
         // Return response
         return NextResponse.json(result);
