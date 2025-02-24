@@ -84,29 +84,32 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
       }),
     });
 
-    const externalResponse = await fetch("https://ecoshiftcorp.com.ph/data.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        SalesAgent,
-        SalesManager,
-        CompanyName, 
-        CustomerName, 
-        ContactNumber,
-        Email,
-        CityAddress,
-        Status,
-        TicketReferenceNumber,
-        Amount,
-        QtySold,
-        WrapUp,
-        Inquiries,
-      }),
-    });
+    if (Status === "Endorsed") {
+      const externalResponse = await fetch("https://ecoshiftcorp.com.ph/data.php", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+              SalesAgent,
+              SalesManager,
+              CompanyName, 
+              CustomerName, 
+              ContactNumber,
+              Email,
+              CityAddress,
+              Status,
+              TicketReferenceNumber,
+              Amount,
+              QtySold,
+              WrapUp,
+              Inquiries,
+          }),
+      });
 
-    const result = await externalResponse.json();
+      const result = await externalResponse.json();
+      // Handle result if necessary
+  }
 
     if (response.ok) {
       toast.success(editPost ? "Account updated successfully" : "Account added successfully", {
