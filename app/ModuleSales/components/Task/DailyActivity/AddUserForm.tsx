@@ -32,6 +32,21 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [projecttype, setprojecttype] = useState("");
   const [source, setsource] = useState("");
   const [typeactivity, settypeactivity] = useState("Select Activity");
+  // Inbound & Outbound Fields
+  const [callback, setcallback] = useState("");
+  const [callstatus, setcallstatus] = useState("");
+  const [typecall, settypecall] = useState("");
+  const [remarks, setremarks] = useState("");
+  const [quotationnumber, setquotationnumber] = useState("");
+  const [quotationamount, setquotationamount] = useState("");
+  const [sonumber, setsonumber] = useState("");
+  const [soamount, setsoamount] = useState("");
+
+  const [startdate, setstartdate] = useState("");
+  const [enddate, setenddate] = useState("");
+
+  const [activitystatus, setactivitystatus] = useState("");
+  const [activitynumber, setactivitynumber] = useState("");
 
   useEffect(() => {
     if (editUser) {
@@ -50,19 +65,30 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       setprojecttype(editUser.projecttype || "");
       setsource(editUser.projectsource || "");
       settypeactivity(editUser.typeactivity || "");
+
+      setcallback(editUser.callback || "");
+      setcallstatus(editUser.callstatus || "");
+      settypecall(editUser.typecall || "");
+      setremarks(editUser.setremarks || "");
+      setquotationnumber(editUser.quotationnumber || "");
+      setquotationamount(editUser.quotationamount || "");
+      setsonumber(editUser.sonumber || "");
+      setsoamount(editUser.soamount || "");
+
+      setactivitystatus(editUser.activitystatus || "");
     }
   }, [editUser]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const url = editUser ? `/api/ModuleSales/UserManagement/CompanyAccounts/EditUser` : `/api/ModuleSales/Task/DailyActivity/CreateUser`;
+    const url = editUser ? `/api/ModuleSales/Task/DailyActivity/EditUser` : `/api/ModuleSales/Task/DailyActivity/CreateUser`;
     const method = editUser ? "PUT" : "POST";
 
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: editUser?.id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area, projectname, projectcategory, projecttype, source, typeactivity }),
+      body: JSON.stringify({ id: editUser?.id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area, projectname, projectcategory, projecttype, source, typeactivity, callback, callstatus, typecall, remarks, quotationnumber, quotationamount, sonumber, soamount, startdate, enddate, activitystatus, activitynumber }),
     });
 
     if (response.ok) {
@@ -80,7 +106,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     }
   };
   
-
   return (
     <>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
@@ -104,6 +129,22 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         projecttype={projecttype} setprojecttype={setprojecttype}
         source={source} setsource={setsource}
         typeactivity={typeactivity} settypeactivity={settypeactivity}
+
+        callback={callback} setcallback={setcallback}
+        callstatus={callstatus} setcallstatus={setcallstatus}
+        typecall={typecall} settypecall={settypecall}
+
+        remarks={remarks} setremarks={setremarks}
+        quotationnumber={quotationnumber} setquotationnumber={setquotationnumber}
+        quotationamount={quotationamount} setquotationamount={setquotationamount}
+        sonumber={sonumber} setsonumber={setsonumber}
+        soamount={soamount} setsoamount={setsoamount}
+
+        startdate={startdate} setstartdate={setstartdate}
+        enddate={enddate} setenddate={setenddate}
+
+        activitystatus={activitystatus} setactivitystatus={setactivitystatus}
+        activitynumber={activitynumber} setactivitynumber={setactivitynumber}
         />
         <div className="flex justify-between">
           <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs">

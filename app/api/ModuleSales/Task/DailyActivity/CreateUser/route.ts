@@ -10,54 +10,135 @@ if (!databaseUrl) {
 // Create a reusable Neon database connection function
 const sql = neon(databaseUrl);
 
-async function addUser(
-    referenceid: string,
-    manager: string,
-    tsm: string,
-    companyname: string, 
-    contactperson: string,
-    contactnumber: string,
-    emailaddress: string,
-    typeclient: string,
-    address: string,
-    area: string,
-    projectname: string,
-    projectcategory: string,
-    projecttype: string,
-    source: string,
-    typeactivity: string,
-) {
+async function addUser(data: any) {
     try {
-        if (!companyname || !typeclient) {
-            throw new Error("Company Name and Type of Client are required.");
+        const {
+            referenceid,
+            manager,
+            tsm,
+            companyname,
+            contactperson,
+            contactnumber,
+            emailaddress,
+            typeclient,
+            address,
+            area,
+            projectname,
+            projectcategory,
+            projecttype,
+            source,
+            typeactivity,
+            callback,
+            callstatus,
+            typecall,
+            remarks,
+            quotationnumber,
+            quotationamount,
+            sonumber,
+            soamount,
+            startdate,
+            enddate,
+            activitystatus,
+            activitynumber,
+        } = data;
+
+        // Validate required fields
+        if (!companyname || !typeclient || !typeactivity) {
+            throw new Error("Company Name, Type of Client, and Type of Activity are required.");
         }
 
-        const result = await sql`
-            INSERT INTO activity (referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area, projectname, projectcategory, projecttype, source, typeactivity, date_created) 
-            VALUES (${referenceid}, ${manager}, ${tsm}, ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${address}, ${area}, ${projectname}, ${projectcategory}, ${projecttype}, ${source}, ${typeactivity}, NOW()) 
+        // Build dynamic insert query
+        const columns = [
+            "referenceid",
+            "manager",
+            "tsm",
+            "companyname",
+            "contactperson",
+            "contactnumber",
+            "emailaddress",
+            "typeclient",
+            "address",
+            "area",
+            "projectname",
+            "projectcategory",
+            "projecttype",
+            "source",
+            "typeactivity",
+            "callback",
+            "callstatus",
+            "typecall",
+            "remarks",
+            "quotationnumber",
+            "quotationamount",
+            "sonumber",
+            "soamount",
+            "startdate",
+            "enddate",
+            "activitystatus",
+            "activitynumber",
+            "date_created"
+        ];
+        
+        const values = [
+            referenceid,
+            manager,
+            tsm,
+            companyname,
+            contactperson,
+            contactnumber,
+            emailaddress,
+            typeclient,
+            address,
+            area,
+            projectname,
+            projectcategory,
+            projecttype,
+            source,
+            typeactivity,
+            callback || null, // Ensure NULL values for optional fields
+            callstatus || null,
+            typecall || null,
+            remarks || null,
+            quotationnumber || null,
+            quotationamount || null,
+            sonumber || null,
+            soamount || null,
+            startdate || null,
+            enddate || null,
+            activitystatus || null,
+            activitynumber || null,
+            new Date() // Use JavaScript Date for timestamp
+        ];
+
+        // Construct query dynamically
+        const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");
+        
+        const query = `
+            INSERT INTO activity (${columns.join(", ")}) 
+            VALUES (${placeholders}) 
             RETURNING *;
         `;
 
+        // Execute query
+        const result = await sql(query, values);
+
         return { success: true, data: result };
     } catch (error: any) {
-        console.error("Error inserting task:", error);
-        return { success: false, error: error.message || "Failed to add task." };
+        console.error("Error inserting activity:", error);
+        return { success: false, error: error.message || "Failed to add activity." };
     }
 }
 
 export async function POST(req: Request) {
     try {
-        // Ensure request body is valid JSON
         const body = await req.json();
-        const { referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area, projectname, projectcategory, projecttype, source, typeactivity } = body;
 
         // Call the addUser function
-        const result = await addUser(referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area, projectname, projectcategory, projecttype, source, typeactivity);
+        const result = await addUser(body);
 
-        // Return response
         return NextResponse.json(result);
     } catch (error: any) {
-        console.error("Error in POST /api/addTask:", error);
+        console.error("Error in POST /api/addActivity:", error);
         return NextResponse.json(
             { success: false, error: error.message || "Internal Server Error" },
             { status: 500 }
