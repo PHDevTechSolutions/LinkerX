@@ -16,10 +16,11 @@ interface UsersCardProps {
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid }) => {
     const socketRef = useRef(io(socketURL));
-    const [updatedUser, setUpdatedUser] = useState<any[]>([]);
+    const [updatedUser, setUpdatedUser] = useState<any[]>([]); 
     const [currentDate, setCurrentDate] = useState(new Date());
     const [groupedByDate, setGroupedByDate] = useState<Record<string, any[]>>({});
-    const [openMenu, setOpenMenu] = useState<string | null>(null); // To track the open menu for each card
+    const [openMenu, setOpenMenu] = useState<string | null>(null); // Track which card menu is open
+    const [collapsed, setCollapsed] = useState<boolean>(true); // To track which card body is collapsed
 
     useEffect(() => {
         setUpdatedUser(posts);
@@ -86,19 +87,24 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                             </h4>
                             <div>
                                 {groupedByDate[formattedDay]?.map((user) => (
-                                    <div key={user.id} className="border rounded-lg shadow-md p-4 bg-gray-50 mb-4 transition-all hover:shadow-2xl hover:bg-gray-100">
+                                    <div key={user.id} className="border rounded-lg shadow-md p-4 bg-gray-50 mb-2 transition-all hover:shadow-2xl hover:bg-gray-100">
                                         {/* Card Header - Company Name with 3-dot menu */}
                                         <div className="card-header mb-2 border-b-2 pb-2 flex justify-between items-center">
-                                            <h3 className="text-xs font-semibold text-gray-800">{user.companyname}</h3>
+                                            <h3 className="text-xs font-semibold text-gray-800 uppercase">{user.companyname}</h3>
                                             <div className="relative">
+                                            <button
+                                                onClick={() => setCollapsed(collapsed === user.id ? null : user.id)}
+                                                className="text-gray-500 hover:text-gray-700">
+                                                {collapsed === user.id ? <BsDash size={16} /> : <BsPlus size={16} />}
+                                            </button>
                                                 <button
                                                     className="text-gray-500 hover:text-gray-700"
-                                                    onClick={() => setOpenMenu(openMenu === user.id ? null : user.id)}> {/* Toggle the menu */}
-                                                    <BsThreeDotsVertical size={20} />
+                                                    onClick={() => setOpenMenu(openMenu === user.id ? null : user.id)}>{/* Toggle the menu */}
+                                                    <BsThreeDotsVertical size={16} />
                                                 </button>
                                                 {/* Dropdown Menu */}
                                                 <div
-                                                    className={`absolute right-0 mt-2 w-32 bg-white shadow-md rounded-md text-xs ${openMenu === user.id ? 'block' : 'hidden'}`}>
+                                                    className={`absolute right-0 mt-2 w-32 bg-white shadow-md p-2 rounded-md text-xs ${openMenu === user.id ? 'block' : 'hidden'}`}>
                                                     <ul>
                                                         <li
                                                             className="p-2 cursor-pointer hover:bg-gray-100"
@@ -111,12 +117,17 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                         </div>
 
                                         {/* Card Body - Contact Person, Contact Number, Product Category, Product Type */}
-                                        <div className="card-body mb-2">
-                                            <p className="text-xs"><strong>Contact Person:</strong> {user.contactperson}</p>
-                                            <p className="text-xs"><strong>Contact Number:</strong> {user.contactnumber}</p>
-                                            <p className="text-xs"><strong>Product Category:</strong> {user.productcategory}</p>
-                                            <p className="text-xs"><strong>Product Type:</strong> {user.producttype}</p>
+                                        {collapsed !== user.id && (
+                                        <div className="flex justify-between items-center">
+                                            <div className="text-xs">
+                                                <p><strong>Source:</strong> {user.source}</p>
+                                                <p><strong>Product Category:</strong> {user.projectcategory}</p>
+                                                <p><strong>Quotation Number:</strong> {user.quotationnumber}</p>
+                                                <p><strong>SO Amount:</strong> {user.soamount}</p>
+                                            </div>
+                                            {/* Toggle Collapse */}
                                         </div>
+                                        )}
 
                                         {/* Card Footer - Date Created */}
                                         <div className="card-footer text-xs text-left mt-2 border-t-2 pt-2">
