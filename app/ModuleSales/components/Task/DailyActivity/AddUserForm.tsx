@@ -27,6 +27,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [typeclient, settypeclient] = useState("");
   const [address, setaddress] = useState("");
   const [area, setarea] = useState("");
+  const [projectname, setprojectname] = useState("");
+  const [projectcategory, setprojectcategory] = useState("");
+  const [projecttype, setprojecttype] = useState("");
+  const [source, setsource] = useState("");
+  const [typeactivity, settypeactivity] = useState("Select Activity");
 
   useEffect(() => {
     if (editUser) {
@@ -40,19 +45,24 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       settypeclient(editUser.typeclient || "");
       setaddress(editUser.address || "");
       setarea(editUser.area || "");
+      setprojectname(editUser.projectname || "");
+      setprojectcategory(editUser.projectcategory || "");
+      setprojecttype(editUser.projecttype || "");
+      setsource(editUser.projectsource || "");
+      settypeactivity(editUser.typeactivity || "");
     }
   }, [editUser]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const url = editUser ? `/api/ModuleSales/UserManagement/CompanyAccounts/EditUser` : `/api/ModuleSales/UserManagement/CompanyAccounts/CreateUser`;
+    const url = editUser ? `/api/ModuleSales/UserManagement/CompanyAccounts/EditUser` : `/api/ModuleSales/Task/DailyActivity/CreateUser`;
     const method = editUser ? "PUT" : "POST";
 
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: editUser?.id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area}),
+      body: JSON.stringify({ id: editUser?.id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area, projectname, projectcategory, projecttype, source, typeactivity }),
     });
 
     if (response.ok) {
@@ -69,6 +79,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       });
     }
   };
+  
 
   return (
     <>
@@ -88,6 +99,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         typeclient={typeclient} settypeclient={settypeclient}
         address={address} setaddress={setaddress}
         area={area} setarea={setarea}
+        projectname={projectname} setprojectname={setprojectname}
+        projectcategory={projectcategory} setprojectcategory={setprojectcategory}
+        projecttype={projecttype} setprojecttype={setprojecttype}
+        source={source} setsource={setsource}
+        typeactivity={typeactivity} settypeactivity={settypeactivity}
         />
         <div className="flex justify-between">
           <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs">

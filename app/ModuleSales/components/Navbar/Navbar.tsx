@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { IoIosMenu } from 'react-icons/io';
+import { CiClock2 } from "react-icons/ci";
 
 const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) => {
   const [userName, setUserName] = useState("");
@@ -37,13 +38,29 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
     router.push("/Login");
   };
 
+  const [currentTime, setCurrentTime] = useState(
+    new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true })
+  );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(
+        new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true })
+      );
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="flex justify-between items-center p-4 bg-gray-100 text-dark shadow-md">
       <div className="flex items-center">
         <button onClick={onToggleSidebar} className="p-2">
           <IoIosMenu size={24} />
         </button>
-        <h1 className="ml-2 text-xs">Dashboard</h1>
+        <span className="flex items-center border text-sm shadow-md text-xs font-medium bg-gray-50 px-3 py-1 rounded-full">
+          <CiClock2 className="mr-1" /> {currentTime}
+        </span>
       </div>
       <div className="flex items-center text-xs">
         <span className="mr-4 capitalize">Hello, {userName}</span>

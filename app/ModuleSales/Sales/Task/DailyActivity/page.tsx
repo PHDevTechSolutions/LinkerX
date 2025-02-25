@@ -156,18 +156,22 @@ const ListofUser: React.FC = () => {
                                         referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
                                         manager: editUser ? editUser.manager : userDetails.Manager,
                                         tsm: editUser ? editUser.tsm : userDetails.TSM,
-                                      }}   // Ensure id is passed correctly
+                                    }}   // Ensure id is passed correctly
                                     editUser={editUser}
                                 />
                             ) : (
                                 <>
                                     <div className="flex justify-between items-center mb-4">
-                                        <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
-                                            <CiSquarePlus size={16} /> Create Task
-                                        </button>
-                                        <div className="flex gap-2">
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
+                                                onClick={() => setShowForm(true)}
+                                            >
+                                                <CiSquarePlus size={16} /> Create Task
+                                            </button>
                                         </div>
                                     </div>
+
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                         <h2 className="text-lg font-bold mb-2">My Task</h2>
                                         <SearchFilters
