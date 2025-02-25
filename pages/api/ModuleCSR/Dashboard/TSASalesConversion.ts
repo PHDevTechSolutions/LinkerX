@@ -145,6 +145,15 @@ export default async function fetchMetrics(req: NextApiRequest, res: NextApiResp
             "JS-NCR-002": "Sherilyn Rapote",
             "AB-NCR-005": "Vincent Ortiz",
             "AB-NCR-001": "Wilnie Ardelozo",
+            "RT-NCR-016": "Agnes Angeli, Panopio",
+            "NTL-DVO-004": "Arteo Angelo, Beseril",
+            "RT-NCR-018": "Brian, Zantua",
+            "JP-CBU-003": "Ferdinand, Canete",
+            "RT-NCR-024": "Fortunato, Mabingnay",
+            "JD-001": "Jayvee, Atienza",
+            "RT-NCR-023": "Joy Merel, Soriente",
+            "RT-NCR-021": "Niko, Gertes",
+            "RT-NCR-019": "Richard, Esteban",
             // Add more mappings here as needed
         };
 
