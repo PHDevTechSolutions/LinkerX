@@ -219,7 +219,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
             </div>
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="Traffic">Traffic</label>
+                <label className="block text-xs font-bold mb-2 bg-yellow-300 px-2 py-1 rounded w-40" htmlFor="Traffic"><span>Traffic</span></label>
                     <select id="Traffic" value={Traffic || ""} onChange={(e) => setTraffic(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
                         <option value="">Select Traffic</option>
                         <option value="Sales">Sales</option>
@@ -230,7 +230,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
 
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="TicketReceived">Ticket Received</label>
+                    <label className="block text-xs font-bold mb-2 bg-yellow-300 px-2 py-1 rounded w-40" htmlFor="TicketReceived">Ticket Received</label>
                     <input
                         type="datetime-local"
                         id="TicketReceived"
@@ -240,7 +240,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     />
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="TicketEndorsed">Ticket Endorsed</label>
+                    <label className="block text-xs font-bold mb-2 bg-yellow-300 px-2 py-1 rounded w-40" htmlFor="TicketEndorsed">Ticket Endorsed</label>
                     <input
                         type="datetime-local"
                         id="TicketEndorsed"
@@ -253,7 +253,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
 
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="Channel">Channel</label>
+                    <label className="block text-xs font-bold mb-2 bg-yellow-300 px-2 py-1 rounded w-40" htmlFor="Channel">Channel</label>
                     <select id="Channel" value={Channel || ""} onChange={(e) => setChannel(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" required>
                         <option value="">Select Channel</option>
                         <option value="Google Maps">Google Maps</option>
@@ -270,7 +270,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 </div>
 
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="WrapUp">Wrap-Up</label>
+                    <label className="block text-xs font-bold mb-2 bg-yellow-300 px-2 py-1 rounded w-40" htmlFor="WrapUp">Wrap-Up</label>
                     <select id="WrapUp" value={WrapUp || ""} onChange={(e) => setWrapUp(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" required>
                         <option value="">Select Wrap Up</option>
                         <option value="Customer Order">Customer Order</option>
@@ -319,7 +319,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </select>
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="CustomerType">Customer Type</label>
+                    <label className="block text-xs font-bold mb-2 bg-yellow-300 px-2 py-1 rounded w-40" htmlFor="CustomerType">Customer Type</label>
                     <select id="CustomerType" value={CustomerType || ""} onChange={(e) => setCustomerType(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
                         <option value="">Select Type</option>
                         <option value="B2B">B2B</option>
@@ -332,7 +332,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
             </div>
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="CustomerStatus">Customer Status</label>
+                    <label className="block text-xs font-bold mb-2 bg-yellow-300 px-2 py-1 rounded w-40" htmlFor="CustomerStatus">Customer Status</label>
                     <select id="CustomerStatus" value={CustomerStatus || ""} onChange={(e) => setCustomerStatus(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
                         <option value="">Select Customer Status</option>
                         <option value="New Client">New Client</option>
@@ -342,7 +342,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </select>
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="Status">Status</label>
+                    <label className="block text-xs font-bold mb-2 bg-yellow-300 px-2 py-1 rounded w-40" htmlFor="Status">Status</label>
                     <select id="Status" value={Status || ""} onChange={(e) => setStatus(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" required>
                         <option value="">Select Status</option>
                         <option value="Closed">Closed</option>
@@ -418,7 +418,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
 
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="QtySold">Department</label>
+                    <label className="block text-xs font-bold mb-2 bg-yellow-300 px-2 py-1 rounded w-40" htmlFor="QtySold">Department</label>
                     <select id="Department" value={Department || ""} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
                         <option value="">Select Department</option>
                         <option value="Accounting">Accounting</option>
@@ -431,7 +431,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </select>
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="SalesManager">Sales Manager</label>
+                    <label className="block text-xs font-bold mb-2 bg-white-300 px-2 py-1" htmlFor="SalesManager">Sales Manager</label>
                     <select id="SalesManager" value={SalesManager || ""} onChange={(e) => setSalesManager(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" required>
                         <option value="">Select Manager</option>
                         <option value="AB-NCR-000">Angie Baldugo</option>
@@ -450,59 +450,65 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </select>
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="SalesAgent">Sales Agent</label>
+                    <label className="block text-xs font-bold mb-2 bg-white-300 px-2 py-1" htmlFor="SalesAgent">Sales Agent</label>
                     <select id="SalesAgent" value={SalesAgent || ""} onChange={(e) => setSalesAgent(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
                         <option value="">Select Agent</option>
-                        <option value="">Airish Echanes</option>
-                        <option value="RME-CDO-001">Andrew Banaglorosio</option>
-                        <option value="RME-CDO-004">Annie Mabilanga</option>
-                        <option value="AB-NCR-006">Ansley Patelo</option>
-                        <option value="RT-NCR-001">Banjo Lising</option>
-                        <option value="RT-NCR-013">Cesar Paredes</option>
-                        <option value="RDC-R1-001">Cris Acierto</option>
-                        <option value="AB-NCR-002">Cristy Bobis</option>
-                        <option value="RT-NCR-006">Dionisio Doyugan</option>
-                        <option value="NTL-DVO-003">Duke Menil</option>
-                        <option value="RT-NCR-014">Erish Tomas Cajipe</option>
-                        <option value="AB-NCR-008">Erwin Laude</option>
-                        <option value="RT-NCR-009">Eryll Joyce Encina</option>
-                        <option value="">Florencio Jacinto Jr</option>
-                        <option value="RT-NCR-005">Gene Mark Roxas</option>
-                        <option value="RT-NCR-004">Gretchell Aquino</option>
-                        <option value="RT-016">Jean Dela Cerna</option>
-                        <option value="AB-NCR-007">Jeff Puying</option>
-                        <option value="RT-NCR-002">Jeffrey Lacson</option>
-                        <option value="">Jessie De Guzman</option>
-                        <option value="JS-NCR-001">Jonna Clarin</option>
-                        <option value="">Jujeno Marie Del Rio</option>
-                        <option value="JS-NCR-005">Julius Abuel</option>
-                        <option value="AB-NCR-003">Joseph Candazo</option>
-                        <option value="NTL-DVO-001">Khay Yango</option>
-                        <option value="SH-DA-001">Krista Ilaya</option>
-                        <option value="RT-NCR-011">Krizelle Payno</option>
-                        <option value="RME-CDO-002">Kurt Guanco</option>
-                        <option value="RT-NCR-003">Lotty Deguzman</option>
-                        <option value="JP-CBU-002">Mark Villagonzalo</option>
-                        <option value="JS-NCR-003">Michael Quijano</option>
-                        <option value="">Merie Tumbado</option>
-                        <option value="RR-SLN-002">Patrick Managuelod</option>
-                        <option value="">Paula Cauguiran</option>
-                        <option value="AB-NCR-009">Princess Joy Ambre</option>
-                        <option value="RT-NCR-012">Raegan Bautista</option>
-                        <option value="JP-CBU-004">Reynaldo Piedad</option>
-                        <option value="RT-NCR-015">Randy Bacor</option>
-                        <option value="RT-NCR-008">Rodelio Ico</option>
-                        <option value="RT-NCR-007">Rodolfo Delizo</option>
-                        <option value="RT-018">Rosemarie Nollora</option>
-                        <option value="RT-017">Roselyn Barnes</option>
-                        <option value="JS-NCR-002">Sherilyn Rapote</option>
-                        <option value="AB-NCR-005">Vincent Ortiz</option>
-                        <option value="AB-NCR-001">Wilnie Ardelozo</option>
+                        <option value="">Airish, Echanes</option>
+                        <option value="RT-NCR-016">Agnes Angeli, Panopio</option>
+                        <option value="RME-CDO-001">Andrew, Banaglorosio</option>
+                        <option value="AB-NCR-006">Ansley, Patelo</option>
+                        <option value="NTL-DVO-004">Arteo Angelo, Beseril</option>
+                        <option value="RT-NCR-001">Banjo, Lising</option>
+                        <option value="RT-NCR-018">Brian, Zantua</option>
+                        <option value="RT-NCR-013">Cesar, Paredes</option>
+                        <option value="RDC-R1-001">Cris, Acierto</option>
+                        <option value="AB-NCR-002">Cristy, Bobis</option>
+                        <option value="RT-NCR-006">Dionisio, Doyugan</option>
+                        <option value="NTL-DVO-003">Duke, Menil</option>
+                        <option value="RT-NCR-014">Erish Tomas, Cajipe</option>
+                        <option value="AB-NCR-008">Erwin, Laude</option>
+                        <option value="RT-NCR-009">Eryll Joyce, Encina</option>
+                        <option value="JP-CBU-003">Ferdinand, Canete</option>
+                        <option value="">Florencio, Jacinto Jr</option>
+                        <option value="RT-NCR-024">Fortunato, Mabingnay</option>
+                        <option value="RT-NCR-005">Gene Mark, Roxas</option>
+                        <option value="RT-NCR-004">Gretchell, Aquino</option>
+                        <option value="JD-001">Jayvee, Atienza</option>
+                        <option value="RT-016">Jean, Dela Cerna</option>
+                        <option value="AB-NCR-007">Jeff, Puying</option>
+                        <option value="RT-NCR-002">Jeffrey, Lacson</option>
+                        <option value="">Jessie, De Guzman</option>
+                        <option value="JS-NCR-001">Jonna, Clarin</option>
+                        <option value="JS-NCR-005">Julius, Abuel</option>
+                        <option value="AB-NCR-003">Joseph, Candazo</option>
+                        <option value="RT-NCR-023">Joy Merel, Soriente</option>
+                        <option value="NTL-DVO-001">Khay, Yango</option>
+                        <option value="SH-DA-001">Krista, Ilaya</option>
+                        <option value="RT-NCR-011">Krizelle, Payno</option>
+                        <option value="RME-CDO-002">Kurt, Guanco</option>
+                        <option value="RT-NCR-003">Lotty, Deguzman</option>
+                        <option value="JP-CBU-002">Mark, Villagonzalo</option>
+                        <option value="JS-NCR-003">Michael, Quijano</option>
+                        <option value="">Merie, Tumbado</option>
+                        <option value="RT-NCR-021">Niko, Gertes</option>
+                        <option value="RR-SLN-002">Patrick, Managuelod</option>
+                        <option value="">Paula, Cauguiran</option>
+                        <option value="AB-NCR-009">Princess Joy, Ambre</option>
+                        <option value="RT-NCR-019">Richard, Esteban</option>
+                        <option value="JP-CBU-004">Reynaldo, Piedad</option>
+                        <option value="RT-NCR-015">Randy, Bacor</option>
+                        <option value="RT-NCR-008">Rodelio, Ico</option>
+                        <option value="RT-NCR-007">Rodolfo, Delizo</option>
+                        <option value="RT-018">Rosemarie, Nollora</option>
+                        <option value="RT-017">Roselyn, Barnes</option>
+                        <option value="JS-NCR-002">Sherilyn, Rapote</option>
+                        <option value="AB-NCR-005">Vincent, Ortiz</option>
+                        <option value="AB-NCR-001">Wilnie, Ardelozo</option>
                         <option value="LX-NCR-001">Leroux Y Xchire (TEST ACCOUNT)</option>
                     </select>
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="Remarks">Remarks</label>
+                    <label className="block text-xs font-bold mb-2 bg-white-300 px-2 py-1" htmlFor="Remarks">Remarks</label>
                     <select id="Remarks" value={Remarks || ""} onChange={(e) => setRemarks(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" >
                         <option value="">Select Remarks</option>
                         <option value="No Stocks / Insufficient Stocks">No Stocks / Insufficient Stocks</option>

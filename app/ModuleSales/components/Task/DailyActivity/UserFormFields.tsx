@@ -19,26 +19,24 @@ interface FormFieldsProps {
     setemailaddress: (value: string) => void;
     typeclient: string;
     settypeclient: (value: string) => void;
+    address: string;
+    setaddress: (value: string) => void;
+    area: string;
+    setarea: (value: string) => void;
     editPost?: any;
 }
 
 const UserFormFields: React.FC<FormFieldsProps> = ({
-    referenceid,
-    setreferenceid,
-    manager,
-    setmanager,
-    tsm,
-    settsm,
-    companyname,
-    setcompanyname,
-    contactperson,
-    setcontactperson,
-    contactnumber,
-    setcontactnumber,
-    emailaddress,
-    setemailaddress,
-    typeclient,
-    settypeclient,
+    referenceid, setreferenceid,
+    manager, setmanager,
+    tsm, settsm,
+    companyname, setcompanyname,
+    contactperson, setcontactperson,
+    contactnumber, setcontactnumber,
+    emailaddress, setemailaddress,
+    typeclient, settypeclient,
+    address, setaddress,
+    area, setarea,
     editPost,
 }) => {
     const [companies, setCompanies] = useState<any[]>([]);
@@ -61,6 +59,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             contactnumber: company.contactnumber,
                             emailaddress: company.emailaddress,
                             typeclient: company.typeclient,
+                            address: company.address,
+                            area: company.area,
                         })));
                     } else {
                         console.error("Error fetching companies:", data.error);
@@ -82,6 +82,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         setcontactnumber(selectedOption ? selectedOption.contactnumber : "");
         setemailaddress(selectedOption ? selectedOption.emailaddress : "");
         settypeclient(selectedOption ? selectedOption.typeclient : "");
+        setaddress(selectedOption ? selectedOption.address : "");
+        setarea(selectedOption ? selectedOption.area : "");
     };
 
     const handleContactPersonChange = (index: number, value: string) => {
@@ -138,7 +140,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     <label className="block text-xs font-bold mb-2">Contact Person</label>
                     {contactPersons.map((person, index) => (
                         <div key={index} className="flex items-center gap-2 mb-2">
-                            <input type="text" value={person} onChange={(e) => handleContactPersonChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                            <input type="text" value={person} onChange={(e) => handleContactPersonChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly/>
                             {index > 0 && (
                                 <button type="button" onClick={() => removeContactPerson(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600" >
                                     <CiCircleMinus size={16} />
@@ -152,7 +154,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     <label className="block text-xs font-bold mb-2">Contact Number</label>
                     {contactNumbers.map((number, index) => (
                         <div key={index} className="flex items-center gap-2 mb-2">
-                            <input type="text" value={number} onChange={(e) => handleContactNumberChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                            <input type="text" value={number} onChange={(e) => handleContactNumberChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly/>
                             {index > 0 && (
                                 <button type="button" onClick={() => removeContactNumber(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600">
                                     <CiCircleMinus size={16} />
@@ -166,7 +168,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     <label className="block text-xs font-bold mb-2">Email Address</label>
                     {emailAddresses.map((email, index) => (
                         <div key={index} className="flex items-center gap-2 mb-2">
-                            <input type="text" value={email} onChange={(e) => handleEmailAddressChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                            <input type="text" value={email} onChange={(e) => handleEmailAddressChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs" readOnly/>
                             {index > 0 && (
                                 <button type="button" onClick={() => removeEmailAddress(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600">
                                     <CiCircleMinus size={16} />
@@ -178,7 +180,17 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Type Client</label>
-                    <input type="text" id="typeclient" value={typeclient} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                    <input type="text" id="typeclient" value={typeclient} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly/>
+                </div>
+
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2">Address</label>
+                    <input type="text" id="address" value={address} onChange={(e) => setaddress(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly/>
+                </div>
+
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2">Area</label>
+                    <input type="text" id="area" value={area} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly/>
                 </div>
             </div>
         </>

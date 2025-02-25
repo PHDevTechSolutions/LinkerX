@@ -206,10 +206,10 @@ const ActivityCards: React.FC<ActivityCardsProps> = ({ userDetails, posts, handl
                                             {/* Card Footer */}
                                             <div className="border-t border-gray-900 mt-3 pt-2 text-xs flex justify-between items-center">
                                                 <span className="flex items-center gap-1">
-                                                    Endorsed: {formatDate(post.TicketEndorsed)}
+                                                    Received: {formatDate(post.TicketReceived)}
                                                 </span>
                                                 <span className="flex items-center gap-1">
-                                                    Received: {formatDate(post.TicketReceived)}
+                                                    Endorsed: {formatDate(post.TicketEndorsed)}
                                                 </span>
                                             </div>
 

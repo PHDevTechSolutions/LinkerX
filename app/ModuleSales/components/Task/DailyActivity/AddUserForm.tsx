@@ -25,6 +25,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [contactnumber, setcontactnumber] = useState("");
   const [emailaddress, setemailaddress] = useState("");
   const [typeclient, settypeclient] = useState("");
+  const [address, setaddress] = useState("");
+  const [area, setarea] = useState("");
 
   useEffect(() => {
     if (editUser) {
@@ -36,6 +38,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       setcontactnumber(editUser.contactnumber || "");
       setemailaddress(editUser.emailaddress || "");
       settypeclient(editUser.typeclient || "");
+      setaddress(editUser.address || "");
+      setarea(editUser.area || "");
     }
   }, [editUser]);
 
@@ -48,7 +52,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: editUser?.id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, }),
+      body: JSON.stringify({ id: editUser?.id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area}),
     });
 
     if (response.ok) {
@@ -65,7 +69,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       });
     }
   };
-  
 
   return (
     <>
@@ -83,6 +86,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         contactnumber={contactnumber} setcontactnumber={setcontactnumber}
         emailaddress={emailaddress} setemailaddress={setemailaddress}
         typeclient={typeclient} settypeclient={settypeclient}
+        address={address} setaddress={setaddress}
+        area={area} setarea={setarea}
         />
         <div className="flex justify-between">
           <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs">
