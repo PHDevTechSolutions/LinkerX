@@ -7,7 +7,7 @@ import UserFetcher from "../../../components/User/UserFetcher";
 // Components
 import AddPostForm from "../../../components/Task/DailyActivity/AddUserForm";
 import SearchFilters from "../../../components/ClientActivityBoard/ListofCompanies/SearchFilters";
-import UsersTable from "../../../components/Companies/GroupCompanies/UsersTable";
+import UsersTable from "../../../components/Task/DailyActivity/UsersTable";
 import Pagination from "../../../components/ClientActivityBoard/ListofCompanies/Pagination";
 
 // Toast Notifications
@@ -78,7 +78,7 @@ const ListofUser: React.FC = () => {
     // Fetch all users from the API
     const fetchAccount = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
+            const response = await fetch("/api/ModuleSales/Task/DailyActivity/FetchTask");
             const data = await response.json();
             console.log("Fetched data:", data); // Debugging line
             setPosts(data.data); // Make sure you're setting `data.data` if API response has `{ success: true, data: [...] }`
