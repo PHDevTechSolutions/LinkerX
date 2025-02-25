@@ -14,6 +14,7 @@ const CSRFaqs: React.FC<AccordionProps> = () => {
         "Branches",
         "Warranty",
         "Accreditation Requirements",
+        "Delivery Option",
         "Production Promotion"
     ];
 
@@ -55,6 +56,11 @@ const CSRFaqs: React.FC<AccordionProps> = () => {
             "2 Valid Government I.D of Owners with Picture (Colored)",
             "Credit Terms Agreement and Conditions",
             "Note: Applications with incomplete details and documents will not be approved"
+        ],
+        [
+            "Free Delivery Outside Metro Manila: Available for Rizal is 10K",
+            "For Bulacan, Cavite is 15K",
+            "For Pampanga, Laguna is 25K",
         ],
         [""]
     ];

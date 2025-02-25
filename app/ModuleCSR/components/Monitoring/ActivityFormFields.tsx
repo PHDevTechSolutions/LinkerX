@@ -266,6 +266,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <option value="Voice Call">Voice Call</option>
                         <option value="Email">Email</option>
                         <option value="Whatsapp">Whatsapp</option>
+                        <option value="Shopify">Shopify</option>
                     </select>
                 </div>
 
