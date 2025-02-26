@@ -6,8 +6,6 @@ import React, { useState } from "react";
 interface SearchFiltersProps {
     searchTerm: string;
     setSearchTerm: (term: string) => void;
-    postsPerPage: number;
-    setPostsPerPage: (num: number) => void;
     selectedClientType: string;
     setSelectedClientType: (clientType: string) => void;
     startDate: string;
@@ -19,8 +17,6 @@ interface SearchFiltersProps {
 const SearchFilters: React.FC<SearchFiltersProps> = ({
     searchTerm,
     setSearchTerm,
-    postsPerPage,
-    setPostsPerPage,
     selectedClientType,
     setSelectedClientType,
     startDate,
@@ -62,15 +58,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                     onChange={(e) => setEndDate(e.target.value)} 
                     className="border px-3 py-2 rounded text-xs" 
                 />
-                <select
-                value={postsPerPage}
-                onChange={(e) => setPostsPerPage(parseInt(e.target.value))}
-                className="shadow-sm border px-3 py-2 rounded text-xs w-full md:w-auto"
-            >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-            </select>
             </div>
         </div>
     );

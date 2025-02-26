@@ -6,7 +6,7 @@ import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
 import AddPostForm from "../../../components/Task/DailyActivity/AddUserForm";
-import SearchFilters from "../../../components/ClientActivityBoard/ListofCompanies/SearchFilters";
+import SearchFilters from "../../../components/Task/DailyActivity/SearchFilters";
 import UsersTable from "../../../components/Task/DailyActivity/UsersTable";
 
 // Toast Notifications
