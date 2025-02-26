@@ -447,7 +447,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <option value="RG-CBU-000">Robert Gonzales</option>
                         <option value="">Chi Mercado</option>
                         <option value="RME-CDO-000">Ray Michael Estimo</option>
-                        <option value="LR-NCR-000">Xchire Technology (TEST ACCOUNT)</option>
+                        <option value="LR-NCR-000">(TEST ACCOUNT)</option>
                     </select>
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -505,7 +505,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <option value="JS-NCR-002">Sherilyn, Rapote</option>
                         <option value="AB-NCR-005">Vincent, Ortiz</option>
                         <option value="AB-NCR-001">Wilnie, Ardelozo</option>
-                        <option value="LX-NCR-001">Leroux Y Xchire (TEST ACCOUNT)</option>
+                        <option value="LX-NCR-001">(TEST ACCOUNT)</option>
                     </select>
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
