@@ -68,78 +68,63 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const url = editPost 
-        ? `/api/ModuleCSR/Monitorings/EditActivity` 
-        : `/api/ModuleCSR/Monitorings/CreateActivity`; 
+    const url = editPost ? `/api/ModuleCSR/Monitorings/EditActivity` : `/api/ModuleCSR/Monitorings/CreateActivity`; // API endpoint changes based on edit or add
+    const method = editPost ? "PUT" : "POST"; // HTTP method changes based on edit or add
 
-    const method = editPost ? "PUT" : "POST"; 
+    const response = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        UserId, TicketReferenceNumber, userName, Role, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, CustomerStatus, Status, 
+        Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
+        TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource,
+        id: editPost ? editPost._id : undefined, // Send post ID if editing
+      }),
+    });
 
-    try {
-        // Main API Request
-        const response = await fetch(url, {
-            method,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                UserId, TicketReferenceNumber, userName, Role, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, CustomerStatus, Status, 
-                Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
-                TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource,
-                id: editPost ? editPost._id : undefined, 
-            }),
-        });
+    if (Status === "Endorsed") {
+      const externalResponse = await fetch("https://ecoshiftcorp.com.ph/data.php", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+              SalesAgent,
+              SalesManager,
+              CompanyName, 
+              CustomerName, 
+              ContactNumber,
+              Email,
+              CityAddress,
+              Status,
+              TicketReferenceNumber,
+              Amount,
+              QtySold,
+              WrapUp,
+              Inquiries,
+          }),
+      });
 
-        if (!response.ok) {
-            throw new Error("Failed to save activity in main API");
+      const result = await externalResponse.json();
+      // Handle result if necessary
+  }
+
+    if (response.ok) {
+      toast.success(editPost ? "Account updated successfully" : "Account added successfully", {
+        autoClose: 1000,
+        onClose: () => {
+          onCancel(); // Hide the form after submission
+          refreshPosts(); // Refresh accounts after successful submission
         }
-
-        // Only send request to data.php if Status === "Endorsed"
-        if (Status === "Endorsed") {
-            const externalResponse = await fetch("https://ecoshiftcorp.com.ph/data.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    SalesAgent,
-                    SalesManager,
-                    CompanyName, 
-                    CustomerName, 
-                    ContactNumber,
-                    Email,
-                    CityAddress,
-                    Status,
-                    TicketReferenceNumber,
-                    Amount,
-                    QtySold,
-                    WrapUp,
-                    Inquiries,
-                }),
-            });
-
-            if (!externalResponse.ok) {
-                throw new Error("Failed to send data to data.php");
-            }
-
-            const result = await externalResponse.json();
-            console.log("Data.php Response:", result);
-        }
-
-        // If success, show toast and refresh
-        toast.success(editPost ? "Account updated successfully" : "Account added successfully", {
-            autoClose: 1000,
-            onClose: () => {
-                onCancel();
-                refreshPosts();
-            }
-        });
-
-    } catch (error) {
-        console.error("Error in handleSubmit:", error);
-        toast.error("Something went wrong. Please try again.", { autoClose: 1000 });
+      });
+    } else {
+      toast.error(editPost ? "Failed to update account" : "Failed to add account", {
+        autoClose: 1000
+      });
     }
-};
-
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
