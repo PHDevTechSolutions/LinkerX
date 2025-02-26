@@ -8,25 +8,20 @@ import UserFetcher from "../../../components/User/UserFetcher";
 import AddPostForm from "../../../components/Task/DailyActivity/AddUserForm";
 import SearchFilters from "../../../components/ClientActivityBoard/ListofCompanies/SearchFilters";
 import UsersTable from "../../../components/Task/DailyActivity/UsersTable";
-import Pagination from "../../../components/ClientActivityBoard/ListofCompanies/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import ExcelJS from "exceljs";
-
 
 // Icons
-import { CiSquarePlus, CiImport, CiExport } from "react-icons/ci";
+import { CiSquarePlus } from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
-    const [showImportForm, setShowImportForm] = useState(false);
     const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(12);
+    const [currentPage, setCurrentPage] = useState("");
     const [selectedClientType, setSelectedClientType] = useState("");
     const [startDate, setStartDate] = useState(""); // Default to null
     const [endDate, setEndDate] = useState(""); // Default to null
@@ -125,12 +120,8 @@ const ListofUser: React.FC = () => {
         })
         : [];
 
-
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
-    const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
-
+    const currentPosts = filteredAccounts.slice();
+    const totalPages = Math.ceil(filteredAccounts.length);
 
     // Handle editing a post
     const handleEdit = (post: any) => {
@@ -177,8 +168,6 @@ const ListofUser: React.FC = () => {
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}
-                                            postsPerPage={postsPerPage}
-                                            setPostsPerPage={setPostsPerPage}
                                             selectedClientType={selectedClientType}
                                             setSelectedClientType={setSelectedClientType}
                                             startDate={startDate}
@@ -190,17 +179,6 @@ const ListofUser: React.FC = () => {
                                             posts={currentPosts}
                                             handleEdit={handleEdit}
                                         />
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                        />
-
-                                        <div className="text-xs mt-2">
-                                            Showing {indexOfFirstPost + 1} to{" "}
-                                            {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                            {filteredAccounts.length} entries
-                                        </div>
                                     </div>
                                 </>
                             )}
