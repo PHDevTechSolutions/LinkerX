@@ -114,7 +114,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
         console.log("Sending data to API:", requestData); // Debugging log
       
         try {
-          const externalResponse = await fetch("https://ecoshiftcorp.com.ph/data.php", {
+          const externalResponse = await fetch("https://www.ecoshiftcorp.com.ph/data.php", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
