@@ -3,8 +3,6 @@ import io from "socket.io-client";
 import { AiOutlineLeft, AiOutlineRight, AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
-const socket = io("http://localhost:3001");
-
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const STATUS_COLORS: Record<string, string> = {
@@ -69,17 +67,6 @@ const ActivityCards: React.FC<ActivityCardsProps> = ({ userDetails, posts, handl
           setRole(userDetails.Role);
         }
       }, [userDetails]);
-
-    useEffect(() => {
-        socket.on("newPost", (newPost: Post) => {
-            if (!posts.some((post) => post._id === newPost._id)) {
-                posts.unshift(newPost);
-            }
-        });
-        return () => {
-            socket.off("newPost");
-        };
-    }, [posts]);
 
     useEffect(() => {
     const grouped = posts.reduce((acc, post) => {
