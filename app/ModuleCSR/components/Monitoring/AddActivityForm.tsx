@@ -107,7 +107,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
       // If Status is "Endorsed", send data to external API
       if (Status === "Endorsed") {
         try {
-          const externalResponse = await fetch("https://buildchemsolutions.com/data.php", {
+          const externalResponse = await fetch("https://ecoshiftcorp.com.ph/data.php", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
