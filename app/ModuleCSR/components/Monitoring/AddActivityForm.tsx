@@ -67,64 +67,80 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const url = editPost ? `/api/ModuleCSR/Monitorings/EditActivity` : `/api/ModuleCSR/Monitorings/CreateActivity`; // API endpoint changes based on edit or add
-    const method = editPost ? "PUT" : "POST"; // HTTP method changes based on edit or add
-
-    const response = await fetch(url, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        UserId, TicketReferenceNumber, userName, Role, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, CustomerStatus, Status, 
-        Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
-        TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource,
-        id: editPost ? editPost._id : undefined, // Send post ID if editing
-      }),
-    });
-
-    if (Status === "Endorsed") {
-      const externalResponse = await fetch("https://ecoshiftcorp.com.ph/data.php", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-              SalesAgent,
-              SalesManager,
-              CompanyName, 
-              CustomerName, 
-              ContactNumber,
-              Email,
-              CityAddress,
-              Status,
-              TicketReferenceNumber,
-              Amount,
-              QtySold,
-              WrapUp,
-              Inquiries,
-          }),
+  
+    try {
+      const url = editPost
+        ? `/api/ModuleCSR/Monitorings/EditActivity`
+        : `/api/ModuleCSR/Monitorings/CreateActivity`;
+      const method = editPost ? "PUT" : "POST";
+  
+      // Prepare request body
+      const bodyData: any = {
+        UserId, TicketReferenceNumber, userName, Role, CompanyName, CustomerName, Gender, ContactNumber, Email,
+        CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, CustomerStatus, Status, Amount, QtySold,
+        SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
+        TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription,
+        SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource,
+      };
+  
+      // Add ID only when editing
+      if (editPost) {
+        bodyData.id = editPost._id;
+      }
+  
+      // Send main API request
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData),
       });
-
-      const result = await externalResponse.json();
-      // Handle result if necessary
-  }
-
-    if (response.ok) {
+  
+      const responseData = await response.json();
+      console.log("Main API Response:", responseData);
+  
+      if (!response.ok) {
+        throw new Error(responseData.message || "Failed to process request");
+      }
+  
+      // If Status is "Endorsed", send data to external API
+      if (Status === "Endorsed") {
+        try {
+          const externalResponse = await fetch("https://ecoshiftcorp.com.ph/data.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              SalesAgent, SalesManager, CompanyName, CustomerName, ContactNumber, Email, CityAddress, Status,
+              TicketReferenceNumber, Amount, QtySold, WrapUp, Inquiries,
+            }),
+          });
+  
+          const externalResult = await externalResponse.json();
+          console.log("External API Response:", externalResult);
+        } catch (externalError) {
+          console.error("External API Error:", externalError);
+        }
+      }
+  
+      // Show success toast and refresh posts
       toast.success(editPost ? "Account updated successfully" : "Account added successfully", {
         autoClose: 1000,
         onClose: () => {
-          onCancel(); // Hide the form after submission
-          refreshPosts(); // Refresh accounts after successful submission
-        }
+          onCancel();
+          refreshPosts();
+        },
       });
-    } else {
+  
+    } catch (error) {
+      console.error("Error:", error);
       toast.error(editPost ? "Failed to update account" : "Failed to add account", {
-        autoClose: 1000
+        autoClose: 1000,
       });
     }
-  };
+  };  
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
