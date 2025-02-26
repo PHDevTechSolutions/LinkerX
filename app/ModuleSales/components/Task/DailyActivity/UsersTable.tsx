@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import io from "socket.io-client";
 import { format, parseISO, addDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameDay, isWithinInterval } from "date-fns";
 import { CiSquareChevLeft, CiSquareChevRight, CiEdit, CiCalendar, CiMapPin, CiTrash } from "react-icons/ci";
 import { BsThreeDotsVertical, BsPlus, BsDash, BsRecycle } from "react-icons/bs";
@@ -16,7 +15,6 @@ interface UsersCardProps {
 }
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUpdate, handleDelete, referenceid }) => {
-    const socketRef = useRef(io(socketURL));
     const [updatedUser, setUpdatedUser] = useState<any[]>([]);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<"default" | "day" | "week" | "month">("default");
@@ -26,6 +24,20 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
     const [pinnedUsers, setPinnedUsers] = useState<Set<string>>(new Set());
     const [menuVisible, setMenuVisible] = useState<{ [key: string]: boolean }>({});
     const [statusMenuVisible, setStatusMenuVisible] = useState<{ [key: string]: boolean }>({});
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (openMenu && !document.getElementById(`menu-${openMenu}`)?.contains(event.target as Node)) {
+                setOpenMenu(null);
+            }
+        };
+
+        document.addEventListener("click", handleClickOutside);
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, [openMenu]);
+
 
     useEffect(() => {
         const storedPinned = localStorage.getItem("pinnedUsers");
@@ -40,13 +52,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
 
     const handlePin = (userId: string) => {
         setPinnedUsers((prev) => {
-            const newPinned = new Set(prev);
-            if (newPinned.has(userId)) {
-                newPinned.delete(userId);
-            } else {
-                newPinned.add(userId);
-            }
-            localStorage.setItem("pinnedUsers", JSON.stringify([...newPinned]));
+            const newPinned = new Set([...prev]);
+            newPinned.has(userId) ? newPinned.delete(userId) : newPinned.add(userId);
+            localStorage.setItem("pinnedUsers", JSON.stringify(Array.from(newPinned)));
             return newPinned;
         });
     };
@@ -78,11 +86,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
         } else if (viewMode === "week") {
             return Array.from({ length: 7 }, (_, i) => addDays(startOfWeek(currentDate), i));
         } else if (viewMode === "month") {
-            return Array.from({ length: 31 }, (_, i) => addDays(startOfMonth(currentDate), i)).filter(
-                (date) => date <= endOfMonth(currentDate)
-            );
+            const daysInMonth = endOfMonth(currentDate).getDate();
+            return Array.from({ length: daysInMonth }, (_, i) => addDays(startOfMonth(currentDate), i));
         } else {
-            // Default view: Show the last 4 days
             return Array.from({ length: 4 }, (_, i) => addDays(currentDate, -i)).reverse();
         }
     };
@@ -108,18 +114,25 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
     };
 
     const toggleMenu = (postId: string) => {
-        setMenuVisible({ [postId]: !menuVisible[postId] });
-        setStatusMenuVisible({});
+        setMenuVisible((prev) => ({
+            ...prev,
+            [postId]: !prev[postId]
+        }));
     };
 
     const toggleStatusMenu = (postId: string) => {
-        setStatusMenuVisible({ [postId]: !statusMenuVisible[postId] });
+        setStatusMenuVisible((prev) => ({
+            ...prev,
+            [postId]: !prev[postId]
+        }));
     };
+
 
     const updateStatus = (postId: string, newStatus: string) => {
         handleStatusUpdate(postId, newStatus);
         setStatusMenuVisible({});
     };
+
 
     return (
         <div className="mb-4">
@@ -128,9 +141,25 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                 <div className="group inline-flex">
                     <button onClick={handlePrevious} className="text-xs flex items-center"><CiSquareChevLeft size={30} /></button>
                     <button onClick={handleNext} className="text-xs flex items-center mr-2"><CiSquareChevRight size={30} /></button>
-                    <button onClick={() => setViewMode("day")} className={`text-xs flex items-center mr-2 ${viewMode === "day" ? "text-blue-500" : ""}`}><MdOutlineCalendarViewDay size={20} /></button>
-                    <button onClick={() => setViewMode("week")} className={`text-xs flex items-center mr-2 ${viewMode === "week" ? "text-blue-500" : ""}`}><MdOutlineCalendarViewWeek size={20} /></button>
-                    <button onClick={() => setViewMode("month")} className={`text-xs flex items-center mr-2 ${viewMode === "month" ? "text-blue-500" : ""}`}><MdOutlineCalendarViewMonth size={20} /></button>
+                    <button
+                        onClick={() => setViewMode(viewMode === "day" ? "default" : "day")}
+                        className={`text-xs flex items-center mr-2 ${viewMode === "day" ? "text-blue-500" : ""}`}
+                    >
+                        <MdOutlineCalendarViewDay size={20} />
+                    </button>
+                    <button
+                        onClick={() => setViewMode(viewMode === "week" ? "default" : "week")}
+                        className={`text-xs flex items-center mr-2 ${viewMode === "week" ? "text-blue-500" : ""}`}
+                    >
+                        <MdOutlineCalendarViewWeek size={20} />
+                    </button>
+
+                    <button
+                        onClick={() => setViewMode(viewMode === "month" ? "default" : "month")}
+                        className={`text-xs flex items-center mr-2 ${viewMode === "month" ? "text-blue-500" : ""}`}
+                    >
+                        <MdOutlineCalendarViewMonth size={20} />
+                    </button>
                 </div>
                 <h3 className="text-xs font-semibold mr-4">{format(formattedDates[0], "dd MMM yyyy")} - {format(formattedDates[formattedDates.length - 1], "dd MMM yyyy")}</h3>
             </div>
@@ -155,13 +184,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                         key={user.id}
                                         className={`
                                         rounded-lg shadow-md p-4 mb-2
-                                        ${
-                                            user.activitystatus === "Cold" ? "border-l-2 border-t-2 border-blue-700" :
-                                            user.activitystatus === "Warm" ? "border-l-2 border-t-2 border-yellow-700" :
-                                            user.activitystatus === "Hot" ? "border-l-2 border-t-2 border-red-700" :
-                                            user.activitystatus === "Delivered" ? "border-l-2 border-t-2 border-green-700" :
-                                            user.activitystatus === "Loss" ? "border-l-2 border-t-2 border-gray-500" : 
-                                            user.activitystatus === "Cancelled" ? "border-l-2 border-t-2 border-red-800" :""}
+                                        ${user.activitystatus === "Cold" ? "border-l-2 border-t-2 border-blue-700" :
+                                                user.activitystatus === "Warm" ? "border-l-2 border-t-2 border-yellow-700" :
+                                                    user.activitystatus === "Hot" ? "border-l-2 border-t-2 border-red-700" :
+                                                        user.activitystatus === "Delivered" ? "border-l-2 border-t-2 border-green-700" :
+                                                            user.activitystatus === "Loss" ? "border-l-2 border-t-2 border-gray-500" :
+                                                                user.activitystatus === "Cancelled" ? "border-l-2 border-t-2 border-red-800" : ""}
                                         ${pinnedUsers.has(user.id) ? "bg-yellow-100" : "bg-gray-50"}
                                     `}
                                     >
@@ -179,7 +207,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                     <BsThreeDotsVertical size={16} />
                                                 </button>
                                                 {/* Dropdown Menu */}
-                                                <div className={`absolute right-0 mt-2 w-32 bg-white shadow-md p-2 rounded-md text-xs ${openMenu === user.id ? 'block' : 'hidden'}`}>
+                                                <div
+                                                    id={`menu-${user.id}`} // Unique ID para sa bawat menu
+                                                    className={`absolute right-0 mt-2 w-32 bg-white shadow-md p-2 rounded-md text-xs ${openMenu === user.id ? 'block' : 'hidden'}`}
+                                                >
                                                     <ul>
                                                         <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handleEdit(user)}><CiEdit /> Edit Details</li>
                                                         <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1"><CiCalendar />Callback</li>
@@ -221,14 +252,13 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
 
                                             {/* Status Badge */}
                                             <span className={`px-2 py-1 rounded-full text-white text-xs 
-                                                ${
-                                                    user.activitystatus === "Cold" ? "bg-blue-700" :
+                                                ${user.activitystatus === "Cold" ? "bg-blue-700" :
                                                     user.activitystatus === "Warm" ? "bg-yellow-700" :
-                                                    user.activitystatus === "Hot" ? "bg-red-700" :
-                                                    user.activitystatus === "Delivered" ? "bg-green-700" :
-                                                    user.activitystatus === "Loss" ? "bg-gray-500" :
-                                                    user.activitystatus === "Cancelled" ? "bg-red-800" :
-                                                            "bg-gray-500"
+                                                        user.activitystatus === "Hot" ? "bg-red-700" :
+                                                            user.activitystatus === "Delivered" ? "bg-green-700" :
+                                                                user.activitystatus === "Loss" ? "bg-gray-500" :
+                                                                    user.activitystatus === "Cancelled" ? "bg-red-800" :
+                                                                        "bg-gray-500"
                                                 }`}>
                                                 {user.activitystatus}
                                             </span>

@@ -91,36 +91,40 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-        ? posts.filter((post) => {
-            // Check if the company name matches the search term
-            const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+    ? posts
+          .filter((post) => {
+              // Check if the company name matches the search term
+              const matchesSearchTerm = post?.companyname
+                  ?.toLowerCase()
+                  .includes(searchTerm.toLowerCase());
 
-            // Parse the date_created field
-            const postDate = post.date_created ? new Date(post.date_created) : null;
+              // Parse the date_created field
+              const postDate = post.date_created ? new Date(post.date_created) : null;
 
-            // Check if the post's date is within the selected date range
-            const isWithinDateRange = (
-                (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                (!endDate || (postDate && postDate <= new Date(endDate)))
-            );
+              // Check if the post's date is within the selected date range
+              const isWithinDateRange =
+                  (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                  (!endDate || (postDate && postDate <= new Date(endDate)));
 
-            // Check if the post matches the selected client type
-            const matchesClientType = selectedClientType
-                ? post?.typeclient === selectedClientType
-                : true;
+              // Check if the post matches the selected client type
+              const matchesClientType = selectedClientType
+                  ? post?.typeclient === selectedClientType
+                  : true;
 
-            // Get the reference ID from userDetails
-            const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
+              // Get the reference ID from userDetails
+              const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
 
-            // Check the user's role for filtering
-            const matchesRole = userDetails.Role === "Super Admin" || userDetails.Role === "Territory Sales Associate"
-                ? true // Both Super Admin and TSA can see the posts
-                : false; // Default false if no match
+              // Check the user's role for filtering
+              const matchesRole =
+                  userDetails.Role === "Super Admin" || userDetails.Role === "Territory Sales Associate"
+                      ? true // Both Super Admin and TSA can see the posts
+                      : false; // Default false if no match
 
-            // Return the filtered result
-            return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
-        })
-        : [];
+              // Return the filtered result
+              return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
+          })
+          .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created in descending order
+    : [];
 
     const currentPosts = filteredAccounts.slice();
     const totalPages = Math.ceil(filteredAccounts.length);

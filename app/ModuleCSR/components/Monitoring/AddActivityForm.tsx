@@ -84,12 +84,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
       }),
     });
 
-    if (Status !== "Endorsed") {
-      console.error("Submission failed: Status must be 'Endorsed'");
-      return; // Hihinto rito kapag hindi "Endorsed"
-  }
-  
-  try {
+    if (Status === "Endorsed") {
       const externalResponse = await fetch("https://ecoshiftcorp.com.ph/data.php", {
           method: "POST",
           headers: {
@@ -111,15 +106,9 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
               Inquiries,
           }),
       });
-  
-      if (!externalResponse.ok) {
-          throw new Error(`HTTP error! Status: ${externalResponse.status}`);
-      }
-  
+
       const result = await externalResponse.json();
-      console.log("Submission successful:", result);
-  } catch (error) {
-      console.error("Error submitting data:", error);
+      // Handle result if necessary
   }
 
     if (response.ok) {
