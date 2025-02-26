@@ -25,6 +25,8 @@ const ListofUser: React.FC = () => {
     const [selectedClientType, setSelectedClientType] = useState("");
     const [startDate, setStartDate] = useState(""); // Default to null
     const [endDate, setEndDate] = useState(""); // Default to null
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
     const [userDetails, setUserDetails] = useState({
         UserId: "", ReferenceID: "", Manager: "", TSM: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
@@ -129,6 +131,58 @@ const ListofUser: React.FC = () => {
         setShowForm(true);
     };
 
+    const handleStatusUpdate = async (id: string, newStatus: string) => {
+        try {
+            const response = await fetch("/api/ModuleSales/Task/DailyActivity/UpdateStatus", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id, activitystatus: newStatus }),
+            });
+    
+            if (response.ok) {
+                toast.success("Status updated successfully.");
+                fetchAccount(); // Auto-refresh table after update
+            } else {
+                const errorData = await response.json();
+                toast.error(errorData.error || "Failed to update status.");
+            }
+        } catch (error) {
+            toast.error("Failed to update status.");
+            console.error("Error updating status:", error);
+        }
+    };
+
+    const confirmDelete = (postId: string) => {
+        setPostToDelete(postId);
+        setShowDeleteModal(true);
+    };
+
+    const handleDelete = async () => {
+            if (!postToDelete) return;
+            try {
+                const response = await fetch(`/api/ModuleSales/Task/DailyActivity/DeleteActivity`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ id: postToDelete }),
+                });
+    
+                if (response.ok) {
+                    setPosts(posts.filter((post) => post.id !== postToDelete));
+                    toast.success("Post deleted successfully.");
+                } else {
+                    toast.error("Failed to delete post.");
+                }
+            } catch (error) {
+                console.error("Error deleting post:", error);
+                toast.error("Failed to delete post.");
+            } finally {
+                setShowDeleteModal(false);
+                setPostToDelete(null);
+            }
+        };
+
     return (
         <SessionChecker>
             <ParentLayout>
@@ -178,9 +232,34 @@ const ListofUser: React.FC = () => {
                                         <UsersTable
                                             posts={currentPosts}
                                             handleEdit={handleEdit}
+                                            handleStatusUpdate={handleStatusUpdate}
+                                            handleDelete={confirmDelete}
                                         />
                                     </div>
                                 </>
+                            )}
+                            
+                            {showDeleteModal && (
+                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                    <div className="bg-white p-4 rounded shadow-lg">
+                                        <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
+                                        <p className="text-xs">Are you sure you want to delete this post?</p>
+                                        <div className="mt-4 flex justify-end">
+                                            <button
+                                                className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2"
+                                                onClick={handleDelete}
+                                            >
+                                                Delete
+                                            </button>
+                                            <button
+                                                className="bg-gray-300 text-xs px-4 py-2 rounded"
+                                                onClick={() => setShowDeleteModal(false)}
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             )}
 
                             <ToastContainer className="text-xs" autoClose={1000} />

@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import io from "socket.io-client";
 import { format, parseISO, addDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameDay, isWithinInterval } from "date-fns";
-import { CiSquareChevLeft, CiSquareChevRight, CiEdit, CiCalendar, CiMapPin, CiTrash} from "react-icons/ci";
-import { BsThreeDotsVertical, BsPlus, BsDash } from "react-icons/bs";
+import { CiSquareChevLeft, CiSquareChevRight, CiEdit, CiCalendar, CiMapPin, CiTrash } from "react-icons/ci";
+import { BsThreeDotsVertical, BsPlus, BsDash, BsRecycle } from "react-icons/bs";
 import { MdOutlineCalendarViewMonth, MdOutlineCalendarViewWeek, MdOutlineCalendarViewDay } from "react-icons/md";
 
 const socketURL = "http://localhost:3001";
@@ -10,18 +10,22 @@ const socketURL = "http://localhost:3001";
 interface UsersCardProps {
     posts: any[];
     handleEdit: (post: any) => void;
+    handleDelete: (postId: string) => void;
+    handleStatusUpdate: (postId: string, newStatus: string) => void;
     referenceid?: string;
 }
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid }) => {
+const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUpdate, handleDelete, referenceid }) => {
     const socketRef = useRef(io(socketURL));
-    const [updatedUser, setUpdatedUser] = useState<any[]>([]); 
+    const [updatedUser, setUpdatedUser] = useState<any[]>([]);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<"default" | "day" | "week" | "month">("default");
     const [groupedByDate, setGroupedByDate] = useState<Record<string, any[]>>({});
     const [openMenu, setOpenMenu] = useState<string | null>(null);
-    const [collapsed, setCollapsed] = useState<boolean>(true);
+    const [collapsedCards, setCollapsedCards] = useState<Record<string, boolean>>({});
     const [pinnedUsers, setPinnedUsers] = useState<Set<string>>(new Set());
+    const [menuVisible, setMenuVisible] = useState<{ [key: string]: boolean }>({});
+    const [statusMenuVisible, setStatusMenuVisible] = useState<{ [key: string]: boolean }>({});
 
     useEffect(() => {
         const storedPinned = localStorage.getItem("pinnedUsers");
@@ -45,6 +49,13 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
             localStorage.setItem("pinnedUsers", JSON.stringify([...newPinned]));
             return newPinned;
         });
+    };
+
+    const toggleCollapse = (userId: string) => {
+        setCollapsedCards((prev) => ({
+            ...prev,
+            [userId]: !prev[userId], // Toggle specific card
+        }));
     };
 
     useEffect(() => {
@@ -90,6 +101,26 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
 
     const formattedDates = getFilteredDates();
 
+    const STATUS_COLORS: Record<string, string> = {
+        Cold: "bg-blue-700 text-gray-700",
+        Loss: "bg-gray-500 text-dark",
+        Cancelled: "bg-red-800 text-dark",
+    };
+
+    const toggleMenu = (postId: string) => {
+        setMenuVisible({ [postId]: !menuVisible[postId] });
+        setStatusMenuVisible({});
+    };
+
+    const toggleStatusMenu = (postId: string) => {
+        setStatusMenuVisible({ [postId]: !statusMenuVisible[postId] });
+    };
+
+    const updateStatus = (postId: string, newStatus: string) => {
+        handleStatusUpdate(postId, newStatus);
+        setStatusMenuVisible({});
+    };
+
     return (
         <div className="mb-4">
             {/* Pagination & View Mode Buttons */}
@@ -119,16 +150,28 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                 {format(day, "dd")} | {format(day, "EE")}
                             </h4>
                             <div>
-                            {[...pinned, ...unpinned].map(user => (
-                                    <div key={user.id} className={`border rounded-lg shadow-md p-4 mb-2 ${pinnedUsers.has(user.id) ? 'bg-yellow-100' : 'bg-gray-50'}`}>
+                                {[...pinned, ...unpinned].map(user => (
+                                    <div
+                                        key={user.id}
+                                        className={`
+                                        rounded-lg shadow-md p-4 mb-2
+                                        ${
+                                            user.activitystatus === "Cold" ? "border-l-2 border-t-2 border-blue-700" :
+                                            user.activitystatus === "Warm" ? "border-l-2 border-t-2 border-yellow-700" :
+                                            user.activitystatus === "Hot" ? "border-l-2 border-t-2 border-red-700" :
+                                            user.activitystatus === "Delivered" ? "border-l-2 border-t-2 border-green-700" :
+                                            user.activitystatus === "Loss" ? "border-l-2 border-t-2 border-gray-500" : 
+                                            user.activitystatus === "Cancelled" ? "border-l-2 border-t-2 border-red-800" :""}
+                                        ${pinnedUsers.has(user.id) ? "bg-yellow-100" : "bg-gray-50"}
+                                    `}
+                                    >
+
                                         {/* Card Header - Company Name with 3-dot menu */}
-                                        <div className="card-header mb-2 border-b-2 pb-2 flex justify-between items-center">
+                                        <div className="card-header mb-2 pb-2 flex justify-between items-center">
                                             <h3 className="text-xs font-semibold text-gray-800 uppercase">{user.companyname}</h3>
                                             <div className="relative">
-                                                <button
-                                                    onClick={() => setCollapsed(collapsed === user.id ? null : user.id)}
-                                                    className="text-gray-500 hover:text-gray-700">
-                                                    {collapsed === user.id ? <BsDash size={16} /> : <BsPlus size={16} />}
+                                                <button onClick={() => toggleCollapse(user.id)} className="text-gray-500 hover:text-gray-700">
+                                                    {collapsedCards[user.id] ? <BsDash size={16} /> : <BsPlus size={16} />}
                                                 </button>
                                                 <button
                                                     className="text-gray-500 hover:text-gray-700"
@@ -140,17 +183,30 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                                     <ul>
                                                         <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handleEdit(user)}><CiEdit /> Edit Details</li>
                                                         <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1"><CiCalendar />Callback</li>
+                                                        <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => toggleStatusMenu(user.id)}><BsRecycle />Change Status</li>
+                                                        {/* Status Change Menu */}
+                                                        {statusMenuVisible[user.id] && (
+                                                            <div className="absolute left-[-10rem] top-0 bg-white shadow-lg rounded-lg border w-40 z-10 mr-2 text-xs">
+                                                                {Object.keys(STATUS_COLORS).map((activitystatus) => (
+                                                                    <button key={activitystatus} onClick={() => updateStatus(user.id, activitystatus)} className="w-full flex items-center gap-2 text-left px-4 py-2 hover:bg-gray-100">
+                                                                        <span className={`w-3 h-3 rounded-full border border-black ${STATUS_COLORS[activitystatus].split(" ")[0]}`}></span>
+                                                                        {activitystatus}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        )}
                                                         <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handlePin(user.id)}>
-                                                                <CiMapPin /> {pinnedUsers.has(user.id) ? "Unpin" : "Pin"}
-                                                            </li>
-                                                        <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1"><CiTrash />Delete</li>
+                                                            <CiMapPin /> {pinnedUsers.has(user.id) ? "Unpin" : "Pin"}
+                                                        </li>
+                                                        <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handleDelete(user.id)}><CiTrash />Delete</li>
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
 
+
                                         {/* Card Body */}
-                                        {collapsed !== user.id && (
+                                        {collapsedCards[user.id] && (
                                             <div className="text-xs">
                                                 <p><strong>Source:</strong> {user.source}</p>
                                                 <p><strong>Product Category:</strong> {user.projectcategory}</p>
@@ -160,19 +216,36 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                         )}
 
                                         {/* Card Footer */}
-                                        <div className="card-footer text-xs text-left mt-2 border-t-2 pt-2">
+                                        <div className="card-footer text-xs flex justify-between items-center mt-2 border-t-2 pt-2">
                                             <p><strong>Date Created:</strong> {format(parseISO(user.date_created), "MMM dd, yyyy - h:mm:ss a")}</p>
+
+                                            {/* Status Badge */}
+                                            <span className={`px-2 py-1 rounded-full text-white text-xs 
+                                                ${
+                                                    user.activitystatus === "Cold" ? "bg-blue-700" :
+                                                    user.activitystatus === "Warm" ? "bg-yellow-700" :
+                                                    user.activitystatus === "Hot" ? "bg-red-700" :
+                                                    user.activitystatus === "Delivered" ? "bg-green-700" :
+                                                    user.activitystatus === "Loss" ? "bg-gray-500" :
+                                                    user.activitystatus === "Cancelled" ? "bg-red-800" :
+                                                            "bg-gray-500"
+                                                }`}>
+                                                {user.activitystatus}
+                                            </span>
                                         </div>
+
                                         {pinnedUsers.has(user.id) && (
                                             <div className="card-footer text-xs text-left mt-2 border-t pt-2 font-semibold text-green-600 flex items-center gap-1">
                                                 <span>&#10003;</span> Pinned
                                             </div>
                                         )}
                                     </div>
+
                                 ))}
                                 {groupedByDate[formattedDay]?.length === 0 && <div className="text-center py-2 text-xs text-gray-500">No accounts available</div>}
                             </div>
                         </div>
+
                     );
                 })}
             </div>
