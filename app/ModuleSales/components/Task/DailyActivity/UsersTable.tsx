@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import io from "socket.io-client";
 import { format, parseISO, addDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameDay, isWithinInterval } from "date-fns";
-import { CiSquareChevLeft, CiSquareChevRight } from "react-icons/ci";
+import { CiSquareChevLeft, CiSquareChevRight, CiEdit, CiCalendar, CiMapPin, CiTrash} from "react-icons/ci";
 import { BsThreeDotsVertical, BsPlus, BsDash } from "react-icons/bs";
 import { MdOutlineCalendarViewMonth, MdOutlineCalendarViewWeek, MdOutlineCalendarViewDay } from "react-icons/md";
 
@@ -21,6 +21,31 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
     const [groupedByDate, setGroupedByDate] = useState<Record<string, any[]>>({});
     const [openMenu, setOpenMenu] = useState<string | null>(null);
     const [collapsed, setCollapsed] = useState<boolean>(true);
+    const [pinnedUsers, setPinnedUsers] = useState<Set<string>>(new Set());
+
+    useEffect(() => {
+        const storedPinned = localStorage.getItem("pinnedUsers");
+        if (storedPinned) {
+            try {
+                setPinnedUsers(new Set(JSON.parse(storedPinned)));
+            } catch (error) {
+                console.error("Error parsing pinnedUsers from localStorage:", error);
+            }
+        }
+    }, []);
+
+    const handlePin = (userId: string) => {
+        setPinnedUsers((prev) => {
+            const newPinned = new Set(prev);
+            if (newPinned.has(userId)) {
+                newPinned.delete(userId);
+            } else {
+                newPinned.add(userId);
+            }
+            localStorage.setItem("pinnedUsers", JSON.stringify([...newPinned]));
+            return newPinned;
+        });
+    };
 
     useEffect(() => {
         setUpdatedUser(posts);
@@ -70,39 +95,32 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
             {/* Pagination & View Mode Buttons */}
             <div className="flex justify-start items-center mb-3">
                 <div className="group inline-flex">
-                    <button onClick={handlePrevious} className="text-xs flex items-center">
-                        <CiSquareChevLeft size={30} />
-                    </button>
-                    <button onClick={handleNext} className="text-xs flex items-center mr-2">
-                        <CiSquareChevRight size={30} />
-                    </button>
-                    <button onClick={() => setViewMode("day")} className={`text-xs flex items-center mr-2 ${viewMode === "day" ? "text-blue-500" : ""}`}>
-                        <MdOutlineCalendarViewDay size={20} />
-                    </button>
-                    <button onClick={() => setViewMode("week")} className={`text-xs flex items-center mr-2 ${viewMode === "week" ? "text-blue-500" : ""}`}>
-                        <MdOutlineCalendarViewWeek size={20} />
-                    </button>
-                    <button onClick={() => setViewMode("month")} className={`text-xs flex items-center mr-2 ${viewMode === "month" ? "text-blue-500" : ""}`}>
-                        <MdOutlineCalendarViewMonth size={20} />
-                    </button>
+                    <button onClick={handlePrevious} className="text-xs flex items-center"><CiSquareChevLeft size={30} /></button>
+                    <button onClick={handleNext} className="text-xs flex items-center mr-2"><CiSquareChevRight size={30} /></button>
+                    <button onClick={() => setViewMode("day")} className={`text-xs flex items-center mr-2 ${viewMode === "day" ? "text-blue-500" : ""}`}><MdOutlineCalendarViewDay size={20} /></button>
+                    <button onClick={() => setViewMode("week")} className={`text-xs flex items-center mr-2 ${viewMode === "week" ? "text-blue-500" : ""}`}><MdOutlineCalendarViewWeek size={20} /></button>
+                    <button onClick={() => setViewMode("month")} className={`text-xs flex items-center mr-2 ${viewMode === "month" ? "text-blue-500" : ""}`}><MdOutlineCalendarViewMonth size={20} /></button>
                 </div>
-                <h3 className="text-xs font-semibold mr-4">
-                    {format(formattedDates[0], "dd MMM yyyy")} - {format(formattedDates[formattedDates.length - 1], "dd MMM yyyy")}
-                </h3>
+                <h3 className="text-xs font-semibold mr-4">{format(formattedDates[0], "dd MMM yyyy")} - {format(formattedDates[formattedDates.length - 1], "dd MMM yyyy")}</h3>
             </div>
 
             {/* User Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-0">
                 {formattedDates.map((day) => {
                     const formattedDay = format(day, "yyyy-MM-dd");
+                    const usersForDate = updatedUser.filter(user => format(parseISO(user.date_created), "yyyy-MM-dd") === formattedDay);
+                    // Separate pinned users from unpinned
+                    const pinned = usersForDate.filter(user => pinnedUsers.has(user.id));
+                    const unpinned = usersForDate.filter(user => !pinnedUsers.has(user.id));
+
                     return (
                         <div key={formattedDay} className="border rounded p-2 bg-white mb-4">
                             <h4 className="text-center font-semibold text-xs mb-2 text-gray-700">
                                 {format(day, "dd")} | {format(day, "EE")}
                             </h4>
                             <div>
-                                {groupedByDate[formattedDay]?.map((user) => (
-                                    <div key={user.id} className="border rounded-lg shadow-md p-4 bg-gray-50 mb-2 transition-all hover:shadow-2xl hover:bg-gray-100">
+                            {[...pinned, ...unpinned].map(user => (
+                                    <div key={user.id} className={`border rounded-lg shadow-md p-4 mb-2 ${pinnedUsers.has(user.id) ? 'bg-yellow-100' : 'bg-gray-50'}`}>
                                         {/* Card Header - Company Name with 3-dot menu */}
                                         <div className="card-header mb-2 border-b-2 pb-2 flex justify-between items-center">
                                             <h3 className="text-xs font-semibold text-gray-800 uppercase">{user.companyname}</h3>
@@ -120,9 +138,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                                 {/* Dropdown Menu */}
                                                 <div className={`absolute right-0 mt-2 w-32 bg-white shadow-md p-2 rounded-md text-xs ${openMenu === user.id ? 'block' : 'hidden'}`}>
                                                     <ul>
-                                                        <li className="p-2 cursor-pointer hover:bg-gray-100" onClick={() => handleEdit(user)}>Edit Details</li>
-                                                        <li className="p-2 cursor-pointer hover:bg-gray-100">Callback</li>
-                                                        <li className="p-2 cursor-pointer hover:bg-gray-100">Delete</li>
+                                                        <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handleEdit(user)}><CiEdit /> Edit Details</li>
+                                                        <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1"><CiCalendar />Callback</li>
+                                                        <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handlePin(user.id)}>
+                                                                <CiMapPin /> {pinnedUsers.has(user.id) ? "Unpin" : "Pin"}
+                                                            </li>
+                                                        <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1"><CiTrash />Delete</li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -142,6 +163,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                         <div className="card-footer text-xs text-left mt-2 border-t-2 pt-2">
                                             <p><strong>Date Created:</strong> {format(parseISO(user.date_created), "MMM dd, yyyy - h:mm:ss a")}</p>
                                         </div>
+                                        {pinnedUsers.has(user.id) && (
+                                            <div className="card-footer text-xs text-left mt-2 border-t pt-2 font-semibold text-green-600 flex items-center gap-1">
+                                                <span>&#10003;</span> Pinned
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                                 {groupedByDate[formattedDay]?.length === 0 && <div className="text-center py-2 text-xs text-gray-500">No accounts available</div>}
