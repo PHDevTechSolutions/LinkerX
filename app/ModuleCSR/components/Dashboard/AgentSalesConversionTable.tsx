@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 interface Metric {
     userName: string;
     ReferenceID: string;
-    Role: string;
     Traffic: string;
-    Amount: string;
-    QtySold: string;
+    Amount: number;
+    QtySold: number;
+    Status: string;
 }
 
 interface AgentSalesConversionProps {
@@ -42,24 +42,66 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
         };
     }, [ReferenceID, Role]);
 
-    // Group metrics by ReferenceID and count usernames per group
-    const groupedMetrics = metrics.reduce((acc, metric) => {
-        if (!acc[metric.ReferenceID]) {
-            acc[metric.ReferenceID] = { agents: [], count: 0 };
+    // Group data by ReferenceID
+    const groupedMetrics = metrics.reduce((acc: any, metric) => {
+        const { ReferenceID, Traffic, Amount, QtySold, Status } = metric;
+
+        if (!acc[ReferenceID]) {
+            acc[ReferenceID] = {
+                Traffic,
+                Amount: 0,
+                QtySold: 0,
+                ConversionToSale: 0,
+                Sales: 0,
+                NonSales: 0,
+            };
         }
-        acc[metric.ReferenceID].agents.push({ 
-            userName: metric.userName, 
-            Traffic: metric.Traffic, 
-            Amount: metric.Amount,
-            QtySold: metric.QtySold  
-        });
-        acc[metric.ReferenceID].count += 1; // Counting all usernames under each ReferenceID
+
+        acc[ReferenceID].Amount += Amount;
+        acc[ReferenceID].QtySold += QtySold;
+
+        // Increment ConversionToSale only if Status is 'Converted Into Sales'
+        if (Status === "Converted Into Sales") {
+            acc[ReferenceID].ConversionToSale += 1;
+        }
+
+        // Count Sales and Non-Sales based on Traffic
+        if (Traffic === "Sales") {
+            acc[ReferenceID].Sales += 1;
+        } else {
+            acc[ReferenceID].NonSales += 1;
+        }
+
         return acc;
-    }, {} as Record<string, { agents: { userName: string; Traffic: string; Amount: string; QtySold: string }[]; count: number }>);
+    }, {});
+
+    // Format Amount as Peso sign with thousands separator and 2 decimal places
+    const formatAmount = (amount: number) => {
+        if (isNaN(amount)) {
+            return "₱0.00";  // Handle invalid or non-numeric amount
+        }
+        // Convert amount to a number and format it with 2 decimal places
+        return `₱${Number(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
+    };
+
+    // Format QtySold by removing leading zeros
+    const formatQtySold = (qtySold: number) => {
+        return qtySold === 0 ? '0' : qtySold.toString().replace(/^0+/, ''); // Remove leading zeros, but show 0 if the value is 0
+    };
+
+    // Calculate totals
+    const totalData = Object.keys(groupedMetrics).map((key) => ({
+        ReferenceID: key,
+        Traffic: groupedMetrics[key].Traffic,
+        Amount: groupedMetrics[key].Amount,
+        QtySold: groupedMetrics[key].QtySold,
+        ConversionToSale: groupedMetrics[key].ConversionToSale,
+        Sales: groupedMetrics[key].Sales,
+        NonSales: groupedMetrics[key].NonSales,
+    }));
 
     return (
         <div className="bg-white shadow-md rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-4">Agent Sales Conversion</h2>
             {loading ? (
                 <p className="text-xs">Loading...</p>
             ) : (
@@ -67,39 +109,30 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
                     <thead>
                         <tr className="bg-gray-100">
                             <th className="border p-2">Reference ID</th>
-                            <th className="border p-2">Agent</th>
                             <th className="border p-2">Traffic</th>
                             <th className="border p-2">Amount</th>
-                            <th className="border p-2">Quantity</th> 
-                            <th className="border p-2">Total Count</th>
+                            <th className="border p-2">Quantity Sold</th>
+                            <th className="border p-2">Conversion to Sale</th>
+                            <th className="border p-2">Sales</th>
+                            <th className="border p-2">Non-Sales</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {Object.entries(groupedMetrics).length > 0 ? (
-                            Object.entries(groupedMetrics).map(([refID, { agents, count }]) => (
-                                <React.Fragment key={refID}>
-                                    <tr className="bg-gray-200 font-semibold">
-                                        <td className="border p-2">{refID}</td>
-                                        <td className="border p-2"></td>
-                                        <td className="border p-2"></td>
-                                        <td className="border p-2"></td>
-                                        <td className="border p-2 text-center">{count}</td>
-                                    </tr>
-                                    {agents.map(({ userName, Traffic, Amount, QtySold }, index) => (
-                                        <tr key={index} className="text-center border-t">
-                                            <td className="border p-2"></td>
-                                            <td className="border p-2 capitalize">{userName}</td>
-                                            <td className="border p-2">{Traffic}</td>
-                                            <td className="border p-2">{Amount}</td>
-                                            <td className="border p-2">{QtySold}</td>
-                                            <td className="border p-2"></td>
-                                        </tr>
-                                    ))}
-                                </React.Fragment>
+                        {totalData.length > 0 ? (
+                            totalData.map((metric, index) => (
+                                <tr key={index} className="text-center border-t">
+                                    <td className="border p-2">{metric.ReferenceID}</td>
+                                    <td className="border p-2">{metric.Traffic}</td>
+                                    <td className="border p-2">{formatAmount(metric.Amount)}</td>
+                                    <td className="border p-2">{formatQtySold(metric.QtySold)}</td>
+                                    <td className="border p-2">{metric.ConversionToSale}</td>
+                                    <td className="border p-2">{metric.Sales}</td>
+                                    <td className="border p-2">{metric.NonSales}</td>
+                                </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={5} className="p-2 text-center text-gray-500">
+                                <td colSpan={7} className="p-2 text-center text-gray-500">
                                     No data available
                                 </td>
                             </tr>
