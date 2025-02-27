@@ -222,10 +222,9 @@ const ActivityPage: React.FC = () => {
                                     userDetails={{
                                         id: editPost ? editPost.UserId : userDetails.UserId,
                                         Role: user ? user.Role : "",
-                                        ReferenceID: user ? user.ReferenceID : "",  // <-- Ito ang dapat mong suriin
+                                        ReferenceID: user ? user.ReferenceID : "", // <-- Ito ang dapat mong suriin
                                     }}
                                     editPost={editPost}
-                                    
                                 />
                                 
                                 ) : (

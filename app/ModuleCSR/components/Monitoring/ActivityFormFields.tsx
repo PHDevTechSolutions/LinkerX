@@ -243,6 +243,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         value={TicketReceived || ""}
                         onChange={(e) => setTicketReceived(e.target.value)}
                         className="w-full px-3 py-2 border rounded text-xs"
+                        required
                     />
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
@@ -253,6 +254,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         value={TicketEndorsed || ""}
                         onChange={(e) => setTicketEndorsed(e.target.value)}
                         className="w-full px-3 py-2 border rounded text-xs"
+                        required
                     />
                 </div>
             </div>
