@@ -10,9 +10,11 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 interface ChannelBarChartProps {
   startDate?: string;
   endDate?: string;
+  ReferenceID: string;
+  Role: string;
 }
 
-const ChannelBarChart: React.FC<ChannelBarChartProps> = ({ startDate, endDate }) => {
+const ChannelBarChart: React.FC<ChannelBarChartProps> = ({ startDate, endDate, ReferenceID, Role }) => {
   const [chartData, setChartData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +34,7 @@ const ChannelBarChart: React.FC<ChannelBarChartProps> = ({ startDate, endDate })
         const finalStartDate = startDate || startOfMonth.toISOString();
         const finalEndDate = endDate || endOfMonth.toISOString();
 
-        const response = await fetch(`/api/ModuleCSR/Dashboard/Metrics?startDate=${finalStartDate}&endDate=${finalEndDate}`);
+        const response = await fetch(`/api/ModuleCSR/Dashboard/Metrics?startDate=${finalStartDate}&endDate=${finalEndDate}&ReferenceID=${ReferenceID}&Role=${Role}`);
         if (!response.ok) throw new Error("Failed to fetch data");
         const data = await response.json();
 
@@ -70,7 +72,7 @@ const ChannelBarChart: React.FC<ChannelBarChartProps> = ({ startDate, endDate })
     };
 
     fetchData();
-  }, [startDate, endDate]);
+  }, [startDate, endDate, ReferenceID, Role]);
 
   const options = {
     responsive: true,

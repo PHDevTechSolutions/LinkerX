@@ -3,9 +3,7 @@ import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectTo
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
-    const { startDate, endDate } = req.query;
-    const userRole = req.headers["user-role"] as string; // Assuming role is passed in headers
-    const referenceID = req.headers["reference-id"] as string; // Assuming ReferenceID is passed in headers
+    const { startDate, endDate, ReferenceID, Role } = req.query;
 
     // Get the current date and calculate the start and end of the current month
     const currentDate = new Date();
@@ -26,9 +24,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         createdAt: { $gte: start, $lte: end }, // Filter records within the start and end dates
       };
 
-      // Restrict Staff to their own ReferenceID
-      if (userRole === "Staff") {
-        matchFilter.ReferenceID = referenceID;
+      // Apply ReferenceID filter only if Role is "Staff"
+      if (Role === "Staff" && ReferenceID) {
+        matchFilter.ReferenceID = ReferenceID;
       }
 
       // Aggregating customer status count within the date range

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ParentLayout from "../../components/Layouts/ParentLayout";
 import SessionChecker from "../../components/Session/SessionChecker";
 import GenderPieChart from "../../components/Dashboard/GenderPieChart";
@@ -17,6 +17,7 @@ import AgentBarChart from "../../components/Dashboard/AgentBarChart";
 
 import TSASalesConversion from "../../components/Dashboard/TSASalesConversion";
 
+
 const DashboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("gender");
   const [activeTable, setactiveTable] = useState("barchart");
@@ -24,6 +25,12 @@ const DashboardPage: React.FC = () => {
   const [activeTableConversion, setactiveTableConversion] = useState("agentbarchart");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
+  const [userDetails, setUserDetails] = useState({
+    UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "",
+  });
+
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, type: "start" | "end") => {
     if (type === "start") {
@@ -32,6 +39,39 @@ const DashboardPage: React.FC = () => {
       setEndDate(e.target.value);
     }
   };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const userId = params.get("id");
+
+      if (userId) {
+        try {
+          const response = await fetch(`/api/user?id=${encodeURIComponent(userId)}`);
+          if (!response.ok) throw new Error("Failed to fetch user data");
+          const data = await response.json();
+          setUserDetails({
+            UserId: data._id, // Set the user's id here
+            ReferenceID: data.ReferenceID || "",  // <-- Siguraduhin na ito ay may value
+            Firstname: data.Firstname || "",
+            Lastname: data.Lastname || "",
+            Email: data.Email || "",
+            Role: data.Role || "",
+          });
+        } catch (err: unknown) {
+          console.error("Error fetching user data:", err);
+          setError("Failed to load user data. Please try again later.");
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setError("User ID is missing.");
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   return (
     <SessionChecker>
@@ -55,8 +95,16 @@ const DashboardPage: React.FC = () => {
                 <button className={`p-2 flex-1 ${activeTable === "metrictable" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("metrictable")}>Metrics</button>
               </div>
               <div className="p-4">
-                {activeTable === "barchart" && <BarChart startDate={startDate} endDate={endDate} />}
-                {activeTable === "metrictable" && <MetricTable />}
+                {activeTable === "barchart" && <BarChart
+                  startDate={startDate}
+                  endDate={endDate}
+                  ReferenceID={userDetails.ReferenceID}
+                  Role={userDetails.Role}
+                />}
+                {activeTable === "metrictable" && <MetricTable
+                  ReferenceID={userDetails.ReferenceID}
+                  Role={userDetails.Role}
+                />}
               </div>
             </div>
           </div>
@@ -70,9 +118,24 @@ const DashboardPage: React.FC = () => {
                 <button className={`p-2 flex-1 ${activeTab === "customerType" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setActiveTab("customerType")}>Customer Type</button>
               </div>
               <div className="p-4">
-                {activeTab === "gender" && <GenderPieChart startDate={startDate} endDate={endDate} />}
-                {activeTab === "customer" && <CustomerChart startDate={startDate} endDate={endDate} />}
-                {activeTab === "customerType" && <CustomerTypeChart startDate={startDate} endDate={endDate} />}
+                {activeTab === "gender" && <GenderPieChart
+                  startDate={startDate}
+                  endDate={endDate}
+                  ReferenceID={userDetails.ReferenceID}
+                  Role={userDetails.Role}
+                />}
+                {activeTab === "customer" && <CustomerChart
+                  startDate={startDate}
+                  endDate={endDate}
+                  ReferenceID={userDetails.ReferenceID}
+                  Role={userDetails.Role}
+                />}
+                {activeTab === "customerType" && <CustomerTypeChart
+                  startDate={startDate}
+                  endDate={endDate}
+                  ReferenceID={userDetails.ReferenceID}
+                  Role={userDetails.Role}
+                />}
               </div>
             </div>
 
@@ -83,8 +146,17 @@ const DashboardPage: React.FC = () => {
                 <button className={`p-2 flex-1 ${activeSource === "wrapup" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveSource("wrapup")}>Wrap Up</button>
               </div>
               <div className="p-4">
-                {activeSource === "source" && <CustomerSource startDate={startDate} endDate={endDate} />}
-                {activeSource === "wrapup" && <Wrapup startDate={startDate} endDate={endDate} />}
+                {activeSource === "source" && <CustomerSource
+                  startDate={startDate}
+                  endDate={endDate}
+                  ReferenceID={userDetails.ReferenceID}
+                  Role={userDetails.Role}
+                />}
+                {activeSource === "wrapup" && <Wrapup
+                  startDate={startDate}
+                  endDate={endDate}
+                  ReferenceID={userDetails.ReferenceID}
+                  Role={userDetails.Role} />}
               </div>
             </div>
           </div>
@@ -108,7 +180,7 @@ const DashboardPage: React.FC = () => {
             <div className="bg-white shadow-md rounded-lg p-4 w-full">
               <h3 className="text-sm font-bold mb-2">TSA Traffic to Sales Conversion</h3>
               <div className="flex border-b mb-4 text-xs font-bold">
-              <TSASalesConversion />
+                <TSASalesConversion />
               </div>
             </div>
           </div>

@@ -9,9 +9,11 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale)
 interface CustomerTypeChartProps {
   startDate?: string;
   endDate?: string;
+  ReferenceID: string;
+  Role: string;
 }
 
-const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ startDate, endDate }) => {
+const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ startDate, endDate, ReferenceID, Role }) => {
   const [genderData, setCustomerType] = useState<any>(null);
 
   const getCurrentMonthRange = () => {
@@ -27,7 +29,7 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ startDate, endDat
       const finalStartDate = startDate || startOfMonth.toISOString(); // Fallback to current month if no startDate
       const finalEndDate = endDate || endOfMonth.toISOString(); // Fallback to current month if no endDate
       
-      const res = await fetch(`/api/ModuleCSR/Dashboard/CustomerType?startDate=${finalStartDate}&endDate=${finalEndDate}`);
+      const res = await fetch(`/api/ModuleCSR/Dashboard/CustomerType?startDate=${finalStartDate}&endDate=${finalEndDate}&ReferenceID=${ReferenceID}&Role=${Role}`);
       const data = await res.json();
       if (res.ok) {
         setCustomerType(data);
@@ -35,7 +37,7 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ startDate, endDat
     };
 
     fetchGenderData();
-  }, [startDate, endDate]); // Depend on startDate and endDate
+  }, [startDate, endDate, ReferenceID, Role]); // Depend on startDate and endDate
 
   const doughnutChartData = {
     labels: genderData ? genderData.map((item: any) => item._id) : [],

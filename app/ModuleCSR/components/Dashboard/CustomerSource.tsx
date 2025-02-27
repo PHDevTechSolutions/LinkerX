@@ -1,15 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-} from "chart.js";
+import { Chart as ChartJS, Title, Tooltip, Legend, CategoryScale, LinearScale, BarElement, } from "chart.js";
 
 // Register Chart.js components
 ChartJS.register(Title, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
@@ -17,9 +9,11 @@ ChartJS.register(Title, Tooltip, Legend, CategoryScale, LinearScale, BarElement)
 interface CustomerSourceProps {
   startDate?: string;
   endDate?: string;
+  ReferenceID: string;
+  Role: string;
 }
 
-const CustomerSource: React.FC<CustomerSourceProps> = ({ startDate, endDate }) => {
+const CustomerSource: React.FC<CustomerSourceProps> = ({ startDate, endDate, ReferenceID, Role }) => {
   const [genderData, setGenderData] = useState<{ _id: string; count: number }[]>([]);
 
   const getCurrentMonthRange = () => {
@@ -36,7 +30,7 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({ startDate, endDate }) =
       const finalEndDate = endDate || endOfMonth.toISOString(); // Fallback to current month if no endDate
 
       try {
-        const res = await fetch(`/api/ModuleCSR/Dashboard/CustomerSource?startDate=${finalStartDate}&endDate=${finalEndDate}`);
+        const res = await fetch(`/api/ModuleCSR/Dashboard/CustomerSource?startDate=${finalStartDate}&endDate=${finalEndDate}&ReferenceID=${ReferenceID}&Role=${Role}`);
         if (!res.ok) throw new Error("Failed to fetch data");
         const data = await res.json();
         setGenderData(data || []);
@@ -46,7 +40,7 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({ startDate, endDate }) =
     };
 
     fetchGenderData();
-  }, [startDate, endDate]); // Now depends on startDate and endDate
+  }, [startDate, endDate, ReferenceID, Role]); // Now depends on startDate and endDate
 
   const colors = [
     "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40",

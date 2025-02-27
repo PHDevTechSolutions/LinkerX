@@ -9,9 +9,11 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale)
 interface GenderPieChartProps {
   startDate?: string;
   endDate?: string;
+  ReferenceID: string;
+  Role: string;
 }
 
-const GenderPieChart: React.FC<GenderPieChartProps> = ({ startDate, endDate }) => {
+const GenderPieChart: React.FC<GenderPieChartProps> = ({ startDate, endDate, ReferenceID, Role }) => {
   const [genderData, setGenderData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -30,7 +32,7 @@ const GenderPieChart: React.FC<GenderPieChartProps> = ({ startDate, endDate }) =
       const finalEndDate = endDate || endOfMonth.toISOString(); // Fallback to the current month if no endDate
 
       try {
-        const res = await fetch(`/api/ModuleCSR/Dashboard/Monitoring?startDate=${finalStartDate}&endDate=${finalEndDate}`);
+        const res = await fetch(`/api/ModuleCSR/Dashboard/Monitoring?startDate=${finalStartDate}&endDate=${finalEndDate}&ReferenceID=${ReferenceID}&Role=${Role}`);
         const data = await res.json();
         if (res.ok) {
           setGenderData(data);
@@ -45,7 +47,7 @@ const GenderPieChart: React.FC<GenderPieChartProps> = ({ startDate, endDate }) =
     };
 
     fetchGenderData();
-  }, [startDate, endDate]); // Re-fetch data when startDate or endDate change
+  }, [startDate, endDate, ReferenceID, Role]); // Re-fetch data when startDate or endDate change
 
   const pieChartData = {
     labels: genderData ? genderData.map((item: any) => item._id) : [], // Gender status

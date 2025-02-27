@@ -9,9 +9,11 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale)
 interface CustomerChartProps {
   startDate?: string;
   endDate?: string;
+  ReferenceID: string;
+  Role: string;
 }
 
-const CustomerChart: React.FC<CustomerChartProps> = ({ startDate, endDate }) => {
+const CustomerChart: React.FC<CustomerChartProps> = ({ startDate, endDate, ReferenceID, Role }) => {
   const [genderData, setGenderData] = useState<any>(null);
   
   const getCurrentMonthRange = () => {
@@ -24,10 +26,12 @@ const CustomerChart: React.FC<CustomerChartProps> = ({ startDate, endDate }) => 
   useEffect(() => {
     const fetchGenderData = async () => {
       const { startOfMonth, endOfMonth } = getCurrentMonthRange();
-      const finalStartDate = startDate || startOfMonth.toISOString(); // Fallback to the current month if no startDate
-      const finalEndDate = endDate || endOfMonth.toISOString(); // Fallback to the current month if no endDate
+      const finalStartDate = startDate || startOfMonth.toISOString();
+      const finalEndDate = endDate || endOfMonth.toISOString();
 
-      const res = await fetch(`/api/ModuleCSR/Dashboard/Customer?startDate=${finalStartDate}&endDate=${finalEndDate}`);
+      const res = await fetch(
+        `/api/ModuleCSR/Dashboard/Customer?startDate=${finalStartDate}&endDate=${finalEndDate}&ReferenceID=${ReferenceID}&Role=${Role}`
+      );
       const data = await res.json();
       if (res.ok) {
         setGenderData(data);
@@ -35,7 +39,7 @@ const CustomerChart: React.FC<CustomerChartProps> = ({ startDate, endDate }) => 
     };
 
     fetchGenderData();
-  }, []);
+  }, [startDate, endDate, ReferenceID, Role]); // Added dependencies
 
   const pieChartData = {
     labels: genderData ? genderData.map((item: any) => item._id) : [],
@@ -72,11 +76,11 @@ const CustomerChart: React.FC<CustomerChartProps> = ({ startDate, endDate }) => 
       },
     },
     layout: {
-      padding: 30, // Added padding for a better view
+      padding: 30,
     },
     elements: {
       arc: {
-        borderWidth: 6, // Add border width to the arcs for a more distinct look
+        borderWidth: 6,
       },
     },
   };
