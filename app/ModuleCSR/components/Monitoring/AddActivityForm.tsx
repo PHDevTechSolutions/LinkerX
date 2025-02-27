@@ -13,6 +13,7 @@ interface AddAccountFormProps {
   userDetails: { 
     id: string; 
     Role: string; 
+    ReferenceID: string;
   };
   editPost?: any; // Optional prop for the post being edited
 }
@@ -20,6 +21,7 @@ interface AddAccountFormProps {
 const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, refreshPosts, editPost }) => {
   const [UserId, setUserId] = useState(editPost ? editPost._id : userDetails.id);
   const [Role, setRole] = useState(editPost ? editPost.Role : userDetails.Role);
+  const [ReferenceID, setReferenceID] = useState(editPost ? editPost.ReferenceID : userDetails.ReferenceID);
 
   const [TicketReferenceNumber, setTicketReferenceNumber] = useState("");
   const [userName, setuserName] = useState("");
@@ -76,7 +78,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
   
       // Prepare request body
       const bodyData: any = {
-        UserId, TicketReferenceNumber, userName, Role, CompanyName, CustomerName, Gender, ContactNumber, Email,
+        UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email,
         CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, CustomerStatus, Status, Amount, QtySold,
         SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
         TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription,
@@ -169,6 +171,8 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
           setuserName={setuserName}
           Role={Role}
           setRole={setRole}
+          ReferenceID={ReferenceID}
+          setReferenceID={setReferenceID}
 
           CompanyName={CompanyName}
           setCompanyName={setCompanyName}

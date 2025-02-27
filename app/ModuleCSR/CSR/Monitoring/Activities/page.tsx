@@ -25,44 +25,46 @@ const ActivityPage: React.FC = () => {
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
     const [userDetails, setUserDetails] = useState({
-            UserId: "", Firstname: "", Lastname: "", Email: "", Role: "",
+            UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "",
         });
 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     // Fetch user data based on query parameters (user ID)
-        useEffect(() => {
-            const fetchUserData = async () => {
-                const params = new URLSearchParams(window.location.search);
-                const userId = params.get("id");
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const params = new URLSearchParams(window.location.search);
+            const userId = params.get("id");
     
-                if (userId) {
-                    try {
-                        const response = await fetch(`/api/user?id=${encodeURIComponent(userId)}`);
-                        if (!response.ok) throw new Error("Failed to fetch user data");
-                        const data = await response.json();
-                        setUserDetails({
-                            UserId: data._id, // Set the user's id here
-                            Firstname: data.Firstname || "",
-                            Lastname: data.Lastname || "",
-                            Email: data.Email || "",
-                            Role: data.Role || "",
-                        });
-                    } catch (err: unknown) {
-                        console.error("Error fetching user data:", err);
-                        setError("Failed to load user data. Please try again later.");
-                    } finally {
-                        setLoading(false);
-                    }
-                } else {
-                    setError("User ID is missing.");
+            if (userId) {
+                try {
+                    const response = await fetch(`/api/user?id=${encodeURIComponent(userId)}`);
+                    if (!response.ok) throw new Error("Failed to fetch user data");
+                    const data = await response.json();
+                    setUserDetails({
+                        UserId: data._id, // Set the user's id here
+                        ReferenceID: data.ReferenceID || "",  // <-- Siguraduhin na ito ay may value
+                        Firstname: data.Firstname || "",
+                        Lastname: data.Lastname || "",
+                        Email: data.Email || "",
+                        Role: data.Role || "",
+                    });
+                } catch (err: unknown) {
+                    console.error("Error fetching user data:", err);
+                    setError("Failed to load user data. Please try again later.");
+                } finally {
                     setLoading(false);
                 }
-            };
+            } else {
+                setError("User ID is missing.");
+                setLoading(false);
+            }
+        };
     
-            fetchUserData();
-        }, []);
+        fetchUserData();
+    }, []);
+    
 
     // Fetch accounts from the API
     const fetchActivity = async () => {
@@ -137,17 +139,25 @@ const ActivityPage: React.FC = () => {
             post.CustomerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (post.TicketReferenceNumber && post.TicketReferenceNumber.includes(searchTerm)) ||
             post.ContactNumber.includes(searchTerm);
-
+    
         const matchesStatus = selectedStatus ? post.Status.includes(selectedStatus) : true;
         const matchesSalesAgent = salesAgent ? post.SalesAgent.toLowerCase().includes(salesAgent.toLowerCase()) : true;
-
-        const matchesDateRange = (
+    
+        const matchesDateRange =
             (!TicketReceived || new Date(post.TicketReceived) >= new Date(TicketReceived)) &&
-            (!TicketEndorsed || new Date(post.TicketEndorsed) <= new Date(TicketEndorsed))
-        );
-
-        return matchesSearchTerm && matchesStatus && matchesSalesAgent && matchesDateRange;
+            (!TicketEndorsed || new Date(post.TicketEndorsed) <= new Date(TicketEndorsed));
+    
+        if (userDetails.Role === "Super Admin") {
+            return matchesSearchTerm && matchesStatus && matchesSalesAgent && matchesDateRange;
+        } else if (userDetails.Role === "Admin") {
+            return post.Role === "Staff" && matchesSearchTerm && matchesStatus && matchesSalesAgent && matchesDateRange;
+        } else if (userDetails.Role === "Staff") {
+            return post.ReferenceID === userDetails.ReferenceID && matchesSearchTerm && matchesStatus && matchesSalesAgent && matchesDateRange;
+        }
+    
+        return false; // Default case: if none of the roles match, return false
     });
+    
 
     // Pagination logic
     const indexOfLastPost = currentPage * postsPerPage;
@@ -203,18 +213,21 @@ const ActivityPage: React.FC = () => {
                             <div className="grid grid-cols-1 md:grid-cols-1">
                                 {showForm ? (
                                     <AddAccountForm
-                                        onCancel={() => {
-                                            setShowForm(false);
-                                            setEditPost(null);
-                                        }}
-                                        refreshPosts={fetchActivity}  // Pass the refreshPosts callback
-                                        userName={user ? user.userName : ""}
-                                        userDetails={{
-                                            id: editPost ? editPost.UserId : userDetails.UserId, // Pass UserId correctly here
-                                            Role: user ? user.Role : "" // Pass Role here separately
-                                        }}
-                                        editPost={editPost}
-                                    />
+                                    onCancel={() => {
+                                        setShowForm(false);
+                                        setEditPost(null);
+                                    }}
+                                    refreshPosts={fetchActivity}
+                                    userName={user ? user.userName : ""}
+                                    userDetails={{
+                                        id: editPost ? editPost.UserId : userDetails.UserId,
+                                        Role: user ? user.Role : "",
+                                        ReferenceID: user ? user.ReferenceID : "",  // <-- Ito ang dapat mong suriin
+                                    }}
+                                    editPost={editPost}
+                                    
+                                />
+                                
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">

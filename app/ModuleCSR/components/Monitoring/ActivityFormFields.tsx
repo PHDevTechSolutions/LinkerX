@@ -5,9 +5,9 @@ interface FormFieldsProps {
     UserId: string; setUserId: (value: string) => void;
     userName: string; setuserName: (value: string) => void;
     Role: string; setRole: (value: string) => void;
+    ReferenceID: string; setReferenceID: (value: string) => void;
 
     TicketReferenceNumber: string; setTicketReferenceNumber: (value: string) => void;
-
     CompanyName: string; setCompanyName: (value: string) => void;
     CustomerName: string; setCustomerName: (value: string) => void;
     Gender: string; setGender: (value: string) => void;
@@ -62,7 +62,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     UserId, setUserId,
 
     TicketReferenceNumber, setTicketReferenceNumber,
-    userName, setuserName, Role, setRole,
+    userName, setuserName, Role, setRole, ReferenceID, setReferenceID,
 
     CompanyName, setCompanyName, CustomerName, setCustomerName,
     Gender, setGender, ContactNumber, setContactNumber, Email, setEmail, CustomerSegment, setCustomerSegment,
@@ -169,6 +169,11 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
         }
     }, [editPost, setTicketReferenceNumber]);
 
+    useEffect(() => {
+        console.log("ReferenceID on render:", ReferenceID);
+    }, [ReferenceID]);
+    
+
     return (
         <>
             <div className="flex flex-wrap -mx-4">
@@ -184,6 +189,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <input type="hidden" id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                         <input type="hidden" id="UserId" value={UserId || ""} onChange={(e) => setUserId(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                         <input type="hidden" id="Username" value={userName || ""} onChange={(e) => setuserName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
+                        <input type="hidden" id="ReferenceID" value={ReferenceID || ""} onChange={(e) => setReferenceID(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" disabled/>
                         <label className="block text-xs font-bold mb-2" htmlFor="CompanyName">Company Name</label>
                         {editPost ? (
                             <input type="text" id="CompanyName" value={CompanyName} readOnly className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" />

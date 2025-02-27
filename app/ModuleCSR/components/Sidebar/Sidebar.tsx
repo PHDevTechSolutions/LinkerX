@@ -16,7 +16,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
-  const [userDetails, setUserDetails] = useState({Firstname: "", Lastname: "", Location: "", Role: "",});
+  const [userDetails, setUserDetails] = useState({ReferenceID: "", Firstname: "", Lastname: "", Location: "", Role: "",});
   const router = useRouter();
 
   useEffect(() => {
@@ -34,6 +34,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
 
         const data = await response.json();
         setUserDetails({
+          ReferenceID: data.ReferenceID || "",
           Firstname: data.Firstname || "Ecoshift",
           Lastname: data.Lastname || "Corporation",
           Location: data.Location || "Primex Tower",
@@ -146,7 +147,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
             <p className="font-bold uppercase">
             {userDetails.Firstname}, {userDetails.Lastname}
             </p>
-            <p>{userDetails.Location}</p>
+            <p>{userDetails.ReferenceID}</p>
             <p>( {userDetails.Role} )</p>
           </div>
         )}

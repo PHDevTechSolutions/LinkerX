@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Menu } from "@headlessui/react";
@@ -9,11 +9,9 @@ interface UsersCardProps {
   posts: any[];
   handleEdit: (post: any) => void;
   handleDelete: (postId: string) => void;
-  Role: string;
-  Department: string;
 }
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete, Role, Department }) => {
+const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete }) => {
   const [updatedUser, setUpdatedUser] = useState<any[]>(posts);
 
   useEffect(() => {
@@ -34,26 +32,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete, 
     };
   }, []);
 
-  const filteredUsers = useMemo(() => {
-    let users = updatedUser;
-
-    if (Department) {
-      users = users.filter((post) => post.Department === Department);
-    }
-
-    if (Role === "Admin") {
-      users = users.filter((post) => post.Role === "Staff");
-    } else if (Role === "Super Admin") {
-      users = users.filter((post) => post.Role === "Staff" || post.Role === "Admin");
-    }
-
-    return users;
-  }, [updatedUser, Role, Department]);
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {filteredUsers.length > 0 ? (
-        filteredUsers.map((post) => (
+      {updatedUser.length > 0 ? (
+        updatedUser.map((post) => (
           <div key={post._id} className="relative border rounded-md shadow-md p-4 flex flex-col bg-white">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">

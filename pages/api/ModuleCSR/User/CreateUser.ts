@@ -2,10 +2,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/MongoDB";
 import bcrypt from "bcrypt";
 
-async function AddUser({ UserId, Firstname, Lastname, Email, userName, Password, Role, Department,
+async function AddUser({ UserId, ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Department,
 }: {
   UserId: string;
-  
+  ReferenceID: string;
   Firstname: string;
   Lastname: string;
   Email: string;
@@ -30,6 +30,7 @@ async function AddUser({ UserId, Firstname, Lastname, Email, userName, Password,
 
   const newUser = {
     UserId,
+    ReferenceID,
     Firstname,
     Lastname,
     Email,
@@ -56,7 +57,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const { UserId, Firstname, Lastname, Email, userName, Password, Role, Department } =
+    const { UserId, ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Department } =
       req.body;
 
     // Validate required fields
@@ -70,6 +71,7 @@ export default async function handler(
     try {
       const result = await AddUser({
         UserId,
+        ReferenceID,
         Firstname,
         Lastname,
         Email,

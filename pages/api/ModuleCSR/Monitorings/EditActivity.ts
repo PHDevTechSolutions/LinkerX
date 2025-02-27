@@ -9,7 +9,7 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
         return;
     }
 
-    const { id, UserId, userName, Role, TicketReceived, TicketEndorsed, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
+    const { id, UserId, userName, Role, ReferenceID, TicketReceived, TicketEndorsed, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
         CustomerStatus, Status, OrderNumber, Amount, QtySold, SalesManager, SalesAgent, TsmAcknowledgeDate, TsaAcknowledgeDate, TsmHandlingTime, TsaHandlingTime, Remarks, 
         Traffic, Inquiries, Department, DateClosed } = req.body;
 
@@ -17,7 +17,7 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
         const db = await connectToDatabase();
         const accountCollection = db.collection('monitoring');
 
-        const updatedAccount = { UserId, userName, Role, CompanyName, TicketReceived, TicketEndorsed, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
+        const updatedAccount = { UserId, userName, Role, ReferenceID, CompanyName, TicketReceived, TicketEndorsed, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
             CustomerStatus, Status, OrderNumber, Amount, QtySold, SalesManager, SalesAgent, TsmAcknowledgeDate, TsaAcknowledgeDate, TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, DateClosed,
             updatedAt: new Date(),
         };

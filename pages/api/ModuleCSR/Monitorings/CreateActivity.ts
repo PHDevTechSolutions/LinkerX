@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectToDatabase
 
 // Function to add an account directly in this file
-async function addMonitoring({ UserId, TicketReferenceNumber, userName, Role, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, 
+async function addMonitoring({ UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, 
   CustomerType, CustomerStatus, Status, Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
   TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource,
 }: {
@@ -10,6 +10,7 @@ async function addMonitoring({ UserId, TicketReferenceNumber, userName, Role, Co
   TicketReferenceNumber: string;
   userName: string;
   Role: string;
+  ReferenceID: string;
   CompanyName: string;
   CustomerName: string;
   Gender: string;
@@ -52,7 +53,7 @@ async function addMonitoring({ UserId, TicketReferenceNumber, userName, Role, Co
 }) {
   const db = await connectToDatabase();
   const accountsCollection = db.collection("monitoring");
-  const newMonitoring = { UserId, TicketReferenceNumber, userName, Role, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
+  const newMonitoring = { UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
     CustomerStatus, Status, Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
     TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource, createdAt: new Date(), };
   await accountsCollection.insertOne(newMonitoring);
@@ -67,7 +68,7 @@ async function addMonitoring({ UserId, TicketReferenceNumber, userName, Role, Co
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
-    const { UserId, TicketReferenceNumber, userName, Role, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
+    const { UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
       CustomerStatus, Status, Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate, TsmHandlingTime, 
       TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource } = req.body;
 
@@ -79,7 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-      const result = await addMonitoring({ UserId, TicketReferenceNumber, userName, Role, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
+      const result = await addMonitoring({ UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
         CustomerStatus, Status, Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate, TsmHandlingTime, TsaHandlingTime, 
         Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource});
       res.status(200).json(result);

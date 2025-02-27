@@ -12,10 +12,11 @@ interface AddPostFormProps {
 }
 
 const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refreshPosts, editUser }) => {
+  const [ReferenceID, setReferenceID] = useState("");
   const [Firstname, setFirstname] = useState(editUser ? editUser.Firstname : "");
   const [Lastname, setLastname] = useState(editUser ? editUser.Lastname : "");
   const [Email, setEmail] = useState(editUser ? editUser.Email : "");
-  const [userName, setuserName] = useState(editUser ? editUser.userName : "");
+  const [userName, setUserName] = useState(editUser ? editUser.userName : "");
   const [Password, setPassword] = useState(editUser ? editUser.Password : "");
   const [Role, setRole] = useState(editUser ? editUser.Role : "");
   const [Department, setDepartment] = useState(editUser ? editUser.Department: "");
@@ -35,7 +36,8 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        Firstname, Lastname, Email, userName, Password, Role, Department, UserId,
+        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Department, UserId,
+        id: editUser ? editUser._id : undefined, // Send post ID if editing
       }),
     });
 
@@ -60,10 +62,11 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
         <h2 className="text-xs font-bold mb-4">{editUser ? "Edit User Information" : "Add New User"}</h2>
         <FormFields
           UserId={UserId} setUserId={setUserId}
+          ReferenceID={ReferenceID} setReferenceID={setReferenceID}
           Firstname={Firstname} setFirstname={setFirstname}
           Lastname={Lastname} setLastname={setLastname}
           Email={Email} setEmail={setEmail}
-          userName={userName} setuserName={setuserName}
+          userName={userName} setUserName={setUserName}
           Password={Password} setPassword={setPassword}
           Role={Role} setRole={setRole}
           Department={Department} setDepartment={setDepartment}
