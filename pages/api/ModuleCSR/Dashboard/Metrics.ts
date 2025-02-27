@@ -4,22 +4,18 @@ import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectTo
 export default async function fetchMetrics(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
         res.setHeader("Allow", ["GET"]);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
-        return;
+        return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
     }
 
-    const { startDate, endDate, ReferenceID, Role } = req.query;
-
-    // Determine the current month (start and end dates)
-    const currentDate = new Date();
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-
-    // Use provided dates or fallback to the current month's range
-    const start = startDate ? new Date(startDate as string) : startOfMonth;
-    const end = endDate ? new Date(endDate as string) : endOfMonth;
-
     try {
+        const { startDate, endDate, ReferenceID, Role } = req.query;
+
+        // Validate Role
+        if (!Role || typeof Role !== "string") {
+            return res.status(400).json({ error: "Invalid Role parameter" });
+        }
+
+        // Connect to database
         const db = await connectToDatabase();
         const monitoringCollection = db.collection("monitoring");
 
@@ -29,57 +25,83 @@ export default async function fetchMetrics(req: NextApiRequest, res: NextApiResp
             "Text Message", "Instagram", "Voice Call", "Email", "WhatsApp"
         ];
 
-        // Build the match condition based on the date range
+        // Determine the current month's start and end dates
+        const currentDate = new Date();
+        const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        startOfMonth.setHours(0, 0, 0, 0);
+        const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        endOfMonth.setHours(23, 59, 59, 999);
+
+        // Use provided dates or fallback to current month
+        const start = startDate ? new Date(startDate as string) : startOfMonth;
+        const end = endDate ? new Date(endDate as string) : endOfMonth;
+
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            return res.status(400).json({ error: "Invalid date format" });
+        }
+
+        // Build match conditions
         const matchConditions: any = {
             Status: "Converted Into Sales",
-            createdAt: { $gte: start, $lte: end } // Always filter based on the selected or default date range
+            createdAt: { $gte: start, $lte: end }
         };
 
         // Role-based filtering
         if (Role === "Staff" && ReferenceID) {
-            matchConditions.ReferenceID = ReferenceID; // Staff can only see their assigned data
-        } else if (Role === "Admin") {
-            // Super Admin and Admin can see all data (no additional filtering)
+            matchConditions.ReferenceID = ReferenceID;
+        } else if (Role === "Admin" || Role === "SuperAdmin") {
+            // Allow all data for Admin and SuperAdmin (no filtering needed)
         } else {
             return res.status(403).json({ error: "Unauthorized role" });
         }
 
-        // Aggregating traffic count, amount, and createdAt per channel
+        console.log("Match Conditions:", matchConditions); // Debugging
+
+        // Aggregation query
         const aggregatedMetrics = await monitoringCollection
             .aggregate([
-                { $match: matchConditions }, // Apply the dynamic date range filter
+                { $match: matchConditions },
                 {
                     $group: {
-                        _id: "$Channel", // Group by Channel
-                        count: { $sum: 1 }, // Count occurrences per channel
-                        totalAmount: { $sum: { $toDouble: "$Amount" } }, // Ensure Amount is treated as a number
-                        convertedSales: { $sum: 1 }, // Count only converted sales
-                        totalQty: { $sum: { $toDouble: "$QtySold" } },
-                        createdAt: { $max: "$createdAt" } // Get the latest createdAt timestamp
+                        _id: "$Channel",
+                        count: { $sum: 1 },
+                        totalAmount: {
+                            $sum: {
+                                $convert: { input: "$Amount", to: "double", onError: 0, onNull: 0 }
+                            }
+                        },
+                        convertedSales: { $sum: 1 },
+                        totalQty: {
+                            $sum: {
+                                $convert: { input: "$QtySold", to: "double", onError: 0, onNull: 0 }
+                            }
+                        },
+                        createdAt: { $max: "$createdAt" }
                     }
                 },
-                { $sort: { _id: 1 } } // Sort alphabetically by channel name
+                { $sort: { _id: 1 } }
             ])
             .toArray();
 
-        // Convert MongoDB result to expected format
+        console.log("Aggregated Metrics:", aggregatedMetrics); // Debugging
+
+        // Convert result to expected format
         const result = channels.map(channel => {
             const data = aggregatedMetrics.find(m => m._id === channel);
             return {
-                Role, // Include Role in the response
-                Total: channel, // Display category name
-                Count: data ? data.count : 0, // Total count
-                Amount: data ? `₱${data.totalAmount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}` : "₱0.00", // Format amount in PHP
-                ConvertedSales: data ? data.convertedSales : 0, // Count of converted sales
+                Role,
+                Total: channel,
+                Count: data ? data.count : 0,
+                Amount: data ? `₱${data.totalAmount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}` : "₱0.00",
+                ConvertedSales: data ? data.convertedSales : 0,
                 TotalQty: data ? data.totalQty : 0,
-                CreatedAt: data ? new Date(data.createdAt).toLocaleString("en-PH") : "N/A" // Format date
+                CreatedAt: data ? new Date(data.createdAt).toLocaleString("en-PH") : "N/A"
             };
         });
 
-        console.log("Final Result:", result); // Debugging log
         res.status(200).json(result);
-    } catch (error) {
-        console.error("Error fetching metrics:", error);
-        res.status(500).json({ error: "Failed to fetch metrics" });
+    } catch (error: any) {
+        console.error("Error fetching metrics:", error.message);
+        res.status(500).json({ error: "Failed to fetch metrics", details: error.message });
     }
 }

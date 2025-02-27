@@ -160,22 +160,27 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
           </div>
-
+      
           {/* Card 4: Tables */}
+          {userDetails.Role !== "Staff" && (
           <div className="flex gap-4 mt-4 mb-4">
             <div className="bg-white shadow-md rounded-lg p-4 w-full">
-              <div className="flex border-b mb-4 text-xs font-bold">
-                <button className={`p-2 flex-1 ${activeTableConversion === "agentbarchart" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableConversion("agentbarchart")}>Bar Chart</button>
-                <button className={`p-2 flex-1 ${activeTableConversion === "agentsalesconversion" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableConversion("agentsalesconversion")}>Traffic to Sales Conversion</button>
+              <div className="border-b mb-4 text-xs font-bold">
+                <button className="p-2 flex-1 border-b-2 border-blue-500">
+                  Traffic to Sales Conversion
+                </button>
               </div>
               <div className="p-4">
-                {activeTableConversion === "agentbarchart" && <AgentBarChart />}
-                {activeTableConversion === "agentsalesconversion" && <AgentSalesConversion />}
+                <AgentSalesConversion 
+                ReferenceID={userDetails.ReferenceID}
+                Role={userDetails.Role}/>
               </div>
             </div>
           </div>
+          )}
 
-          {/* Card 4: Tables */}
+          {/* Card 5: Tables */}
+          {userDetails.Role !== "Staff" && (
           <div className="flex gap-4 mt-4 mb-4">
             <div className="bg-white shadow-md rounded-lg p-4 w-full">
               <h3 className="text-sm font-bold mb-2">TSA Traffic to Sales Conversion</h3>
@@ -184,6 +189,7 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
           </div>
+          )}
 
         </div>
       </ParentLayout>
