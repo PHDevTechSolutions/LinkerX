@@ -161,7 +161,10 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
             <div key={index} className="w-full">
               <button
                 onClick={() => handleToggle(item.title)}
-                className={`flex items-center w-full p-4 mt-1 hover:bg-gray-50 hover:border-l-2 hover:border-yellow-500 hover:rounded-t-md hover:text-gray-900 transition-all ${collapsed ? "justify-center" : ""}`}
+                className={`flex items-center w-full p-4 mt-1 transition-all duration-300 ease-in-out 
+                  hover:bg-gray-50 hover:rounded-md hover:text-gray-900 hover:shadow-md 
+                  active:scale-95 ${collapsed ? "justify-center" : ""}`}
+                
               >
                 <item.icon size={18} />
                 {!collapsed && <span className="ml-2">{item.title}</span>}
@@ -180,11 +183,12 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
                   <div> {/* Added margin-left for submenu spacing */}
                     {item.subItems.map((subItem, subIndex) => (
                       <Link
-                        key={subIndex}
-                        href={subItem.href}
-                        prefetch={true}
-                        className="flex w-full items-center p-4 bg-gray-50 text-gray-900 hover:border-l-2 hover:border-yellow-500 transition-all"
-                      >
+                      key={subIndex}
+                      href={subItem.href}
+                      prefetch={true}
+                      className="flex w-full items-center p-4 bg-gray-50 text-gray-900 border-l-2 border-transparent transition-all duration-300 ease-in-out hover:bg-yellow-100 hover:shadow-md"
+                    >
+                    
                         {/* Adding small circle icon for each submenu item */}
                         <FaRegCircle size={10} className="mr-2 ml-2" />
                         {subItem.title}
