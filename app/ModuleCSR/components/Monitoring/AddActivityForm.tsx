@@ -140,8 +140,15 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          TicketReferenceNumber,
           SalesManager,
           SalesAgent,
+          CompanyName,
+          CustomerName,
+          ContactNumber,
+          Email,
+          CityAddress,
+          Status,
         }),
       });
   
