@@ -232,13 +232,15 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
       {/* Menu Section */}
       <div className="flex flex-col items-center rounded-md flex-grow overflow-y-auto text-xs p-2">
         <div className="w-full">
-          <Link href={`/ModuleSales/Sales/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex items-center w-full p-4 bg-green-900 mb-1 text-white rounded transition-all"><CiGrid42 size={22} className="mr-1"/>Dashboard</Link>
+          <Link href={`/ModuleSales/Sales/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex items-center w-full p-4 bg-green-900 mb-1 text-white rounded transition-all duration-300 ease-in-out hover:shadow-md 
+                  active:scale-95"><CiGrid42 size={22} className="mr-1"/>Dashboard</Link>
         </div>
           {filteredMenuItems.map((item, index) => (
             <div key={index} className="w-full">
               <button
                 onClick={() => handleToggle(item.title)}
-                className={`flex items-center w-full p-4 hover:bg-green-900 rounded hover:rounded-md hover:text-white transition-all ${collapsed ? "justify-center" : ""}`}
+                className={`flex items-center w-full p-4 hover:bg-green-900 rounded hover:rounded-md hover:text-white transition-all duration-300 ease-in-out hover:shadow-md 
+                  active:scale-95 ${collapsed ? "justify-center" : ""}`}
               >
                 <item.icon size={18} />
                 {!collapsed && <span className="ml-2">{item.title}</span>}
@@ -260,7 +262,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
                         key={subIndex}
                         href={subItem.href}
                         prefetch={true}
-                        className="flex items-center text-dark w-full p-4 bg-gray-200 hover:bg-green-900 hover:text-white transition-all"
+                        className="flex items-center text-dark w-full p-4 bg-gray-200 hover:bg-green-900 hover:text-white transition-all border-transparent transition-all duration-300 ease-in-out"
                       >
                         {/* Adding small circle icon for each submenu item */}
                         <FaRegCircle size={10} className="mr-2 ml-2" />
