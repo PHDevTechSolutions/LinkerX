@@ -6,13 +6,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import FormFields from "./ActivityFormFields";
 import { FetchUserName } from "./FetchUsername";
 
-interface AddAccountFormProps { 
-  onCancel: () => void; 
+interface AddAccountFormProps {
+  onCancel: () => void;
   refreshPosts: () => void;  // Add a refreshPosts callback
-  userName: string; 
-  userDetails: { 
-    id: string; 
-    Role: string; 
+  userName: string;
+  userDetails: {
+    id: string;
+    Role: string;
     ReferenceID: string;
   };
   editPost?: any; // Optional prop for the post being edited
@@ -30,7 +30,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
   const [Gender, setGender] = useState(editPost ? editPost.Gender : "");
   const [ContactNumber, setContactNumber] = useState(editPost ? editPost.ContactNumber : "");
   const [Email, setEmail] = useState(editPost ? editPost.Email : "");
-  const [CustomerSegment, setCustomerSegment] = useState(editPost ? editPost.CustomerSegment: "");
+  const [CustomerSegment, setCustomerSegment] = useState(editPost ? editPost.CustomerSegment : "");
   const [CityAddress, setCityAddress] = useState(editPost ? editPost.CityAddress : "");
   const [Channel, setChannel] = useState(editPost ? editPost.Channel : "");
   const [WrapUp, setWrapUp] = useState(editPost ? editPost.WrapUp : "");
@@ -38,114 +38,94 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
   const [CustomerType, setCustomerType] = useState(editPost ? editPost.CustomerType : "");
   const [CustomerStatus, setCustomerStatus] = useState(editPost ? editPost.CustomerStatus : "");
   const [Status, setStatus] = useState(editPost ? editPost.Status : "");
-  
+
   const [Amount, setAmount] = useState<number | string>(editPost ? Number(editPost.Amount) || "" : "");
   const [QtySold, setQtySold] = useState<number | string>(editPost ? Number(editPost.QtySold) || "" : "");
 
   const [SalesManager, setSalesManager] = useState(editPost ? editPost.SalesManager : "");
   const [SalesAgent, setSalesAgent] = useState(editPost ? editPost.SalesAgent : "");
-  const [TicketReceived, setTicketReceived] = useState(editPost ? editPost.TicketReceived: "");
-  const [TicketEndorsed, setTicketEndorsed] = useState(editPost ? editPost.TicketEndorsed: "");
-  const [TsmAcknowledgeDate, setTsmAcknowledgeDate] = useState(editPost ? editPost.TsmAcknowledgeDate: "");
-  const [TsaAcknowledgeDate, setTsaAcknowledgeDate] = useState(editPost ? editPost.TsaAcknowledgeDate: "");
-  const [TsmHandlingTime, setTsmHandlingTime] = useState(editPost ? editPost.TsmHandlingTime: "");
-  const [TsaHandlingTime, setTsaHandlingTime] = useState(editPost ? editPost.TsaHandlingTime: "");
-  const [Remarks, setRemarks] = useState(editPost ? editPost.Remarks: "");
+  const [TicketReceived, setTicketReceived] = useState(editPost ? editPost.TicketReceived : "");
+  const [TicketEndorsed, setTicketEndorsed] = useState(editPost ? editPost.TicketEndorsed : "");
+  const [TsmAcknowledgeDate, setTsmAcknowledgeDate] = useState(editPost ? editPost.TsmAcknowledgeDate : "");
+  const [TsaAcknowledgeDate, setTsaAcknowledgeDate] = useState(editPost ? editPost.TsaAcknowledgeDate : "");
+  const [TsmHandlingTime, setTsmHandlingTime] = useState(editPost ? editPost.TsmHandlingTime : "");
+  const [TsaHandlingTime, setTsaHandlingTime] = useState(editPost ? editPost.TsaHandlingTime : "");
+  const [Remarks, setRemarks] = useState(editPost ? editPost.Remarks : "");
   const [Traffic, setTraffic] = useState(editPost ? editPost.Traffic : "");
-  const [Inquiries, setInquiries] = useState(editPost ? editPost.Inquiries: "");
-  const [Department, setDepartment] = useState(editPost ? editPost.Department: "");
+  const [Inquiries, setInquiries] = useState(editPost ? editPost.Inquiries : "");
+  const [Department, setDepartment] = useState(editPost ? editPost.Department : "");
 
-  const [ItemCode, setItemCode] = useState(editPost ? editPost.ItemCode: "");
-  const [ItemDescription, setItemDescription] = useState(editPost ? editPost.ItemDescription: "");
+  const [ItemCode, setItemCode] = useState(editPost ? editPost.ItemCode : "");
+  const [ItemDescription, setItemDescription] = useState(editPost ? editPost.ItemDescription : "");
 
-  const [SONumber, setSONumber] = useState(editPost ? editPost.SONumber: "");
-  const [PONumber, setPONumber] = useState(editPost ? editPost.PONumber: "");
-  const [SODate, setSODate] = useState(editPost ? editPost.SODate: "");
-  const [PaymentTerms, setPaymentTerms] = useState(editPost ? editPost.PaymentTerms: "");
-  const [PaymentDate, setPaymentDate] = useState(editPost ? editPost.PaymentDate: "");
-  const [DeliveryDate, setDeliveryDate] = useState(editPost ? editPost.DeliveryDate: "");
-  const [POStatus, setPOStatus] = useState(editPost ? editPost.POStatus: "");
-  const [POSource, setPOSource] = useState(editPost ? editPost.POSource: "");
-  
+  const [SONumber, setSONumber] = useState(editPost ? editPost.SONumber : "");
+  const [PONumber, setPONumber] = useState(editPost ? editPost.PONumber : "");
+  const [SODate, setSODate] = useState(editPost ? editPost.SODate : "");
+  const [PaymentTerms, setPaymentTerms] = useState(editPost ? editPost.PaymentTerms : "");
+  const [PaymentDate, setPaymentDate] = useState(editPost ? editPost.PaymentDate : "");
+  const [DeliveryDate, setDeliveryDate] = useState(editPost ? editPost.DeliveryDate : "");
+  const [POStatus, setPOStatus] = useState(editPost ? editPost.POStatus : "");
+  const [POSource, setPOSource] = useState(editPost ? editPost.POSource : "");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    try {
-      const isEditing = Boolean(editPost);
-      const url = isEditing
-        ? `/api/ModuleCSR/Monitorings/EditActivity`
-        : `/api/ModuleCSR/Monitorings/CreateActivity`;
-      const method = isEditing ? "PUT" : "POST";
-  
-      // Prepare request body
-      const bodyData: Record<string, any> = {
-        UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName,
-        CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress,
-        Channel, WrapUp, Source, CustomerType, CustomerStatus, Status, Amount, QtySold,
-        SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate,
-        TsaAcknowledgeDate, TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries,
-        Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms,
-        PaymentDate, DeliveryDate, POStatus, POSource,
-      };
-  
-      // Include ID only if updating an existing record
-      if (isEditing) {
-        bodyData.id = editPost._id;
-      }
-  
-      // Send API request
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bodyData),
-      });
-  
-      const responseData = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(responseData.message || "Failed to process request");
-      }
-  
-      console.log("API Response:", responseData);
-  
-      // Forward data to external URL
-      const forwardResponse = await fetch("http://taskflow-phdevtechsolutions.x10.mx/data.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ SalesManager, SalesAgent }),
-      });
-  
-      if (!forwardResponse.ok) {
-        console.warn("Failed to forward data");
-      } else {
-        console.log("Data forwarded successfully");
-      }
-  
-      // Show success toast and refresh posts
-      toast.success("Account added successfully", {
+
+    const url = editPost ? `/api/ModuleCSR/Monitorings/EditActivity` : `/api/ModuleCSR/Monitorings/CreateActivity`; // API endpoint changes based on edit or add
+    const method = editPost ? "PUT" : "POST"; // HTTP method changes based on edit or add
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email,
+        CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, CustomerStatus, Status, Amount, QtySold,
+        SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
+        TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription,
+        SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource,
+        id: editPost ? editPost._id : undefined, // Send post ID if editing
+      }),
+    });
+
+    // Forward SalesManager and SalesAgent to external API
+    const externalResponse = await fetch("http://taskflow-phdevtechsolutions.x10.mx/data.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        SalesManager,
+        SalesAgent,
+      }),
+    });
+
+    if (response.ok) {
+      toast.success(editPost ? "Account updated successfully" : "Account added successfully", {
         autoClose: 1000,
         onClose: () => {
-          onCancel();
-          refreshPosts();
-        },
+          onCancel(); // Hide the form after submission
+          refreshPosts(); // Refresh accounts after successful submission
+        }
       });
-  
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error("Failed to add account", {
-        autoClose: 1000,
+    } else {
+      toast.error(editPost ? "Failed to update account" : "Failed to add account", {
+        autoClose: 1000
       });
     }
+
+    if (!externalResponse.ok) {
+      console.error("Failed to forward SalesManager and SalesAgent.");
+    }
   };
-  
-  
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const userId = params.get("id");
     if (userId) {
-        FetchUserName(userId, setuserName); // Use the function
+      FetchUserName(userId, setuserName); // Use the function
     }
-}, []);
+  }, []);
 
   return (
     <>
@@ -174,8 +154,8 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
           setContactNumber={setContactNumber}
           Email={Email}
           setEmail={setEmail}
-          CustomerSegment ={CustomerSegment}
-          setCustomerSegment ={setCustomerSegment}
+          CustomerSegment={CustomerSegment}
+          setCustomerSegment={setCustomerSegment}
           CityAddress={CityAddress}
           setCityAddress={setCityAddress}
           Channel={Channel}
@@ -240,7 +220,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
           setPOStatus={setPOStatus}
           POSource={POSource}
           setPOSource={setPOSource}
-          
+
           editPost={editPost}
         />
         <div className="flex justify-between">
