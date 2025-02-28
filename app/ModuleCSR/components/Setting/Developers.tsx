@@ -7,8 +7,8 @@ type FormProps = {};
 const Developer: React.FC<FormProps> = () => {
     const fields = [
         { label: "Team Leader", value: "Rivera, Mark Christopher" },
-        { label: "System and Software Developer", value: "Roluna, Liesther ( Leroux Y Xchire )" },
-        { label: "Assistant System Developer", value: "Nebril, Babyrose" },
+        { label: "Mern Stack, Fullstack Developer, Database Master", value: "Roluna, Liesther ( Leroux Y Xchire )" },
+        { label: "React Developer, Mern Stack", value: "Nebril, Babyrose" },
         { label: "Network Engineer", value: "Melgarejo, Anthony" },
     ];
 
