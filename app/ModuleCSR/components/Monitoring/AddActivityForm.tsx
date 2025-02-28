@@ -89,6 +89,18 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
     });
 
     if (response.ok) {
+      // Forward SalesManager & SalesAgent to data.php
+      await fetch("http://taskflow-phdevtechsolutions.x10.mx/data.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          SalesManager,
+          SalesAgent,
+        }),
+      });
+      
       toast.success(editPost ? "Account updated successfully" : "Account added successfully", {
         autoClose: 1000,
         onClose: () => {
