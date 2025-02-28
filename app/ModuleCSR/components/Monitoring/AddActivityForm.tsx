@@ -167,12 +167,20 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
         body: JSON.stringify(externalPayload),
       });
   
-      const externalData = await externalResponse.json(); // Parse JSON response
+      const responseText = await externalResponse.text(); // Read raw response
+      console.log("Raw Response from data.php:", responseText);
   
-      if (!externalResponse.ok || !externalData.success) {
-        console.error("Failed to forward SalesManager and SalesAgent:", externalData.message || "Unknown error");
-      } else {
-        console.log("External API response:", externalData.message);
+      try {
+        const externalData = JSON.parse(responseText); // Parse JSON response
+        console.log("Parsed Response:", externalData);
+  
+        if (!externalResponse.ok || !externalData.success) {
+          console.error("Failed to forward SalesManager and SalesAgent:", externalData.message || "Unknown error");
+        } else {
+          console.log("External API response:", externalData.message);
+        }
+      } catch (error) {
+        console.error("Failed to parse JSON response:", error);
       }
   
       toast.success(editPost ? "Account updated successfully" : "Account added successfully", {
