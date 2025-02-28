@@ -69,28 +69,72 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const url = editPost ? `/api/ModuleCSR/Monitorings/EditActivity` : `/api/ModuleCSR/Monitorings/CreateActivity`; // API endpoint changes based on edit or add
+  
+    const url = editPost
+      ? "/api/ModuleCSR/Monitorings/EditActivity"
+      : "/api/ModuleCSR/Monitorings/CreateActivity"; // API endpoint changes based on edit or add
     const method = editPost ? "PUT" : "POST"; // HTTP method changes based on edit or add
-
-    const response = await fetch(url, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email,
-        CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, CustomerStatus, Status, Amount, QtySold,
-        SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
-        TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription,
-        SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource,
-        id: editPost ? editPost._id : undefined, // Send post ID if editing
-      }),
-    });
-
-    if (response.ok) {
+  
+    try {
+      // Submit main request (EditActivity or CreateActivity)
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          UserId,
+          TicketReferenceNumber,
+          userName,
+          Role,
+          ReferenceID,
+          CompanyName,
+          CustomerName,
+          Gender,
+          ContactNumber,
+          Email,
+          CustomerSegment,
+          CityAddress,
+          Channel,
+          WrapUp,
+          Source,
+          CustomerType,
+          CustomerStatus,
+          Status,
+          Amount,
+          QtySold,
+          SalesManager,
+          SalesAgent,
+          TicketReceived,
+          TicketEndorsed,
+          TsmAcknowledgeDate,
+          TsaAcknowledgeDate,
+          TsmHandlingTime,
+          TsaHandlingTime,
+          Remarks,
+          Traffic,
+          Inquiries,
+          Department,
+          ItemCode,
+          ItemDescription,
+          SONumber,
+          PONumber,
+          SODate,
+          PaymentTerms,
+          PaymentDate,
+          DeliveryDate,
+          POStatus,
+          POSource,
+          id: editPost ? editPost._id : undefined, // Send post ID if editing
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to submit: ${response.status}`);
+      }
+  
       // Forward SalesManager & SalesAgent to data.php
-      await fetch("http://taskflow-phdevtechsolutions.x10.mx/data.php", {
+      const dataResponse = await fetch("http://taskflow-phdevtechsolutions.x10.mx/data.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -100,20 +144,26 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
           SalesAgent,
         }),
       });
-      
+  
+      if (!dataResponse.ok) {
+        throw new Error(`Failed to forward SalesManager & SalesAgent: ${dataResponse.status}`);
+      }
+  
+      // Show success message and refresh posts
       toast.success(editPost ? "Account updated successfully" : "Account added successfully", {
         autoClose: 1000,
         onClose: () => {
           onCancel(); // Hide the form after submission
           refreshPosts(); // Refresh accounts after successful submission
-        }
+        },
       });
-    } else {
-      toast.error(editPost ? "Failed to update account" : "Failed to add account", {
-        autoClose: 1000
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("An error occurred. Please try again.", {
+        autoClose: 1000,
       });
     }
-  };
+  };  
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
