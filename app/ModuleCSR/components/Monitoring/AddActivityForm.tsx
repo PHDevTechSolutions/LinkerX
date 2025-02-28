@@ -69,79 +69,126 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const url = editPost ? `/api/ModuleCSR/Monitorings/EditActivity` : `/api/ModuleCSR/Monitorings/CreateActivity`; // API endpoint changes based on edit or add
+  
+    const url = editPost
+      ? `/api/ModuleCSR/Monitorings/EditActivity`
+      : `/api/ModuleCSR/Monitorings/CreateActivity`; // API endpoint changes based on edit or add
     const method = editPost ? "PUT" : "POST"; // HTTP method changes based on edit or add
-
+  
     try {
+      const payload = {
+        UserId,
+        TicketReferenceNumber,
+        userName,
+        Role,
+        ReferenceID,
+        CompanyName,
+        CustomerName,
+        Gender,
+        ContactNumber,
+        Email,
+        CustomerSegment,
+        CityAddress,
+        Channel,
+        WrapUp,
+        Source,
+        CustomerType,
+        CustomerStatus,
+        Status,
+        Amount,
+        QtySold,
+        SalesManager,
+        SalesAgent,
+        TicketReceived,
+        TicketEndorsed,
+        TsmAcknowledgeDate,
+        TsaAcknowledgeDate,
+        TsmHandlingTime,
+        TsaHandlingTime,
+        Remarks,
+        Traffic,
+        Inquiries,
+        Department,
+        ItemCode,
+        ItemDescription,
+        SONumber,
+        PONumber,
+        SODate,
+        PaymentTerms,
+        PaymentDate,
+        DeliveryDate,
+        POStatus,
+        POSource,
+        id: editPost ? editPost._id : undefined,
+      };
+  
+      console.log("Sending payload to main API:", payload);
+  
       const response = await fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email,
-          CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, CustomerStatus, Status, Amount, QtySold,
-          SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
-          TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription,
-          SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource,
-          id: editPost ? editPost._id : undefined, // Send post ID if editing
-        }),
+        body: JSON.stringify(payload),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Main API Error:", errorData);
         throw new Error(editPost ? "Failed to update account" : "Failed to add account");
       }
-
+  
+      console.log("Main API response:", await response.json());
+  
       // Forward SalesManager and SalesAgent to external API
+      const externalPayload = {
+        SalesManager,
+        SalesAgent,
+        CompanyName,
+        CustomerName,
+        ContactNumber,
+        Email,
+        CityAddress,
+        Status,
+        TicketReferenceNumber,
+        Amount,
+        QtySold,
+        WrapUp,
+        Inquiries,
+      };
+  
+      console.log("Sending payload to external API:", externalPayload);
+  
       const externalResponse = await fetch("http://taskflow-phdevtechsolutions.x10.mx/data.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          SalesManager,
-          SalesAgent,
-          CompanyName,
-          CustomerName,
-          ContactNumber,
-          Email,
-          CityAddress,
-          Status,
-          TicketReferenceNumber,
-          Amount,
-          QtySold,
-          WrapUp,
-          Inquiries,
-        }),
+        body: JSON.stringify(externalPayload),
       });
-
+  
       const externalData = await externalResponse.json(); // Parse JSON response
-
+  
       if (!externalResponse.ok || !externalData.success) {
         console.error("Failed to forward SalesManager and SalesAgent:", externalData.message || "Unknown error");
       } else {
         console.log("External API response:", externalData.message);
       }
-
+  
       toast.success(editPost ? "Account updated successfully" : "Account added successfully", {
         autoClose: 1000,
         onClose: () => {
           onCancel(); // Hide the form after submission
           refreshPosts(); // Refresh accounts after successful submission
-        }
+        },
       });
-
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error(editPost ? "Failed to update account" : "Failed to add account", {
-        autoClose: 1000
+        autoClose: 1000,
       });
     }
-  };
-
+  };  
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
