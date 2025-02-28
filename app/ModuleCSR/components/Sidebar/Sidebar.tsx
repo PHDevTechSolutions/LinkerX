@@ -128,11 +128,11 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
   });
 
   return (
-    <div className={`fixed inset-y-0 left-0 z-50 h-screen bg-gray-800 text-white transition-all duration-300 flex flex-col ${collapsed ? "w-16" : "w-64"} ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
+    <div className={`fixed inset-y-0 left-0 z-50 h-screen bg-green-900 text-white transition-all duration-300 flex flex-col ${collapsed ? "w-16" : "w-64"} ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
       {/* Logo Section */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center">
-          <img src="/react.svg" alt="Logo" className="h-8 mr-2"/>
+          <img src="/ecodesk.png" alt="Logo" className="h-8 mr-2 bg-gray-50 shadow-lg rounded-full"/>
           <Link href={`/ModuleCSR/CSR/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}>
             <h1 className={`text-md font-bold transition-opacity ${collapsed ? "opacity-0" : "opacity-100"}`}>
               ECODESK
@@ -155,13 +155,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
       {/* Menu Section */}
       <div className="flex flex-col items-center rounded-md flex-grow overflow-y-auto text-xs p-2">
         <div className="w-full">
-          <Link href={`/ModuleCSR/CSR/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex items-center w-full p-4 hover:bg-gray-700 rounded hover: rounded-md hover:text-white transition-all"><MdOutlineSpaceDashboard size={22} className="mr-1"/>Dashboard</Link>
+          <Link href={`/ModuleCSR/CSR/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex items-center w-full p-4 bg-gray-50 rounded text-gray-900 transition-all"><MdOutlineSpaceDashboard size={22} className="mr-1"/>Dashboard</Link>
         </div>
           {filteredMenuItems.map((item, index) => (
             <div key={index} className="w-full">
               <button
                 onClick={() => handleToggle(item.title)}
-                className={`flex items-center w-full p-4 hover:bg-gray-700 rounded hover:rounded-md hover:text-white transition-all ${collapsed ? "justify-center" : ""}`}
+                className={`flex items-center w-full p-4 mt-1 hover:bg-gray-50 hover:border-l-2 hover:border-yellow-500 hover:rounded-t-md hover:text-gray-900 transition-all ${collapsed ? "justify-center" : ""}`}
               >
                 <item.icon size={18} />
                 {!collapsed && <span className="ml-2">{item.title}</span>}
@@ -183,7 +183,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
                         key={subIndex}
                         href={subItem.href}
                         prefetch={true}
-                        className="flex items-center w-full p-4 bg-gray-800 hover:bg-gray-700 rounded hover:rounded-md hover:text-white transition-all"
+                        className="flex w-full items-center p-4 bg-gray-50 text-gray-900 hover:border-l-2 hover:border-yellow-500 transition-all"
                       >
                         {/* Adding small circle icon for each submenu item */}
                         <FaRegCircle size={10} className="mr-2 ml-2" />
