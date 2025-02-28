@@ -106,31 +106,25 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
         throw new Error(responseData.message || "Failed to process request");
       }
   
-      // If Status is "Endorsed", send data to external API
-      if (Status === "Endorsed") {
-        const requestData = {
-          SalesAgent, SalesManager, CompanyName, CustomerName, ContactNumber, Email, CityAddress, Status,
-          TicketReferenceNumber, Amount, QtySold, WrapUp, Inquiries,
-        };
-      
-        console.log("Sending data to API:", requestData); // Debugging log
-      
-        try {
-          const externalResponse = await fetch("https://www.ecoshiftcorp.com.ph/data.php", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestData),
-          });
-      
-          const externalResult = await externalResponse.json();
-          console.log("External API Response:", externalResult);
-        } catch (externalError) {
-          console.error("External API Error:", externalError);
-        }
+      // Send only SalesAgent and SalesManager to external API
+      const requestData = { SalesAgent, SalesManager };
+  
+      console.log("Sending data to API:", requestData); // Debugging log
+  
+      try {
+        const externalResponse = await fetch("https://www.ecoshiftcorp.com.ph/data.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
+        });
+  
+        const externalResult = await externalResponse.json();
+        console.log("External API Response:", externalResult);
+      } catch (externalError) {
+        console.error("External API Error:", externalError);
       }
-      
   
       // Show success toast and refresh posts
       toast.success(editPost ? "Account updated successfully" : "Account added successfully", {
