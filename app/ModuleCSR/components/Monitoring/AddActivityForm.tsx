@@ -71,69 +71,58 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
     e.preventDefault();
   
     try {
-      const url = editPost
+      const isEditing = Boolean(editPost);
+      const url = isEditing
         ? `/api/ModuleCSR/Monitorings/EditActivity`
         : `/api/ModuleCSR/Monitorings/CreateActivity`;
-      const method = editPost ? "PUT" : "POST";
+      const method = isEditing ? "PUT" : "POST";
   
       // Prepare request body
-      const bodyData: any = {
-        UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email,
-        CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, CustomerStatus, Status, Amount, QtySold,
-        SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
-        TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription,
-        SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource,
+      const bodyData: Record<string, any> = {
+        UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName,
+        CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress,
+        Channel, WrapUp, Source, CustomerType, CustomerStatus, Status, Amount, QtySold,
+        SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate,
+        TsaAcknowledgeDate, TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries,
+        Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms,
+        PaymentDate, DeliveryDate, POStatus, POSource,
       };
   
-      // Add ID only when editing
-      if (editPost) {
+      // Include ID only if updating an existing record
+      if (isEditing) {
         bodyData.id = editPost._id;
       }
   
-      // Send main API request
+      // Send API request
       const response = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bodyData),
       });
   
       const responseData = await response.json();
-      console.log("Main API Response:", responseData);
   
       if (!response.ok) {
         throw new Error(responseData.message || "Failed to process request");
       }
   
-      // If Status is "Endorsed", send data to external API
-      if (Status === "Endorsed") {
-        const requestData = {
-          SalesAgent, SalesManager, CompanyName, CustomerName, ContactNumber, Email, CityAddress, Status,
-          TicketReferenceNumber, Amount, QtySold, WrapUp, Inquiries,
-        };
-      
-        console.log("Sending data to API:", requestData); // Debugging log
-      
-        try {
-          const externalResponse = await fetch("http://taskflow-phdevtechsolutions.x10.mx/data.php", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestData),
-          });
-      
-          const externalResult = await externalResponse.json();
-          console.log("External API Response:", externalResult);
-        } catch (externalError) {
-          console.error("External API Error:", externalError);
-        }
+      console.log("API Response:", responseData);
+  
+      // Forward data to external URL
+      const forwardResponse = await fetch("http://taskflow-phdevtechsolutions.x10.mx/data.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ SalesManager, SalesAgent }),
+      });
+  
+      if (!forwardResponse.ok) {
+        console.warn("Failed to forward data");
+      } else {
+        console.log("Data forwarded successfully");
       }
-      
   
       // Show success toast and refresh posts
-      toast.success(editPost ? "Account updated successfully" : "Account added successfully", {
+      toast.success("Account added successfully", {
         autoClose: 1000,
         onClose: () => {
           onCancel();
@@ -143,12 +132,13 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
   
     } catch (error) {
       console.error("Error:", error);
-      toast.error(editPost ? "Failed to update account" : "Failed to add account", {
+      toast.error("Failed to add account", {
         autoClose: 1000,
       });
     }
-  };  
-
+  };
+  
+  
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const userId = params.get("id");
