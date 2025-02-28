@@ -134,7 +134,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
       }
   
       // Forward SalesManager & SalesAgent to data.php
-      const dataResponse = await fetch("https://buildchemsolutions.com/data.php", {
+      const dataResponse = await fetch("https://ecoshiftcorp.com.ph/data.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
