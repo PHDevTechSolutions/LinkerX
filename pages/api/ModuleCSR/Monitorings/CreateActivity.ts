@@ -52,14 +52,18 @@ async function addMonitoring({ UserId, TicketReferenceNumber, userName, Role, Re
 
 }) {
   const db = await connectToDatabase();
+  const createdAt = new Date();
   const accountsCollection = db.collection("monitoring");
   const newMonitoring = { UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
     CustomerStatus, Status, Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
     TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource, createdAt: new Date(), };
   await accountsCollection.insertOne(newMonitoring);
 
-  // Also insert into the "MonitoringRecords" collection with the same values
-  await db.collection("MonitoringRecords").insertOne(newMonitoring);
+  // Build the message for the MonitoringRecords collection
+  const message = `${userName} has been created ticket - ${TicketReferenceNumber} on ${createdAt.toLocaleString()}`;
+
+  // Insert into the "MonitoringRecords" collection including the message field
+  await db.collection("MonitoringRecords").insertOne({ ...newMonitoring, message });
 
   // Broadcast logic if needed
   if (typeof io !== "undefined" && io) {

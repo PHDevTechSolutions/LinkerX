@@ -43,7 +43,8 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
     Traffic, 
     Inquiries, 
     Department, 
-    DateClosed 
+    DateClosed,
+    TicketReferenceNumber // optional: if provided, use this; otherwise, ReferenceID will be used
   } = req.body;
 
   try {
@@ -87,12 +88,17 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
       updatedAt: new Date(),
     };
 
-    // Update the account in the "monitoring" collection
+    // Update the record in the "monitoring" collection
     await accountCollection.updateOne({ _id: new ObjectId(id) }, { $set: updatedAccount });
     
-    // Also insert the updated document into the "MonitoringRecords" collection
-    const monitoringRecordsCollection = db.collection('MonitoringRecords');
-    await monitoringRecordsCollection.insertOne(updatedAccount);
+    // Use TicketReferenceNumber if provided; otherwise, fallback to ReferenceID
+    const ticketRef = TicketReferenceNumber ? TicketReferenceNumber : ReferenceID;
+    const createdAt = new Date();
+    const message = `${userName} has been updated ticket - ${ticketRef} on ${createdAt.toLocaleString()}`;
+
+    // Insert into the "MonitoringRecords" collection including the message field
+    const monitoringRecordsCollection = db.collection("MonitoringRecords");
+    await monitoringRecordsCollection.insertOne({ ...updatedAccount, message });
 
     res.status(200).json({ success: true, message: 'Account updated successfully' });
   } catch (error) {
