@@ -58,6 +58,9 @@ async function addMonitoring({ UserId, TicketReferenceNumber, userName, Role, Re
     TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource, createdAt: new Date(), };
   await accountsCollection.insertOne(newMonitoring);
 
+  // Also insert into the "MonitoringRecords" collection with the same values
+  await db.collection("MonitoringRecords").insertOne(newMonitoring);
+
   // Broadcast logic if needed
   if (typeof io !== "undefined" && io) {
     io.emit("newMonitoring", newMonitoring);
