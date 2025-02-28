@@ -73,45 +73,59 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
     const url = editPost ? `/api/ModuleCSR/Monitorings/EditActivity` : `/api/ModuleCSR/Monitorings/CreateActivity`; // API endpoint changes based on edit or add
     const method = editPost ? "PUT" : "POST"; // HTTP method changes based on edit or add
 
-    const response = await fetch(url, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email,
-        CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, CustomerStatus, Status, Amount, QtySold,
-        SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
-        TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription,
-        SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource,
-        id: editPost ? editPost._id : undefined, // Send post ID if editing
-      }),
-    });
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email,
+          CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, CustomerStatus, Status, Amount, QtySold,
+          SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
+          TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription,
+          SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource,
+          id: editPost ? editPost._id : undefined, // Send post ID if editing
+        }),
+      });
 
-    // Forward SalesManager and SalesAgent to external API
-    const externalResponse = await fetch("http://taskflow-phdevtechsolutions.x10.mx/data.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        SalesManager,
-        SalesAgent,
-        CompanyName,
-        CustomerName,
-        ContactNumber,
-        Email,
-        CityAddress,
-        Status,
-        TicketReferenceNumber,
-        Amount,
-        QtySold,
-        WrapUp,
-        Inquiries,
-      }),
-    });
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Main API Error:", errorData);
+        throw new Error(editPost ? "Failed to update account" : "Failed to add account");
+      }
 
-    if (response.ok) {
+      // Forward SalesManager and SalesAgent to external API
+      const externalResponse = await fetch("http://taskflow-phdevtechsolutions.x10.mx/data.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          SalesManager,
+          SalesAgent,
+          CompanyName,
+          CustomerName,
+          ContactNumber,
+          Email,
+          CityAddress,
+          Status,
+          TicketReferenceNumber,
+          Amount,
+          QtySold,
+          WrapUp,
+          Inquiries,
+        }),
+      });
+
+      const externalData = await externalResponse.json(); // Parse JSON response
+
+      if (!externalResponse.ok || !externalData.success) {
+        console.error("Failed to forward SalesManager and SalesAgent:", externalData.message || "Unknown error");
+      } else {
+        console.log("External API response:", externalData.message);
+      }
+
       toast.success(editPost ? "Account updated successfully" : "Account added successfully", {
         autoClose: 1000,
         onClose: () => {
@@ -119,16 +133,15 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
           refreshPosts(); // Refresh accounts after successful submission
         }
       });
-    } else {
+
+    } catch (error) {
+      console.error("Error submitting form:", error);
       toast.error(editPost ? "Failed to update account" : "Failed to add account", {
         autoClose: 1000
       });
     }
-
-    if (!externalResponse.ok) {
-      console.error("Failed to forward SalesManager and SalesAgent.");
-    }
   };
+
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
