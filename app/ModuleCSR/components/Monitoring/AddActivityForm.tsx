@@ -149,6 +149,8 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
           Email,
           CityAddress,
           Status,
+          WrapUp,
+          Inquiries,
         }),
       });
   
