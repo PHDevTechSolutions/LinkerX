@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/MongoDB";
 import bcrypt from "bcrypt";
 
-async function AddUser({ ReferenceID, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Manager, TSM,
+async function AddUser({ ReferenceID, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Manager, TSM, Status,
 }: {
   ReferenceID: string;
   UserId: string;
@@ -17,6 +17,7 @@ async function AddUser({ ReferenceID, UserId, Firstname, Lastname, Email, userNa
   Company: string;
   Manager: string;
   TSM: string;
+  Status: string;
 }) {
   const db = await connectToDatabase();
   const userCollection = db.collection("users");
@@ -46,6 +47,7 @@ async function AddUser({ ReferenceID, UserId, Firstname, Lastname, Email, userNa
     Company,
     Manager,
     TSM,
+    Status,
     createdAt: new Date(),
   };
 
@@ -65,11 +67,11 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const { ReferenceID, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Manager, TSM } =
+    const { ReferenceID, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Manager, TSM, Status } =
       req.body;
 
     // Validate required fields
-    if (!ReferenceID || !Firstname || !Lastname || !Email || !userName || !Password || !Role || !Department || !Location || !Company || !Manager || !TSM) {
+    if (!ReferenceID || !Firstname || !Lastname || !Email || !userName || !Password || !Role || !Department || !Location || !Company || !Manager || !TSM || !Status) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -90,7 +92,8 @@ export default async function handler(
         Location,
         Company,
         Manager,
-        TSM
+        TSM,
+        Status,
       });
       res.status(201).json(result);
     } catch (error: any) {

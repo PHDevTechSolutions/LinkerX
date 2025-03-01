@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import io from "socket.io-client";
 import moment from "moment";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
-
-const socket = io("http://localhost:3000");
 
 interface Post {
   _id: string;

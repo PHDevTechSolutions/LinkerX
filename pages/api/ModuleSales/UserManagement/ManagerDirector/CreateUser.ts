@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/MongoDB";
 import bcrypt from "bcrypt";
 
-async function AddUser({ ReferenceID, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company,
+async function AddUser({ ReferenceID, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Status,
 }: {
   ReferenceID: string;
   UserId: string;
@@ -15,6 +15,7 @@ async function AddUser({ ReferenceID, UserId, Firstname, Lastname, Email, userNa
   Department: string;
   Location: string;
   Company: string;
+  Status: string;
 }) {
   const db = await connectToDatabase();
   const userCollection = db.collection("users");
@@ -42,6 +43,7 @@ async function AddUser({ ReferenceID, UserId, Firstname, Lastname, Email, userNa
     Department,
     Location,
     Company,
+    Status,
     createdAt: new Date(),
   };
 
@@ -61,11 +63,11 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const { ReferenceID, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company } =
+    const { ReferenceID, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Status } =
       req.body;
 
     // Validate required fields
-    if (!ReferenceID || !Firstname || !Lastname || !Email || !userName || !Password || !Role || !Department || !Location || !Company) {
+    if (!ReferenceID || !Firstname || !Lastname || !Email || !userName || !Password || !Role || !Department || !Location || !Company || !Status) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -85,6 +87,7 @@ export default async function handler(
         Department,
         Location,
         Company,
+        Status,
       });
       res.status(201).json(result);
     } catch (error: any) {

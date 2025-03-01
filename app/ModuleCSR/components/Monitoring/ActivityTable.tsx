@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import io from "socket.io-client";
 import { AiOutlineLeft, AiOutlineRight, AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import { BsThreeDotsVertical } from "react-icons/bs";
 

@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import io from "socket.io-client";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
-
-const socket = io("http://localhost:3000");
 
 interface Post {
     _id: string;
@@ -56,22 +53,6 @@ const TransactionCards: React.FC<AccountsTableProps> = ({ posts, setPosts, handl
     const totalQty = useMemo(() => {
         return filteredPosts.reduce((total, post) => total + parseFloat(post.QtySold), 0);
     }, [filteredPosts]);
-
-    useEffect(() => {
-        const newPostListener = (newPost: Post) => {
-            setPosts((prevPosts) => {
-                if (!prevPosts.some(post => post._id === newPost._id)) {
-                    return [newPost, ...prevPosts];
-                }
-                return prevPosts;
-            });
-        };
-
-        socket.on("newPost", newPostListener);
-        return () => {
-            socket.off("newPost", newPostListener);
-        };
-    }, [setPosts]);
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

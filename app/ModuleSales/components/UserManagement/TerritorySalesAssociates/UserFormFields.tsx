@@ -15,6 +15,9 @@ interface FormFieldsProps {
   Company: string; setCompany: (value: string) => void;
   Manager: string; setManager: (value: string) => void;
   TSM: string; setTSM: (value: string) => void;
+
+  Status: string; setStatus: (value: string) => void;
+
   editPost?: any;
 }
 
@@ -32,6 +35,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   Company, setCompany,
   Manager, setManager,
   TSM, setTSM,
+
+  Status, setStatus,
   editPost,
 }) => {
   const [managerOptions, setManagerOptions] = useState<{ value: string; label: string }[]>([]);
@@ -165,7 +170,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         </div>
         <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Role">Role</label>
-          <select id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
+          <select id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50" required>
             <option>Select Role</option>
             <option value="Admin">Admin</option>
             <option value="Manager">Manager</option>
@@ -177,14 +182,14 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
       <div className="flex flex-wrap -mx-4">
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Role">Department</label>
-          <select id="Department" value={Department || ""} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
+          <select id="Department" value={Department || ""} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50" required>
             <option>Select Department</option>
             <option value="Sales">Sales</option>
           </select>
         </div>
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Location">Location</label>
-          <select id="Location" value={Location || ""} onChange={(e) => setLocation(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
+          <select id="Location" value={Location || ""} onChange={(e) => setLocation(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50" required>
             <option>Select Location</option>
             <option value="PH" className="bg-green-800 hover:bg-green-900 text-white">Philippines</option>
             <option value="NCR">Metro Manila</option>
@@ -193,11 +198,22 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="CDO">Cagayan De Oro</option>
           </select>
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Company">Company</label>
-          <select id="Company" value={Company || ""} onChange={(e) => setCompany(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
+          <select id="Company" value={Company || ""} onChange={(e) => setCompany(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50" required>
             <option>Select Company</option>
             <option value="Ecoshift Corporation">Ecoshift Corporation</option>
+          </select>
+        </div>
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+          <label className="block text-xs font-bold mb-2" htmlFor="Status">Status</label>
+          <select id="Status" value={Status || ""} onChange={(e) => setStatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50">
+            <option value="">Select Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+            <option value="Resigned">Resigned</option>
+            <option value="Terminated">Terminated</option>
+            <option value="Locked">Locked</option>
           </select>
         </div>
 

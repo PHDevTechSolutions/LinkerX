@@ -12,6 +12,8 @@ interface FormFieldsProps {
   Department: string; setDepartment: (value: string) => void;
   Location: string; setLocation: (value: string) => void;
   Company: string; setCompany: (value: string) => void;
+
+  Status: string; setStatus: (value: string) => void;
   editPost?: any;
 }
 
@@ -27,6 +29,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   Department, setDepartment,
   Location, setLocation,
   Company, setCompany,
+  Status, setStatus,
+  
   editPost,
 }) => {
 
@@ -107,6 +111,24 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <select id="Company" value={Company || ""} onChange={(e) => setCompany(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
             <option>Select Company</option>
             <option value="Ecoshift Corporation">Ecoshift Corporation</option>
+          </select>
+        </div>
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+          <label className="block text-xs font-bold mb-2" htmlFor="Company">Company</label>
+          <select id="Company" value={Company || ""} onChange={(e) => setCompany(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50" required>
+            <option>Select Company</option>
+            <option value="Ecoshift Corporation">Ecoshift Corporation</option>
+          </select>
+        </div>
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+          <label className="block text-xs font-bold mb-2" htmlFor="Status">Status</label>
+          <select id="Status" value={Status || ""} onChange={(e) => setStatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50">
+            <option value="">Select Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+            <option value="Resigned">Resigned</option>
+            <option value="Terminated">Terminated</option>
+            <option value="Locked">Locked</option>
           </select>
         </div>
 

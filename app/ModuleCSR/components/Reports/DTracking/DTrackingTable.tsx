@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import io from "socket.io-client";
 import moment from "moment";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
-
-const socket = io("http://localhost:3000");
 
 interface Post {
   _id: string;
@@ -34,19 +31,6 @@ interface AccountsCardsProps {
 const DTrackingCards: React.FC<AccountsCardsProps> = ({ posts, handleEdit }) => {
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
   const [menuVisible, setMenuVisible] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    const newPostListener = (newPost: Post) => {
-      if (!posts.some((post) => post._id === newPost._id)) {
-        posts.unshift(newPost);
-      }
-    };
-
-    socket.on("newPost", newPostListener);
-    return () => {
-      socket.off("newPost", newPostListener);
-    };
-  }, [posts]);
 
   const toggleExpand = useCallback((postId: string) => {
     setExpandedCards((prev) => ({ ...prev, [postId]: !prev[postId] }));

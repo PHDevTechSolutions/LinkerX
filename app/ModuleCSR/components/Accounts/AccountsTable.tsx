@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import io from "socket.io-client";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiOutlineLeft, AiOutlineRight, AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 
-const socket = io("http://localhost:3000");
 
 interface Post {
   _id: string;
@@ -38,19 +36,6 @@ const AccountsCards: React.FC<AccountsTableProps> = ({ posts, handleEdit, handle
   useEffect(() => {
     console.log("Role in AccountsTable:", Role);
   }, [Role]);
-
-  useEffect(() => {
-    const newPostListener = (newPost: Post) => {
-      if (!updatedPosts.some((post) => post._id === newPost._id)) {
-        posts.unshift(newPost);
-      }
-    };
-
-    socket.on("newPost", newPostListener);
-    return () => {
-      socket.off("newPost", newPostListener);
-    };
-  }, [updatedPosts, posts]);
 
   const toggleExpand = useCallback((postId: string) => {
     setExpandedCards((prev) => ({

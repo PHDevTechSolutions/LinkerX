@@ -25,6 +25,8 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
   const [Manager, setManager] = useState(editUser ? editUser.Manager: ""); 
   const [TSM, setTSM] = useState(editUser ? editUser.TSM: "");
 
+  const [Status, setStatus] = useState(editUser ? editUser.Status: "");
+
   // Ensure the correct ID is set depending on edit or create mode
   const [UserId, setUserId] = useState(editUser ? editUser._id : userDetails.id);
 
@@ -40,7 +42,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Manager, TSM, UserId,
+        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Manager, TSM, UserId, Status,
         id: editUser ? editUser._id : undefined, // Send post ID if editing
       }),
     });
@@ -78,6 +80,9 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
           Company={Company} setCompany={setCompany}
           Manager={Manager} setManager={setManager}
           TSM={TSM} setTSM={setTSM}
+
+          Status={Status} setStatus={setStatus}
+          
           editPost={editUser}
         />
         <div className="flex justify-between">
