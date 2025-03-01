@@ -7,6 +7,7 @@ import { IoIosMenu } from 'react-icons/io';
 const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [Firstname, setFirstname] = useState("");
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const router = useRouter();
 
@@ -20,6 +21,7 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
         .then(data => {
           setUserName(data.userName);
           setUserEmail(data.Email);
+          setFirstname(data.Firstname);
         })
         .catch(error => console.error("Error fetching user data:", error));
     }
@@ -46,7 +48,7 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
         <h1 className="ml-2 text-xs">Dashboard</h1>
       </div>
       <div className="flex items-center text-xs">
-        <span className="mr-4 capitalize">Hello, {userName}</span>
+        <span className="mr-4 capitalize">Hello, {Firstname}</span>
         <button className="bg-red-500 px-2 py-2 text-white rounded" onClick={() => setShowLogoutModal(true)}>
           Logout
         </button>
