@@ -26,6 +26,8 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
   const [TSM, setTSM] = useState(editUser ? editUser.TSM: "");
 
   const [Status, setStatus] = useState(editUser ? editUser.Status: "");
+  const [LoginAttempts, setLoginAttempts] = useState(editUser ? editUser.LoginAttempts: "");
+  const [LockUntil, setLockUntil] = useState(editUser ? editUser.LockUntil: "");
 
   // Ensure the correct ID is set depending on edit or create mode
   const [UserId, setUserId] = useState(editUser ? editUser._id : userDetails.id);
@@ -42,7 +44,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Manager, TSM, UserId, Status,
+        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Manager, TSM, UserId, Status, LoginAttempts, LockUntil,
         id: editUser ? editUser._id : undefined, // Send post ID if editing
       }),
     });
@@ -82,6 +84,8 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
           TSM={TSM} setTSM={setTSM}
 
           Status={Status} setStatus={setStatus}
+          LoginAttempts={LoginAttempts} setLoginAttempts={setLoginAttempts}
+          LockUntil={LockUntil} setLockUntil={setLockUntil}
           
           editPost={editUser}
         />

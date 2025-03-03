@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/MongoDB";
 import bcrypt from "bcrypt";
 
-async function AddUser({ ReferenceID, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Status,
+async function AddUser({ ReferenceID, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Status, LoginAttempts, LockUntil,
 }: {
   ReferenceID: string;
   UserId: string;
@@ -16,6 +16,8 @@ async function AddUser({ ReferenceID, UserId, Firstname, Lastname, Email, userNa
   Location: string;
   Company: string;
   Status: string;
+  LoginAttempts: string;
+  LockUntil: string;
 }) {
   const db = await connectToDatabase();
   const userCollection = db.collection("users");
@@ -44,6 +46,8 @@ async function AddUser({ ReferenceID, UserId, Firstname, Lastname, Email, userNa
     Location,
     Company,
     Status,
+    LoginAttempts,
+    LockUntil,
     createdAt: new Date(),
   };
 
@@ -63,11 +67,11 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const { ReferenceID, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Status } =
+    const { ReferenceID, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Status, LoginAttempts, LockUntil } =
       req.body;
 
     // Validate required fields
-    if (!ReferenceID || !Firstname || !Lastname || !Email || !userName || !Password || !Role || !Department || !Location || !Company || !Status) {
+    if (!ReferenceID || !Firstname || !Lastname || !Email || !userName || !Password || !Role || !Department || !Location || !Company || !Status || !LoginAttempts || !LockUntil) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -88,6 +92,8 @@ export default async function handler(
         Location,
         Company,
         Status,
+        LoginAttempts,
+        LockUntil,
       });
       res.status(201).json(result);
     } catch (error: any) {

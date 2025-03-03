@@ -23,7 +23,9 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
   const [Location, setLocation] = useState(editUser ? editUser.Location: "");
   const [Company, setCompany] = useState(editUser ? editUser.Company : "");
 
-  const [Status, setStatus] = useState(editUser ? editUser.Status : "");
+  const [Status, setStatus] = useState(editUser ? editUser.Status: "");
+  const [LoginAttempts, setLoginAttempts] = useState(editUser ? editUser.LoginAttempts: "");
+  const [LockUntil, setLockUntil] = useState(editUser ? editUser.LockUntil: "");
 
   // Ensure the correct ID is set depending on edit or create mode
   const [UserId, setUserId] = useState(editUser ? editUser._id : userDetails.id);
@@ -40,7 +42,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, UserId, Status,
+        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, UserId, Status, LoginAttempts, LockUntil,
         id: editUser ? editUser._id : undefined, // Send post ID if editing
       }),
     });
@@ -78,6 +80,8 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
           Company={Company} setCompany={setCompany}
 
           Status={Status} setStatus={setStatus}
+          LoginAttempts={LoginAttempts} setLoginAttempts={setLoginAttempts}
+          LockUntil={LockUntil} setLockUntil={setLockUntil}
           editPost={editUser}
         />
         <div className="flex justify-between">

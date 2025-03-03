@@ -155,9 +155,9 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     const [isEditing, setIsEditing] = useState(false);
 
     const generateTicketReferenceNumber = () => {
-        const randomNumber = Math.floor(Math.random() * 1000); // Generates a random number between 0 and 999
-        return `CSR-Ticket-${randomNumber.toString().padStart(10, '0')}`;
-    };
+        const randomNumber = Math.floor(100000000 + Math.random() * 1000000000); // Ensures a 9-digit number
+        return `CSR-TICKET-${randomNumber}`;
+    };    
 
     useEffect(() => {
         if (editPost) {
@@ -173,7 +173,6 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
         console.log("ReferenceID on render:", ReferenceID);
     }, [ReferenceID]);
     
-
     return (
         <>
             <div className="flex flex-wrap -mx-4">

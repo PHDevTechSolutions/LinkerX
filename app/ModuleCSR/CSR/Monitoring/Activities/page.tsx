@@ -158,7 +158,6 @@ const ActivityPage: React.FC = () => {
         return false; // Default case: if none of the roles match, return false
     });
     
-
     // Pagination logic
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;

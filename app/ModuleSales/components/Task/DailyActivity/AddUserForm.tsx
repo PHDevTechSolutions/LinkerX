@@ -63,7 +63,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       setprojectname(editUser.projectname || "");
       setprojectcategory(editUser.projectcategory || "");
       setprojecttype(editUser.projecttype || "");
-      setsource(editUser.projectsource || "");
+      setsource(editUser.source || "");
       settypeactivity(editUser.typeactivity || "");
 
       setcallback(editUser.callback || "");

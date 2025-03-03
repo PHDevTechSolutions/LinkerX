@@ -10,7 +10,7 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
     return;
   }
 
-  const { id, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Manager, TSM, Status } = req.body;
+  const { id, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Manager, TSM, Status, LoginAttempts, LockUntil } = req.body;
 
   try {
     const db = await connectToDatabase();
@@ -18,7 +18,7 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
 
     // Prepare updated fields
     const updatedUser: any = {
-      UserId, Firstname, Lastname, Email, userName, Role, Department, Location, Company, Manager, TSM, Status, updatedAt: new Date(),
+      UserId, Firstname, Lastname, Email, userName, Role, Department, Location, Company, Manager, TSM, Status, LoginAttempts, LockUntil, updatedAt: new Date(),
     };
 
     // Hash the password only if it is provided and not empty

@@ -398,8 +398,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     <label className="block text-xs font-bold mb-2">Source</label>
                                     <select value={source} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                         <option value="">Select Category</option>
-                                        <option value="B2B">Existing</option>
-                                        <option value="B2C">Referral</option>
+                                        <option value="Existing">Existing</option>
+                                        <option value="Referral">Referral</option>
                                     </select>
                                 </div>
                             </div>

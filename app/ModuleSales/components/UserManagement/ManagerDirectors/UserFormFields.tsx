@@ -14,6 +14,8 @@ interface FormFieldsProps {
   Company: string; setCompany: (value: string) => void;
 
   Status: string; setStatus: (value: string) => void;
+  LoginAttempts: string; setLoginAttempts: (value: string) => void;
+  LockUntil: string; setLockUntil: (value: string) => void;
   editPost?: any;
 }
 
@@ -30,6 +32,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   Location, setLocation,
   Company, setCompany,
   Status, setStatus,
+  LoginAttempts, setLoginAttempts,
+  LockUntil, setLockUntil,
   
   editPost,
 }) => {
@@ -76,7 +80,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <label className="block text-xs font-bold mb-2" htmlFor="Password">Password</label>
           <input type="password" id="Password" value={Password} onChange={(e) => setPassword(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Role">Role</label>
           <select id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
             <option>Select Role</option>
@@ -86,8 +90,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="Territory Sales Associate">Territory Sales Associate</option>
           </select>
         </div>
-        </div>
-        <div className="flex flex-wrap -mx-4">
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Role">Department</label>
           <select id="Department" value={Department || ""} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
@@ -95,6 +97,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="Sales">Sales</option>
           </select>
         </div>
+        </div>
+        <div className="flex flex-wrap -mx-4">
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Location">Location</label>
           <select id="Location" value={Location || ""} onChange={(e) => setLocation(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
@@ -106,31 +110,53 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="CDO">Cagayan De Oro</option>
           </select>
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Company">Company</label>
           <select id="Company" value={Company || ""} onChange={(e) => setCompany(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
             <option>Select Company</option>
             <option value="Ecoshift Corporation">Ecoshift Corporation</option>
           </select>
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-          <label className="block text-xs font-bold mb-2" htmlFor="Company">Company</label>
-          <select id="Company" value={Company || ""} onChange={(e) => setCompany(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50" required>
-            <option>Select Company</option>
-            <option value="Ecoshift Corporation">Ecoshift Corporation</option>
-          </select>
-        </div>
-        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+        <div className="w-full sm:w-1/2 md:w-1/6 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Status">Status</label>
-          <select id="Status" value={Status || ""} onChange={(e) => setStatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50">
+          <select
+            id="Status"
+            value={Status || ""}
+            onChange={(e) => {
+              const newStatus = e.target.value;
+              setStatus(newStatus);
+
+              if (newStatus === "Active") {
+                setLoginAttempts("0"); // Convert number to string
+                setLockUntil("0"); // Convert number to string
+              }
+            }}
+            className="w-full px-3 py-2 border rounded text-xs bg-gray-50"
+          >
             <option value="">Select Status</option>
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
             <option value="Resigned">Resigned</option>
             <option value="Terminated">Terminated</option>
-            <option value="Locked">Locked</option>
+            <option value="Locked" disabled={["Active", "Inactive", "Resigned", "Terminated"].includes(Status)}>
+              Locked
+            </option>
           </select>
         </div>
+
+        {Status === "Locked" && (
+          <>
+            <div className="w-full sm:w-1/2 md:w-1/6 px-4 mb-4">
+              <label className="block text-xs font-bold mb-2" htmlFor="LoginAttempts">Login Attempts</label>
+              <input type="text" id="LoginAttempts" value={LoginAttempts} onChange={(e) => setLoginAttempts(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+            </div>
+
+            <div className="w-full sm:w-1/2 md:w-1/6 px-4 mb-4">
+              <label className="block text-xs font-bold mb-2" htmlFor="LockUntil">Lock Until</label>
+              <input type="text" id="LockUntil" value={LockUntil} onChange={(e) => setLockUntil(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+            </div>
+          </>
+        )}
 
       </div>
     </>
