@@ -1,139 +1,90 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-// Ensure DATABASE_URL is set
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
     throw new Error("DATABASE_URL is not set in the environment variables.");
 }
 
-// Create a reusable Neon database connection function
 const sql = neon(databaseUrl);
 
 /**
- * Updates user activity details in the database.
- * @param id - The ID of the activity to update.
- * @param data - The updated fields.
+ * Updates an existing user in the database and inserts progress.
+ * @param userDetails - The updated details of the user.
  * @returns Success or error response.
  */
-async function updateUserActivity(id: string, data: any) {
+async function updateUser(userDetails: any) {
     try {
-        if (!id) {
-            throw new Error("Activity ID is required for updating.");
-        }
 
         const {
-            referenceid,
-            manager,
-            tsm,
-            companyname,
-            contactperson,
-            contactnumber,
-            emailaddress,
-            typeclient,
-            address,
-            area,
-            projectname,
-            projectcategory,
-            projecttype,
-            source,
-            typeactivity,
-            callback,
-            callstatus,
-            typecall,
-            remarks,
-            quotationnumber,
-            quotationamount,
-            sonumber,
-            soamount,
-            startdate,
-            enddate,
-            activitystatus,
-            activitynumber,
-        } = data;
+            id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient,
+            address, area, projectname, projectcategory, projecttype, source, startdate, enddate, activitynumber,
+            typeactivity, activitystatus, remarks, callback, typecall, quotationnumber, quotationamount,
+            sonumber, soamount, callstatus
+        } = userDetails;
 
-        // Prepare dynamic query
-        const updateFields = [
-            ["referenceid", referenceid],
-            ["manager", manager],
-            ["tsm", tsm],
-            ["companyname", companyname],
-            ["contactperson", contactperson],
-            ["contactnumber", contactnumber],
-            ["emailaddress", emailaddress],
-            ["typeclient", typeclient],
-            ["address", address],
-            ["area", area],
-            ["projectname", projectname],
-            ["projectcategory", projectcategory],
-            ["projecttype", projecttype],
-            ["source", source],
-            ["typeactivity", typeactivity],
-            ["callback", callback || null],
-            ["callstatus", callstatus || null],
-            ["typecall", typecall || null],
-            ["remarks", remarks || null],
-            ["quotationnumber", quotationnumber || null],
-            ["quotationamount", quotationamount || null],
-            ["sonumber", sonumber || null],
-            ["soamount", soamount || null],
-            ["startdate", startdate || null],
-            ["enddate", enddate || null],
-            ["activitystatus", activitystatus || null],
-            ["activitynumber", activitynumber || null],
-            ["date_updated", new Date()], // Timestamp for update
-        ]
-            .filter(([_, value]) => value !== undefined) // Remove fields that are not provided
-            .map(([key, value], index) => `${key} = $${index + 2}`) // Generate dynamic key-value pairs
-            .join(", ");
-
-        if (!updateFields) {
-            throw new Error("No valid fields provided for update.");
-        }
-
-        const values = [id, ...updateFields.split(", ").map((field) => data[field.split(" = ")[0]])];
-
-        const query = `
+        // Update the activity table
+        const updateResult = await sql`
             UPDATE activity
-            SET ${updateFields}
-            WHERE id = $1
+            SET referenceid = ${referenceid}, manager = ${manager}, tsm = ${tsm}, companyname = ${companyname}, 
+            contactperson = ${contactperson}, contactnumber = ${contactnumber}, emailaddress = ${emailaddress}, 
+            typeclient = ${typeclient}, address = ${address}, area = ${area}, projectname = ${projectname}, 
+            projectcategory = ${projectcategory}, projecttype = ${projecttype}, source = ${source}, 
+            activitystatus = ${activitystatus}, date_updated = CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
+            WHERE id = ${id}
             RETURNING *;
         `;
 
-        // Execute the update query
-        const result = await sql(query, values);
-
-        if (result.length === 0) {
-            return { success: false, error: "Activity not found or no changes made." };
+        if (updateResult.length === 0) {
+            return { success: false, error: "User not found or already updated." };
         }
 
-        return { success: true, data: result };
+        // Insert all fields into the progress table
+        await sql`
+            INSERT INTO progress (
+                referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient,
+                address, area, projectname, projectcategory, projecttype, source, startdate, enddate, activitynumber,
+                typeactivity, activitystatus, remarks, callback, typecall, quotationnumber, quotationamount,
+                sonumber, soamount, callstatus, date_created
+            ) VALUES (
+                ${referenceid}, ${manager}, ${tsm}, ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient},
+                ${address}, ${area}, ${projectname}, ${projectcategory}, ${projecttype}, ${source}, ${startdate}, ${enddate}, ${activitynumber},
+                ${typeactivity}, ${activitystatus}, ${remarks}, ${callback}, ${typecall}, ${quotationnumber}, ${quotationamount},
+                ${sonumber}, ${soamount}, ${callstatus}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
+            );
+        `;
+
+        return { success: true, data: updateResult };
     } catch (error: any) {
-        console.error("Error updating activity:", error);
-        return { success: false, error: error.message || "Failed to update activity." };
+        console.error("Error updating user:", error);
+        return { success: false, error: error.message || "Failed to update user." };
     }
 }
 
-// Handle PUT request to update activity
+/**
+ * Handles PUT requests for updating users.
+ * @param req - The incoming request.
+ * @returns Success or error response.
+ */
 export async function PUT(req: Request) {
     try {
         const body = await req.json();
-        const { id, ...updateData } = body;
+        const { id } = body;
 
+        // Ensure the ID is provided for the update operation
         if (!id) {
             return NextResponse.json(
-                { success: false, error: "Missing activity ID." },
+                { success: false, error: "User ID is required for update." },
                 { status: 400 }
             );
         }
 
-        const result = await updateUserActivity(id, updateData);
-
+        const result = await updateUser(body);
         return NextResponse.json(result);
     } catch (error: any) {
-        console.error("Error in PUT /api/ModuleSales/Task/DailyActivity/EditUser:", error);
+        console.error("Error in PUT /api/ModuleSales/Task/DailyActivity/UpdateUser:", error);
         return NextResponse.json(
-            { success: false, error: error.message || "Internal Server Error" },
+            { success: false, error: error.message || "Internal server error" },
             { status: 500 }
         );
     }

@@ -22,51 +22,72 @@ async function addUser(data: any) {
         } = data;
 
         // Validate required fields
-        if (!companyname || !typeclient || !typeactivity) {
-            throw new Error("Company Name, Type of Client, and Type of Activity are required.");
+        if (!companyname || !typeclient) {
+            throw new Error("Company Name and Type of Client are required.");
         }
 
-        // Define columns and values for insertion
-        const columns = [
+        // Fields for activity table
+        const activityColumns = [
             "referenceid", "manager", "tsm", "companyname", "contactperson",
             "contactnumber", "emailaddress", "typeclient", "address", "area",
-            "projectname", "projectcategory", "projecttype", "source", "typeactivity",
-            "callback", "callstatus", "typecall", "remarks", "quotationnumber",
-            "quotationamount", "sonumber", "soamount", "startdate", "enddate",
-            "activitystatus", "activitynumber", "date_created"
+            "projectname", "projectcategory", "projecttype", "source", 
+            "activitystatus", "activitynumber"
         ];
-        
-        const values = [
+
+        const activityValues = [
             referenceid, manager, tsm, companyname, contactperson,
             contactnumber, emailaddress, typeclient, address, area,
-            projectname, projectcategory, projecttype, source, typeactivity,
-            callback || null, callstatus || null, typecall || null, remarks || null, quotationnumber || null,
-            quotationamount || null, sonumber || null, soamount || null, startdate || null, enddate || null,
-            activitystatus || null, activitynumber || null,
-            new Date()
+            projectname, projectcategory, projecttype, source, 
+            activitystatus || null, activitynumber || null
         ];
 
-        // Construct query dynamically
-        const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");
-        
-        const query = `
-            INSERT INTO activity (${columns.join(", ")}) 
-            VALUES (${placeholders}) 
+        // Construct and execute the query for activity table
+        const activityPlaceholders = activityValues.map((_, index) => `$${index + 1}`).join(", ");
+        const activityQuery = `
+            INSERT INTO activity (${activityColumns.join(", ")}, date_created) 
+            VALUES (${activityPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') 
             RETURNING *;
         `;
 
-        // Execute query and get the inserted activity
-        const activityResult = await sql(query, values);
+        const activityResult = await sql(activityQuery, activityValues);
         const insertedActivity = activityResult[0];
 
-        // Insert the same data into the progress table
+        if (!insertedActivity) {
+            throw new Error("Failed to insert into activity table.");
+        }
+
+        // Use the returned activitynumber from the inserted activity
+        const newActivityNumber = insertedActivity.activitynumber;
+
+        // Fields for progress table
+        const progressColumns = [
+            ...activityColumns, "typeactivity", "callback", "callstatus", "typecall", 
+            "remarks", "quotationnumber", "quotationamount", "sonumber", "soamount", 
+            "startdate", "enddate"
+        ];
+
+        const progressValues = [
+            ...activityValues, typeactivity, callback || null, callstatus || null, typecall || null, 
+            remarks || null, quotationnumber || null, quotationamount || null, sonumber || null, 
+            soamount || null, startdate || null, enddate || null
+        ];
+
+        // Update activitynumber in progressValues to use the returned one
+        progressValues[progressColumns.indexOf("activitynumber")] = newActivityNumber;
+
+        // Construct and execute the query for progress table
+        const progressPlaceholders = progressValues.map((_, index) => `$${index + 1}`).join(", ");
         const progressQuery = `
-            INSERT INTO progress (${columns.join(", ")}) 
-            VALUES (${placeholders}) 
+            INSERT INTO progress (${progressColumns.join(", ")}, date_created) 
+            VALUES (${progressPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') 
             RETURNING *;
         `;
 
-        const progressResult = await sql(progressQuery, values);
+        const progressResult = await sql(progressQuery, progressValues);
+
+        if (!progressResult[0]) {
+            throw new Error("Failed to insert into progress table.");
+        }
 
         return { success: true, activity: insertedActivity, progress: progressResult[0] };
     } catch (error: any) {

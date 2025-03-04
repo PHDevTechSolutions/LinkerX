@@ -255,7 +255,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                 ${user.activitystatus === "Cold" ? "bg-blue-700" :
                                                     user.activitystatus === "Warm" ? "bg-yellow-700" :
                                                         user.activitystatus === "Hot" ? "bg-red-700" :
-                                                            user.activitystatus === "Delivered" ? "bg-green-700" :
+                                                            user.activitystatus === "Done" ? "bg-green-700" :
                                                                 user.activitystatus === "Loss" ? "bg-gray-500" :
                                                                     user.activitystatus === "Cancelled" ? "bg-red-800" :
                                                                         "bg-gray-500"

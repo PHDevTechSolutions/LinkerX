@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef  } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Select from 'react-select';
 import { CiCirclePlus, CiCircleMinus, CiSquarePlus, CiSquareMinus } from "react-icons/ci";
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
@@ -19,22 +19,19 @@ interface FormFieldsProps {
     projecttype: string; setprojecttype: (value: string) => void;
     source: string; setsource: (value: string) => void;
     typeactivity: string; settypeactivity: (value: string) => void;
-    // Inbound & Outbound Fields
-    callback: string; setcallback: (value: string) => void;
-    callstatus: string; setcallstatus: (value: string) => void;
-    typecall: string; settypecall: (value: string) => void;
     remarks: string; setremarks: (value: string) => void;
+    callback: string; setcallback: (value: string) => void;
+    typecall: string; settypecall: (value: string) => void;
     quotationnumber: string; setquotationnumber: (value: string) => void;
     quotationamount: string; setquotationamount: (value: string) => void;
     sonumber: string; setsonumber: (value: string) => void;
     soamount: string; setsoamount: (value: string) => void;
+    callstatus: string; setcallstatus: (value: string) => void;
 
     startdate: string; setstartdate: (value: string) => void;
     enddate: string; setenddate: (value: string) => void;
-
-    activitystatus: string; setactivitystatus: (value: string) => void;
     activitynumber: string; setactivitynumber: (value: string) => void;
-
+    activitystatus: string; setactivitystatus: (value: string) => void;
     editPost?: any;
 }
 
@@ -54,20 +51,19 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     projecttype, setprojecttype,
     source, setsource,
     typeactivity, settypeactivity,
-    // Inbound & Outbound Fields
-    callback, setcallback,
-    callstatus, setcallstatus,
-    typecall, settypecall,
     remarks, setremarks,
+    callback, setcallback,
+    typecall, settypecall,
     quotationnumber, setquotationnumber,
     quotationamount, setquotationamount,
     sonumber, setsonumber,
     soamount, setsoamount,
+    callstatus, setcallstatus,
+
     startdate, setstartdate,
     enddate, setenddate,
-    activitystatus, setactivitystatus,
     activitynumber, setactivitynumber,
-
+    activitystatus, setactivitystatus,
     editPost,
 }) => {
     const [companies, setCompanies] = useState<any[]>([]);
@@ -75,19 +71,44 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const [contactNumbers, setContactNumbers] = useState<string[]>([]);
     const [emailAddresses, setEmailAddresses] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
-    const [isAccordionOpen, setIsAccordionOpen] = useState(true);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
     const [showFields, setShowFields] = useState(false);
     const [showOutboundFields, setShowOutboundFields] = useState(false);
     const [showInboundFields, setShowInboundFields] = useState(false);
-    const [isSubmenuPreparationOpen, setIsSubmenuPreparationOpen] = useState(false);
     const [showQuotationField, setShowQuotationField] = useState(false);
     const [showSOField, setShowSOField] = useState(false);
     const dropdownRef = useRef<HTMLUListElement>(null);
-
     const isQuotationEmpty = !quotationnumber || !quotationamount;
-    const [datedin, setDatedin] = useState("");
+
+    const generateActivityNumber = () => {
+        if (editPost?.activitynumber) return; // Keep existing number in Edit Mode
+        if (!companyname || !referenceid) return;
+
+        const firstLetter = companyname.charAt(0).toUpperCase();
+        const firstTwoRef = referenceid.substring(0, 2).toUpperCase();
+
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+        }).replace("/", "");
+
+        const randomNumber = String(Math.floor(100000 + Math.random() * 900000)).slice(0, 6);
+
+        const generatedNumber = `${firstLetter}-${firstTwoRef}-${formattedDate}-${randomNumber}`;
+        setactivitynumber(generatedNumber);
+    };
+
+    useEffect(() => {
+        if (!editPost) {
+            generateActivityNumber();
+        } else {
+            setactivitynumber(editPost.activitynumber);
+        }
+    }, [editPost, companyname, referenceid]);
+
+
 
     // Fetch companies based on referenceid
     useEffect(() => {
@@ -239,61 +260,39 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
     const getFormattedTimestamp = () => {
         const now = new Date();
-    
+
         // Convert to YYYY-MM-DD HH:mm:ss format (MySQL TIMESTAMP)
         const formattedTimestamp = now
-          .toLocaleString("en-US", { timeZone: "Asia/Manila" })
-          .replace(",", ""); // Remove comma from formatted string
-    
-        return formattedTimestamp;
-      };
-    
-      // Capture start date & time only once when the component mounts
-      useEffect(() => {
-        setstartdate(getFormattedTimestamp());
-      }, []);
-    
-      // Continuously update end date & time in real-time
-      useEffect(() => {
-        const interval = setInterval(() => {
-          setenddate(getFormattedTimestamp());
-        }, 1000);
-    
-        return () => clearInterval(interval);
-      }, []);
+            .toLocaleString("en-US", { timeZone: "Asia/Manila" })
+            .replace(",", ""); // Remove comma from formatted string
 
-      useEffect(() => {
-        generateActivityNumber();
-      }, [companyname, referenceid]);
-    
-      const generateActivityNumber = () => {
-        if (!companyname || !referenceid) return;
-    
-        const firstLetter = companyname.charAt(0).toUpperCase();
-        const firstTwoRef = referenceid.substring(0, 2).toUpperCase();
-    
-        const now = new Date();
-        const formattedDate = now.toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "2-digit",
-        }).replace("/", ""); // Converts DD/MM to DDMM
-    
-        const randomNumber = String(Math.floor(100000 + Math.random() * 900000)).slice(0, 6); // 6-digit random number
-    
-        const generatedNumber = `${firstLetter}-${firstTwoRef}-${formattedDate}-${randomNumber}`;
-        setactivitynumber(generatedNumber);
-      };
+        return formattedTimestamp;
+    };
+
+    // Capture start date & time only once when the component mounts
+    useEffect(() => {
+        setstartdate(getFormattedTimestamp());
+    }, []);
+
+    // Continuously update end date & time in real-time
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setenddate(getFormattedTimestamp());
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <>
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <input type="hidden" id="activitynumber" value={activitynumber} onChange={(e) => setactivitynumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                    <input type="hidden" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                    <input type="hidden" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                    <input type="hidden" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                    <input type="hidden" value={startdate} onChange={(e) => setstartdate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
-                    <input type="hidden" value={enddate} onChange={(e) => setenddate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required/>
+                    <input type="text" id="activitynumber" value={activitynumber ?? ""} onChange={() => {}} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly={!!editPost} />
+                    <input type="hidden" id="referenceid" value={referenceid ?? ""} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                    <input type="hidden" id="manager" value={manager ?? ""} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                    <input type="hidden" id="tsm" value={tsm ?? ""} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                    <input type="hidden" value={startdate ?? ""} onChange={(e) => setstartdate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
+                    <input type="hidden" value={enddate ?? ""} onChange={(e) => setenddate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
                 </div>
             </div>
             <div className="flex flex-wrap -mx-4">
@@ -306,7 +305,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     <label className="block text-xs font-bold mb-2">Contact Person</label>
                     {contactPersons.map((person, index) => (
                         <div key={index} className="flex items-center gap-2 mb-2">
-                            <input type="text" value={person} onChange={(e) => handleContactPersonChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                            <input type="text" value={person ?? ""} onChange={(e) => handleContactPersonChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                             {index > 0 && (
                                 <button type="button" onClick={() => removeContactPerson(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600" >
                                     <CiCircleMinus size={16} />
@@ -320,7 +319,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     <label className="block text-xs font-bold mb-2">Contact Number</label>
                     {contactNumbers.map((number, index) => (
                         <div key={index} className="flex items-center gap-2 mb-2">
-                            <input type="text" value={number} onChange={(e) => handleContactNumberChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                            <input type="text" value={number ?? ""} onChange={(e) => handleContactNumberChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                             {index > 0 && (
                                 <button type="button" onClick={() => removeContactNumber(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600">
                                     <CiCircleMinus size={16} />
@@ -334,7 +333,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     <label className="block text-xs font-bold mb-2">Email Address</label>
                     {emailAddresses.map((email, index) => (
                         <div key={index} className="flex items-center gap-2 mb-2">
-                            <input type="text" value={email} onChange={(e) => handleEmailAddressChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs" readOnly />
+                            <input type="text" value={email ?? ""} onChange={(e) => handleEmailAddressChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                             {index > 0 && (
                                 <button type="button" onClick={() => removeEmailAddress(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600">
                                     <CiCircleMinus size={16} />
@@ -346,17 +345,17 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Type Client</label>
-                    <input type="text" id="typeclient" value={typeclient} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                    <input type="text" id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                 </div>
 
                 <div className="w-full sm:w-1/2 md:w-1/8 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Address</label>
-                    <input type="text" id="address" value={address} onChange={(e) => setaddress(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                    <input type="text" id="address" value={address ?? ""} onChange={(e) => setaddress(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                 </div>
 
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Area</label>
-                    <input type="text" id="area" value={area} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                    <input type="text" id="area" value={area ?? ""} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                 </div>
             </div>
             <div>
@@ -376,19 +375,20 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             <div className="flex flex-wrap -mx-4 rounded">
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Project Name ( Optional )</label>
-                                    <input type="text" id="projectname" value={projectname} onChange={(e) => setprojectname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                                    <input type="text" id="projectname" value={projectname ?? ""} onChange={(e) => setprojectname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                                 </div>
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Project Category</label>
-                                    <select value={projectcategory} onChange={(e) => setprojectcategory(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+                                    <select value={projectcategory ?? ""} onChange={(e) => setprojectcategory(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                         <option value="">Select Category</option>
                                         <option value="Bollard Light">Bollard Light</option>
                                         <option value="Bulb Light">Bulb Light</option>
+                                        <option value="Canopy Light">Canopy Light</option>
                                     </select>
                                 </div>
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Type</label>
-                                    <select value={projecttype} onChange={(e) => setprojecttype(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+                                    <select value={projecttype ?? ""} onChange={(e) => setprojecttype(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                         <option value="">Select Category</option>
                                         <option value="B2B">B2B</option>
                                         <option value="B2C">B2C</option>
@@ -396,7 +396,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 </div>
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Source</label>
-                                    <select value={source} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+                                    <select value={source ?? ""} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                         <option value="">Select Category</option>
                                         <option value="Existing">Existing</option>
                                         <option value="Referral">Referral</option>
@@ -419,82 +419,80 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             }}
                             className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm flex justify-between items-center hover:bg-gray-100 cursor-pointer"
                         >
-                            {typeactivity}
+                            {typeactivity ?? ""}
                             <FaChevronDown className="text-gray-500 text-xs" />
                         </div>
 
                         {isDropdownOpen && (
                             <div className="absolute left-4 w-[70%] mt-1 bg-white border rounded shadow-md text-xs z-10">
-                            <ul 
-                                ref={dropdownRef} 
-                                tabIndex={0} 
-                                className="py-1 max-h-[200px] overflow-y-auto outline-none"
-                            >
-                                {[
-                                    "Account Development",
-                                    "Accounting: Accounts Receivable and Payment",
-                                    "Accounting: Billing Concern",
-                                    "Accounting: Refund Request",
-                                    "Accounting: Sales Order Concern",
-                                    "Accounting: TPC Request",
-                                    "Admin Concern: Coordination of Payment Terms Request",
-                                    "CSR Inquiries",
-                                    "Coordination of Pick-Up / Delivery to Client",
-                                    "Coordination With CS (Email Acknowledgement)",
-                                    "Marketing Concern",
-                                    "Email and Viber Checking",
-                                    "Email Blast",
-                                    "Email, SMS & Viber Replies",
-                                    "Inbound Call",
-                                    "Payment Follow-Up",
-                                    "Quotation Follow-Up",
-                                    "Logistic Concern: Shipping Cost Estimation",
-                                    "Outbound Call",
-                                    "Preparation: Bidding Preparation",
-                                    "Preparation: Preparation of Report",
-                                    "Preparation: Preparation of SPF",
-                                    "Preparation: Preparation of Quote: New Client",
-                                    "Preparation: Preparation of Quote: Existing Client",
-                                    "Preparation: Sales Order Preparation",
-                                    "Technical: Dialux Simulation Request",
-                                    "Technical: Drawing Request",
-                                    "Technical: Inquiry",
-                                    "Technical: Site Visit Request",
-                                    "Technical: TDS Request",
-                                    "Walk-In Client",
-                                    "Warehouse: Coordination to Billing",
-                                    "Warehouse: Coordination to Dispatch",
-                                    "Warehouse: Coordination to Inventory",
-                                    "Warehouse: Delivery / Helper Concern",
-                                    "Warehouse: Replacement Request / Concern",
-                                    "Warehouse: Sample Request / Concern",
-                                    "Warehouse: SO Status Follow Up",
-                                ].map((item) => (
-                                    <li 
-                                        key={item} 
-                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer" 
-                                        onClick={() => handleActivitySelection(item)}
-                                    >
-                                        {item}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        
+                                <ul
+                                    ref={dropdownRef}
+                                    tabIndex={0}
+                                    className="py-1 max-h-[200px] overflow-y-auto outline-none"
+                                >
+                                    {[
+                                        "Account Development",
+                                        "Accounting: Accounts Receivable and Payment",
+                                        "Accounting: Billing Concern",
+                                        "Accounting: Refund Request",
+                                        "Accounting: Sales Order Concern",
+                                        "Accounting: TPC Request",
+                                        "Admin Concern: Coordination of Payment Terms Request",
+                                        "CSR Inquiries",
+                                        "Coordination of Pick-Up / Delivery to Client",
+                                        "Coordination With CS (Email Acknowledgement)",
+                                        "Marketing Concern",
+                                        "Email and Viber Checking",
+                                        "Email Blast",
+                                        "Email, SMS & Viber Replies",
+                                        "Inbound Call",
+                                        "Payment Follow-Up",
+                                        "Quotation Follow-Up",
+                                        "Logistic Concern: Shipping Cost Estimation",
+                                        "Outbound Call",
+                                        "Preparation: Bidding Preparation",
+                                        "Preparation: Preparation of Report",
+                                        "Preparation: Preparation of SPF",
+                                        "Preparation: Preparation of Quote: New Client",
+                                        "Preparation: Preparation of Quote: Existing Client",
+                                        "Preparation: Sales Order Preparation",
+                                        "Technical: Dialux Simulation Request",
+                                        "Technical: Drawing Request",
+                                        "Technical: Inquiry",
+                                        "Technical: Site Visit Request",
+                                        "Technical: TDS Request",
+                                        "Walk-In Client",
+                                        "Warehouse: Coordination to Billing",
+                                        "Warehouse: Coordination to Dispatch",
+                                        "Warehouse: Coordination to Inventory",
+                                        "Warehouse: Delivery / Helper Concern",
+                                        "Warehouse: Replacement Request / Concern",
+                                        "Warehouse: Sample Request / Concern",
+                                        "Warehouse: SO Status Follow Up",
+                                    ].map((item) => (
+                                        <li
+                                            key={item}
+                                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                            onClick={() => handleActivitySelection(item)}
+                                        >
+                                            {item}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
                         )}
                     </div>
-
                     {/* Conditional Fields */}
                     {showInboundFields && (
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Callback</label>
-                                <input type="datetime-local" value={callback} onChange={(e) => setcallback(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                                <input type="datetime-local" value={callback ?? ""} onChange={(e) => setcallback(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                             </div>
-
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Type of Call</label>
-                                <select value={typecall} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                <select value={typecall ?? ""} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                     <option value="">Select Status</option>
                                     <option value="Cannot Be Reached">Cannot Be Reached</option>
                                     <option value="Follow Up Pending">Follow Up Pending</option>
@@ -507,16 +505,17 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Quotation Number</label>
-                                <input type="text" value={quotationnumber} onChange={(e) => setquotationnumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                                <input type="text" value={quotationnumber ?? ""} onChange={(e) => setquotationnumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                             </div>
+
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Quotation Amount</label>
-                                <input type="number" value={quotationamount} onChange={(e) => setquotationamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                                <input type="number" value={quotationamount ?? ""} onChange={(e) => setquotationamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                             </div>
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Type of Call</label>
-                                <select value={typecall} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                <select value={typecall ?? ""} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                     <option value="">Select Status</option>
                                     <option value="Cannot Be Reached">Cannot Be Reached</option>
                                     <option value="Follow Up Pending">Follow Up Pending</option>
@@ -529,11 +528,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Number</label>
-                                <input type="text" value={sonumber} onChange={(e) => setsonumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                                <input type="text" value={sonumber ?? ""} onChange={(e) => setsonumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                             </div>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Amount</label>
-                                <input type="text" value={soamount} onChange={(e) => setsoamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                                <input type="text" value={soamount ?? ""} onChange={(e) => setsoamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                             </div>
                         </>
                     )}
@@ -542,12 +541,12 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Callback</label>
-                                <input type="datetime-local" value={callback} onChange={(e) => setcallback(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                                <input type="datetime-local" value={callback ?? ""} onChange={(e) => setcallback(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                             </div>
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Call Status</label>
-                                <select value={callstatus} onChange={(e) => setcallstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                <select value={callstatus ?? ""} onChange={(e) => setcallstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                     <option value="">Select Status</option>
                                     <option value="Successful">Successful</option>
                                     <option value="Unsuccessful">Unsuccessful</option>
@@ -556,7 +555,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Type of Call</label>
-                                <select value={typecall} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                <select value={typecall ?? ""} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                     <option value="">Select Status</option>
                                     <option value="Cannot Be Reached">Cannot Be Reached</option>
                                     <option value="Follow Up Pending">Follow Up Pending</option>
@@ -565,26 +564,24 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         </>
                     )}
 
-                    {showFields && (
-                        <div className="w-full px-4 mb-4">
-                            <label className="block text-xs font-bold mb-2">Remarks</label>
-                            <textarea value={remarks} onChange={(e) => setremarks(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={5}></textarea>
-                        </div>
-                    )}
-                    </div>
-                    <div className="flex flex-wrap -mx-4">
-                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Status</label>
-                    <select value={activitystatus} onChange={(e) => setactivitystatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize bg-gray-100">
-                        <option value="">Select Status</option>
-                        <option value="Cold">Cold (Progress 20% to 30%) Touchbase</option>
-                        <option value="Warm" disabled={isQuotationEmpty}>Warm (Progress 50% to 60%) With Quotation</option>
-                        <option value="Hot" disabled={isQuotationEmpty}>Hot (Progress 80% to 90%) Quotation with Confirmation W/PO</option>
-                        <option value="Done" disabled={isQuotationEmpty}>Done (Progress 100%) Delivered</option>
-                        <option value="Loss">Loss</option>
-                        <option value="Cancelled">Cancelled</option>
-                    </select>
                 </div>
+                <div className="flex flex-wrap -mx-4">
+                    <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Remarks</label>
+                        <textarea value={remarks ?? ""} onChange={(e) => setremarks(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={5}></textarea>
+                    </div>
+                    <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Status</label>
+                        <select value={activitystatus || ""} onChange={(e) => setactivitystatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize bg-gray-100">
+                            <option value="">Select Status</option>
+                            <option value="Cold">Cold (Progress 20% to 30%) Touchbase</option>
+                            <option value="Warm" disabled={isQuotationEmpty}>Warm (Progress 50% to 60%) With Quotation</option>
+                            <option value="Hot" disabled={isQuotationEmpty}>Hot (Progress 80% to 90%) Quotation with Confirmation W/PO</option>
+                            <option value="Done" disabled={isQuotationEmpty}>Done (Progress 100%) Delivered</option>
+                            <option value="Loss">Loss</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </>
