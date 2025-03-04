@@ -3,6 +3,8 @@ import { format, parseISO, addDays, startOfWeek, endOfWeek, startOfMonth, endOfM
 import { CiSquareChevLeft, CiSquareChevRight, CiEdit, CiCalendar, CiMapPin, CiTrash } from "react-icons/ci";
 import { BsThreeDotsVertical, BsPlus, BsDash, BsRecycle } from "react-icons/bs";
 import { MdOutlineCalendarViewMonth, MdOutlineCalendarViewWeek, MdOutlineCalendarViewDay } from "react-icons/md";
+import { FcAssistant, FcCollaboration, FcBullish, FcPaid, FcAddressBook } from "react-icons/fc";
+
 
 const socketURL = "http://localhost:3001";
 
@@ -180,61 +182,54 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                             </h4>
                             <div>
                                 {[...pinned, ...unpinned].map(user => (
-                                    <div
-                                        key={user.id}
-                                        className={`
-                                        rounded-lg shadow-md p-4 mb-2
+                                    <div key={user.id} className={` rounded-lg shadow-md p-4 mb-2
                                         ${user.activitystatus === "Cold" ? "border-l-2 border-t-2 border-blue-700" :
-                                                user.activitystatus === "Warm" ? "border-l-2 border-t-2 border-yellow-700" :
-                                                    user.activitystatus === "Hot" ? "border-l-2 border-t-2 border-red-700" :
-                                                        user.activitystatus === "Delivered" ? "border-l-2 border-t-2 border-green-700" :
-                                                            user.activitystatus === "Loss" ? "border-l-2 border-t-2 border-gray-500" :
-                                                                user.activitystatus === "Cancelled" ? "border-l-2 border-t-2 border-red-800" : ""}
-                                        ${pinnedUsers.has(user.id) ? "bg-yellow-100" : "bg-gray-50"}
-                                    `}
-                                    >
+                                            user.activitystatus === "Warm" ? "border-l-2 border-t-2 border-yellow-700" :
+                                                user.activitystatus === "Hot" ? "border-l-2 border-t-2 border-red-700" :
+                                                    user.activitystatus === "Delivered" ? "border-l-2 border-t-2 border-green-700" :
+                                                        user.activitystatus === "Loss" ? "border-l-2 border-t-2 border-gray-500" :
+                                                            user.activitystatus === "Cancelled" ? "border-l-2 border-t-2 border-red-800" : ""}
+                                            ${pinnedUsers.has(user.id) ? "bg-yellow-100" : "bg-gray-50"}
+                                            `}>
 
-                                        {/* Card Header - Company Name with 3-dot menu */}
-                                        <div className="card-header mb-2 pb-2 flex justify-between items-center">
-                                            <h3 className="text-xs font-semibold text-gray-800 uppercase">{user.companyname}</h3>
-                                            <div className="relative">
-                                                <button onClick={() => toggleCollapse(user.id)} className="text-gray-500 hover:text-gray-700">
-                                                    {collapsedCards[user.id] ? <BsDash size={16} /> : <BsPlus size={16} />}
-                                                </button>
-                                                <button
-                                                    className="text-gray-500 hover:text-gray-700"
-                                                    onClick={() => setOpenMenu(openMenu === user.id ? null : user.id)}>
-                                                    <BsThreeDotsVertical size={16} />
-                                                </button>
-                                                {/* Dropdown Menu */}
-                                                <div
-                                                    id={`menu-${user.id}`} // Unique ID para sa bawat menu
-                                                    className={`absolute right-0 mt-2 w-32 bg-white shadow-md p-2 rounded-md text-xs ${openMenu === user.id ? 'block' : 'hidden'}`}
-                                                >
-                                                    <ul>
-                                                        <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handleEdit(user)}><CiEdit /> Edit Details</li>
-                                                        <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1"><CiCalendar />Callback</li>
-                                                        <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => toggleStatusMenu(user.id)}><BsRecycle />Change Status</li>
-                                                        {/* Status Change Menu */}
-                                                        {statusMenuVisible[user.id] && (
-                                                            <div className="absolute left-[-10rem] top-0 bg-white shadow-lg rounded-lg border w-40 z-10 mr-2 text-xs">
-                                                                {Object.keys(STATUS_COLORS).map((activitystatus) => (
-                                                                    <button key={activitystatus} onClick={() => updateStatus(user.id, activitystatus)} className="w-full flex items-center gap-2 text-left px-4 py-2 hover:bg-gray-100">
-                                                                        <span className={`w-3 h-3 rounded-full border border-black ${STATUS_COLORS[activitystatus].split(" ")[0]}`}></span>
-                                                                        {activitystatus}
-                                                                    </button>
-                                                                ))}
-                                                            </div>
-                                                        )}
-                                                        <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handlePin(user.id)}>
-                                                            <CiMapPin /> {pinnedUsers.has(user.id) ? "Unpin" : "Pin"}
-                                                        </li>
-                                                        <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handleDelete(user.id)}><CiTrash />Delete</li>
-                                                    </ul>
+                                        {/* Card Header - Company Name */}
+                                        {!["Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking"].includes(user.activitystatus) && (
+                                            <div className="card-header mb-2 pb-2 flex justify-between items-center">
+                                                <h3 className="text-xs font-semibold text-gray-800 uppercase">{user.companyname}</h3>
+                                                <div className="relative">
+                                                    <button onClick={() => toggleCollapse(user.id)} className="text-gray-500 hover:text-gray-700">
+                                                        {collapsedCards[user.id] ? <BsDash size={16} /> : <BsPlus size={16} />}
+                                                    </button>
+                                                    <button className="text-gray-500 hover:text-gray-700" onClick={() => setOpenMenu(openMenu === user.id ? null : user.id)}>
+                                                        <BsThreeDotsVertical size={16} />
+                                                    </button>
+                                                    {/* Dropdown Menu */}
+                                                    <div id={`menu-${user.id}`} className={`absolute right-0 mt-2 w-32 bg-white shadow-md p-2 rounded-md text-xs ${openMenu === user.id ? 'block' : 'hidden'}`}>
+                                                        <ul>
+                                                            <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handleEdit(user)}><CiEdit /> Edit Details</li>
+                                                            <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1"><CiCalendar />Callback</li>
+                                                            <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => toggleStatusMenu(user.id)}><BsRecycle />Change Status</li>
+
+                                                            {/* Status Change Menu */}
+                                                            {statusMenuVisible[user.id] && (
+                                                                <div className="absolute left-[-10rem] top-0 bg-white shadow-lg rounded-lg border w-40 z-10 mr-2 text-xs">
+                                                                    {Object.keys(STATUS_COLORS).map((activitystatus) => (
+                                                                        <button key={activitystatus} onClick={() => updateStatus(user.id, activitystatus)} className="w-full flex items-center gap-2 text-left px-4 py-2 hover:bg-gray-100">
+                                                                            <span className={`w-3 h-3 rounded-full border border-black ${STATUS_COLORS[activitystatus].split(" ")[0]}`}></span>
+                                                                            {activitystatus}
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                            <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handlePin(user.id)}>
+                                                                <CiMapPin /> {pinnedUsers.has(user.id) ? "Unpin" : "Pin"}
+                                                            </li>
+                                                            <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handleDelete(user.id)}><CiTrash />Delete</li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-
+                                        )}
 
                                         {/* Card Body */}
                                         {collapsedCards[user.id] && (
@@ -246,23 +241,64 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                             </div>
                                         )}
 
-                                        {/* Card Footer */}
-                                        <div className="card-footer text-xs flex justify-between items-center mt-2 border-t-2 pt-2">
-                                            <p><strong>Date Created:</strong> {format(parseISO(user.date_created), "MMM dd, yyyy - h:mm:ss a")}</p>
+                                        {/* Only show certain fields based on activitystatus */}
+                                        {["Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking"].includes(user.activitystatus) && (
+                                            <div className="mt-2 text-xs">
+                                                {/* Background and Icon Changes based on Activity Status */}
+                                                <div className={`p-2 rounded-lg text-white flex items-center gap-2
+                                                ${user.activitystatus === "Assisting other Agents Client" ? "bg-blue-500" :
+                                                        user.activitystatus === "Updating Reports" ? "bg-yellow-500" :
+                                                            user.activitystatus === "Coordination of SO to Warehouse" ? "bg-green-500" :
+                                                                user.activitystatus === "Coordination of SO to Orders" ? "bg-orange-500" :
+                                                                    user.activitystatus === "Email and Viber Checking" ? "bg-violet-500" :
+                                                                        ""}`}>
 
-                                            {/* Status Badge */}
-                                            <span className={`px-2 py-1 rounded-full text-white text-xs 
-                                                ${user.activitystatus === "Cold" ? "bg-blue-700" :
-                                                    user.activitystatus === "Warm" ? "bg-yellow-700" :
-                                                        user.activitystatus === "Hot" ? "bg-red-700" :
-                                                            user.activitystatus === "Done" ? "bg-green-700" :
-                                                                user.activitystatus === "Loss" ? "bg-gray-500" :
-                                                                    user.activitystatus === "Cancelled" ? "bg-red-800" :
-                                                                        "bg-gray-500"
-                                                }`}>
-                                                {user.activitystatus}
-                                            </span>
-                                        </div>
+                                                    {/* Icon based on activitystatus */}
+                                                    {user.activitystatus === "Assisting other Agents Client" && (
+                                                        <FcAssistant size={20} />  // Icon for assisting agents (change to the icon of your choice)
+                                                    )}
+                                                    {user.activitystatus === "Updating Reports" && (
+                                                        <FcBullish size={20} />  // Icon for updating reports (change to the icon of your choice)
+                                                    )}
+                                                    {user.activitystatus === "Coordination of SO to Warehouse" && (
+                                                        <FcCollaboration size={20} />  // Icon for coordination to warehouse (change to the icon of your choice)
+                                                    )}
+                                                    {user.activitystatus === "Coordination of SO to Orders" && (
+                                                        <FcPaid size={20} />  // Icon for coordination to warehouse (change to the icon of your choice)
+                                                    )}
+                                                    {user.activitystatus === "Email and Viber Checking" && (
+                                                        <FcAddressBook size={20} />  // Icon for coordination to warehouse (change to the icon of your choice)
+                                                    )}
+                                                    <p>{user.activitystatus}</p>
+                                                </div>
+
+                                                <p className="mt-2"><strong>Activity Remarks:</strong> {user.activityremarks}</p>
+                                                <p>
+                                                    <strong>Duration:</strong> {format(parseISO(user.startdate), "MMM dd, yyyy - h:mm:ss a")} - {format(parseISO(user.enddate), "MMM dd, yyyy - h:mm:ss a")}
+                                                </p>
+
+                                            </div>
+                                        )}
+
+                                        {/* Status Badge */}
+                                        {!["Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking"].includes(user.activitystatus) && (
+                                            <div className="card-footer text-xs flex justify-between items-center mt-2 border-t-2 pt-2">
+                                                <p><strong>Date Created:</strong> {format(parseISO(user.date_created), "MMM dd, yyyy - h:mm:ss a")}</p>
+
+                                                {/* Status Badge */}
+                                                <span className={`px-2 py-1 rounded-full text-white text-xs 
+                                                    ${user.activitystatus === "Cold" ? "bg-blue-700" :
+                                                        user.activitystatus === "Warm" ? "bg-yellow-700" :
+                                                            user.activitystatus === "Hot" ? "bg-red-700" :
+                                                                user.activitystatus === "Done" ? "bg-green-700" :
+                                                                    user.activitystatus === "Loss" ? "bg-gray-500" :
+                                                                        user.activitystatus === "Cancelled" ? "bg-red-800" :
+                                                                            "bg-gray-500"
+                                                    }`}>
+                                                    {user.activitystatus}
+                                                </span>
+                                            </div>
+                                        )}
 
                                         {pinnedUsers.has(user.id) && (
                                             <div className="card-footer text-xs text-left mt-2 border-t pt-2 font-semibold text-green-600 flex items-center gap-1">
@@ -270,15 +306,14 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                             </div>
                                         )}
                                     </div>
-
                                 ))}
                                 {groupedByDate[formattedDay]?.length === 0 && <div className="text-center py-2 text-xs text-gray-500">No accounts available</div>}
                             </div>
                         </div>
-
                     );
                 })}
             </div>
+
         </div>
     );
 };
