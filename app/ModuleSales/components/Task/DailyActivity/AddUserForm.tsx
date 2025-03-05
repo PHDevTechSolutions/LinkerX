@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormFields from "./UserFormFields";
+import { FcFullTrash } from "react-icons/fc";
 
 interface AddUserFormProps {
   onCancel: () => void;
@@ -62,8 +63,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
   const [currentPage, setCurrentPage] = useState(1);
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
   // 🔥 FIX: Ensure activityList is always an array
   const [activityList, setActivityList] = useState<{
+    id: number;
     typeactivity: string;
     callback: string;
     callstatus: string;
@@ -95,6 +100,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         .catch(() => setActivityList([]));
     }
   }, [editUser?.activitynumber]);
+  
 
   const totalPages = Math.ceil(activityList.length / PAGE_SIZE);
   const currentRecords = activityList.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
@@ -127,6 +133,38 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       toast.error(editUser ? "Failed to update user" : "Failed to add user", {
         autoClose: 1000,
       });
+    }
+  };
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedId(id);
+    setShowDeleteModal(true);
+  };
+
+  // Deletes the record after confirmation
+  const confirmDelete = async () => {
+    if (!selectedId) return;
+
+    try {
+      const response = await fetch(`/api/ModuleSales/Task/DailyActivity/DeleteProgress`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: selectedId }),
+      });
+
+      if (response.ok) {
+        toast.success("Post deleted successfully.");
+      } else {
+        toast.error("Failed to delete post.");
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toast.error("Failed to delete post.");
+    } finally {
+      setShowDeleteModal(false);
+      setSelectedId(null);
     }
   };
 
@@ -194,6 +232,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                 <th className="text-left px-4 py-2 border">Q# Number</th>
                 <th className="text-left px-4 py-2 border">Q-Amount</th>
                 <th className="text-left px-4 py-2 border">Remarks</th>
+                <th className="text-left px-4 py-2 border">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -219,6 +258,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                     <td className="px-4 py-2 border">{activity.quotationnumber}</td>
                     <td className="px-4 py-2 border">{activity.quotationamount}</td>
                     <td className="px-4 py-2 border">{activity.remarks}</td>
+                    <td className="px-4 py-2 border text-right">
+                    <button onClick={() => handleDeleteClick(activity.id.toString())} className="text-red-600">
+                      <FcFullTrash size={16} />
+                    </button>
+
+                    </td>
                   </tr>
 
                 ))
@@ -252,6 +297,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                 <p><strong>Q# Number:</strong> {activity.quotationnumber}</p>
                 <p><strong>Q-Amount:</strong> {activity.quotationamount}</p>
                 <p><strong>Remarks:</strong> {activity.remarks}</p>
+                <div className="flex justify-end mt-2">
+                <button onClick={() => handleDeleteClick(activity.id.toString())} className="text-red-600">
+                      <FcFullTrash size={16} />
+                    </button>
+
+                </div>
               </div>
             ))
           ) : (
@@ -282,6 +333,24 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-4 rounded shadow-lg">
+            <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
+            <p className="text-xs">Are you sure you want to delete this post?</p>
+            <div className="mt-4 flex justify-end">
+              <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2" onClick={confirmDelete}>
+                Delete
+              </button>
+              <button className="bg-gray-300 text-xs px-4 py-2 rounded" onClick={() => setShowDeleteModal(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ToastContainer className="text-xs" autoClose={1000} />
     </>
