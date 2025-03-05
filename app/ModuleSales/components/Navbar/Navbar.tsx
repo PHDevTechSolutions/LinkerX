@@ -43,7 +43,7 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
     });
 
     sessionStorage.clear();
-    router.push("/Login");
+    router.replace("/Login");
   };
 
   const [currentTime, setCurrentTime] = useState(
