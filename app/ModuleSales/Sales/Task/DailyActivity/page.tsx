@@ -128,40 +128,47 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-        ? posts
-            .filter((post) => {
-                // Check if the company name or activity status matches the search term
-                const matchesSearchTerm =
-                    (post?.companyname && post.companyname.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                    (post?.activitystatus && post.activitystatus.toLowerCase().includes(searchTerm.toLowerCase()));
+    ? posts
+        .filter((post) => {
+            // Check if company name or activity status matches the search term
+            const matchesSearchTerm =
+                (post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (post?.activitystatus?.toLowerCase().includes(searchTerm.toLowerCase()));
 
-                // Parse the date_created field
-                const postDate = post.date_created ? new Date(post.date_created) : null;
+            // Parse the date_created field safely
+            const postDate = post?.date_created ? new Date(post.date_created) : null;
 
-                // Check if the post's date is within the selected date range
-                const isWithinDateRange =
-                    (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                    (!endDate || (postDate && postDate <= new Date(endDate)));
+            // Check if the post's date is within the selected date range
+            const isWithinDateRange =
+                (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                (!endDate || (postDate && postDate <= new Date(endDate)));
 
-                // Check if the post matches the selected client type
-                const matchesClientType = selectedClientType
-                    ? post?.typeclient === selectedClientType
-                    : true;
+            // Check if the post matches the selected client type
+            const matchesClientType = selectedClientType
+                ? post?.typeclient === selectedClientType
+                : true;
 
-                // Get the reference ID from userDetails
-                const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
+            // Check if the post matches the current user's ReferenceID (PostgreSQL or MongoDB)
+            const matchesReferenceID =
+                post?.referenceid === userDetails.ReferenceID || // PostgreSQL referenceid
+                post?.ReferenceID === userDetails.ReferenceID;   // MongoDB ReferenceID
 
-                // Check the user's role for filtering
-                const matchesRole =
-                    userDetails.Role === "Super Admin" || userDetails.Role === "Territory Sales Associate"
-                        ? true // Both Super Admin and TSA can see the posts
-                        : false; // Default false if no match
+            // Check the user's role for filtering
+            const matchesRole =
+                userDetails.Role === "Super Admin" ||
+                userDetails.Role === "Territory Sales Associate";
 
-                // Return the filtered result
-                return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
-            })
-            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created in descending order
-        : [];
+            // Return the final filtering condition
+            return (
+                matchesSearchTerm &&
+                isWithinDateRange &&
+                matchesClientType &&
+                matchesReferenceID && // Ensures the user sees only their data
+                matchesRole
+            );
+        })
+        .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
+    : [];
 
     const currentPosts = filteredAccounts.slice();
     const totalPages = Math.ceil(filteredAccounts.length);
@@ -468,7 +475,7 @@ const ListofUser: React.FC = () => {
                                                         <input type="hidden" value={enddate} readOnly className="w-full px-3 py-2 border rounded text-xs" />
 
                                                         {/* Select Option */}
-                                                        <select value={activitystatus} onChange={(e) => setactivitystatus(e.target.value)} className="w-full px-3 py-3 border rounded text-xs capitalize mb-4">
+                                                        <select value={activitystatus} onChange={(e) => setactivitystatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize mb-4">
                                                             <option value="">-- Select an Option --</option>
                                                             <option value="Assisting other Agents Client">Assisting other Agents Client</option>
                                                             <option value="Coordination of SO to Warehouse">Coordination of SO to Warehouse</option>
@@ -486,9 +493,9 @@ const ListofUser: React.FC = () => {
                                                         </select>
 
                                                         {/* Remarks Input */}
-                                                        <textarea value={activityremarks} onChange={(e) => setactivityremarks(e.target.value)} className="w-full px-3 py-3 border rounded text-xs capitalize resize-none mb-4" rows={4} placeholder="Enter remarks here..."></textarea>
+                                                        <textarea value={activityremarks} onChange={(e) => setactivityremarks(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize resize-none mb-4" rows={4} placeholder="Enter remarks here..."></textarea>
 
-                                                        <select value={timeDuration} onChange={handleTimeChange} className="w-full px-3 py-3 border rounded text-xs capitalize mb-4">
+                                                        <select value={timeDuration} onChange={handleTimeChange} className="w-full px-3 py-2 border rounded text-xs capitalize mb-2">
                                                             <option value="">Choose Time</option>
                                                             <option value="1 Minute">1 Minute</option>
                                                             <option value="5 Minutes">5 Minutes</option>
@@ -503,21 +510,8 @@ const ListofUser: React.FC = () => {
 
                                                         {/* Buttons */}
                                                         <div className="mt-6 flex justify-end">
-                                                            <button
-                                                                type="button"
-                                                                className="bg-gray-400 text-xs px-5 py-2 rounded mr-2"
-                                                                onClick={closeForm}
-                                                                disabled={loading}
-                                                            >
-                                                                Cancel
-                                                            </button>
-                                                            <button
-                                                                type="submit"
-                                                                className="bg-blue-600 text-white text-xs px-5 py-2 rounded"
-                                                                disabled={loading}
-                                                            >
-                                                                {loading ? "Submitting..." : "Submit"}
-                                                            </button>
+                                                            <button type="button" className="bg-gray-400 text-xs px-5 py-2 rounded mr-2" onClick={closeForm} disabled={loading}>Cancel</button>
+                                                            <button type="submit" className="bg-blue-600 text-white text-xs px-5 py-2 rounded" disabled={loading}>{loading ? "Submitting..." : "Submit"}</button>
                                                         </div>
                                                     </form>
                                                 </div>

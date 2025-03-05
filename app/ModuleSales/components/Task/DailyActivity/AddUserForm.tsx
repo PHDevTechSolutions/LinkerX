@@ -238,7 +238,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
             <tbody>
               {currentRecords.length > 0 ? (
                 currentRecords.map((activity, index) => (
-                  <tr key={index} className="odd:bg-white even:bg-gray-100">
+                  <tr key={index} className="odd:bg-white even:bg-gray-100 capitalize">
                     <td className="px-4 py-2 border">{activity.typeactivity}</td>
                     <td className="px-4 py-2 border">
                       {activity.callback
