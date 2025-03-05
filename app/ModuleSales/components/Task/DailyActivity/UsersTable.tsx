@@ -3,7 +3,7 @@ import { format, parseISO, addDays, startOfWeek, endOfWeek, startOfMonth, endOfM
 import { CiSquareChevLeft, CiSquareChevRight, CiEdit, CiCalendar, CiMapPin, CiTrash } from "react-icons/ci";
 import { BsThreeDotsVertical, BsPlus, BsDash, BsRecycle } from "react-icons/bs";
 import { MdOutlineCalendarViewMonth, MdOutlineCalendarViewWeek, MdOutlineCalendarViewDay } from "react-icons/md";
-import { FcAssistant, FcCollaboration, FcBullish, FcPaid, FcAddressBook } from "react-icons/fc";
+import { FcAssistant, FcCollaboration, FcBullish, FcPaid, FcAddressBook, FcFullTrash, FcAlarmClock, FcPodiumWithAudience, FcConferenceCall, FcReading } from "react-icons/fc";
 
 
 const socketURL = "http://localhost:3001";
@@ -193,7 +193,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                             `}>
 
                                         {/* Card Header - Company Name */}
-                                        {!["Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking"].includes(user.activitystatus) && (
+                                        {!["Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
                                             <div className="card-header mb-2 pb-2 flex justify-between items-center">
                                                 <h3 className="text-xs font-semibold text-gray-800 uppercase">{user.companyname}</h3>
                                                 <div className="relative">
@@ -251,37 +251,63 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                             user.activitystatus === "Coordination of SO to Warehouse" ? "bg-green-500" :
                                                                 user.activitystatus === "Coordination of SO to Orders" ? "bg-orange-500" :
                                                                     user.activitystatus === "Email and Viber Checking" ? "bg-violet-500" :
-                                                                        ""}`}>
+                                                                        user.activitystatus === "1st Break" ? "bg-red-500" :
+                                                                            ""}`}>
 
                                                     {/* Icon based on activitystatus */}
-                                                    {user.activitystatus === "Assisting other Agents Client" && (
-                                                        <FcAssistant size={20} />  // Icon for assisting agents (change to the icon of your choice)
-                                                    )}
-                                                    {user.activitystatus === "Updating Reports" && (
-                                                        <FcBullish size={20} />  // Icon for updating reports (change to the icon of your choice)
-                                                    )}
-                                                    {user.activitystatus === "Coordination of SO to Warehouse" && (
-                                                        <FcCollaboration size={20} />  // Icon for coordination to warehouse (change to the icon of your choice)
-                                                    )}
-                                                    {user.activitystatus === "Coordination of SO to Orders" && (
-                                                        <FcPaid size={20} />  // Icon for coordination to warehouse (change to the icon of your choice)
-                                                    )}
-                                                    {user.activitystatus === "Email and Viber Checking" && (
-                                                        <FcAddressBook size={20} />  // Icon for coordination to warehouse (change to the icon of your choice)
-                                                    )}
-                                                    <p>{user.activitystatus}</p>
+                                                    {user.activitystatus === "Assisting other Agents Client" && (<FcAssistant size={20} />)}
+                                                    {user.activitystatus === "Updating Reports" && (<FcBullish size={20} />)}
+                                                    {user.activitystatus === "Coordination of SO to Warehouse" && (<FcCollaboration size={20} />)}
+                                                    {user.activitystatus === "Coordination of SO to Orders" && (<FcPaid size={20} />)}
+                                                    {user.activitystatus === "Email and Viber Checking" && (<FcAddressBook size={20} />)}
+                                                    {user.activitystatus === "1st Break" && (<FcAlarmClock size={20} />)}
+
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <p>{user.activitystatus}</p>
+                                                        <FcFullTrash size={16} className="ml-2 cursor-pointer" onClick={() => handleDelete(user.id)} />
+                                                    </div>
+                                                </div>
+                                                <p className="mt-2"><strong>Activity Remarks:</strong> {user.activityremarks}</p>
+                                                <p><strong>Duration:</strong> {format(parseISO(user.startdate), "MMM dd, yyyy - h:mm:ss a")} - {format(parseISO(user.enddate), "MMM dd, yyyy - h:mm:ss a")}</p>
+
+                                            </div>
+                                        )}
+
+                                        {/* Only show certain fields based on activitystatus */}
+                                        {["1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
+                                            <div className="mt-2 text-xs">
+                                                {/* Background and Icon Changes based on Activity Status */}
+                                                <div className={`p-2 rounded-lg text-white flex items-center gap-2
+                                                ${user.activitystatus === "1st Break" ? "bg-red-500" :
+                                                        user.activitystatus === "Client Meeting" ? "bg-blue-300" :
+                                                            user.activitystatus === "Coffee Break" ? "bg-gray-700" :
+                                                                user.activitystatus === "Group Meeting" ? "bg-gray-400" :
+                                                                    user.activitystatus === "Last Break" ? "bg-red-500" :
+                                                                        user.activitystatus === "Lunch Break" ? "bg-red-400" :
+                                                                            user.activitystatus === "TSM Coaching" ? "bg-gray-800" :
+                                                                                ""}`}>
+
+                                                    {user.activitystatus === "1st Break" && (<FcAlarmClock size={20} />)}
+                                                    {user.activitystatus === "Client Meeting" && (<FcPodiumWithAudience size={20} />)}
+                                                    {user.activitystatus === "Coffee Break" && (<FcAlarmClock size={20} />)}
+                                                    {user.activitystatus === "Group Meeting" && (<FcConferenceCall size={20} />)}
+                                                    {user.activitystatus === "Last Break" && (<FcAlarmClock size={20} />)}
+                                                    {user.activitystatus === "Lunch Break" && (<FcAlarmClock size={20} />)}
+                                                    {user.activitystatus === "TSM Coaching" && (<FcReading size={20} />)}
+
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <p>{user.activitystatus}</p>
+                                                        <FcFullTrash size={16} className="ml-2 cursor-pointer" onClick={() => handleDelete(user.id)} />
+                                                    </div>
                                                 </div>
 
-                                                <p className="mt-2"><strong>Activity Remarks:</strong> {user.activityremarks}</p>
-                                                <p>
-                                                    <strong>Duration:</strong> {format(parseISO(user.startdate), "MMM dd, yyyy - h:mm:ss a")} - {format(parseISO(user.enddate), "MMM dd, yyyy - h:mm:ss a")}
-                                                </p>
+                                                <p className="mt-2"><strong>Duration:</strong> {format(parseISO(user.startdate), "MMM dd, yyyy - h:mm:ss a")} - {format(parseISO(user.enddate), "MMM dd, yyyy - h:mm:ss a")}</p>
 
                                             </div>
                                         )}
 
                                         {/* Status Badge */}
-                                        {!["Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking"].includes(user.activitystatus) && (
+                                        {!["Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
                                             <div className="card-footer text-xs flex justify-between items-center mt-2 border-t-2 pt-2">
                                                 <p><strong>Date Created:</strong> {format(parseISO(user.date_created), "MMM dd, yyyy - h:mm:ss a")}</p>
 

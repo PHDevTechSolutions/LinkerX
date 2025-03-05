@@ -17,6 +17,27 @@ import 'react-toastify/dist/ReactToastify.css';
 import { CiSquarePlus } from "react-icons/ci";
 import { PiHandTap } from "react-icons/pi";
 
+// Function to get formatted Manila timestamp
+const getFormattedTimestamp = () => {
+    const now = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+        timeZone: "Asia/Manila",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+    };
+
+    // Get Manila time correctly formatted
+    const manilaTimeStr = new Intl.DateTimeFormat("en-US", options).format(now);
+    const [month, day, year, hour, minute, second] = manilaTimeStr.match(/\d+/g)!;
+
+    // Return Manila date in `YYYY-MM-DDTHH:MM:SS` format
+    return `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+};
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -35,7 +56,7 @@ const ListofUser: React.FC = () => {
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [showPersonalForm, setPersonalForm] = useState(false);
+    const [showPersonalForm, setShowPersonalForm] = useState(false);
 
     const [activitystatus, setactivitystatus] = useState(""); // Default to null
     const [activityremarks, setactivityremarks] = useState(""); // Default to null
@@ -44,6 +65,11 @@ const ListofUser: React.FC = () => {
     const [referenceid, setreferenceid] = useState(userDetails.ReferenceID);
     const [tsm, settsm] = useState(userDetails.TSM);
     const [manager, setmanager] = useState(userDetails.Manager);
+    const [timeDuration, setTimeDuration] = useState("");
+
+    const [showTimerModal, setShowTimerModal] = useState(false);
+    const [countdown, setCountdown] = useState(0);
+    const [timerRunning, setTimerRunning] = useState(false);
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -102,40 +128,40 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-    ? posts
-        .filter((post) => {
-            // Check if the company name or activity status matches the search term
-            const matchesSearchTerm =
-                (post?.companyname && post.companyname.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                (post?.activitystatus && post.activitystatus.toLowerCase().includes(searchTerm.toLowerCase()));
+        ? posts
+            .filter((post) => {
+                // Check if the company name or activity status matches the search term
+                const matchesSearchTerm =
+                    (post?.companyname && post.companyname.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                    (post?.activitystatus && post.activitystatus.toLowerCase().includes(searchTerm.toLowerCase()));
 
-            // Parse the date_created field
-            const postDate = post.date_created ? new Date(post.date_created) : null;
+                // Parse the date_created field
+                const postDate = post.date_created ? new Date(post.date_created) : null;
 
-            // Check if the post's date is within the selected date range
-            const isWithinDateRange =
-                (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                (!endDate || (postDate && postDate <= new Date(endDate)));
+                // Check if the post's date is within the selected date range
+                const isWithinDateRange =
+                    (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                    (!endDate || (postDate && postDate <= new Date(endDate)));
 
-            // Check if the post matches the selected client type
-            const matchesClientType = selectedClientType
-                ? post?.typeclient === selectedClientType
-                : true;
+                // Check if the post matches the selected client type
+                const matchesClientType = selectedClientType
+                    ? post?.typeclient === selectedClientType
+                    : true;
 
-            // Get the reference ID from userDetails
-            const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
+                // Get the reference ID from userDetails
+                const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
 
-            // Check the user's role for filtering
-            const matchesRole =
-                userDetails.Role === "Super Admin" || userDetails.Role === "Territory Sales Associate"
-                    ? true // Both Super Admin and TSA can see the posts
-                    : false; // Default false if no match
+                // Check the user's role for filtering
+                const matchesRole =
+                    userDetails.Role === "Super Admin" || userDetails.Role === "Territory Sales Associate"
+                        ? true // Both Super Admin and TSA can see the posts
+                        : false; // Default false if no match
 
-            // Return the filtered result
-            return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
-        })
-        .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created in descending order
-    : [];
+                // Return the filtered result
+                return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
+            })
+            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created in descending order
+        : [];
 
     const currentPosts = filteredAccounts.slice();
     const totalPages = Math.ceil(filteredAccounts.length);
@@ -198,26 +224,91 @@ const ListofUser: React.FC = () => {
         }
     };
 
-    const getFormattedTimestamp = () => {
-        const now = new Date();
-
-        // Convert to YYYY-MM-DD HH:mm:ss format (MySQL TIMESTAMP)
-        const formattedTimestamp = now
-            .toLocaleString("en-US", { timeZone: "Asia/Manila" })
-            .replace(",", ""); // Remove comma from formatted string
-
-        return formattedTimestamp;
-    };
-
-    // Capture start date & time only once when the component mounts
+    // Set start date when the component mounts
     useEffect(() => {
         setstartdate(getFormattedTimestamp());
     }, []);
 
+    // Function to calculate end date based on selected duration
+    const calculateEndDate = (duration: string) => {
+        if (!startdate) return;
+
+        // Convert `startdate` string into a Date object (Manila time)
+        const start = new Date(startdate);
+
+        // Ensure the start date is correctly in Manila timezone
+        const manilaDate = new Date(
+            start.getFullYear(),
+            start.getMonth(),
+            start.getDate(),
+            start.getHours(),
+            start.getMinutes(),
+            start.getSeconds()
+        );
+
+        // Adjust time based on selected duration
+        switch (duration) {
+            case "1 Minute":
+                manilaDate.setMinutes(manilaDate.getMinutes() + 1);
+                break;
+            case "5 Minutes":
+                manilaDate.setMinutes(manilaDate.getMinutes() + 5);
+                break;
+            case "10 Minutes":
+                manilaDate.setMinutes(manilaDate.getMinutes() + 10);
+                break;
+            case "15 Minutes":
+                manilaDate.setMinutes(manilaDate.getMinutes() + 15);
+                break;    
+            case "20 Minutes":
+                manilaDate.setMinutes(manilaDate.getMinutes() + 20);
+                break;
+            case "30 Minutes":
+                manilaDate.setMinutes(manilaDate.getMinutes() + 30);
+                break;
+            case "1 Hour":
+                manilaDate.setHours(manilaDate.getHours() + 1);
+                break;
+            case "2 Hours":
+                manilaDate.setHours(manilaDate.getHours() + 2);
+                break;
+            case "3 Hours":
+                manilaDate.setHours(manilaDate.getHours() + 3);
+                break;
+            default:
+                return;
+        }
+
+        // Ensure correct formatting for datetime-local input
+        const formattedEndDate = `${manilaDate.getFullYear()}-${String(manilaDate.getMonth() + 1).padStart(2, '0')}-${String(manilaDate.getDate()).padStart(2, '0')}T${String(manilaDate.getHours()).padStart(2, '0')}:${String(manilaDate.getMinutes()).padStart(2, '0')}`;
+
+        setenddate(formattedEndDate);
+    };
+
+    // Handle button click to set start date
+    const handleButtonClick = () => {
+        setstartdate(getFormattedTimestamp());
+        setShowPersonalForm(true);
+    };
+
+    // Handle time selection change
+    const handleTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedTime = e.target.value;
+        setTimeDuration(selectedTime);
+        calculateEndDate(selectedTime);
+    };
+
+    // Close form and reset fields
+    const closeForm = () => {
+        setShowPersonalForm(false);
+        setstartdate("");
+        setenddate("");
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!activitystatus || !activityremarks || !enddate) {
+        if (!activitystatus || !activityremarks) {
             toast.error("Please fill in all fields before submitting.");
             return;
         }
@@ -240,13 +331,28 @@ const ListofUser: React.FC = () => {
 
             if (response.ok) {
                 toast.success("Activity submitted successfully!");
-                setPersonalForm(false);
+                setShowPersonalForm(false); // Close the form
                 setactivitystatus("");
                 setactivityremarks("");
-                setenddate("");
 
-                fetchAccount();
-                
+                // Convert time duration to seconds
+                const durationMap: Record<string, number> = {
+                    "1 Minute": 1 * 60,
+                    "5 Minutes": 5 * 60,
+                    "10 Minutes": 10 * 60,
+                    "15 Minutes": 15 * 60,
+                    "20 Minutes": 20 * 60,
+                    "30 Minutes": 30 * 60,
+                    "1 Hour": 60 * 60,
+                    "2 Hours": 2 * 60 * 60,
+                    "3 Hours": 3 * 60 * 60,
+                };
+
+                const durationInSeconds = durationMap[timeDuration] || 0;
+                if (durationInSeconds > 0) {
+                    startCountdown(durationInSeconds);
+                }
+
             } else {
                 const errorData = await response.json();
                 toast.error(errorData.error || "Failed to submit activity.");
@@ -273,7 +379,42 @@ const ListofUser: React.FC = () => {
             }
         }
     }, [userDetails]); // Only trigger when userDetails changes
+
+    let timer: NodeJS.Timeout | null = null;
+
+    const startCountdown = (durationInSeconds: number) => {
+        if (timer) clearInterval(timer); // Clear existing timer before starting a new one
     
+        setCountdown(durationInSeconds);
+        setShowTimerModal(true);
+        setTimerRunning(true);
+    
+        timer = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev <= 1) {
+                    clearInterval(timer!);
+                    setShowTimerModal(false);
+                    setTimerRunning(false);
+    
+                    // Refresh the entire page after timer ends
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+    
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+    };
+    
+    // Cleanup timer when component unmounts
+    useEffect(() => {
+        return () => {
+            if (timer) clearInterval(timer);
+        };
+    }, []);
+
 
     return (
         <SessionChecker>
@@ -308,21 +449,24 @@ const ListofUser: React.FC = () => {
                                             </button>
                                             <button
                                                 className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
-                                                onClick={() => setPersonalForm(true)}
+                                                onClick={handleButtonClick}
                                             >
                                                 <PiHandTap size={16} /> Tap
                                             </button>
                                         </div>
+
                                         {showPersonalForm && (
                                             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                                                 <div className="bg-white p-8 rounded shadow-lg w-96 max-w-lg">
                                                     <h2 className="text-sm font-bold mb-4">Personal Activity</h2>
 
                                                     <form onSubmit={handleSubmit}>
-                                                    <input type="hidden" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                                                    <input type="hidden" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                                                    <input type="hidden" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-        
+                                                        <input type="hidden" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                                                        <input type="hidden" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                                                        <input type="hidden" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                                                        <input type="hidden" value={startdate} readOnly className="w-full px-3 py-2 border rounded text-xs bg-gray-100 cursor-not-allowed" />
+                                                        <input type="hidden" value={enddate} readOnly className="w-full px-3 py-2 border rounded text-xs" />
+
                                                         {/* Select Option */}
                                                         <select value={activitystatus} onChange={(e) => setactivitystatus(e.target.value)} className="w-full px-3 py-3 border rounded text-xs capitalize mb-4">
                                                             <option value="">-- Select an Option --</option>
@@ -331,27 +475,47 @@ const ListofUser: React.FC = () => {
                                                             <option value="Coordination of SO to Orders">Coordination of SO to Orders</option>
                                                             <option value="Updating Reports">Updating Reports</option>
                                                             <option value="Email and Viber Checking">Email and Viber Checking</option>
+                                                            <optgroup label="──────────────────"></optgroup>
+                                                            <option value="1st Break">1st Break</option>
+                                                            <option value="Client Meeting">Client Meeting</option>
+                                                            <option value="Coffee Break">Coffee Break </option>
+                                                            <option value="Group Meeting">Group Meeting</option>
+                                                            <option value="Last Break">Last Break</option>
+                                                            <option value="Lunch Break">Lunch Break</option>
+                                                            <option value="TSM Coaching">TSM Coaching</option>
                                                         </select>
 
                                                         {/* Remarks Input */}
                                                         <textarea value={activityremarks} onChange={(e) => setactivityremarks(e.target.value)} className="w-full px-3 py-3 border rounded text-xs capitalize resize-none mb-4" rows={4} placeholder="Enter remarks here..."></textarea>
 
-                                                        {/* Start Date (Auto-set) */}
-                                                        <div className="mb-4">
-                                                            <label className="block text-xs font-bold mb-1">Start Date</label>
-                                                            <input type="text" value={startdate} readOnly className="w-full px-3 py-2 border rounded text-xs bg-gray-100 cursor-not-allowed"/>
-                                                        </div>
-
-                                                        {/* End Date (User Input) */}
-                                                        <div className="mb-4">
-                                                            <label className="block text-xs font-bold mb-1">End Date</label>
-                                                            <input type="datetime-local" value={enddate} onChange={(e) => setenddate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs"/>
-                                                        </div>
+                                                        <select value={timeDuration} onChange={handleTimeChange} className="w-full px-3 py-3 border rounded text-xs capitalize mb-4">
+                                                            <option value="">Choose Time</option>
+                                                            <option value="1 Minute">1 Minute</option>
+                                                            <option value="5 Minutes">5 Minutes</option>
+                                                            <option value="10 Minutes">10 Minutes</option>
+                                                            <option value="15 Minutes">15 Minutes</option>
+                                                            <option value="20 Minutes">20 Minutes</option>
+                                                            <option value="30 Minutes">30 Minutes</option>
+                                                            <option value="1 Hour">1 Hour</option>
+                                                            <option value="2 Hours">2 Hours</option>
+                                                            <option value="3 Hours">3 Hours</option>
+                                                        </select>
 
                                                         {/* Buttons */}
                                                         <div className="mt-6 flex justify-end">
-                                                            <button type="button" className="bg-gray-400 text-xs px-5 py-2 rounded mr-2" onClick={() => setPersonalForm(false)} disabled={loading}>Cancel</button>
-                                                            <button type="submit" className="bg-blue-600 text-white text-xs px-5 py-2 rounded" disabled={loading}>
+                                                            <button
+                                                                type="button"
+                                                                className="bg-gray-400 text-xs px-5 py-2 rounded mr-2"
+                                                                onClick={closeForm}
+                                                                disabled={loading}
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                            <button
+                                                                type="submit"
+                                                                className="bg-blue-600 text-white text-xs px-5 py-2 rounded"
+                                                                disabled={loading}
+                                                            >
                                                                 {loading ? "Submitting..." : "Submit"}
                                                             </button>
                                                         </div>
@@ -359,8 +523,24 @@ const ListofUser: React.FC = () => {
                                                 </div>
                                             </div>
                                         )}
-                                    </div>
 
+                                        {showTimerModal && (
+                                            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end justify-end pointer-events-auto">
+                                                {/* Invisible overlay to block clicks */}
+                                                <div className="absolute inset-0"></div>
+
+                                                {/* Modal Box */}
+                                                <div className="relative bg-white p-6 rounded-lg shadow-lg w-64 text-center border border-gray-300 m-4">
+                                                    <h2 className="text-sm font-bold mb-2">Activity in Progress</h2>
+                                                    <p className="text-xl font-bold text-red-600">
+                                                        {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, "0")}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500 mt-2">Please wait until the timer ends.</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                         <h2 className="text-lg font-bold mb-2">My Task</h2>
                                         <SearchFilters
