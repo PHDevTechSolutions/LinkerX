@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { format, parseISO, addDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameDay, isWithinInterval } from "date-fns";
 import { CiSquareChevLeft, CiSquareChevRight, CiEdit, CiCalendar, CiMapPin, CiTrash } from "react-icons/ci";
-import { BsThreeDotsVertical, BsPlus, BsDash, BsRecycle } from "react-icons/bs";
+import { BsThreeDotsVertical, BsPlus, BsDash, BsRecycle, BsChevronDown } from "react-icons/bs";
 import { MdOutlineCalendarViewMonth, MdOutlineCalendarViewWeek, MdOutlineCalendarViewDay } from "react-icons/md";
 import { FcAssistant, FcCollaboration, FcBullish, FcPaid, FcAddressBook, FcFullTrash, FcAlarmClock, FcPodiumWithAudience, FcConferenceCall, FcReading } from "react-icons/fc";
-
 
 const socketURL = "http://localhost:3001";
 
@@ -207,7 +206,23 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                     <div id={`menu-${user.id}`} className={`absolute right-0 mt-2 w-32 bg-white shadow-md p-2 rounded-md text-xs ${openMenu === user.id ? 'block' : 'hidden'}`}>
                                                         <ul>
                                                             <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handleEdit(user)}><CiEdit /> Edit Details</li>
-                                                            <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1"><CiCalendar />Callback</li>
+                                                            <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1"><CiCalendar size={16} /> Edit Details</li>
+                                                            <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1">
+                                                                <div className="relative w-full">
+                                                                    <CiCalendar size={16} />
+                                                                    <select className="appearance-none bg-transparent border-none text-xs cursor-pointer focus:outline-none pl-4 pr-6">
+                                                                        <option value="" disabled selected>Callback</option>
+                                                                        <option value="Repeat Once">Repeat Once</option>
+                                                                        <option value="Repeat Every Week">Repeat Every Week</option>
+                                                                        <option value="Repeat Every Month">Repeat Every Month</option>
+                                                                        <option value="Repeat Every Year">Repeat Every Year</option>
+                                                                    </select>
+                                                                    <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                                                        <BsChevronDown size={14} className="text-gray-500" />
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+
                                                             <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => toggleStatusMenu(user.id)}><BsRecycle />Change Status</li>
 
                                                             {/* Status Change Menu */}

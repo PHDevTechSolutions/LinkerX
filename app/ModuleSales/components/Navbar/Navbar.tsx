@@ -7,7 +7,6 @@ import { CiClock2 } from "react-icons/ci";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { CiUser, CiSettings } from "react-icons/ci";
 
-
 interface Notification {
   id: number;
   companyname: string;
@@ -222,7 +221,7 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
                     {allNotifications.map((notif) => (
                       <li
                         key={notif.id}
-                        className="px-4 py-3 border-b text-xs hover:bg-gray-100 whitespace-normal break-words"
+                        className="px-4 py-3 border-b text-xs hover:bg-gray-100 whitespace-normal break-words capitalize"
                       >
                         <strong>{notif.companyname}:</strong> Callback at {new Date(notif.callback).toLocaleString()}
                       </li>
