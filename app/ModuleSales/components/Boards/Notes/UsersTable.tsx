@@ -17,6 +17,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, updatePostStatus }) => {
     const [isBulkEditVisible, setIsBulkEditVisible] = useState<boolean>(false);
     const [pinnedUsers, setPinnedUsers] = useState<Set<string>>(new Set());
     const [menuState, setMenuState] = useState<{ [key: string]: boolean }>({}); // State to track menu visibility for each user
+    const [dateState, setDateState] = useState<{ [key: string]: string | null }>({}); // State to track date selections
+    const [modalVisible, setModalVisible] = useState<{ [key: string]: boolean }>({}); // New state to control modal visibility for each user
 
     useEffect(() => {
         setUpdatedUser(posts);
@@ -93,6 +95,29 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, updatePostStatus }) => {
         }));
     };
 
+    const handleDateChange = (userId: string, value: string) => {
+        setDateState((prevState) => ({
+            ...prevState,
+            [userId]: value, // Store the selected date and time
+        }));
+    };
+
+    // Open Modal to select date
+    const openModal = (userId: string) => {
+        setModalVisible((prevState) => ({
+            ...prevState,
+            [userId]: true,
+        }));
+    };
+
+    // Close Modal
+    const closeModal = (userId: string) => {
+        setModalVisible((prevState) => ({
+            ...prevState,
+            [userId]: false,
+        }));
+    };
+
     return (
         <div className="mb-4">
             <div className="flex justify-between items-center mb-4">
@@ -133,7 +158,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, updatePostStatus }) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {["Backlogs", "Priority", "Important", "Finished"].map((status) => (
-                    <div key={status} className="border rounded p-2 bg-white shadow-md relative"> {/* Relative position */}
+                    <div key={status} className="border rounded p-2 bg-white shadow-md relative">
                         <h4 className="text-center font-semibold text-xs mb-2 text-gray-700">{status}</h4>
                         <div>
                             {sortedPosts(status).map((user) => (
@@ -160,10 +185,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, updatePostStatus }) => {
                                             <TbBellPlus
                                                 size={18}
                                                 className="text-gray-900 cursor-pointer"
-                                                onClick={() => handleBellClick(user.id)} // Pass userId to control menu visibility
+                                                onClick={() => handleBellClick(user.id)}
                                             />
                                         </div>
-
                                     </div>
 
                                     <p className="text-xs capitalize mt-2 text-gray-500">{user.description}</p>
@@ -176,9 +200,45 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, updatePostStatus }) => {
                                     {menuState[user.id] && (
                                         <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded border p-2">
                                             <button className="block w-full text-left text-xs py-1 px-2 hover:bg-gray-200">Tomorrow</button>
-                                            <button className="block w-full text-left text-xs py-1 px-2 hover:bg-gray-200">Pick a Date</button>
+                                            <button
+                                                className="block w-full text-left text-xs py-1 px-2 hover:bg-gray-200"
+                                                onClick={() => openModal(user.id)} // Open modal when "Pick a Date" is clicked
+                                            >
+                                                Pick a Date
+                                            </button>
                                         </div>
                                     )}
+
+                                    {/* Modal for Date Picker */}
+                                    {modalVisible[user.id] && (
+                                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                                            <div className="bg-white p-6 rounded-lg shadow-lg w-full sm:w-11/12 md:w-1/3 lg:w-1/4 max-w-sm mx-4">
+                                                <h3 className="text-center text-xs sm:text-base mb-4 font-semibold">Select Date & Time</h3>
+                                                <input
+                                                    type="datetime-local"
+                                                    value={dateState[user.id] || ""}
+                                                    onChange={(e) => handleDateChange(user.id, e.target.value)}
+                                                    className="w-full p-3 border rounded-md text-xs sm:text-sm mb-4"
+                                                />
+                                                <div className="flex justify-between gap-2">
+                                                    <button
+                                                        className="bg-gray-500 text-white py-2 px-4 rounded-md text-xs sm:text-sm w-full sm:w-auto"
+                                                        onClick={() => closeModal(user.id)} // Close modal when cancel is clicked
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        className="bg-blue-500 text-white py-2 px-4 rounded-md text-xs sm:text-sm w-full sm:w-auto"
+                                                        onClick={() => closeModal(user.id)} // Close modal after selecting date
+                                                    >
+                                                        Save
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+
                                 </div>
                             ))}
                             {updatedUser.filter((post) => post.status === status).length === 0 && (
