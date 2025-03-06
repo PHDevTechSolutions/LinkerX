@@ -55,6 +55,8 @@ interface FormFieldsProps {
     Inquiries: string; setInquiries: (value: string) => void;
     Department: string; setDepartment: (value: string) => void;
 
+    createdAt: string; setcreatedAt: (value: string) => void;
+
     editPost?: any;
 }
 
@@ -79,7 +81,10 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     ItemCode, setItemCode, ItemDescription, setItemDescription,
     Traffic, setTraffic, Inquiries, setInquiries, Department, setDepartment,
 
-    SONumber, setSONumber, PONumber, setPONumber, SODate, setSODate, PaymentTerms, setPaymentTerms, PaymentDate, setPaymentDate, DeliveryDate, setDeliveryDate, POStatus, setPOStatus, POSource, setPOSource,
+    SONumber, setSONumber, PONumber, setPONumber, SODate, setSODate, PaymentTerms, setPaymentTerms, 
+    PaymentDate, setPaymentDate, DeliveryDate, setDeliveryDate, POStatus, setPOStatus, POSource, setPOSource,
+
+    createdAt, setcreatedAt,
     editPost
 }) => {
     const [companies, setCompanies] = useState<any[]>([]);
@@ -172,14 +177,18 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     useEffect(() => {
         console.log("ReferenceID on render:", ReferenceID);
     }, [ReferenceID]);
-    
+
     return (
         <>
             <div className="flex flex-wrap -mx-4">
             <div className="w-full sm:w-1/1 md:w-1/6 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2" htmlFor="ticketReferenceNumber">Ticket Reference Number</label>
                 <input type="text" id="ticketReferenceNumber" value={TicketReferenceNumber} className="w-full px-3 py-2 border rounded text-xs bg-gray-100"readOnly/>
-                </div>
+            </div>
+            <div className="w-full sm:w-1/1 md:w-1/6 px-4 mb-4">
+                <label className="block text-xs font-bold mb-2" htmlFor="ticketReferenceNumber">Date Today</label>
+                <input type="datetime-local" id="createdAt" value={createdAt} onChange={(e) => setcreatedAt(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required/>
+            </div>
             </div>
             <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                 <h1 className="text-lg font-bold mb-2">Account Information</h1>

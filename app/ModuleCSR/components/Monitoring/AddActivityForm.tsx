@@ -67,6 +67,8 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
   const [POStatus, setPOStatus] = useState(editPost ? editPost.POStatus : "");
   const [POSource, setPOSource] = useState(editPost ? editPost.POSource : "");
 
+  const [createdAt, setcreatedAt] = useState(editPost ? editPost.createdAt : "");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
@@ -125,6 +127,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
           DeliveryDate,
           POStatus,
           POSource,
+          createdAt,
           id: editPost ? editPost._id : undefined, // Send post ID if editing
         }),
       });
@@ -275,6 +278,9 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
           setPOStatus={setPOStatus}
           POSource={POSource}
           setPOSource={setPOSource}
+
+          createdAt={createdAt}
+          setcreatedAt={setcreatedAt}
 
           editPost={editPost}
         />

@@ -4,7 +4,7 @@ import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectTo
 // Function to add an account directly in this file
 async function addMonitoring({ UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, 
   CustomerType, CustomerStatus, Status, Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
-  TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource,
+  TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource, createdAt,
 }: {
   UserId: string;
   TicketReferenceNumber: string;
@@ -49,14 +49,14 @@ async function addMonitoring({ UserId, TicketReferenceNumber, userName, Role, Re
   DeliveryDate: string;
   POStatus: string;
   POSource: string;
+  createdAt: string;
 
 }) {
   const db = await connectToDatabase();
-  const createdAt = new Date();
   const accountsCollection = db.collection("monitoring");
   const newMonitoring = { UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
     CustomerStatus, Status, Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
-    TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource, createdAt: new Date(), };
+    TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource, createdAt, };
   await accountsCollection.insertOne(newMonitoring);
 
   // Build the message for the MonitoringRecords collection
@@ -77,7 +77,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === "POST") {
     const { UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
       CustomerStatus, Status, Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate, TsmHandlingTime, 
-      TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource } = req.body;
+      TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource, createdAt } = req.body;
 
     // Validate required fields
     if (!CompanyName || !CustomerName) {
@@ -89,7 +89,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const result = await addMonitoring({ UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
         CustomerStatus, Status, Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate, TsmHandlingTime, TsaHandlingTime, 
-        Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource});
+        Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource, createdAt});
       res.status(200).json(result);
     } catch (error) {
       console.error("Error adding account:", error);
