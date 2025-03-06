@@ -122,7 +122,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                                                     >
                                                         {expandedPosts[postIndex] && (
                                                             <div className="text-xs">
-                                                                <div className="text-xs">
+                                                                <div className="text-xs capitalize">
                                                                     Contact Person: {post.contactperson}
                                                                 </div>
                                                                 <div className="text-xs">
@@ -137,7 +137,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                                                                         "yyyy-MM-dd HH:mm:ss a"
                                                                     )}
                                                                 </div>
-                                                                <div className="mt-1 text-xs">
+                                                                <div className="mt-1 text-xs capitalize">
                                                                     Activity Remarks: {post.remarks}
                                                                 </div>
                                                             </div>

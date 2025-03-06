@@ -29,6 +29,9 @@ const ListofUser: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+    const [modalCompanyName, setModalCompanyName] = useState("");
+
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
         const fetchUserData = async () => {
@@ -67,7 +70,7 @@ const ListofUser: React.FC = () => {
         fetchUserData();
     }, []);
 
-    // Fetch all users from the API
+    // Fetch all callbacks from the API
     const fetchAccount = async () => {
         try {
             const response = await fetch("/api/ModuleSales/Task/Callback/FetchProgress");
@@ -84,67 +87,110 @@ const ListofUser: React.FC = () => {
         fetchAccount();
     }, []);
 
+    // Check if any callback date matches today's date
+    useEffect(() => {
+        const checkCallbacks = () => {
+            const now = new Date();
+
+            posts.forEach((post) => {
+                const callbackDate = new Date(post.callback); // Assuming post.callback is a timestamp
+
+                // Compare the exact date and time (hours and minutes)
+                const isSameDate = callbackDate.toDateString() === now.toDateString();
+                const isSameTime = callbackDate.getHours() === now.getHours() && callbackDate.getMinutes() === now.getMinutes();
+
+                if (isSameDate && isSameTime) {
+                    // Show the modal with the company name
+                    setModalCompanyName(post.companyname);
+                    setIsModalOpen(true);
+
+                    // Set a timer to close the modal after 30 minutes
+                    setTimeout(() => {
+                        setIsModalOpen(false);
+                    }, 1800000); // 30 minutes
+                }
+            });
+        };
+
+        // Calculate how many milliseconds until the next minute
+        const now = new Date();
+        const delayUntilNextMinute = 60000 - now.getSeconds() * 1000;
+
+        // Trigger a one-time check at the next exact minute
+        const timeout = setTimeout(() => {
+            checkCallbacks();
+            // Then, continue to check every minute after that
+            setInterval(checkCallbacks, 60000);
+        }, delayUntilNextMinute);
+
+        return () => {
+            clearTimeout(timeout); // Cleanup the timeout
+            clearInterval(timeout); // Cleanup the interval when component unmounts
+        };
+    }, [posts]);
+
+
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-    ? posts
-        .filter((post) => {
-            // Ensure typeactivity is either "Outbound Call" or "Inbound Call"
-            const isRelevantCall =
-                post?.typeactivity === "Outbound Call" || post?.typeactivity === "Inbound Call";
+        ? posts
+            .filter((post) => {
+                // Ensure typeactivity is either "Outbound Call" or "Inbound Call"
+                const isRelevantCall =
+                    post?.typeactivity === "Outbound Call" || post?.typeactivity === "Inbound Call";
 
-            // Ensure callback is not null or empty
-            const hasCallback = post?.callback && post.callback.trim() !== "";
+                // Ensure callback is not null or empty
+                const hasCallback = post?.callback && post.callback.trim() !== "";
 
-            // Ensure companyname exists
-            const hasCompanyName = !!post?.companyname;
+                // Ensure companyname exists
+                const hasCompanyName = !!post?.companyname;
 
-            // Search term filter (company name or callback)
-            const matchesSearchTerm =
-                (hasCompanyName &&
-                    post.companyname.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                (hasCallback && post.callback.toLowerCase().includes(searchTerm.toLowerCase()));
+                // Search term filter (company name or callback)
+                const matchesSearchTerm =
+                    (hasCompanyName &&
+                        post.companyname.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                    (hasCallback && post.callback.toLowerCase().includes(searchTerm.toLowerCase()));
 
-            // Date range filter
-            const postDate = post.date_created ? new Date(post.date_created) : null;
-            const isWithinDateRange =
-                (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                (!endDate || (postDate && postDate <= new Date(endDate)));
+                // Date range filter
+                const postDate = post.date_created ? new Date(post.date_created) : null;
+                const isWithinDateRange =
+                    (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                    (!endDate || (postDate && postDate <= new Date(endDate)));
 
-            // Client type filter
-            const matchesClientType = selectedClientType
-                ? post?.typeclient === selectedClientType
-                : true;
+                // Client type filter
+                const matchesClientType = selectedClientType
+                    ? post?.typeclient === selectedClientType
+                    : true;
 
-            // Get the reference ID from userDetails
-            const userReferenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
+                // Get the reference ID from userDetails
+                const userReferenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
 
-            // Match reference ID (PostgreSQL "referenceid" or MongoDB "ReferenceID")
-            const matchesReferenceID =
-                post?.referenceid === userReferenceID || post?.ReferenceID === userReferenceID;
+                // Match reference ID (PostgreSQL "referenceid" or MongoDB "ReferenceID")
+                const matchesReferenceID =
+                    post?.referenceid === userReferenceID || post?.ReferenceID === userReferenceID;
 
-            // User role filter
-            const matchesRole =
-                userDetails.Role === "Super Admin" || userDetails.Role === "Territory Sales Associate";
+                // User role filter
+                const matchesRole =
+                    userDetails.Role === "Super Admin" || userDetails.Role === "Territory Sales Associate";
 
-            // Final filtering condition
-            return (
-                isRelevantCall && // Must be either Inbound or Outbound Call
-                hasCallback &&
-                hasCompanyName &&
-                matchesSearchTerm &&
-                isWithinDateRange &&
-                matchesClientType &&
-                matchesReferenceID && // Ensure only relevant posts appear
-                matchesRole
-            );
-        })
-        .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
-    : [];
+                // Final filtering condition
+                return (
+                    isRelevantCall && // Must be either Inbound or Outbound Call
+                    hasCallback &&
+                    hasCompanyName &&
+                    matchesSearchTerm &&
+                    isWithinDateRange &&
+                    matchesClientType &&
+                    matchesReferenceID && // Ensure only relevant posts appear
+                    matchesRole
+                );
+            })
+            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
+        : [];
 
     const currentPosts = filteredAccounts.slice();
     const totalPages = Math.ceil(filteredAccounts.length);
 
-    
+
     const confirmDelete = (postId: string) => {
         setPostToDelete(postId);
         setShowDeleteModal(true);
@@ -232,7 +278,7 @@ const ListofUser: React.FC = () => {
                                 </div>
                             )}
 
-                            <ToastContainer className="text-xs" autoClose={1000} />
+                            <ToastContainer className="text-xs" />
                         </div>
                     )}
                 </UserFetcher>
