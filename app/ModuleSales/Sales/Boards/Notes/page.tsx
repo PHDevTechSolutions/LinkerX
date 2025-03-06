@@ -5,12 +5,13 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../components/Task/DailyActivity/AddUserForm";
-import UsersTable from "../../../components/Boards/Notes/UsersTable";
+import AddPostForm from "../../../components/Boards/Notes/AddUserForm";
+import UsersCard from "../../../components/Boards/Notes/UsersTable"; // Assuming this is the component handling the Kanban-style cards
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { PiNotepad } from "react-icons/pi";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -41,7 +42,7 @@ const ListofUser: React.FC = () => {
                     if (!response.ok) throw new Error("Failed to fetch user data");
                     const data = await response.json();
                     setUserDetails({
-                        UserId: data._id, // Set the user's id here
+                        UserId: data._id,
                         ReferenceID: data.ReferenceID || "",
                         Manager: data.Manager || "",
                         TSM: data.TSM || "",
@@ -67,13 +68,12 @@ const ListofUser: React.FC = () => {
         fetchUserData();
     }, []);
 
-    // Fetch all callbacks from the API
+    // Fetch all posts from the API
     const fetchAccount = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/Task/Callback/FetchProgress");
+            const response = await fetch("/api/ModuleSales/Boards/Notes/FetchNotes");
             const data = await response.json();
-            console.log("Fetched data:", data); // Debugging line
-            setPosts(data.data); // Make sure you're setting `data.data` if API response has `{ success: true, data: [...] }`
+            setPosts(data.data);
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
@@ -84,67 +84,71 @@ const ListofUser: React.FC = () => {
         fetchAccount();
     }, []);
 
+    const updatePostStatus = async (postId: string, newStatus: string) => {
+        const response = await fetch(`/api/ModuleSales/Boards/Notes/UpdateStatus`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: postId,
+                status: newStatus,
+            }),
+        });
 
-    // Filter users by search term (firstname, lastname)
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Status updated successfully!', data.updatedPost);
+
+            // Update the local state with the new data from the backend
+            setPosts((prevPosts) =>
+                prevPosts.map((post) =>
+                    post.id === postId ? { ...post, status: newStatus } : post
+                )
+            );
+        } else {
+            console.error('Failed to update status');
+        }
+    };
+
+    // Filter users by search term (title)
     const filteredAccounts = Array.isArray(posts)
         ? posts
             .filter((post) => {
-                // Ensure typeactivity is either "Outbound Call" or "Inbound Call"
-                const isRelevantCall =
-                    post?.typeactivity === "Outbound Call" || post?.typeactivity === "Inbound Call";
-
-                // Ensure callback is not null or empty
-                const hasCallback = post?.callback && post.callback.trim() !== "";
-
-                // Ensure companyname exists
-                const hasCompanyName = !!post?.companyname;
-
-                // Search term filter (company name or callback)
+                const hasTitle = !!post?.title;
                 const matchesSearchTerm =
-                    (hasCompanyName &&
-                        post.companyname.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                    (hasCallback && post.callback.toLowerCase().includes(searchTerm.toLowerCase()));
+                    hasTitle && post.title.toLowerCase().includes(searchTerm.toLowerCase());
 
-                // Date range filter
                 const postDate = post.date_created ? new Date(post.date_created) : null;
                 const isWithinDateRange =
                     (!startDate || (postDate && postDate >= new Date(startDate))) &&
                     (!endDate || (postDate && postDate <= new Date(endDate)));
 
-                // Client type filter
                 const matchesClientType = selectedClientType
                     ? post?.typeclient === selectedClientType
                     : true;
 
-                // Get the reference ID from userDetails
-                const userReferenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
-
-                // Match reference ID (PostgreSQL "referenceid" or MongoDB "ReferenceID")
+                const userReferenceID = userDetails.ReferenceID;
                 const matchesReferenceID =
                     post?.referenceid === userReferenceID || post?.ReferenceID === userReferenceID;
 
-                // User role filter
                 const matchesRole =
                     userDetails.Role === "Super Admin" || userDetails.Role === "Territory Sales Associate";
 
-                // Final filtering condition
                 return (
-                    isRelevantCall && // Must be either Inbound or Outbound Call
-                    hasCallback &&
-                    hasCompanyName &&
+                    hasTitle &&
                     matchesSearchTerm &&
                     isWithinDateRange &&
                     matchesClientType &&
-                    matchesReferenceID && // Ensure only relevant posts appear
+                    matchesReferenceID &&
                     matchesRole
                 );
             })
-            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
+            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime())
         : [];
 
     const currentPosts = filteredAccounts.slice();
     const totalPages = Math.ceil(filteredAccounts.length);
-
 
     const confirmDelete = (postId: string) => {
         setPostToDelete(postId);
@@ -189,22 +193,30 @@ const ListofUser: React.FC = () => {
                                         setShowForm(false);
                                         setEditUser(null);
                                     }}
-                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
+                                    refreshPosts={fetchAccount}
                                     userDetails={{
                                         id: editUser ? editUser.id : userDetails.UserId,
                                         referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
-                                        manager: editUser ? editUser.manager : userDetails.Manager,
-                                        tsm: editUser ? editUser.tsm : userDetails.TSM,
-                                    }}   // Ensure id is passed correctly
+                                    }}
                                     editUser={editUser}
                                 />
                             ) : (
                                 <>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <button
+                                            className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
+                                            onClick={() => setShowForm(true)}
+                                        >
+                                            <PiNotepad size={16} /> Create Notes
+                                        </button>
+                                    </div>
+
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                         <h2 className="text-lg font-bold mb-2">Notes</h2>
-                                        <UsersTable
+                                        <UsersCard
                                             posts={currentPosts}
                                             handleDelete={confirmDelete}
+                                            updatePostStatus={updatePostStatus} // Pass the updatePostStatus function
                                         />
                                     </div>
                                 </>

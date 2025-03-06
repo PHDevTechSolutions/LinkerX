@@ -1,175 +1,192 @@
 import React, { useEffect, useState } from "react";
-import { format, parseISO, addDays, startOfWeek, endOfMonth, startOfMonth, differenceInSeconds, isValid } from "date-fns";
-import { CiSquareChevLeft, CiSquareChevRight } from "react-icons/ci";
-import { MdOutlineCalendarViewMonth, MdOutlineCalendarViewWeek, MdOutlineCalendarViewDay } from "react-icons/md";
-import { FcClock } from "react-icons/fc";
+import { PiRecycle } from "react-icons/pi";
+import { TiPinOutline } from "react-icons/ti";
+import { TbBellPlus } from "react-icons/tb";
 
 interface UsersCardProps {
     posts: any[];
     handleDelete: (postId: string) => void;
     referenceid?: string;
+    updatePostStatus: (postId: string, newStatus: string) => void;
 }
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
+const UsersCard: React.FC<UsersCardProps> = ({ posts, updatePostStatus }) => {
     const [updatedUser, setUpdatedUser] = useState<any[]>([]);
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const [viewMode, setViewMode] = useState<"default" | "day" | "week" | "month">("default");
-    const [now, setNow] = useState(new Date()); // 🔥 Real-time clock
+    const [selectedPosts, setSelectedPosts] = useState<Set<string>>(new Set());
+    const [bulkStatus, setBulkStatus] = useState<string>("");
+    const [isBulkEditVisible, setIsBulkEditVisible] = useState<boolean>(false);
+    const [pinnedUsers, setPinnedUsers] = useState<Set<string>>(new Set());
+    const [menuState, setMenuState] = useState<{ [key: string]: boolean }>({}); // State to track menu visibility for each user
 
     useEffect(() => {
         setUpdatedUser(posts);
     }, [posts]);
 
     useEffect(() => {
-        // 🔥 Update time every second
-        const timer = setInterval(() => {
-            setNow(new Date());
-        }, 1000);
-
-        return () => clearInterval(timer);
+        const savedPinnedUsers = JSON.parse(localStorage.getItem("pinnedUsers") || "[]");
+        setPinnedUsers(new Set(savedPinnedUsers));
     }, []);
 
-    const getFilteredDates = () => {
-        if (viewMode === "day") return [currentDate];
-        if (viewMode === "week") return Array.from({ length: 7 }, (_, i) => addDays(startOfWeek(currentDate), i));
-        if (viewMode === "month") return Array.from({ length: endOfMonth(currentDate).getDate() }, (_, i) => addDays(startOfMonth(currentDate), i));
-        return Array.from({ length: 4 }, (_, i) => addDays(currentDate, -i)).reverse();
+    const handlePin = (userId: string) => {
+        setPinnedUsers((prev) => {
+            const newPinned = new Set([...prev]);
+            if (newPinned.has(userId)) {
+                newPinned.delete(userId);
+            } else {
+                newPinned.add(userId);
+            }
+            localStorage.setItem("pinnedUsers", JSON.stringify(Array.from(newPinned)));
+            return newPinned;
+        });
     };
 
-    const handleNext = () => {
-        setCurrentDate((prevDate) =>
-            viewMode === "day" ? addDays(prevDate, 1) :
-                viewMode === "week" ? addDays(prevDate, 7) :
-                    viewMode === "month" ? addDays(prevDate, 30) :
-                        addDays(prevDate, 4)
-        );
+    const handleCheckboxChange = (postId: string, isChecked: boolean) => {
+        setSelectedPosts((prevSelected) => {
+            const newSelected = new Set(prevSelected);
+            if (isChecked) {
+                newSelected.add(postId);
+            } else {
+                newSelected.delete(postId);
+            }
+            return newSelected;
+        });
     };
 
-    const handlePrevious = () => {
-        setCurrentDate((prevDate) =>
-            viewMode === "day" ? addDays(prevDate, -1) :
-                viewMode === "week" ? addDays(prevDate, -7) :
-                    viewMode === "month" ? addDays(prevDate, -30) :
-                        addDays(prevDate, -4)
-        );
+    const handleBulkUpdate = () => {
+        if (!bulkStatus || selectedPosts.size === 0) {
+            return;
+        }
+
+        selectedPosts.forEach((postId) => {
+            updatePostStatus(postId, bulkStatus);
+        });
+
+        setSelectedPosts(new Set());
+        setIsBulkEditVisible(false);
     };
 
-    const formattedDates = getFilteredDates();
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case "Backlogs":
+                return "bg-yellow-200";
+            case "Priority":
+                return "bg-red-200";
+            case "Important":
+                return "bg-blue-200";
+            case "Finished":
+                return "bg-green-200";
+            default:
+                return "bg-white";
+        }
+    };
+
+    const sortedPosts = (status: string) => {
+        return updatedUser
+            .filter((post) => post.status === status)
+            .sort((a, b) => (pinnedUsers.has(b.id) ? 1 : 0) - (pinnedUsers.has(a.id) ? 1 : 0));
+    };
+
+    const handleBellClick = (userId: string) => {
+        setMenuState((prevState) => ({
+            ...prevState,
+            [userId]: !prevState[userId], // Toggle the menu visibility for the clicked user
+        }));
+    };
 
     return (
         <div className="mb-4">
-            {/* Pagination & View Mode Buttons */}
-            <div className="flex justify-start items-center mb-3">
-                <div className="group inline-flex">
-                    <button onClick={handlePrevious} className="text-xs flex items-center">
-                        <CiSquareChevLeft size={30} />
-                    </button>
-                    <button onClick={handleNext} className="text-xs flex items-center mr-2">
-                        <CiSquareChevRight size={30} />
-                    </button>
-                    <button
-                        onClick={() => setViewMode(viewMode === "day" ? "default" : "day")}
-                        className={`text-xs flex items-center mr-2 ${viewMode === "day" ? "text-blue-500" : ""}`}
-                    >
-                        <MdOutlineCalendarViewDay size={20} />
-                    </button>
-                    <button
-                        onClick={() => setViewMode(viewMode === "week" ? "default" : "week")}
-                        className={`text-xs flex items-center mr-2 ${viewMode === "week" ? "text-blue-500" : ""}`}
-                    >
-                        <MdOutlineCalendarViewWeek size={20} />
-                    </button>
-                    <button
-                        onClick={() => setViewMode(viewMode === "month" ? "default" : "month")}
-                        className={`text-xs flex items-center mr-2 ${viewMode === "month" ? "text-blue-500" : ""}`}
-                    >
-                        <MdOutlineCalendarViewMonth size={20} />
-                    </button>
-                </div>
-
-                <h3 className="text-xs font-semibold ml-4">
-                    {format(formattedDates[0], "dd MMM yyyy")} - {format(formattedDates[formattedDates.length - 1], "dd MMM yyyy")}
-                </h3>
+            <div className="flex justify-between items-center mb-4">
+                <button
+                    className="bg-orange-400 text-white text-xs px-4 py-2 rounded flex items-center space-x-1"
+                    onClick={() => setIsBulkEditVisible(!isBulkEditVisible)}
+                >
+                    <PiRecycle size={15} className="text-white" />
+                    <span>Change</span>
+                </button>
             </div>
 
-            {/* User Cards Grid */}
+            {isBulkEditVisible && (
+                <div className="flex justify-between items-center mb-4">
+                    <div>
+                        <label htmlFor="bulk-status" className="text-xs">Select Status for Bulk Update:</label>
+                        <select
+                            id="bulk-status"
+                            value={bulkStatus}
+                            onChange={(e) => setBulkStatus(e.target.value)}
+                            className="ml-2 p-1 border rounded text-xs"
+                        >
+                            <option value="">Select Status</option>
+                            <option value="Backlogs">Backlogs</option>
+                            <option value="Priority">Priority</option>
+                            <option value="Important">Important</option>
+                            <option value="Finished">Finished</option>
+                        </select>
+                    </div>
+                    <button
+                        className="bg-blue-500 text-white text-xs px-4 py-2 rounded"
+                        onClick={handleBulkUpdate}
+                    >
+                        Bulk Edit
+                    </button>
+                </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {formattedDates.map((day) => {
-                    const formattedDay = format(day, "yyyy-MM-dd");
+                {["Backlogs", "Priority", "Important", "Finished"].map((status) => (
+                    <div key={status} className="border rounded p-2 bg-white shadow-md relative"> {/* Relative position */}
+                        <h4 className="text-center font-semibold text-xs mb-2 text-gray-700">{status}</h4>
+                        <div>
+                            {sortedPosts(status).map((user) => (
+                                <div
+                                    key={user.id}
+                                    className={`rounded-lg shadow p-4 mb-2 border ${getStatusColor(user.status)}`}
+                                >
+                                    <div className="flex items-center justify-between space-x-2">
+                                        {isBulkEditVisible && (
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedPosts.has(user.id)}
+                                                onChange={(e) => handleCheckboxChange(user.id, e.target.checked)}
+                                                className="text-xs"
+                                            />
+                                        )}
+                                        <h3 className="font-semibold text-left text-gray-700 text-xs capitalize">{user.title}</h3>
+                                        <div className="flex items-center space-x-2 ml-auto">
+                                            <TiPinOutline
+                                                size={18}
+                                                className={`cursor-pointer ${pinnedUsers.has(user.id) ? 'text-yellow-500' : 'text-gray-900'}`}
+                                                onClick={() => handlePin(user.id)}
+                                            />
+                                            <TbBellPlus
+                                                size={18}
+                                                className="text-gray-900 cursor-pointer"
+                                                onClick={() => handleBellClick(user.id)} // Pass userId to control menu visibility
+                                            />
+                                        </div>
 
-                    // Now filtering based on `callback`
-                    const usersForDate = updatedUser.filter(user =>
-                        user.callback && format(parseISO(user.callback), "yyyy-MM-dd") === formattedDay
-                    );
+                                    </div>
 
-                    return (
-                        <div key={formattedDay} className="border rounded p-2 bg-white shadow-md">
-                            <h4 className="text-center font-semibold text-xs mb-2 text-gray-700">
-                                {format(day, "dd")} | {format(day, "EEEE")}
-                            </h4>
-                            <div>
-                                {usersForDate.length > 0 ? (
-                                    usersForDate.map((user) => {
-                                        const callbackDate = user.callback ? parseISO(user.callback) : null;
-                                        const startDate = parseISO(user.date_created);
+                                    <p className="text-xs capitalize mt-2 text-gray-500">{user.description}</p>
 
-                                        const isValidCallback = callbackDate && isValid(callbackDate);
-                                        const timeRemaining = isValidCallback ? differenceInSeconds(callbackDate, now) : 0;
-                                        const totalDuration = isValidCallback ? differenceInSeconds(callbackDate, startDate) : 0;
-                                        const progress = totalDuration > 0 ? ((totalDuration - timeRemaining) / totalDuration) * 100 : 0;
+                                    {pinnedUsers.has(user.id) && (
+                                        <div className="text-xs text-green-500 mt-2">Pinned</div>
+                                    )}
 
-                                        const isCallbackReached = timeRemaining <= 0;
-
-                                        return (
-                                            <div
-                                                key={user.id}
-                                                className={`relative rounded-lg shadow p-4 mb-2 border transition-all ${isCallbackReached ? "bg-green-800 text-white" : "bg-white text-gray-800"
-                                                    }`}
-                                            >
-                                                {/* Card Header - Company Name & Clock */}
-                                                <div className="flex justify-between items-center">
-                                                    <h3 className={`text-xs font-semibold uppercase ${isCallbackReached ? "text-white" : "text-gray-800"
-                                                        }`}>
-                                                        {user.companyname}
-                                                    </h3>
-
-                                                    <div className="relative group">
-                                                        <FcClock className={`ml-2 cursor-pointer ${isCallbackReached ? "hidden" : ""}`} />
-                                                    </div>
-                                                </div>
-
-                                                {/* Card Content - Callback & Timer */}
-                                                <div className="mt-2 text-xs">
-                                                    {isValidCallback && !isCallbackReached && (
-                                                        <div className="w-full bg-gray-200 rounded-full h-1 mt-2">
-                                                            <div
-                                                                className="bg-green-800 h-1 rounded-full transition-all"
-                                                                style={{ width: `${progress}%` }}
-                                                            ></div>
-                                                        </div>
-                                                    )}
-
-                                                    {isCallbackReached ? (
-                                                        <p className="font-semibold mt-1">Callback time reached!</p>
-                                                    ) : (
-                                                        <p className="text-red-600 font-semibold mt-1">
-                                                            Time left: {Math.floor(timeRemaining / 3600)}h{" "}
-                                                            {Math.floor((timeRemaining % 3600) / 60)}m{" "}
-                                                            {timeRemaining % 60}s
-                                                        </p>
-                                                    )}
-
-                                                </div>
-                                            </div>
-                                        );
-                                    })
-                                ) : (
-                                    <div className="text-center py-2 text-xs text-gray-500">No callback</div>
-                                )}
-                            </div>
+                                    {/* Bell menu */}
+                                    {menuState[user.id] && (
+                                        <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded border p-2">
+                                            <button className="block w-full text-left text-xs py-1 px-2 hover:bg-gray-200">Tomorrow</button>
+                                            <button className="block w-full text-left text-xs py-1 px-2 hover:bg-gray-200">Pick a Date</button>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                            {updatedUser.filter((post) => post.status === status).length === 0 && (
+                                <div className="text-center py-2 text-xs text-gray-500">No {status}</div>
+                            )}
                         </div>
-                    );
-                })}
+                    </div>
+                ))}
             </div>
         </div>
     );
