@@ -44,6 +44,7 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
     Inquiries, 
     Department, 
     DateClosed,
+    createdAt,
     TicketReferenceNumber // optional: if provided, use this; otherwise, ReferenceID will be used
   } = req.body;
 
@@ -85,6 +86,7 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
       Inquiries, 
       Department, 
       DateClosed,
+      createdAt,
       updatedAt: new Date(),
     };
 
@@ -93,7 +95,6 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
     
     // Use TicketReferenceNumber if provided; otherwise, fallback to ReferenceID
     const ticketRef = TicketReferenceNumber ? TicketReferenceNumber : ReferenceID;
-    const createdAt = new Date();
     const message = `${userName} has been updated ticket - ${ticketRef} on ${createdAt.toLocaleString()}`;
 
     // Insert into the "MonitoringRecords" collection including the message field
