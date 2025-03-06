@@ -461,13 +461,15 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     <label className="block text-xs font-bold mb-2 bg-white-300 px-2 py-1" htmlFor="SalesAgent">Sales Agent</label>
                     <select id="SalesAgent" value={SalesAgent || ""} onChange={(e) => setSalesAgent(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
                         <option value="">Select Agent</option>
-                        <option value="">Airish, Echanes</option>
+                        <option value="Airish, Echanes">Airish, Echanes</option>
+                        <option value="RME-CDO-006">RME-CDO-006 - Abelou, Sanchez</option>
                         <option value="RT-NCR-016">RT-NCR-016 - Agnes Angeli, Panopio</option>
                         <option value="RME-CDO-001">RME-CDO-001 - Andrew, Banaglorosio</option>
                         <option value="AB-NCR-006">AB-NCR-006 - Ansley, Patelo</option>
                         <option value="NTL-DVO-004">NTL-DVO-004 - Arteo Angelo, Beseril</option>
                         <option value="RT-NCR-001">RT-NCR-001 - Banjo, Lising</option>
                         <option value="RT-NCR-018">RT-NCR-018 - Brian, Zantua</option>
+                        <option value="AB-NCR-011">AB-NCR-011 - Candy, Notob</option>
                         <option value="RT-NCR-013">RT-NCR-013 - Cesar, Paredes</option>
                         <option value="RDC-R1-001">RDC-R1-001 - Cris, Acierto</option>
                         <option value="AB-NCR-002">AB-NCR-002 - Cristy, Bobis</option>
