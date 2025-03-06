@@ -46,9 +46,11 @@ const ReceivedPO: React.FC = () => {
         const isDateInRange =
             (!startDate || new Date(post.createdAt) >= new Date(startDate)) &&
             (!endDate || new Date(post.createdAt) <= new Date(endDate));
-        
-        return isSearchMatch && isDateInRange;
+        const isPoReceived = post.Remarks === "PO Received"; // ✅ Added "PO Received" filter
+    
+        return isSearchMatch && isDateInRange && isPoReceived;
     });
+    
 
     // Pagination logic
     const indexOfLastPost = currentPage * postsPerPage;
@@ -180,7 +182,6 @@ const ReceivedPO: React.FC = () => {
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}
                                                 handleDelete={confirmDelete}
-                                                Role={user ? user.Role : ""}
                                             />
                                             <Pagination
                                                 currentPage={currentPage}

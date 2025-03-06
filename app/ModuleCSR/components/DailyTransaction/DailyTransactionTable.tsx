@@ -1,35 +1,24 @@
-import React, { useState, useCallback, useMemo } from "react";
-import { BsPlusCircle } from "react-icons/bs";
-import { CiClock2 } from "react-icons/ci";
+import React, { useMemo } from "react";
 
-interface DailyTransactionCardProps {
+interface DailyTransactionTableProps {
   posts: any[];
 }
 
 const calculateTimeConsumed = (startDate: string, endDate: string) => {
   if (!startDate || !endDate) return "N/A";
-  
+
   const start = new Date(startDate);
   const end = new Date(endDate);
   const diffInSeconds = (end.getTime() - start.getTime()) / 1000;
-  
+
   const hours = Math.floor(diffInSeconds / 3600);
   const minutes = Math.floor((diffInSeconds % 3600) / 60);
   const seconds = Math.floor(diffInSeconds % 60);
-  
+
   return `${hours}h ${minutes}m ${seconds}s`;
 };
 
-const DailyTransactionCards: React.FC<DailyTransactionCardProps> = ({ posts }) => {
-  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
-
-  const toggleExpand = useCallback((postId: string) => {
-    setExpandedCards((prev) => ({
-      ...prev,
-      [postId]: !prev[postId],
-    }));
-  }, []);
-
+const DailyTransactionTable: React.FC<DailyTransactionTableProps> = ({ posts }) => {
   const sortedPosts = useMemo(() => {
     return [...posts].sort((a, b) => {
       const dateA = a.start_date ? new Date(a.start_date) : new Date(0);
@@ -39,44 +28,47 @@ const DailyTransactionCards: React.FC<DailyTransactionCardProps> = ({ posts }) =
   }, [posts]);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="overflow-x-auto">
       {sortedPosts.length > 0 ? (
-        sortedPosts.map((post) => {
-          const timeConsumed = calculateTimeConsumed(post.start_date, post.end_date);
-          return (
-            <div key={post._id} className="border rounded-md shadow-md p-4 flex flex-col bg-white">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <BsPlusCircle className="text-gray-700 cursor-pointer" onClick={() => toggleExpand(post._id)} />
-                  <h3 className="text-xs font-semibold uppercase">{post.account_name}</h3>
-                </div>
-              </div>
-              {expandedCards[post._id] && (
-                <div className="mt-4 text-xs capitalize">
-                  <p><strong>Ticker Number:</strong> {post.ticket_reference_number}</p>
-                  <p><strong>Contact:</strong> {post.contact_person} / {post.contact_number}</p>
-                  <p><strong>Email:</strong><span className="lowercase"> {post.email}</span></p>
-
-                  <p className="mt-2"><strong>Wrap Up: </strong> {post.wrapup}</p>
-                  <div className="border-t border-gray-800 pb-4 mt-4"></div>
-                  <p><strong>Inquiry / Concern:</strong> {post.inquiries}</p>
-                  <div className="border-t border-gray-800 pb-4 mt-4"></div>
-                  <p><strong>Remarks:</strong> {post.remarks}</p>
-                </div>
-              )}
-              
-              <div className="border-t border-gray-900 mt-3 pt-2 text-xs flex justify-between items-center italic capitalize">
-                <span>TSA: {post.agent_fullname}</span>
-                <span>TSM: {post.tsm_fullname}</span>
-              </div>
-            </div>
-          );
-        })
+        <table className="min-w-full bg-white border border-gray-300 text-xs">
+          <thead>
+            <tr className="bg-gray-100 text-left uppercase font-bold border-b">
+              <th className="p-3 border">Ticket Number</th>
+              <th className="p-3 border">Account Name</th>
+              <th className="p-3 border">Contact</th>
+              <th className="p-3 border">Email</th>
+              <th className="p-3 border">Wrap Up</th>
+              <th className="p-3 border">Inquiry / Concern</th>
+              <th className="p-3 border">Remarks</th>
+              <th className="p-3 border">Agent</th>
+              <th className="p-3 border">TSM</th>
+              <th className="p-3 border">Time Consumed</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedPosts.map((post) => (
+              <tr key={post._id} className="border-b hover:bg-gray-50">
+                <td className="p-3 border">{post.ticket_reference_number}</td>
+                <td className="p-3 border">{post.account_name}</td>
+                <td className="p-3 border">
+                  {post.contact_person} / {post.contact_number}
+                </td>
+                <td className="p-3 border lowercase">{post.email}</td>
+                <td className="p-3 border">{post.wrapup}</td>
+                <td className="p-3 border">{post.inquiries}</td>
+                <td className="p-3 border">{post.remarks}</td>
+                <td className="p-3 border italic capitalize">{post.agent_fullname}</td>
+                <td className="p-3 border italic capitalize">{post.tsm_fullname}</td>
+                <td className="p-3 border">{calculateTimeConsumed(post.start_date, post.end_date)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : (
-        <div className="col-span-full text-center py-4 text-sm">No transactions available</div>
+        <div className="text-center py-4 text-sm">No transactions available</div>
       )}
     </div>
   );
 };
 
-export default DailyTransactionCards;
+export default DailyTransactionTable;

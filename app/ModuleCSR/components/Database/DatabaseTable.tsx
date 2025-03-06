@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { BsPlusCircle, BsThreeDotsVertical } from "react-icons/bs";
+import React, { useMemo } from "react";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 interface OutboundTableProps {
     posts: any[];
@@ -12,20 +12,11 @@ const getTypeOfClientColor = (type: string) => {
         case "Below 20": return "bg-orange-300";
         case "New Account - Client Development": return "bg-gray-200";
         case "CSR Inquiries": return "bg-blue-300";
-        default: return "bg-white";
+        default: return "";
     }
 };
 
 const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
-    const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
-
-    const toggleExpand = useCallback((postId: string) => {
-        setExpandedCards((prev) => ({
-            ...prev,
-            [postId]: !prev[postId],
-        }));
-    }, []);
-
     const sortedPosts = useMemo(() => {
         return [...posts].sort((a, b) => {
             const dateA = a.start_date ? new Date(a.start_date) : new Date(0);
@@ -35,34 +26,36 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
     }, [posts]);
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="overflow-x-auto">
             {sortedPosts.length > 0 ? (
-                sortedPosts.map((post) => (
-                    <div key={post._id} className={`relative border-b-2 rounded-md shadow-md p-4 flex flex-col mb-2 ${getTypeOfClientColor(post.type_of_client)}`}>
-                        <div className="flex justify-between items-center">
-                            <div className="flex items-center gap-2">
-                                <BsPlusCircle className="text-gray-700" onClick={() => toggleExpand(post._id)} />
-                                <h3 className="text-xs font-semibold uppercase">{post.account_name}</h3>
-                            </div>
-                        </div>
-
-                        {expandedCards[post._id] && (
-                            <div className="mt-4 text-xs capitalize">
-                                <p><strong>Contact Person:</strong> {post.contact_person}</p>
-                                <p><strong>Contact No.:</strong> {post.contact_number}</p>
-                                <p><strong>Email:</strong> {post.email}</p>
-                                <p><strong>Address:</strong> {post.address}</p>
-                            </div>
-                        )}
-
-                        <div className="border-t border-gray-900 mt-3 pt-2 text-xs flex justify-between items-center">
-                            <span className="font-bold">{post.type_of_client}</span>
-                            <span className="italic capitalize">{post.fullname}</span>
-                        </div>
-                    </div>
-                ))
+                <table className="min-w-full bg-white border border-gray-300 text-xs">
+                    <thead>
+                        <tr className="bg-gray-100 text-left uppercase font-bold border-b">
+                            <th className="p-3 border">Account Name</th>
+                            <th className="p-3 border">Contact Person</th>
+                            <th className="p-3 border">Contact No.</th>
+                            <th className="p-3 border">Email</th>
+                            <th className="p-3 border">Address</th>
+                            <th className="p-3 border">Type of Client</th>
+                            <th className="p-3 border">Assigned To</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {sortedPosts.map((post) => (
+                            <tr key={post._id} className={`border-b hover:bg-gray-50 ${getTypeOfClientColor(post.type_of_client)}`}>
+                                <td className="p-3 border">{post.account_name}</td>
+                                <td className="p-3 border">{post.contact_person}</td>
+                                <td className="p-3 border">{post.contact_number}</td>
+                                <td className="p-3 border">{post.email}</td>
+                                <td className="p-3 border">{post.address}</td>
+                                <td className="p-3 border font-bold">{post.type_of_client}</td>
+                                <td className="p-3 border italic capitalize">{post.fullname}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             ) : (
-                <div className="col-span-full text-center py-4 text-sm">No accounts available</div>
+                <div className="text-center py-4 text-sm">No accounts available</div>
             )}
         </div>
     );

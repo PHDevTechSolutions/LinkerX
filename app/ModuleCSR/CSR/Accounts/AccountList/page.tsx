@@ -18,7 +18,7 @@ const AccountListPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCityAddress, setSelectedCityAddress] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(5);
+    const [postsPerPage, setPostsPerPage] = useState(10);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 

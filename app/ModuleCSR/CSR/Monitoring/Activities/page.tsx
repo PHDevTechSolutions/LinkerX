@@ -253,10 +253,6 @@ const ActivityPage: React.FC = () => {
                                                 handleDelete={confirmDelete}
                                                 handleStatusUpdate={handleStatusUpdate}
                                                 handleRemarksUpdate={handleRemarksUpdate}
-                                                userDetails={{
-                                                    id: editPost ? editPost.UserId : userDetails.UserId, // Pass UserId correctly here
-                                                    Role: user ? user.Role : "" // Pass Role here separately
-                                                }}
                                             />
                                         </div>
                                     </>
