@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import io from "socket.io-client";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { CiTrash, CiEdit } from "react-icons/ci";
 import { BiTransfer, BiRefresh } from "react-icons/bi";
 import { Menu } from "@headlessui/react";
 import axios from "axios";
+import { toast } from 'react-toastify';
 
 interface UsersCardProps {
   posts: any[];
@@ -28,6 +28,65 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
   useEffect(() => {
     setUpdatedUser(posts);
   }, [posts]);
+
+  // Function to handle updating user status to inactive
+  const handleUpdateStatusToInactive = async (userId: string, companyName: string) => {
+    try {
+      const response = await axios.post(`/api/ModuleSales/Companies/CompanyAccounts/UpdateStatus`, {
+        userId,
+        status: "Inactive",
+      });
+
+      if (response.data.success) {
+        // Update the user status in the frontend
+        setUpdatedUser((prev) =>
+          prev.map((user) =>
+            user.id === userId ? { ...user, status: "Inactive" } : user
+          )
+        );
+
+        // Display toast notification with company name
+        toast.info(`${companyName} status updated to inactive automatically!`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        console.error("Failed to update user status");
+      }
+    } catch (error) {
+      console.error("Error updating user status:", error);
+    }
+  };
+
+  // Check if any user should be updated to inactive based on time intervals and date_created
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+
+      updatedUser.forEach((user) => {
+        const dateCreated = new Date(user.date_created).getTime(); // Convert to timestamp
+        const timeElapsed = now - dateCreated; // Time difference from creation
+
+        // Check if the user is not already inactive and if time conditions are met
+        if (user.status !== "Inactive") {
+          if (user.typeclient === "Top 50" && timeElapsed >= 14 * 24 * 60 * 60 * 1000) { // 14 days in milliseconds
+            handleUpdateStatusToInactive(user.id, user.companyname);
+          } else if (user.typeclient === "Next 30" && timeElapsed >= 1 * 24 * 60 * 60 * 1000) { // 1 day in milliseconds
+            handleUpdateStatusToInactive(user.id, user.companyname);
+          } else if (user.typeclient === "Below 20" && timeElapsed >= 60 * 24 * 60 * 60 * 1000) { // 60 days in milliseconds
+            handleUpdateStatusToInactive(user.id, user.companyname);
+          }
+        }
+      });
+    }, 30000); // Check every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [updatedUser]);
 
   useEffect(() => {
     if (bulkTransferMode) {
@@ -213,7 +272,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
           Refresh
         </button>
       </div>
-  
       {/* Bulk Action Panel */}
       {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode) && (
         <div className="mb-4 p-3 bg-gray-100 rounded-md text-xs">
@@ -253,7 +311,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                   <option value="Below 20">Below 20</option>
                   <option value="Revive Account - Existing">Revive Account - Existing</option>
                   <option value="Revive Account - Resigned Agent">Revive Account - Resigned Agent</option>
-                  <option value="New Account - CSR">New Account - CSR</option>
                   <option value="New Account - Client Development">New Account - Client Development</option>
                   <option value="Transfer Account">Transfer Account</option>
                 </select>
@@ -263,13 +320,13 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
           </div>
         </div>
       )}
-  
+
       {/* Users Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 text-xs">
           <thead>
             <tr className="bg-gray-100">
-              <th className="p-2 border">Select</th>
+              <th className="p-2 border"></th>
               <th className="p-2 border">Company Name</th>
               <th className="p-2 border">Contact Person</th>
               <th className="p-2 border">Contact Number</th>
@@ -277,8 +334,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
               <th className="p-2 border">Address</th>
               <th className="p-2 border">Area</th>
               <th className="p-2 border">Type of Client</th>
-              <th className="p-2 border">TSA</th>
-              <th className="p-2 border">TSM</th>
+              <th className="p-2 border">Status</th>
               <th className="p-2 border">Actions</th>
             </tr>
           </thead>
@@ -298,8 +354,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                   <td className="p-2 border">{post.address}</td>
                   <td className="p-2 border">{post.area}</td>
                   <td className="p-2 border">{post.typeclient}</td>
-                  <td className="p-2 border">{post.referenceid}</td>
-                  <td className="p-2 border">{post.tsm}</td>
+                  <td className="p-2 border">{post.status}</td>
                   <td className="p-2 border">
                     <Menu as="div" className="relative inline-block align-item-center text-center">
                       <div>
@@ -316,7 +371,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
               ))
             ) : (
               <tr>
-                <td colSpan={11} className="p-4 text-center text-gray-500">No accounts available</td>
+                <td colSpan={10} className="p-4 text-center text-gray-500">No accounts available</td>
               </tr>
             )}
           </tbody>
@@ -324,7 +379,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
       </div>
     </div>
   );
-  
 };
 
 export default UsersCard;

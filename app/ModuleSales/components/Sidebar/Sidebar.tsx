@@ -62,6 +62,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
       icon: RiBuilding2Line,
       subItems: [
         { title: 'List of Company Accounts', href: `/ModuleSales/Sales/Companies/CompanyAccounts${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Inactive Companies', href: `/ModuleSales/Sales/Companies/InactiveCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Group of Companies', href: `/ModuleSales/Sales/Companies/GroupCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },

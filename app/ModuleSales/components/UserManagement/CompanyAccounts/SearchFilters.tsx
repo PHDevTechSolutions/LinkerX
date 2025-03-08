@@ -47,7 +47,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                 <option value="Next 30">Next 30</option>
                 <option value="Below 20">Below 20</option>
                 <option value="New Account - Client Development">New Account - Client Development</option>
-                <option value="CSR Inquiries">CSR Inquiries</option>
             </select>
             <div className="flex gap-2">
                 <input 
