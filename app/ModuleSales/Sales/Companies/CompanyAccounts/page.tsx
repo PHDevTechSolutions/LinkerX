@@ -200,16 +200,21 @@ const ListofUser: React.FC = () => {
             // Get the reference ID from userDetails
             const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
 
+            // Check if the role matches based on the user's role
             const matchesRole = userDetails.Role === "Super Admin"
                 ? true // Super Admin sees all
                 : userDetails.Role === "Territory Sales Associate"
                     ? post?.referenceid === referenceID // Manager sees only assigned companies
                     : false; // Default false if no match
 
-            // Return the filtered result
-            return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
+            // Check if the post's status is Active
+            const isActive = post?.status === 'Active';
+
+            // Return the filtered result, including the Active status check
+            return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole && isActive;
         })
         : [];
+
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -222,7 +227,7 @@ const ListofUser: React.FC = () => {
         setEditUser(post);
         setShowForm(true);
     };
-    
+
 
     return (
         <SessionChecker>
@@ -232,20 +237,20 @@ const ListofUser: React.FC = () => {
                         <div className="container mx-auto p-4">
                             {showForm ? (
                                 <AddPostForm
-                                onCancel={() => {
-                                  setShowForm(false);
-                                  setEditUser(null);
-                                }}
-                                refreshPosts={fetchAccount} // Pass the refreshPosts callback
-                                userDetails={{
-                                  id: editUser ? editUser.id : userDetails.UserId,
-                                  referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
-                                  manager: editUser ? editUser.manager : userDetails.Manager,
-                                  tsm: editUser ? editUser.tsm : userDetails.TSM,
-                                }} 
-                                editUser={editUser}
-                              />
-                              
+                                    onCancel={() => {
+                                        setShowForm(false);
+                                        setEditUser(null);
+                                    }}
+                                    refreshPosts={fetchAccount} // Pass the refreshPosts callback
+                                    userDetails={{
+                                        id: editUser ? editUser.id : userDetails.UserId,
+                                        referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
+                                        manager: editUser ? editUser.manager : userDetails.Manager,
+                                        tsm: editUser ? editUser.tsm : userDetails.TSM,
+                                    }}
+                                    editUser={editUser}
+                                />
+
                             ) : showImportForm ? (
                                 <div className="bg-white p-4 shadow-md rounded-md">
                                     <h2 className="text-lg font-bold mb-2">Import Accounts</h2>
