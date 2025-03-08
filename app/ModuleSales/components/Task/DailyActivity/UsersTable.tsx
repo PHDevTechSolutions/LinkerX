@@ -182,6 +182,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                             <div>
                                 {[...pinned, ...unpinned].map(user => (
                                     <div key={user.id} className={` rounded-lg shadow-md p-4 mb-2
+                                        ${user.typeclient === "CSR Inquiries" ? "border-2 border-red-700" : ""} 
+                                        
                                         ${user.activitystatus === "Cold" ? "border-l-2 border-t-2 border-blue-700" :
                                             user.activitystatus === "Warm" ? "border-l-2 border-t-2 border-yellow-700" :
                                                 user.activitystatus === "Hot" ? "border-l-2 border-t-2 border-red-700" :
@@ -191,11 +193,19 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                             ${pinnedUsers.has(user.id) ? "bg-yellow-100" : "bg-gray-50"}
                                             `}>
 
+
+
                                         {/* Card Header - Company Name */}
                                         {!["Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
-                                            <div className="card-header mb-2 pb-2 flex justify-between items-center">
-                                                <h3 className="text-xs font-semibold text-gray-800 uppercase">{user.companyname}</h3>
-                                                <div className="relative">
+                                            <div className="card-header mb-2 pb-2 flex justify-between items-center relative">
+                                                {/* CSR Inquiries Label - Centered at the Top */}
+                                                {user.typeclient === "CSR Inquiries" && (
+                                                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-white px-2 text-red-700 font-bold text-[8px] border border-red-700">
+                                                        CSR Inquiries
+                                                    </span>
+                                                )}
+                                                <h3 className="text-xs font-semibold text-gray-800 uppercase mt-3">{user.companyname}</h3>
+                                                <div className="relative mt-3">
                                                     <button onClick={() => toggleCollapse(user.id)} className="text-gray-500 hover:text-gray-700">
                                                         {collapsedCards[user.id] ? <BsDash size={16} /> : <BsPlus size={16} />}
                                                     </button>
@@ -206,23 +216,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                     <div id={`menu-${user.id}`} className={`absolute right-0 mt-2 w-32 bg-white shadow-md p-2 rounded-md text-xs ${openMenu === user.id ? 'block' : 'hidden'}`}>
                                                         <ul>
                                                             <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handleEdit(user)}><CiEdit /> Edit Details</li>
-                                                            <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1"><CiCalendar size={16} /> Edit Details</li>
-                                                            <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1">
-                                                                <div className="relative w-full">
-                                                                    <CiCalendar size={16} />
-                                                                    <select className="appearance-none bg-transparent border-none text-xs cursor-pointer focus:outline-none pl-4 pr-6">
-                                                                        <option value="" disabled selected>Callback</option>
-                                                                        <option value="Repeat Once">Repeat Once</option>
-                                                                        <option value="Repeat Every Week">Repeat Every Week</option>
-                                                                        <option value="Repeat Every Month">Repeat Every Month</option>
-                                                                        <option value="Repeat Every Year">Repeat Every Year</option>
-                                                                    </select>
-                                                                    <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                                                        <BsChevronDown size={14} className="text-gray-500" />
-                                                                    </div>
-                                                                </div>
-                                                            </li>
-
                                                             <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => toggleStatusMenu(user.id)}><BsRecycle />Change Status</li>
 
                                                             {/* Status Change Menu */}
@@ -249,12 +242,23 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                         {/* Card Body */}
                                         {collapsedCards[user.id] && (
                                             <div className="text-xs">
-                                                <p><strong>Source:</strong> {user.source}</p>
-                                                <p><strong>Product Category:</strong> {user.projectcategory}</p>
-                                                <p><strong>Quotation Number:</strong> {user.quotationnumber}</p>
-                                                <p><strong>SO Amount:</strong> {user.soamount}</p>
+                                                <p><strong>Type:</strong> {user.typeclient}</p>
+                                                {user.typeclient === "CSR Inquiries" ? (
+                                                    <>
+                                                        <p><strong>Wrapup:</strong> {user.wrapup}</p>
+                                                        <p><strong>Inquiries:</strong> {user.inquiries}</p>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <p><strong>Source:</strong> {user.source}</p>
+                                                        <p><strong>Product Category:</strong> {user.projectcategory}</p>
+                                                        <p><strong>Quotation Number:</strong> {user.quotationnumber}</p>
+                                                        <p><strong>SO Amount:</strong> {user.soamount}</p>
+                                                    </>
+                                                )}
                                             </div>
                                         )}
+
 
                                         {/* Only show certain fields based on activitystatus */}
                                         {["Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking"].includes(user.activitystatus) && (

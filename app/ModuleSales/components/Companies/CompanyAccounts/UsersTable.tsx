@@ -6,8 +6,6 @@ import { BiTransfer, BiRefresh } from "react-icons/bi";
 import { Menu } from "@headlessui/react";
 import axios from "axios";
 
-const socketURL = "http://localhost:3001";
-
 interface UsersCardProps {
   posts: any[];
   handleEdit: (post: any) => void;
@@ -15,7 +13,6 @@ interface UsersCardProps {
 }
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid }) => {
-  const socketRef = useRef(io(socketURL));
   const [updatedUser, setUpdatedUser] = useState<any[]>([]);
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
   const [bulkEditMode, setBulkEditMode] = useState(false);
@@ -216,34 +213,17 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
           Refresh
         </button>
       </div>
-
+  
       {/* Bulk Action Panel */}
       {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode) && (
         <div className="mb-4 p-3 bg-gray-100 rounded-md text-xs">
-          {/* Select All Checkbox */}
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <input type="checkbox" checked={selectedUsers.size === updatedUser.length && updatedUser.length > 0} onChange={handleSelectAll} className="w-4 h-4" />
               <span className="ml-2">Select All</span>
               <span className="ml-4 font-semibold text-gray-700">Selected: {selectedUsers.size} / {updatedUser.length}</span>
             </div>
-
-            {/* Bulk Transfer */}
-            {bulkTransferMode && (
-              <div className="flex items-center gap-2">
-                <label className="text-xs font-medium">Territory Sales Manager:</label>
-                <select value={selectedTsm} onChange={(e) => setSelectedTsm(e.target.value)} className="px-2 py-1 border rounded-md capitalize">
-                  <option value="">Select Territory Sales Manager</option>
-                  {tsmList.map((tsm) => (
-                    <option key={tsm._id || tsm.ReferenceID} value={tsm.ReferenceID}>
-                      {tsm.Firstname} {tsm.Lastname}
-                    </option>
-                  ))}
-                </select>
-                <button onClick={handleBulkTransfer} className="px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-xs" disabled={!selectedTsm}>Transfer</button>
-              </div>
-            )}
-
+  
             {/* Bulk Transfer to TSA */}
             {bulkTransferTSAMode && (
               <div className="flex items-center gap-2">
@@ -259,13 +239,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                 <button onClick={handleBulkTSATransfer} className="px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-xs" disabled={!selectedTsa}>Transfer</button>
               </div>
             )}
-
-            {/* Bulk Delete */}
+  
             {bulkDeleteMode && (
               <button onClick={handleBulkDelete} className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-xs" disabled={selectedUsers.size === 0}>Bulk Delete</button>
             )}
-
-            {/* Bulk Edit */}
+  
             {bulkEditMode && (
               <div className="flex items-center gap-2">
                 <select value={newTypeClient} onChange={(e) => setNewTypeClient(e.target.value)} className="px-2 py-1 border rounded-md">
@@ -278,7 +256,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                   <option value="New Account - CSR">New Account - CSR</option>
                   <option value="New Account - Client Development">New Account - Client Development</option>
                   <option value="Transfer Account">Transfer Account</option>
-                  <option value="CSR Inquiries">CSR Inquiries</option>
                 </select>
                 <button onClick={handleBulkEdit} className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs" disabled={!newTypeClient}>Apply Changes</button>
               </div>
@@ -286,61 +263,68 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
           </div>
         </div>
       )}
-
-      {/* User Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {updatedUser.length > 0 ? (
-          updatedUser.map((post) => (
-            <div key={post.id} className="relative border rounded-md shadow-md p-4 flex flex-col bg-white">
-              <div className="flex items-center gap-2">
-                {/* Checkbox will show if any bulk mode is active */}
-                {bulkDeleteMode && (
-                  <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4 text-red-600" />
-                )}
-                {bulkEditMode && (
-                  <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4 text-blue-600" />
-                )}
-                {bulkTransferMode && (
-                  <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4 text-purple-600" />
-                )}
-                {bulkTransferTSAMode && (
-                  <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4 text-purple-600" />
-                )}
-                <h3 className="text-xs font-semibold uppercase">{post.companyname}</h3>
-              </div>
-              <div className="flex justify-between items-center mt-2">
-                <div className="mt-4 mb-4 text-xs">
-                  <p><strong>Contact Person:</strong> <span className="capitalize">{post.contactperson}</span></p>
-                  <p><strong>Contact Number:</strong> {post.contactnumber}</p>
-                  <p><strong>Email Address:</strong> {post.emailaddress}</p>
-                  <div className="border-t border-gray-800 pb-4 mt-4"></div>
-                  <p className="mt-2"><strong>Address:</strong><span className="capitalize">{post.address}</span></p>
-                  <p><strong>Area:</strong><span className="capitalize">{post.area}</span></p>
-                  <p className="mt-2"><strong>Type of Client:</strong><span className="uppercase"> {post.typeclient}</span></p>
-                </div>
-                <Menu as="div" className="relative inline-block text-left">
-                  <div>
-                    <Menu.Button>
-                      <BsThreeDotsVertical />
-                    </Menu.Button>
-                  </div>
-                  <Menu.Items className="absolute right-0 mt-2 min-w-[160px] bg-white shadow-md rounded-md z-10">
-                    <button className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left" onClick={() => handleEdit(post)}>Edit</button>
-
-                  </Menu.Items>
-                </Menu>
-              </div>
-              <div className="mt-auto border-t pt-2 text-xs text-gray-900">
-                <p><strong>TSA:</strong> {post.referenceid} | <strong>TSM:</strong> {post.tsm}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="col-span-full text-center py-4 text-xs">No accounts available</div>
-        )}
+  
+      {/* Users Table */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-200 text-xs">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="p-2 border">Select</th>
+              <th className="p-2 border">Company Name</th>
+              <th className="p-2 border">Contact Person</th>
+              <th className="p-2 border">Contact Number</th>
+              <th className="p-2 border">Email Address</th>
+              <th className="p-2 border">Address</th>
+              <th className="p-2 border">Area</th>
+              <th className="p-2 border">Type of Client</th>
+              <th className="p-2 border">TSA</th>
+              <th className="p-2 border">TSM</th>
+              <th className="p-2 border">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {updatedUser.length > 0 ? (
+              updatedUser.map((post) => (
+                <tr key={post.id} className="hover:bg-gray-50 capitalize">
+                  <td className="p-2 border text-center">
+                    {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode) && (
+                      <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4" />
+                    )}
+                  </td>
+                  <td className="p-2 border">{post.companyname}</td>
+                  <td className="p-2 border">{post.contactperson}</td>
+                  <td className="p-2 border">{post.contactnumber}</td>
+                  <td className="p-2 border lowercase">{post.emailaddress}</td>
+                  <td className="p-2 border">{post.address}</td>
+                  <td className="p-2 border">{post.area}</td>
+                  <td className="p-2 border">{post.typeclient}</td>
+                  <td className="p-2 border">{post.referenceid}</td>
+                  <td className="p-2 border">{post.tsm}</td>
+                  <td className="p-2 border">
+                    <Menu as="div" className="relative inline-block align-item-center text-center">
+                      <div>
+                        <Menu.Button>
+                          <BsThreeDotsVertical />
+                        </Menu.Button>
+                      </div>
+                      <Menu.Items className="absolute right-0 mt-2 min-w-[160px] bg-white shadow-md rounded-md z-10">
+                        <button className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left" onClick={() => handleEdit(post)}>Edit</button>
+                      </Menu.Items>
+                    </Menu>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={11} className="p-4 text-center text-gray-500">No accounts available</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
+  
 };
 
 export default UsersCard;

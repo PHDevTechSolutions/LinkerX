@@ -287,7 +287,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         <>
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <input type="text" id="activitynumber" value={activitynumber ?? ""} onChange={() => {}} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly={!!editPost} />
+                    <input type="text" id="activitynumber" value={activitynumber ?? ""} onChange={() => { }} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly={!!editPost} />
                     <input type="hidden" id="referenceid" value={referenceid ?? ""} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                     <input type="hidden" id="manager" value={manager ?? ""} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                     <input type="hidden" id="tsm" value={tsm ?? ""} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
@@ -298,8 +298,27 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="companyname">Company Name</label>
-                    <Select id="companyname" options={companies} onChange={handleCompanySelect} isClearable className="text-xs capitalize" />
+                    {editPost ? (
+                        // If editUser exists (edit mode), show a disabled text field
+                        <input
+                            type="text"
+                            id="companyname"
+                            value={editPost.companyname || ''}
+                            disabled
+                            className="text-xs capitalize w-full p-2 border border-gray-300 rounded-md"
+                        />
+                    ) : (
+                        // If not in edit mode, show the Select dropdown
+                        <Select
+                            id="companyname"
+                            options={companies}
+                            onChange={handleCompanySelect}
+                            isClearable
+                            className="text-xs capitalize"
+                        />
+                    )}
                 </div>
+
 
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Contact Person</label>

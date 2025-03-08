@@ -65,7 +65,10 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
       icon: BsFillTelephoneOutboundFill,
       subItems: [
         { title: 'Tickets', href: `/ModuleCSR/CSR/Monitoring/Activities${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
+        userDetails.ReferenceID === 'LR-CSR-849432'
+          ? { title: 'Automated Tickets', href: `/ModuleCSR/CSR/AutomatedTickets/Tickets${userId ? `?id=${encodeURIComponent(userId)}` : ''}` }
+          : false,
+      ].filter(Boolean), // Ito ang mag-aalis ng false values
     },
     {
       title: 'Customer Database',
@@ -180,22 +183,24 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
                 }`}
               >
                 {openSections[item.title] && !collapsed && (
-                  <div> {/* Added margin-left for submenu spacing */}
-                    {item.subItems.map((subItem, subIndex) => (
-                      <Link
-                      key={subIndex}
-                      href={subItem.href}
-                      prefetch={true}
-                      className="flex w-full items-center p-4 bg-gray-50 text-gray-900 border-l-2 border-transparent transition-all duration-300 ease-in-out hover:bg-yellow-100 hover:shadow-md"
-                    >
-                    
-                        {/* Adding small circle icon for each submenu item */}
-                        <FaRegCircle size={10} className="mr-2 ml-2" />
-                        {subItem.title}
-                      </Link>
-                    ))}
-                  </div>
-                )}
+  <div> {/* Added margin-left for submenu spacing */}
+    {Array.isArray(item.subItems) &&
+      item.subItems.map((subItem, subIndex) =>
+        subItem && typeof subItem === "object" && "href" in subItem ? (
+          <Link
+            key={subIndex}
+            href={subItem.href}
+            prefetch={true}
+            className="flex w-full items-center p-4 bg-gray-50 text-gray-900 border-l-2 border-transparent transition-all duration-300 ease-in-out hover:bg-yellow-100 hover:shadow-md"
+          >
+            <FaRegCircle size={10} className="mr-2 ml-2" />
+            {subItem.title}
+          </Link>
+        ) : null
+      )}
+  </div>
+)}
+
               </div>
             </div>
           ))}
