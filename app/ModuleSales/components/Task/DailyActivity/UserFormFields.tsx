@@ -81,6 +81,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const dropdownRef = useRef<HTMLUListElement>(null);
     const isQuotationEmpty = !quotationnumber || !quotationamount;
 
+    const [showInput, setShowInput] = useState(false);
+
     const generateActivityNumber = () => {
         if (editPost?.activitynumber) return; // Keep existing number in Edit Mode
         if (!companyname || !referenceid) return;
@@ -282,6 +284,56 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
         return () => clearInterval(interval);
     }, []);
+
+    const handleCallbackChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedOption = e.target.value;
+
+        if (selectedOption === "Select Callback") {
+            setcallback("");
+            setShowInput(false); // Hide input field
+            return;
+        }
+
+        if (selectedOption === "Pick a DateTime") {
+            setcallback(""); // Allow manual input
+            setShowInput(true); // Show input field
+            return;
+        }
+
+        setShowInput(false); // Hide input for predefined dates
+
+        const today = new Date();
+        let futureDate = new Date(today);
+
+        switch (selectedOption) {
+            case "Callback Tomorrow":
+                futureDate.setDate(today.getDate() + 1);
+                break;
+            case "Callback After 3 Days":
+                futureDate.setDate(today.getDate() + 3);
+                break;
+            case "Callback After a Week":
+                futureDate.setDate(today.getDate() + 7);
+                break;
+            case "Callback After a Month":
+                futureDate.setMonth(today.getMonth() + 1);
+                break;
+            case "Callback After a Year":
+                futureDate.setFullYear(today.getFullYear() + 1);
+                break;
+            default:
+                setcallback("");
+                return;
+        }
+
+        // Set time to 08:00 AM
+        futureDate.setHours(8, 0, 0, 0);
+
+        // Convert to datetime-local format (YYYY-MM-DDTHH:MM)
+        const formattedDate = futureDate.toISOString().slice(0, 16);
+
+        setcallback(formattedDate);
+    };
 
     return (
         <>
@@ -507,7 +559,25 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Callback</label>
-                                <input type="datetime-local" value={callback ?? ""} onChange={(e) => setcallback(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                                <select className="w-full px-3 py-2 border rounded text-xs" onChange={handleCallbackChange}>
+                                    <option>Select Callback</option>
+                                    <option>Callback Tomorrow</option>
+                                    <option>Callback After 3 Days</option>
+                                    <option>Callback After a Week</option>
+                                    <option>Callback After a Month</option>
+                                    <option>Callback After a Year</option>
+                                    <option>Pick a DateTime</option>
+                                </select>
+
+                                {/* Show input field ONLY when "Pick a DateTime" is selected */}
+                                {showInput && (
+                                    <input
+                                        type="datetime-local"
+                                        value={callback}
+                                        onChange={(e) => setcallback(e.target.value)}
+                                        className="w-full px-3 py-2 border rounded text-xs mt-2"
+                                    />
+                                )}
                             </div>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Type of Call</label>
@@ -560,7 +630,25 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Callback</label>
-                                <input type="datetime-local" value={callback ?? ""} onChange={(e) => setcallback(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                                <select className="w-full px-3 py-2 border rounded text-xs" onChange={handleCallbackChange}>
+                                    <option>Select Callback</option>
+                                    <option>Callback Tomorrow</option>
+                                    <option>Callback After 3 Days</option>
+                                    <option>Callback After a Week</option>
+                                    <option>Callback After a Month</option>
+                                    <option>Callback After a Year</option>
+                                    <option>Pick a DateTime</option>
+                                </select>
+
+                                {/* Show input field ONLY when "Pick a DateTime" is selected */}
+                                {showInput && (
+                                    <input
+                                        type="datetime-local"
+                                        value={callback}
+                                        onChange={(e) => setcallback(e.target.value)}
+                                        className="w-full px-3 py-2 border rounded text-xs mt-2"
+                                    />
+                                )}
                             </div>
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">

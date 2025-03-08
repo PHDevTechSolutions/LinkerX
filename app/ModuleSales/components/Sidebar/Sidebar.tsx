@@ -9,12 +9,14 @@ import { RiDonutChartLine, RiBuilding2Line  } from "react-icons/ri";
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
+
 const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, onClose }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
   const [userDetails, setUserDetails] = useState({Firstname: "", Lastname: "", Location: "", Role: "", Company: "",});
   const router = useRouter();
+  
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
