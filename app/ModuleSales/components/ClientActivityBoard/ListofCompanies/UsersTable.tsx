@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import io from "socket.io-client";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Menu } from "@headlessui/react";
-const socketURL = "http://localhost:3001";
 
 interface UsersCardProps {
   posts: any[];
@@ -10,7 +9,6 @@ interface UsersCardProps {
 }
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
-  const socketRef = useRef(io(socketURL));
   const [updatedUser, setUpdatedUser] = useState<any[]>([]);
 
   useEffect(() => {
