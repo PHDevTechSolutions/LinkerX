@@ -18,7 +18,7 @@ async function addUser(data: any) {
             projectname, projectcategory, projecttype, source, typeactivity,
             callback, callstatus, typecall, remarks, quotationnumber,
             quotationamount, sonumber, soamount, startdate, enddate,
-            activitystatus, activitynumber,
+            activitystatus, activitynumber, actualsales,
         } = data;
 
         // Validate required fields
@@ -31,13 +31,13 @@ async function addUser(data: any) {
             "referenceid", "manager", "tsm", "companyname", "contactperson",
             "contactnumber", "emailaddress", "typeclient", "address", "area",
             "projectname", "projectcategory", "projecttype", "source", 
-            "activitystatus", "activitynumber"
+            "activitystatus", "activitynumber",
         ];
 
         const activityValues = [
             referenceid, manager, tsm, companyname, contactperson,
             contactnumber, emailaddress, typeclient, address, area,
-            projectname, projectcategory, projecttype, source, 
+            projectname, projectcategory, projecttype, source, actualsales,
             activitystatus || null, activitynumber || null
         ];
 
@@ -63,13 +63,13 @@ async function addUser(data: any) {
         const progressColumns = [
             ...activityColumns, "typeactivity", "callback", "callstatus", "typecall", 
             "remarks", "quotationnumber", "quotationamount", "sonumber", "soamount", 
-            "startdate", "enddate"
+            "startdate", "enddate", "actualsales",
         ];
 
         const progressValues = [
             ...activityValues, typeactivity, callback || null, callstatus || null, typecall || null, 
             remarks || null, quotationnumber || null, quotationamount || null, sonumber || null, 
-            soamount || null, startdate || null, enddate || null
+            soamount || null, startdate || null, enddate || null, actualsales || null,
         ];
 
         // Update activitynumber in progressValues to use the returned one

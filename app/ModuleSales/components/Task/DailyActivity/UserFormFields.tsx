@@ -90,15 +90,17 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const [contactNumbers, setContactNumbers] = useState<string[]>([]);
     const [emailAddresses, setEmailAddresses] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
+
     const [showFields, setShowFields] = useState(false);
     const [showOutboundFields, setShowOutboundFields] = useState(false);
     const [showInboundFields, setShowInboundFields] = useState(false);
     const [showQuotationField, setShowQuotationField] = useState(false);
     const [showSOField, setShowSOField] = useState(false);
-    const [showDeliveredField, setShowDeliveredField] = useState(false);
+    const [showDeliverField, setShowDeliverField] = useState(false);
+    const [selectedEmail, setSelectedEmail] = useState("");
+
     const dropdownRef = useRef<HTMLUListElement>(null);
+
     const isQuotationEmpty = !quotationnumber || !quotationamount;
 
     const [showInput, setShowInput] = useState(false);
@@ -124,7 +126,12 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         } else if (sonumber && soamount) {
             setactivitystatus("Hot"); // Set to Hot if SO number and amount are filled
         }
-    }, [currentRecords, quotationnumber, quotationamount, sonumber, soamount]);
+
+        // If actualsales has a value, set the status to Done
+        if (actualsales) {
+            setactivitystatus("Done"); // Set to Done if there's a value in actualsales
+        }
+    }, [currentRecords, quotationnumber, quotationamount, sonumber, soamount, actualsales]); // Added actualsales dependency    
 
     const generateActivityNumber = () => {
         if (editPost?.activitynumber) return; // Keep existing number in Edit Mode
@@ -213,6 +220,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         setEmailAddresses(newEmailAddresses);
     };
 
+
     // Remove specific contact info
     const removeContactPerson = (index: number) => {
         const newContactPersons = contactPersons.filter((_, i) => i !== index);
@@ -231,19 +239,17 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
     const handleActivitySelection = (activity: string) => {
         console.log("Selected:", activity); // Debugging
-    
+
         settypeactivity(activity);
-        setIsDropdownOpen(false);
-        setIsSubmenuOpen(false);
-    
+
         // Reset all fields
         setShowFields(false);
         setShowOutboundFields(false);
         setShowInboundFields(false);
         setShowQuotationField(false);
         setShowSOField(false);
-        setShowDeliveredField(false); // Reset the delivered field before checking
-    
+        setShowDeliverField(false); // Reset the delivered field before checking
+
         const accountingActivities = [
             "Account Development",
             "Accounting: Accounts Receivable and Payment",
@@ -278,9 +284,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             "Warehouse: Replacement Request / Concern",
             "Warehouse: Sample Request / Concern",
             "Warehouse: SO Status Follow Up",
-            "Delivered", // Ensure "Delivered" is here for the condition
         ];
-    
+
         if (accountingActivities.includes(activity)) {
             setShowFields(true);
         } else if (activity === "Outbound Call") {
@@ -295,12 +300,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         } else if (activity.includes("Preparation: Sales Order Preparation")) {
             setShowFields(true);
             setShowSOField(true);
-        } else if (activity === "Delivered") {
+        } else if (activity.includes("Delivered")) {
             setShowFields(true);
-            setShowDeliveredField(true); // Trigger showing the delivered field when "Delivered" is selected
+            setShowDeliverField(true); // Trigger showing the delivered field when "Delivered" is selected
         }
     };
-    
 
     useEffect(() => {
         if (dropdownRef.current) {
@@ -529,80 +533,62 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <div className="mb-4 border rounded-lg shadow-sm p-4">
                 <div className="flex flex-wrap -mx-4 rounded">
                     {/* Activity Dropdown */}
-                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4 relative">
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Type of Activity</label>
-                        <div
-                            onClick={() => {
-                                setIsDropdownOpen(!isDropdownOpen);
-                                setIsSubmenuOpen(false);
-                            }}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm flex justify-between items-center hover:bg-gray-100 cursor-pointer"
+                        <select
+                            value={typeactivity ?? ""}
+                            onChange={(e) => handleActivitySelection(e.target.value)}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm"
                         >
-                            {typeactivity ?? ""}
-                            <FaChevronDown className="text-gray-500 text-xs" />
-                        </div>
-
-                        {isDropdownOpen && (
-                            <div className="absolute left-4 w-[70%] mt-1 bg-white border rounded shadow-md text-xs z-10">
-                                <ul
-                                    ref={dropdownRef}
-                                    tabIndex={0}
-                                    className="py-1 max-h-[200px] overflow-y-auto outline-none"
-                                >
-                                    {[
-                                        "Account Development",
-                                        "Accounting: Accounts Receivable and Payment",
-                                        "Accounting: Billing Concern",
-                                        "Accounting: Refund Request",
-                                        "Accounting: Sales Order Concern",
-                                        "Accounting: TPC Request",
-                                        "Admin Concern: Coordination of Payment Terms Request",
-                                        "CSR Inquiries",
-                                        "Coordination of Pick-Up / Delivery to Client",
-                                        "Coordination With CS (Email Acknowledgement)",
-                                        "Marketing Concern",
-                                        "Email and Viber Checking",
-                                        "Email Blast",
-                                        "Email, SMS & Viber Replies",
-                                        "Inbound Call",
-                                        "Payment Follow-Up",
-                                        "Quotation Follow-Up",
-                                        "Logistic Concern: Shipping Cost Estimation",
-                                        "Outbound Call",
-                                        "Preparation: Bidding Preparation",
-                                        "Preparation: Preparation of Report",
-                                        "Preparation: Preparation of SPF",
-                                        "Preparation: Preparation of Quote: New Client",
-                                        "Preparation: Preparation of Quote: Existing Client",
-                                        "Preparation: Sales Order Preparation",
-                                        "Technical: Dialux Simulation Request",
-                                        "Technical: Drawing Request",
-                                        "Technical: Inquiry",
-                                        "Technical: Site Visit Request",
-                                        "Technical: TDS Request",
-                                        "Walk-In Client",
-                                        "Warehouse: Coordination to Billing",
-                                        "Warehouse: Coordination to Dispatch",
-                                        "Warehouse: Coordination to Inventory",
-                                        "Warehouse: Delivery / Helper Concern",
-                                        "Warehouse: Replacement Request / Concern",
-                                        "Warehouse: Sample Request / Concern",
-                                        "Warehouse: SO Status Follow Up",
-                                        "Delivered",
-                                    ].map((item) => (
-                                        <li
-                                            key={item}
-                                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                            onClick={() => handleActivitySelection(item)}
-                                        >
-                                            {item}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-
-                        )}
+                            <option value="" disabled>Select an activity</option>
+                            {[
+                                "Account Development",
+                                "Accounting: Accounts Receivable and Payment",
+                                "Accounting: Billing Concern",
+                                "Accounting: Refund Request",
+                                "Accounting: Sales Order Concern",
+                                "Accounting: TPC Request",
+                                "Admin Concern: Coordination of Payment Terms Request",
+                                "CSR Inquiries",
+                                "Coordination of Pick-Up / Delivery to Client",
+                                "Coordination With CS (Email Acknowledgement)",
+                                "Marketing Concern",
+                                "Email and Viber Checking",
+                                "Email Blast",
+                                "Email, SMS & Viber Replies",
+                                "Inbound Call",
+                                "Payment Follow-Up",
+                                "Quotation Follow-Up",
+                                "Logistic Concern: Shipping Cost Estimation",
+                                "Outbound Call",
+                                "Preparation: Bidding Preparation",
+                                "Preparation: Preparation of Report",
+                                "Preparation: Preparation of SPF",
+                                "Preparation: Preparation of Quote: New Client",
+                                "Preparation: Preparation of Quote: Existing Client",
+                                "Preparation: Sales Order Preparation",
+                                "Technical: Dialux Simulation Request",
+                                "Technical: Drawing Request",
+                                "Technical: Inquiry",
+                                "Technical: Site Visit Request",
+                                "Technical: TDS Request",
+                                "Walk-In Client",
+                                "Warehouse: Coordination to Billing",
+                                "Warehouse: Coordination to Dispatch",
+                                "Warehouse: Coordination to Inventory",
+                                "Warehouse: Delivery / Helper Concern",
+                                "Warehouse: Replacement Request / Concern",
+                                "Warehouse: Sample Request / Concern",
+                                "Warehouse: SO Status Follow Up",
+                                "Delivered",
+                            ].map((item) => (
+                                <option key={item} value={item}>
+                                    {item}
+                                </option>
+                            ))}
+                        </select>
                     </div>
+
                     {/* Conditional Fields */}
                     {showInboundFields && (
                         <>
@@ -670,22 +656,40 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             </div>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Amount</label>
-                                <input type="text" value={soamount ?? ""} onChange={(e) => setsoamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                                <input type="number" value={soamount ?? ""} onChange={(e) => setsoamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                             </div>
                         </>
                     )}
 
-{showDeliveredField && (
-    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-        <label className="block text-xs font-bold mb-2">SO to DR Amount (Actual Sales)</label>
-        <input
-            type="text"
-            value={actualsales ?? ""}
-            onChange={(e) => setactualsales(e.target.value)}
-            className="w-full px-3 py-2 border rounded text-xs uppercase"
-        />
-    </div>
-)}
+                    {showDeliverField && (
+                        <>
+                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                                <label className="block text-xs font-bold mb-2">SO to DR Amount (Actual Sales)</label>
+                                <input
+                                    type="number"
+                                    value={actualsales ?? ""}
+                                    onChange={(e) => setactualsales(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded text-xs uppercase"
+                                />
+                            </div>
+
+                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                                <label className="block text-xs font-bold mb-2">Email</label>
+                                <select
+                                    value={emailaddress} // Bind to selected email
+                                    onChange={(e) => setemailaddress(e.target.value)} // Update the selected email
+                                    className="w-full px-3 py-2 border rounded text-xs"
+                                >
+                                    <option value="">Select Email</option>
+                                    {emailAddresses.map((email, index) => (
+                                        <option key={index} value={email}>
+                                            {email}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </>
+                    )}
 
 
                     {showOutboundFields && (
