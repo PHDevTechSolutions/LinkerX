@@ -86,7 +86,10 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
             ...callbackData.data
               .filter(
                 (notif: Notification) =>
-                  notif.typeactivity === "Outbound Call" && new Date(notif.callback) <= currentTime
+                  notif.typeactivity === "Outbound Call" &&
+                  !!notif.callback && // Ensure callback is not null/empty
+                  new Date(notif.callback) <= currentTime &&
+                  !dismissedIds.includes(notif.id)
               )
               .sort((a: Notification, b: Notification) => new Date(b.callback).getTime() - new Date(a.callback).getTime()),
 
@@ -211,15 +214,19 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
         {/* Notification Icon */}
         <button onClick={() => setShowNotifications(!showNotifications)} className="p-2 relative">
           <IoMdNotificationsOutline size={20} />
-          {notificationCount > 0 && (
+          {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback).length > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {notificationCount}
+              {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback).length}
             </span>
           )}
+
         </button>
 
-        {showNotifications && (
-          <div ref={notificationRef} className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-300 rounded shadow-lg z-50 p-2">
+        {showNotifications && notifications.length > 0 && (
+          <div
+            ref={notificationRef}
+            className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-300 rounded shadow-lg z-50 p-2"
+          >
             <h3 className="text-xs font-semibold px-2 py-1 border-b flex justify-between items-center">
               <span>Notifications</span>
               <button className="flex items-center gap-2 text-xs" onClick={openModal}>
@@ -227,38 +234,40 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
               </button>
             </h3>
 
-            {notifications.length > 0 ? (
+            {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback).length > 0 ? (
               <ul>
-                {notifications.map((notif) => (
-                  <li
-                    key={notif.id}
-                    onClick={() => handleNotificationClick(notif.id)}
-                    className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100"
-                  >
-                    {notif.typeactivity === "Outbound Call" ? (
-                      <>
-                        <strong>You have a callback in {notif.companyname}.</strong> Please make a call or activity.
-                        <span className="text-gray-500 text-xs mt-1 block">
-                          {notif.callback ? new Date(notif.callback).toLocaleString() : "Invalid Date"}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <strong>You have a new Inquiry from {notif.companyname}.</strong> From: {notif.typeclient}.
-                        <span className="text-gray-500 text-xs mt-1 block">
-                          {new Date(notif.date_created).toLocaleString()}
-                        </span>
-                      </>
-                    )}
-
-                  </li>
-                ))}
+                {notifications
+                  .filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback) // Ensure callback is not null
+                  .map((notif) => (
+                    <li
+                      key={notif.id}
+                      onClick={() => handleNotificationClick(notif.id)}
+                      className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100"
+                    >
+                      {notif.typeactivity === "Outbound Call" ? (
+                        <>
+                          <strong>You have a callback in {notif.companyname}.</strong> Please make a call or activity.
+                          <span className="text-gray-500 text-xs mt-1 block">
+                            {notif.callback ? new Date(notif.callback).toLocaleString() : "Invalid Date"}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <strong>You have a new Inquiry from {notif.companyname}.</strong> From: {notif.typeclient}.
+                          <span className="text-gray-500 text-xs mt-1 block">
+                            {new Date(notif.date_created).toLocaleString()}
+                          </span>
+                        </>
+                      )}
+                    </li>
+                  ))}
               </ul>
             ) : (
               <p className="text-xs p-2 text-gray-500 text-center">No new notifications</p>
             )}
           </div>
         )}
+
 
         {/* User Dropdown */}
         <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-2 focus:outline-none">

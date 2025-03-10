@@ -54,6 +54,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [quotationamount, setquotationamount] = useState(editUser ? editUser.quotationamount : "");
   const [sonumber, setsonumber] = useState(editUser ? editUser.sonumber : "");
   const [soamount, setsoamount] = useState(editUser ? editUser.soamount : "");
+  const [actualsales, setactualsales] = useState(editUser ? editUser.actualsales: "");
   const [callstatus, setcallstatus] = useState(editUser ? editUser.callstatus : "");
 
   const [startdate, setstartdate] = useState(editUser ? editUser.startdate : "");
@@ -65,6 +66,10 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const [showModal, setShowModal] = useState(false);
+  const [modalRemarks, setModalRemarks] = useState("");
+
 
   // 🔥 FIX: Ensure activityList is always an array
   const [activityList, setActivityList] = useState<{
@@ -78,6 +83,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     quotationamount: string;
     sonumber: string;
     soamount: string;
+    activitystatus: string;
+    date_created: string;
   }[]>([]);
 
 
@@ -100,7 +107,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         .catch(() => setActivityList([]));
     }
   }, [editUser?.activitynumber]);
-  
+
 
   const totalPages = Math.ceil(activityList.length / PAGE_SIZE);
   const currentRecords = activityList.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
@@ -117,7 +124,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       body: JSON.stringify({
         id: editUser?.id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient,
         address, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, remarks,
-        callback, typecall, quotationnumber, quotationamount, sonumber, soamount, callstatus
+        callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus
       }),
     });
 
@@ -168,6 +175,17 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     }
   };
 
+  const handleShowRemarks = (remarks: string) => {
+    setModalRemarks(remarks);
+    setShowModal(true);
+  };
+
+
+  // Function to close modal
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
@@ -198,13 +216,14 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           quotationamount={quotationamount} setquotationamount={setquotationamount}
           sonumber={sonumber} setsonumber={setsonumber}
           soamount={soamount} setsoamount={setsoamount}
+          actualsales={actualsales} setactualsales={setactualsales}
           callstatus={callstatus} setcallstatus={setcallstatus}
-
           startdate={startdate} setstartdate={setstartdate}
           enddate={enddate} setenddate={setenddate}
-
           activitynumber={activitynumber} setactivitynumber={setactivitynumber}
           activitystatus={activitystatus} setactivitystatus={setactivitystatus}
+          //PassedRecords
+          currentRecords={currentRecords}
 
           editPost={editUser}
         />
@@ -231,7 +250,10 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                 <th className="text-left px-4 py-2 border">Type of Call</th>
                 <th className="text-left px-4 py-2 border">Q# Number</th>
                 <th className="text-left px-4 py-2 border">Q-Amount</th>
+                <th className="text-left px-4 py-2 border">SO-Amount</th>
+                <th className="text-left px-4 py-2 border">SO-Number</th>
                 <th className="text-left px-4 py-2 border">Remarks</th>
+                <th className="text-left px-4 py-2 border">Status</th>
                 <th className="text-left px-4 py-2 border">Actions</th>
               </tr>
             </thead>
@@ -257,15 +279,18 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                     <td className="px-4 py-2 border">{activity.typecall}</td>
                     <td className="px-4 py-2 border">{activity.quotationnumber}</td>
                     <td className="px-4 py-2 border">{activity.quotationamount}</td>
-                    <td className="px-4 py-2 border">{activity.remarks}</td>
+                    <td className="px-4 py-2 border">{activity.soamount}</td>
+                    <td className="px-4 py-2 border">{activity.sonumber}</td>
+                    <td className="px-4 py-2 border break-words truncate max-w-xs cursor-pointer" onClick={() => handleShowRemarks(activity.remarks)}>
+                      {activity.remarks}
+                    </td>
+                    <td className="px-4 py-2 border">{activity.activitystatus}</td>
                     <td className="px-4 py-2 border text-right">
-                    <button onClick={() => handleDeleteClick(activity.id.toString())} className="text-red-600">
-                      <FcFullTrash size={16} />
-                    </button>
-
+                      <button onClick={() => handleDeleteClick(activity.id.toString())} className="text-red-600">
+                        <FcFullTrash size={16} />
+                      </button>
                     </td>
                   </tr>
-
                 ))
               ) : (
                 <tr>
@@ -274,6 +299,24 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
               )}
             </tbody>
           </table>
+
+          {/* Modal for showing full remarks */}
+          {showModal && (
+            <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
+              <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-lg">
+                <h3 className="font-semibold text-lg mb-4">Remarks</h3>
+                <div className="modal-body">
+                  <p className="text-sm capitalize break-words">{modalRemarks}</p>
+                </div>
+                <button
+                  onClick={handleCloseModal}
+                  className="mt-4 text-blue-500 px-4 py-2 border border-blue-500 rounded text-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Mobile View */}
@@ -298,9 +341,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                 <p><strong>Q-Amount:</strong> {activity.quotationamount}</p>
                 <p><strong>Remarks:</strong> {activity.remarks}</p>
                 <div className="flex justify-end mt-2">
-                <button onClick={() => handleDeleteClick(activity.id.toString())} className="text-red-600">
-                      <FcFullTrash size={16} />
-                    </button>
+                  <button onClick={() => handleDeleteClick(activity.id.toString())} className="text-red-600">
+                    <FcFullTrash size={16} />
+                  </button>
 
                 </div>
               </div>

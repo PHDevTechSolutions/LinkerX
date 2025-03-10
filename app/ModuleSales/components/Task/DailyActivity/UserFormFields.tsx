@@ -3,6 +3,21 @@ import Select from 'react-select';
 import { CiCirclePlus, CiCircleMinus, CiSquarePlus, CiSquareMinus } from "react-icons/ci";
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
 
+interface Activity {
+    id: number;
+    typeactivity: string;
+    callback: string;
+    callstatus: string;
+    typecall: string;
+    remarks: string;
+    quotationnumber: string;
+    quotationamount: string;
+    sonumber: string;
+    soamount: string;
+    activitystatus: string;
+    date_created: string;
+}
+
 interface FormFieldsProps {
     referenceid: string; setreferenceid: (value: string) => void;
     manager: string; setmanager: (value: string) => void;
@@ -26,12 +41,14 @@ interface FormFieldsProps {
     quotationamount: string; setquotationamount: (value: string) => void;
     sonumber: string; setsonumber: (value: string) => void;
     soamount: string; setsoamount: (value: string) => void;
+    actualsales: string; setactualsales: (value: string) => void;
     callstatus: string; setcallstatus: (value: string) => void;
 
     startdate: string; setstartdate: (value: string) => void;
     enddate: string; setenddate: (value: string) => void;
     activitynumber: string; setactivitynumber: (value: string) => void;
     activitystatus: string; setactivitystatus: (value: string) => void;
+    currentRecords: Activity[];
     editPost?: any;
 }
 
@@ -58,12 +75,14 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     quotationamount, setquotationamount,
     sonumber, setsonumber,
     soamount, setsoamount,
+    actualsales, setactualsales,
     callstatus, setcallstatus,
 
     startdate, setstartdate,
     enddate, setenddate,
     activitynumber, setactivitynumber,
     activitystatus, setactivitystatus,
+    currentRecords, // Destructure the `currentRecords` prop
     editPost,
 }) => {
     const [companies, setCompanies] = useState<any[]>([]);
@@ -78,10 +97,34 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const [showInboundFields, setShowInboundFields] = useState(false);
     const [showQuotationField, setShowQuotationField] = useState(false);
     const [showSOField, setShowSOField] = useState(false);
+    const [showDeliveredField, setShowDeliveredField] = useState(false);
     const dropdownRef = useRef<HTMLUListElement>(null);
     const isQuotationEmpty = !quotationnumber || !quotationamount;
 
     const [showInput, setShowInput] = useState(false);
+
+    useEffect(() => {
+        // Sort currentRecords by date_created in descending order
+        const sortedRecords = [...currentRecords].sort((a, b) => {
+            const dateA = new Date(a.date_created); // Assuming `date_created` is in string format or timestamp
+            const dateB = new Date(b.date_created);
+            return dateB.getTime() - dateA.getTime(); // Sort descending (most recent first)
+        });
+
+        // Get the last record's status from the sorted array (the most recent record)
+        const lastRecord = sortedRecords[0]; // This will be the most recent record
+
+        if (lastRecord) {
+            setactivitystatus(lastRecord.activitystatus); // Set the activity status to the last record's activity status
+        }
+
+        // Automatically update the activity status based on input fields
+        if (quotationnumber && quotationamount) {
+            setactivitystatus("Warm"); // Set to Warm if Quotation number and amount are filled
+        } else if (sonumber && soamount) {
+            setactivitystatus("Hot"); // Set to Hot if SO number and amount are filled
+        }
+    }, [currentRecords, quotationnumber, quotationamount, sonumber, soamount]);
 
     const generateActivityNumber = () => {
         if (editPost?.activitynumber) return; // Keep existing number in Edit Mode
@@ -109,8 +152,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             setactivitynumber(editPost.activitynumber);
         }
     }, [editPost, companyname, referenceid]);
-
-
 
     // Fetch companies based on referenceid
     useEffect(() => {
@@ -190,17 +231,19 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
     const handleActivitySelection = (activity: string) => {
         console.log("Selected:", activity); // Debugging
-
+    
         settypeactivity(activity);
         setIsDropdownOpen(false);
         setIsSubmenuOpen(false);
-
+    
+        // Reset all fields
         setShowFields(false);
         setShowOutboundFields(false);
         setShowInboundFields(false);
         setShowQuotationField(false);
         setShowSOField(false);
-
+        setShowDeliveredField(false); // Reset the delivered field before checking
+    
         const accountingActivities = [
             "Account Development",
             "Accounting: Accounts Receivable and Payment",
@@ -234,9 +277,10 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             "Warehouse: Delivery / Helper Concern",
             "Warehouse: Replacement Request / Concern",
             "Warehouse: Sample Request / Concern",
-            "Warehouse: SO Status Follow Up"
+            "Warehouse: SO Status Follow Up",
+            "Delivered", // Ensure "Delivered" is here for the condition
         ];
-
+    
         if (accountingActivities.includes(activity)) {
             setShowFields(true);
         } else if (activity === "Outbound Call") {
@@ -251,8 +295,12 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         } else if (activity.includes("Preparation: Sales Order Preparation")) {
             setShowFields(true);
             setShowSOField(true);
+        } else if (activity === "Delivered") {
+            setShowFields(true);
+            setShowDeliveredField(true); // Trigger showing the delivered field when "Delivered" is selected
         }
     };
+    
 
     useEffect(() => {
         if (dropdownRef.current) {
@@ -371,7 +419,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     )}
                 </div>
 
-
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Contact Person</label>
                     {contactPersons.map((person, index) => (
@@ -450,7 +497,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 </div>
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Project Category</label>
-                                    <select value={projectcategory ?? ""} onChange={(e) => setprojectcategory(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+                                    <select value={projectcategory ?? ""} onChange={(e) => setprojectcategory(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                         <option value="">Select Category</option>
                                         <option value="Bollard Light">Bollard Light</option>
                                         <option value="Bulb Light">Bulb Light</option>
@@ -459,7 +506,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 </div>
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Type</label>
-                                    <select value={projecttype ?? ""} onChange={(e) => setprojecttype(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+                                    <select value={projecttype ?? ""} onChange={(e) => setprojecttype(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                         <option value="">Select Category</option>
                                         <option value="B2B">B2B</option>
                                         <option value="B2C">B2C</option>
@@ -467,7 +514,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 </div>
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Source</label>
-                                    <select value={source ?? ""} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+                                    <select value={source ?? ""} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                         <option value="">Select Category</option>
                                         <option value="Existing">Existing</option>
                                         <option value="Referral">Referral</option>
@@ -478,6 +525,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     </div>
                 </div>
             </div>
+
             <div className="mb-4 border rounded-lg shadow-sm p-4">
                 <div className="flex flex-wrap -mx-4 rounded">
                     {/* Activity Dropdown */}
@@ -540,6 +588,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                         "Warehouse: Replacement Request / Concern",
                                         "Warehouse: Sample Request / Concern",
                                         "Warehouse: SO Status Follow Up",
+                                        "Delivered",
                                     ].map((item) => (
                                         <li
                                             key={item}
@@ -594,7 +643,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Quotation Number</label>
-                                <input type="text" value={quotationnumber ?? ""} onChange={(e) => setquotationnumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                                <input type="text" value={quotationnumber ?? ""} onChange={(e) => setquotationnumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" />
                             </div>
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -617,7 +666,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Number</label>
-                                <input type="text" value={sonumber ?? ""} onChange={(e) => setsonumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                                <input type="text" value={sonumber ?? ""} onChange={(e) => setsonumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" />
                             </div>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Amount</label>
@@ -625,6 +674,19 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             </div>
                         </>
                     )}
+
+{showDeliveredField && (
+    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+        <label className="block text-xs font-bold mb-2">SO to DR Amount (Actual Sales)</label>
+        <input
+            type="text"
+            value={actualsales ?? ""}
+            onChange={(e) => setactualsales(e.target.value)}
+            className="w-full px-3 py-2 border rounded text-xs uppercase"
+        />
+    </div>
+)}
+
 
                     {showOutboundFields && (
                         <>
@@ -675,21 +737,66 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 <div className="flex flex-wrap -mx-4">
                     <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Remarks</label>
-                        <textarea value={remarks ?? ""} onChange={(e) => setremarks(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={5}></textarea>
+                        <textarea
+                            value={remarks ?? ""}
+                            onChange={(e) => setremarks(e.target.value)}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                            rows={5}
+                        ></textarea>
                     </div>
+
                     <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Status</label>
-                        <select value={activitystatus || ""} onChange={(e) => setactivitystatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize bg-gray-100">
+                        <select
+                            value={activitystatus || ""}
+                            onChange={(e) => setactivitystatus(e.target.value)}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-gray-100"
+                        >
                             <option value="">Select Status</option>
-                            <option value="Cold">Cold (Progress 20% to 30%) Touchbase</option>
-                            <option value="Warm" disabled={isQuotationEmpty}>Warm (Progress 50% to 60%) With Quotation</option>
-                            <option value="Hot" disabled={isQuotationEmpty}>Hot (Progress 80% to 90%) Quotation with Confirmation W/PO</option>
-                            <option value="Done" disabled={isQuotationEmpty}>Done (Progress 100%) Delivered</option>
-                            <option value="Loss">Loss</option>
-                            <option value="Cancelled">Cancelled</option>
+                            <option
+                                value="Cold"
+                                disabled={activitystatus === "Warm" || activitystatus === "Hot" || activitystatus === "Done"}
+                            >
+                                Cold (Progress 20% to 30%) Touchbase
+                            </option>
+                            <option
+                                value="Warm"
+                                disabled={
+                                    !(quotationnumber && quotationamount) ||
+                                    activitystatus === "Hot" ||
+                                    activitystatus === "Done" ||
+                                    activitystatus === "Cancelled"
+                                }
+                            >
+                                Warm (Progress 50% to 60%) With Quotation
+                            </option>
+                            <option
+                                value="Hot"
+                                disabled={
+                                    !(sonumber && soamount) ||
+                                    activitystatus === "Done" ||
+                                    activitystatus === "Warm" ||
+                                    activitystatus === "Cancelled"
+                                }
+                            >
+                                Hot (Progress 80% to 90%) Quotation with Confirmation W/PO
+                            </option>
+                            <option
+                                value="Done"
+                                disabled={activitystatus === "Done" || activitystatus === "Cancelled" || activitystatus === "Warm"}
+                            >
+                                Done (Progress 100%) Delivered
+                            </option>
+                            <option value="Loss" disabled={activitystatus === "Done" || activitystatus === "Cancelled"}>
+                                Loss
+                            </option>
+                            <option value="Cancelled" disabled={activitystatus === "Done"}>
+                                Cancelled
+                            </option>
                         </select>
                     </div>
                 </div>
+
             </div>
         </>
     );
