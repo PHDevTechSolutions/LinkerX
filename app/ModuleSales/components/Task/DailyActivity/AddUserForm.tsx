@@ -12,6 +12,7 @@ interface AddUserFormProps {
     referenceid: string;
     manager: string;
     tsm: string;
+    targetquota: string;
   };
   editUser?: any;
 }
@@ -33,6 +34,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [referenceid, setReferenceid] = useState(userDetails.referenceid || "");
   const [manager, setManager] = useState(userDetails.manager || "");
   const [tsm, setTsm] = useState(userDetails.tsm || "");
+  const [targetquota, setTargetQuota] = useState(userDetails.targetquota || "");
 
   const [companyname, setcompanyname] = useState(editUser ? editUser.companyname : "");
   const [contactperson, setcontactperson] = useState(editUser ? editUser.contactperson : "");
@@ -122,7 +124,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        id: editUser?.id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient,
+        id: editUser?.id, referenceid, manager, tsm, targetquota, companyname, contactperson, contactnumber, emailaddress, typeclient,
         address, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, remarks,
         callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus
       }),
@@ -196,6 +198,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           referenceid={referenceid} setreferenceid={setReferenceid}
           manager={manager} setmanager={setManager}
           tsm={tsm} settsm={setTsm}
+          targetquota={targetquota} settargetquota={setTargetQuota}
           //
           companyname={companyname} setcompanyname={setcompanyname}
           contactperson={contactperson} setcontactperson={setcontactperson}

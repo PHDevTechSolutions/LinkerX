@@ -52,7 +52,7 @@ const ListofUser: React.FC = () => {
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
     const [userDetails, setUserDetails] = useState({
-        UserId: "", ReferenceID: "", Manager: "", TSM: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
+        UserId: "", ReferenceID: "", Manager: "", TSM: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "", TargetQuota: "",
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -93,6 +93,7 @@ const ListofUser: React.FC = () => {
                         Role: data.Role || "",
                         Department: data.Department || "",
                         Company: data.Company || "",
+                        TargetQuota: data.TargetQuota || "",
                     });
                 } catch (err: unknown) {
                     console.error("Error fetching user data:", err);
@@ -441,6 +442,7 @@ const ListofUser: React.FC = () => {
                                         referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
                                         manager: editUser ? editUser.manager : userDetails.Manager,
                                         tsm: editUser ? editUser.tsm : userDetails.TSM,
+                                        targetquota: editUser ? editUser.targetquota : userDetails.TargetQuota,
                                     }}   // Ensure id is passed correctly
                                     editUser={editUser}
                                 />

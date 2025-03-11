@@ -23,6 +23,8 @@ interface FormFieldsProps {
     referenceid: string; setreferenceid: (value: string) => void;
     manager: string; setmanager: (value: string) => void;
     tsm: string; settsm: (value: string) => void;
+    targetquota: string; settargetquota: (value: string) => void;
+
     companyname: string; setcompanyname: (value: string) => void;
     contactperson: string; setcontactperson: (value: string) => void;
     contactnumber: string; setcontactnumber: (value: string) => void;
@@ -57,6 +59,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     referenceid, setreferenceid,
     manager, setmanager,
     tsm, settsm,
+    targetquota, settargetquota,
+
     companyname, setcompanyname,
     contactperson, setcontactperson,
     contactnumber, setcontactnumber,
@@ -98,11 +102,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const [showQuotationField, setShowQuotationField] = useState(false);
     const [showSOField, setShowSOField] = useState(false);
     const [showDeliverField, setShowDeliverField] = useState(false);
-    const [selectedEmail, setSelectedEmail] = useState("");
-
-    const [contactPerson, setContactPerson] = useState("");
-    const [actualSales, setActualSales] = useState("");
-
     const dropdownRef = useRef<HTMLUListElement>(null);
 
     const isQuotationEmpty = !quotationnumber || !quotationamount;
@@ -427,6 +426,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     <input type="hidden" id="referenceid" value={referenceid ?? ""} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                     <input type="hidden" id="manager" value={manager ?? ""} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                     <input type="hidden" id="tsm" value={tsm ?? ""} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                    <input type="hidden" id="targetquota" value={targetquota ?? ""} onChange={(e) => settargetquota(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                     <input type="hidden" value={startdate ?? ""} onChange={(e) => setstartdate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
                     <input type="hidden" value={enddate ?? ""} onChange={(e) => setenddate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
                 </div>

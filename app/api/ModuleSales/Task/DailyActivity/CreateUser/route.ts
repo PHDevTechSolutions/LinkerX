@@ -18,7 +18,7 @@ async function addUser(data: any) {
             projectname, projectcategory, projecttype, source, typeactivity,
             callback, callstatus, typecall, remarks, quotationnumber,
             quotationamount, sonumber, soamount, startdate, enddate,
-            activitystatus, activitynumber,
+            activitystatus, activitynumber, targetquota,
         } = data;
 
         // Validate required fields
@@ -31,14 +31,14 @@ async function addUser(data: any) {
             "referenceid", "manager", "tsm", "companyname", "contactperson",
             "contactnumber", "emailaddress", "typeclient", "address", "area",
             "projectname", "projectcategory", "projecttype", "source", 
-            "activitystatus", "activitynumber",
+            "activitystatus", "activitynumber", "targetquota",
         ];
 
         const activityValues = [
             referenceid, manager, tsm, companyname, contactperson,
             contactnumber, emailaddress, typeclient, address, area,
             projectname, projectcategory, projecttype, source,
-            activitystatus || null, activitynumber || null
+            activitystatus || null, activitynumber || null, targetquota || null
         ];
 
         // Construct and execute the query for activity table
@@ -69,7 +69,7 @@ async function addUser(data: any) {
         const progressValues = [
             ...activityValues, typeactivity, callback || null, callstatus || null, typecall || null, 
             remarks || null, quotationnumber || null, quotationamount || null, sonumber || null, 
-            soamount || null, startdate || null, enddate || null
+            soamount || null, startdate || null, enddate || null, 
         ];
 
         // Update activitynumber in progressValues to use the returned one

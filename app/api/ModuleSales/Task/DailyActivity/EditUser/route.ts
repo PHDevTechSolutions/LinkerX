@@ -20,7 +20,7 @@ async function updateUser(userDetails: any) {
             id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient,
             address, area, projectname, projectcategory, projecttype, source, startdate, enddate, activitynumber,
             typeactivity, activitystatus, remarks, callback, typecall, quotationnumber, quotationamount,
-            sonumber, soamount, callstatus, actualsales,
+            sonumber, soamount, callstatus, actualsales, targetquota,
         } = userDetails;
 
         // Update the activity table
@@ -45,12 +45,12 @@ async function updateUser(userDetails: any) {
                 referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient,
                 address, area, projectname, projectcategory, projecttype, source, startdate, enddate, activitynumber,
                 typeactivity, activitystatus, remarks, callback, typecall, quotationnumber, quotationamount,
-                sonumber, soamount, callstatus, date_created, actualsales
+                sonumber, soamount, callstatus, date_created, actualsales, targetquota
             ) VALUES (
                 ${referenceid}, ${manager}, ${tsm}, ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient},
                 ${address}, ${area}, ${projectname}, ${projectcategory}, ${projecttype}, ${source}, ${startdate}, ${enddate}, ${activitynumber},
                 ${typeactivity}, ${activitystatus}, ${remarks}, ${callback}, ${typecall}, ${quotationnumber}, ${quotationamount}, 
-                ${sonumber}, ${soamount}, ${callstatus}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', ${actualsales}
+                ${sonumber}, ${soamount}, ${callstatus}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', ${actualsales}, ${targetquota}
             );
         `;
 
