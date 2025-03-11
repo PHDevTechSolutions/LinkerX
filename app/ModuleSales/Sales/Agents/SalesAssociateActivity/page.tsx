@@ -141,8 +141,9 @@ const ListofUser: React.FC = () => {
             AgentFirstname: agent ? agent.Firstname : "Unknown",
             AgentLastname: agent ? agent.Lastname : "Unknown"
         };
-    })
+    }).sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sorting by date_created
     : [];
+
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
