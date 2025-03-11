@@ -5,30 +5,38 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../components/Agents/ListSalesAssociate/AddUserForm";
-import SearchFilters from "../../../components/UserManagement/TerritorySalesAssociates/SearchFilters";
-import UsersTable from "../../../components/Agents/ListSalesAssociate/UsersTable";
-import Pagination from "../../../components/UserManagement/TerritorySalesAssociates/Pagination";
+import AddPostForm from "../../../components/ClientActivityBoard/ListofCompanies/AddUserForm";
+import SearchFilters from "../../../components/National/DailyCallRanking/SearchFilters";
+import UsersTable from "../../../components/Agents/DailyCallRanking/UsersTable";
+import Pagination from "../../../components/ClientActivityBoard/ListofCompanies/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import ExcelJS from "exceljs";
+
+
+// Icons
+import { CiExport } from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
+    const [showImportForm, setShowImportForm] = useState(false);
     const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(10);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [postToDelete, setPostToDelete] = useState<string | null>(null);
+    const [postsPerPage, setPostsPerPage] = useState(12);
+    const [selectedClientType, setSelectedClientType] = useState("");
+    const [startDate, setStartDate] = useState(""); // Default to null
+    const [endDate, setEndDate] = useState(""); // Default to null
 
     const [userDetails, setUserDetails] = useState({
         UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [usersList, setUsersList] = useState<any[]>([]);
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -66,59 +74,81 @@ const ListofUser: React.FC = () => {
         fetchUserData();
     }, []);
 
-    // Fetch all users from the API
-    const fetchUsers = async () => {
+    // Fetch users from MongoDB or PostgreSQL
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch("/api/getUsers"); // API endpoint mo
+                const data = await response.json();
+                setUsersList(data);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
+    // Fetch all progress from the API
+    const fetchAccount = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/UserManagement/TerritorySalesAssociates/FetchUser");
+            const response = await fetch("/api/ModuleSales/National/FetchDailyCallRanking");
             const data = await response.json();
-            setPosts(data);
+            console.log("Fetched data:", data); // Debugging line
+            setPosts(data.data); // Make sure you're setting `data.data` if API response has `{ success: true, data: [...] }`
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
         }
     };
 
-    // Filter users by search term (firstname, lastname)
-    const filteredAccounts = posts.filter((post) => {
-        // Check if the user's name matches the search term
-        const matchesSearchTerm = [post?.Firstname, post?.Lastname]
-            .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-        // Get the reference ID from userDetails
-        const referenceID = userDetails.ReferenceID; // TSM's ReferenceID from MongoDB
-    
-        // Check role-based filtering
+    useEffect(() => {
+        fetchAccount();
+    }, []);
+
+    const today = new Date().toISOString().split("T")[0]; // Kunin ang YYYY-MM-DD format ng today
+
+    const filteredAccounts = Array.isArray(posts)
+    ? posts.filter((post) => {
+        const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const postDate = post.date_created ? new Date(post.date_created).toISOString().split("T")[0] : null;
+        const isWithinDateRange = 
+            postDate && 
+            (!startDate || postDate >= startDate) && 
+            (!endDate || postDate <= endDate);
+
+        const matchesClientType = selectedClientType ? post?.typeclient === selectedClientType : true;
+
+        const referenceID = userDetails.ReferenceID;
+
+        // Role-based filtering logic
         const matchesRole = userDetails.Role === "Super Admin"
-            ? post?.Role === "Territory Sales Associate" // Super Admin only sees TSAs
+            ? true
+            : userDetails.Role === "Manager"
+            ? post?.manager === referenceID
             : userDetails.Role === "Territory Sales Manager"
-            ? post?.TSM === referenceID // TSM sees only assigned TSAs
-            : false; // Default false if no match
-    
-        // Return the filtered result
-        return matchesSearchTerm && matchesRole;
-    });
-    
+            ? post?.tsm === referenceID
+            : false;
+
+        return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
+    }).map((post) => {
+        // Hanapin ang Agent na may parehong ReferenceID sa usersList
+        const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+
+        return {
+            ...post,
+            AgentFirstname: agent ? agent.Firstname : "Unknown",
+            AgentLastname: agent ? agent.Lastname : "Unknown",
+        };
+    })
+    : [];
+
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
     const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
 
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
-    // Handle editing a post
-    const handleEdit = (post: any) => {
-        setEditUser(post);
-        setShowForm(true);
-    };
-
-    // Show delete modal
-    const confirmDelete = (postId: string) => {
-        setPostToDelete(postId);
-        setShowDeleteModal(true);
-    };
-    
     return (
         <SessionChecker>
             <ParentLayout>
@@ -131,28 +161,26 @@ const ListofUser: React.FC = () => {
                                         setShowForm(false);
                                         setEditUser(null);
                                     }}
-                                    refreshPosts={fetchUsers}  // Pass the refreshPosts callback
-                                    userName={user ? user.userName : ""}  // Ensure userName is passed properly
-                                    userDetails={{ id: editUser ? editUser._id : userDetails.UserId }}  // Ensure id is passed correctly
+                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
+                                    userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
                                     editUser={editUser}
                                 />
-
                             ) : (
                                 <>
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Territory Sales Associates</h2>
+                                        <h2 className="text-lg font-bold mb-2">Team Daily Ranking</h2>
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}
                                             postsPerPage={postsPerPage}
                                             setPostsPerPage={setPostsPerPage}
+                                            startDate={startDate}
+                                            setStartDate={setStartDate}
+                                            endDate={endDate}
+                                            setEndDate={setEndDate}
                                         />
                                         <UsersTable
                                             posts={currentPosts}
-                                            handleEdit={handleEdit}
-                                            handleDelete={confirmDelete}
-                                            Role={user ? user.Role : ""}
-                                            Department={user ? user.Department : ""}
                                         />
                                         <Pagination
                                             currentPage={currentPage}

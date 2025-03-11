@@ -10,7 +10,7 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
     return;
   }
 
-  const { id, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Manager, TSM, Status, LoginAttempts, LockUntil, TargetQuota } = req.body;
+  const { id, UserId, Firstname, Lastname, Email, userName, Status, TargetQuota } = req.body;
 
   try {
     const db = await connectToDatabase();
@@ -18,14 +18,8 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
 
     // Prepare updated fields
     const updatedUser: any = {
-      UserId, Firstname, Lastname, Email, userName, Role, Department, Location, Company, Manager, TSM, Status, LoginAttempts, LockUntil, TargetQuota, updatedAt: new Date(),
+      UserId, Firstname, Lastname, Email, userName, Status, TargetQuota, updatedAt: new Date(),
     };
-
-    // Hash the password only if it is provided and not empty
-    if (Password?.trim()) {
-      const hashedPassword = await bcrypt.hash(Password, 10);
-      updatedUser.Password = hashedPassword; // Make sure it matches the original field name in your DB
-    }
 
     // Update user data
     const result = await userCollection.updateOne(

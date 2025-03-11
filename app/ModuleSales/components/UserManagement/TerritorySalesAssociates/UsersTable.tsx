@@ -3,8 +3,6 @@ import io from "socket.io-client";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Menu } from "@headlessui/react";
 
-const socketURL = "http://localhost:3001";
-
 interface UsersCardProps {
   posts: any[];
   handleEdit: (post: any) => void;
@@ -14,7 +12,6 @@ interface UsersCardProps {
 }
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete }) => {
-  const socketRef = useRef(io(socketURL));
   const [updatedUser, setUpdatedUser] = useState(posts);
   const [bulkEditMode, setBulkEditMode] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
@@ -57,21 +54,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete }
       console.error("Error deleting users:", error);
     }
   }, [selectedUsers]);
-
-  useEffect(() => {
-    const socket = socketRef.current;
-    const newPostListener = (newPost: any) => {
-      setUpdatedUser((prev) => {
-        if (prev.some((post) => post._id === newPost._id)) return prev;
-        return [newPost, ...prev];
-      });
-    };
-
-    socket.on("newPost", newPostListener);
-    return () => {
-      socket.off("newPost", newPostListener);
-    };
-  }, []);
 
   const statusColors: { [key: string]: string } = {
     Active: 'bg-green-800',
