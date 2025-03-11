@@ -10,9 +10,10 @@ interface UsersCardProps {
   posts: any[];
   handleEdit: (post: any) => void;
   referenceid?: string;
+  fetchAccount: () => Promise<void>; // Function that returns a Promise<void>
 }
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid }) => {
+const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, fetchAccount }) => {
   const [updatedUser, setUpdatedUser] = useState<any[]>([]);
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
   const [bulkEditMode, setBulkEditMode] = useState(false);
@@ -230,16 +231,19 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userIds: Array.from(selectedUsers), tsaReferenceID: selectedTsa }),
       });
+
       if (response.ok) {
         setSelectedUsers(new Set());
         setBulkTransferTSAMode(false);
+        await fetchAccount(); // Reload table after successful update
       } else {
         console.error("Failed to transfer users");
       }
     } catch (error) {
       console.error("Error transferring users:", error);
     }
-  }, [selectedUsers, selectedTsa]);
+  }, [selectedUsers, selectedTsa, fetchAccount]);
+
 
   const handleRefresh = async () => {
     try {

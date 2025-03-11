@@ -348,6 +348,7 @@ const ListofUser: React.FC = () => {
                                             posts={currentPosts}
                                             handleEdit={handleEdit}
                                             referenceid={referenceid}
+                                            fetchAccount={fetchAccount}
                                         />
                                         <Pagination
                                             currentPage={currentPage}

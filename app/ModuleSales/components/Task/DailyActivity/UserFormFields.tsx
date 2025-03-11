@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import Select from 'react-select';
-import { CiCirclePlus, CiCircleMinus, CiSquarePlus, CiSquareMinus } from "react-icons/ci";
-import { FaChevronRight, FaChevronDown } from "react-icons/fa";
+import { CiCircleMinus, CiSquarePlus, CiSquareMinus } from "react-icons/ci";
+import { BiMailSend } from "react-icons/bi";
+
 
 interface Activity {
     id: number;
@@ -99,12 +100,43 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const [showDeliverField, setShowDeliverField] = useState(false);
     const [selectedEmail, setSelectedEmail] = useState("");
 
+    const [contactPerson, setContactPerson] = useState("");
+    const [actualSales, setActualSales] = useState("");
+
     const dropdownRef = useRef<HTMLUListElement>(null);
 
     const isQuotationEmpty = !quotationnumber || !quotationamount;
 
     const [showInput, setShowInput] = useState(false);
 
+    // Handle the email selection and send request to the API
+    const handleEmailSubmit = async () => {
+        if (!emailaddress) {  // Check if emailaddress is empty or not
+            alert("Please select an email.");
+            return;
+        }
+    
+        const response = await fetch("/api/sendEmail", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: emailaddress,  // Use the selected email address directly here
+            }),
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            alert("Email sent successfully!");
+        } else {
+            alert("Error sending email: " + data.message);
+        }
+    
+        // Ensure the form stays visible and doesn't reload or navigate away
+    };
+    
     useEffect(() => {
         // Sort currentRecords by date_created in descending order
         const sortedRecords = [...currentRecords].sort((a, b) => {
@@ -616,10 +648,21 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             </div>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Type of Call</label>
-                                <select value={typecall ?? ""} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                <select value={typecall ?? ""} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                     <option value="">Select Status</option>
                                     <option value="Cannot Be Reached">Cannot Be Reached</option>
                                     <option value="Follow Up Pending">Follow Up Pending</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Requirements">No Requirements</option>
+                                    <option value="Not Connected with the Company">Not Connected with the Company</option>
+                                    <option value="Request for Quotation">Request for Quotation</option>
+                                    <option value="Ringing Only">Ringing Only</option>
+                                    <option value="Sent Quotation - Standard">Sent Quotation - Standard</option>
+                                    <option value="Sent Quotation - With Special Price">Sent Quotation - With Special Price</option>
+                                    <option value="Sent Quotation - With SPF">Sent Quotation - With SPF</option>
+                                    <option value="Touch Base">Touch Base</option>
+                                    <option value="Waiting for Future Projects">Waiting for Future Projects</option>
+                                    <option value="With SPFS">With SPFS</option>
                                 </select>
                             </div>
                         </>
@@ -639,10 +682,21 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Type of Call</label>
-                                <select value={typecall ?? ""} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                <select value={typecall ?? ""} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                     <option value="">Select Status</option>
                                     <option value="Cannot Be Reached">Cannot Be Reached</option>
                                     <option value="Follow Up Pending">Follow Up Pending</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Requirements">No Requirements</option>
+                                    <option value="Not Connected with the Company">Not Connected with the Company</option>
+                                    <option value="Request for Quotation">Request for Quotation</option>
+                                    <option value="Ringing Only">Ringing Only</option>
+                                    <option value="Sent Quotation - Standard">Sent Quotation - Standard</option>
+                                    <option value="Sent Quotation - With Special Price">Sent Quotation - With Special Price</option>
+                                    <option value="Sent Quotation - With SPF">Sent Quotation - With SPF</option>
+                                    <option value="Touch Base">Touch Base</option>
+                                    <option value="Waiting for Future Projects">Waiting for Future Projects</option>
+                                    <option value="With SPFS">With SPFS</option>
                                 </select>
                             </div>
                         </>
@@ -673,24 +727,33 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 />
                             </div>
 
-                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                                <label className="block text-xs font-bold mb-2">Email</label>
-                                <select
-                                    value={emailaddress} // Bind to selected email
-                                    onChange={(e) => setemailaddress(e.target.value)} // Update the selected email
-                                    className="w-full px-3 py-2 border rounded text-xs"
+                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4 flex items-center space-x-2">
+                                <div className="flex-1">
+                                    <label className="block text-xs font-bold mb-2">Send Email Survey</label>
+                                    <select
+                                        value={emailaddress} // Bind to selected email
+                                        onChange={(e) => setemailaddress(e.target.value)} // Update the selected email
+                                        className="w-full px-3 py-2 border rounded text-xs"
+                                    >
+                                        <option value="">Select Email</option>
+                                        {emailAddresses.map((email, index) => (
+                                            <option key={index} value={email}>
+                                                {email}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <button
+                                    onClick={handleEmailSubmit}
+                                    className="bg-green-800 text-white p-2 rounded mt-6 flex items-center space-x-2"
                                 >
-                                    <option value="">Select Email</option>
-                                    {emailAddresses.map((email, index) => (
-                                        <option key={index} value={email}>
-                                            {email}
-                                        </option>
-                                    ))}
-                                </select>
+                                    <BiMailSend size={15} /> <span>Send</span>
+                                </button>
+
                             </div>
+
                         </>
                     )}
-
 
                     {showOutboundFields && (
                         <>
@@ -728,10 +791,21 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Type of Call</label>
-                                <select value={typecall ?? ""} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                <select value={typecall ?? ""} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                     <option value="">Select Status</option>
                                     <option value="Cannot Be Reached">Cannot Be Reached</option>
                                     <option value="Follow Up Pending">Follow Up Pending</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Requirements">No Requirements</option>
+                                    <option value="Not Connected with the Company">Not Connected with the Company</option>
+                                    <option value="Request for Quotation">Request for Quotation</option>
+                                    <option value="Ringing Only">Ringing Only</option>
+                                    <option value="Sent Quotation - Standard">Sent Quotation - Standard</option>
+                                    <option value="Sent Quotation - With Special Price">Sent Quotation - With Special Price</option>
+                                    <option value="Sent Quotation - With SPF">Sent Quotation - With SPF</option>
+                                    <option value="Touch Base">Touch Base</option>
+                                    <option value="Waiting for Future Projects">Waiting for Future Projects</option>
+                                    <option value="With SPFS">With SPFS</option>
                                 </select>
                             </div>
                         </>
@@ -745,7 +819,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             value={remarks ?? ""}
                             onChange={(e) => setremarks(e.target.value)}
                             className="w-full px-3 py-2 border rounded text-xs capitalize"
-                            rows={5}
+                            rows={5} required
                         ></textarea>
                     </div>
 

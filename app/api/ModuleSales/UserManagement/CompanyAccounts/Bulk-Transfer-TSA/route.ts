@@ -11,12 +11,13 @@ const sql = neon(databaseUrl);
 async function bulkTransferUsers(userIds: string[], tsaReferenceID: string) {
     try {
         if (!userIds || userIds.length === 0 || !tsaReferenceID) {
-            throw new Error("User IDs and TSM Reference ID are required.");
+            throw new Error("User IDs and TSA Reference ID are required.");
         }
 
         const result = await sql`
             UPDATE accounts
-            SET referenceid = ${tsaReferenceID}
+            SET referenceid = ${tsaReferenceID},
+                typeclient = 'Transferred Account'
             WHERE id = ANY(${userIds})
             RETURNING *;
         `;
