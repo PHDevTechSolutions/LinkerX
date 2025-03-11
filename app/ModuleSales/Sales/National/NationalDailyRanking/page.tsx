@@ -6,8 +6,8 @@ import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
 import AddPostForm from "../../../components/ClientActivityBoard/ListofCompanies/AddUserForm";
-import SearchFilters from "../../../components/ClientActivityBoard/ListofCompanies/SearchFilters";
-import UsersTable from "../../../components/ClientActivityBoard/ListofCompanies/UsersTable";
+import SearchFilters from "../../../components/National/DailyCallRanking/SearchFilters";
+import UsersTable from "../../../components/National/DailyCallRanking/UsersTable";
 import Pagination from "../../../components/ClientActivityBoard/ListofCompanies/Pagination";
 
 // Toast Notifications
@@ -89,10 +89,10 @@ const ListofUser: React.FC = () => {
         fetchUsers();
     }, []);
 
-    // Fetch all users from the API
+    // Fetch all progress from the API
     const fetchAccount = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
+            const response = await fetch("/api/ModuleSales/National/FetchDailyCallRanking");
             const data = await response.json();
             console.log("Fetched data:", data); // Debugging line
             setPosts(data.data); // Make sure you're setting `data.data` if API response has `{ success: true, data: [...] }`
@@ -106,30 +106,29 @@ const ListofUser: React.FC = () => {
         fetchAccount();
     }, []);
 
-    // Filter users by search term (firstname, lastname)
+    const today = new Date().toISOString().split("T")[0]; // Kunin ang YYYY-MM-DD format ng today
+
     const filteredAccounts = Array.isArray(posts)
     ? posts.filter((post) => {
         const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
 
-        const postDate = post.date_created ? new Date(post.date_created) : null;
-        const isWithinDateRange = (
-            (!startDate || (postDate && postDate >= new Date(startDate))) &&
-            (!endDate || (postDate && postDate <= new Date(endDate)))
-        );
+        const postDate = post.date_created ? new Date(post.date_created).toISOString().split("T")[0] : null;
+        const isWithinDateRange = 
+            postDate && 
+            (!startDate || postDate >= startDate) && 
+            (!endDate || postDate <= endDate);
 
-        const matchesClientType = selectedClientType
-            ? post?.typeclient === selectedClientType
-            : true;
+        const matchesClientType = selectedClientType ? post?.typeclient === selectedClientType : true;
 
+        const userRole = userDetails.Role;
         const referenceID = userDetails.ReferenceID;
 
-        const matchesRole = userDetails.Role === "Super Admin"
-            ? true
-            : userDetails.Role === "Manager"
-            ? post?.manager === referenceID
-            : userDetails.Role === "Territory Sales Manager"
-            ? post?.tsm === referenceID
-            : false;
+        // Logic for role-based filtering
+        const matchesRole =
+            userRole === "Super Admin" || // Kita lahat
+            userRole === "Manager" || // Kita lahat
+            userRole === "Territory Sales Manager" || // Kita lahat
+            post?.manager === referenceID; // Filtered by ReferenceID for other roles
 
         return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
     }).map((post) => {
@@ -139,7 +138,7 @@ const ListofUser: React.FC = () => {
         return {
             ...post,
             AgentFirstname: agent ? agent.Firstname : "Unknown",
-            AgentLastname: agent ? agent.Lastname : "Unknown"
+            AgentLastname: agent ? agent.Lastname : "Unknown",
         };
     })
     : [];
@@ -148,51 +147,6 @@ const ListofUser: React.FC = () => {
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
     const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
-
-
-    // Handle editing a post
-    const handleEdit = (post: any) => {
-        setEditUser(post);
-        setShowForm(true);
-    };
-
-    const exportToExcel = () => {
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet("Company Accounts");
-
-        // Set column headers
-        worksheet.columns = [
-            { header: 'companyname', key: 'companyname', width: 20 },
-            { header: 'contactperson', key: 'contactperson', width: 20 },
-            { header: 'contactnumber', key: 'contactnumber', width: 20 },
-            { header: 'emailaddress', key: 'emailaddress', width: 20 },
-            { header: 'typeclient', key: 'typeclient', width: 20 },
-            { header: 'address', key: 'address', width: 20 },
-            { header: 'area', key: 'area', width: 20 },
-        ];
-
-        // Loop through all filtered posts to ensure the full set of data is exported
-        filteredAccounts.forEach((post) => {
-            worksheet.addRow({
-                companyname: post.companyname,
-                contactperson: post.contactperson,
-                contactnumber: post.contactnumber,
-                emailaddress: post.emailaddress,
-                typeclient: post.typeclient,
-                address: post.address,
-                area: post.area
-            });
-        });
-
-        // Save to file
-        workbook.xlsx.writeBuffer().then((buffer) => {
-            const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "CompanyAccounts.xlsx";
-            link.click();
-        });
-    };
 
     return (
         <SessionChecker>
@@ -212,23 +166,13 @@ const ListofUser: React.FC = () => {
                                 />
                             ) : (
                                 <>
-                                    <div className="flex justify-between items-center mb-4">
-                                        <div className="flex gap-2">
-                                            <button onClick={exportToExcel} className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
-                                                <CiExport size={16} /> Export
-                                            </button>
-                                        </div>
-                                    </div>
-
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Company Accounts</h2>
+                                        <h2 className="text-lg font-bold mb-2">National Daily Ranking</h2>
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}
                                             postsPerPage={postsPerPage}
                                             setPostsPerPage={setPostsPerPage}
-                                            selectedClientType={selectedClientType}
-                                            setSelectedClientType={setSelectedClientType}
                                             startDate={startDate}
                                             setStartDate={setStartDate}
                                             endDate={endDate}
@@ -236,9 +180,6 @@ const ListofUser: React.FC = () => {
                                         />
                                         <UsersTable
                                             posts={currentPosts}
-                                            handleEdit={handleEdit}
-                                            ReferenceID={userDetails.ReferenceID}
-                                            fetchAccount={fetchAccount}
                                         />
                                         <Pagination
                                             currentPage={currentPage}

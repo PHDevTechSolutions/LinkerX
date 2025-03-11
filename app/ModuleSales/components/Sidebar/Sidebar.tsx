@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa";
-import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiCalendarDate, CiViewBoard, CiViewTimeline, CiMemoPad } from "react-icons/ci";
+import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiCalendarDate, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone } from "react-icons/ci";
 import { RiDonutChartLine, } from "react-icons/ri";
 
 import { BsBuildings } from "react-icons/bs";
@@ -91,13 +91,20 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
     },
     {
       title: 'Sales Performance',
-      icon: RiDonutChartLine,
+      icon: CiWavePulse1,
       subItems: [
         { title: 'MTD and YTD', href: `/ModuleSales/Sales/SalesPerformance/MTDYTD${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
-      title: 'Agents',
+      title: 'National',
+      icon: CiPhone,
+      subItems: [
+        { title: 'Daily Call Ranking', href: `/ModuleSales/Sales/National/NationalDailyRanking${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
+    {
+      title: 'My Team',
       icon: CiUser,
       subItems: [
         { title: 'Daily Call Ranking', href: `/ModuleSales/Sales/Agents/DailyCallRanking${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
@@ -194,7 +201,8 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
     if (userDetails.Role === "Territory Sales Manager") {
       return [
         "Sales Performance",
-        "Agents",
+        "National",
+        "My Team",
         "Client Activity Board",
         "Announcements",
         "Profile"
