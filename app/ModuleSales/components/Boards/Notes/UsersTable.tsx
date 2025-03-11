@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { PiRecycle } from "react-icons/pi";
-import { TiPinOutline } from "react-icons/ti";
-import { TbBellPlus } from "react-icons/tb";
+import { CiMapPin, CiRepeat, CiPen } from "react-icons/ci";
 
 interface UsersCardProps {
     posts: any[];
@@ -108,10 +107,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, updatePostStatus }) => {
         <div className="mb-4">
             <div className="flex justify-between items-center mb-4">
                 <button
-                    className="bg-orange-400 text-white text-xs px-4 py-2 rounded flex items-center space-x-1"
+                    className="bg-gray-200 text-dark text-xs px-4 py-2 rounded flex items-center space-x-1"
                     onClick={() => setIsBulkEditVisible(!isBulkEditVisible)}
                 >
-                    <PiRecycle size={15} className="text-white" />
+                    <CiRepeat size={15} />
                     <span>Change</span>
                 </button>
             </div>
@@ -133,12 +132,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, updatePostStatus }) => {
                             <option value="Finished">Finished</option>
                         </select>
                     </div>
-                    <button
-                        className="bg-blue-500 text-white text-xs px-4 py-2 rounded"
-                        onClick={handleBulkUpdate}
-                    >
-                        Bulk Edit
-                    </button>
+                    <button className="bg-blue-500 text-white text-xs px-4 py-2 rounded flex items-center gap-1" onClick={handleBulkUpdate}><CiPen size={18} /> Bulk Edit</button>
                 </div>
             )}
 
@@ -163,7 +157,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, updatePostStatus }) => {
                                         )}
                                         <h3 className="font-semibold text-left text-gray-700 text-xs capitalize">{user.title}</h3>
                                         <div className="flex items-center space-x-2 ml-auto">
-                                            <TiPinOutline
+                                            <CiMapPin
                                                 size={18}
                                                 className={`cursor-pointer ${pinnedUsers.has(user.id) ? 'text-yellow-500' : 'text-gray-900'}`}
                                                 onClick={() => handlePin(user.id)}

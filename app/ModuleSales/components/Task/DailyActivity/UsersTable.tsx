@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { format, parseISO, addDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameDay, isWithinInterval } from "date-fns";
-import { CiSquareChevLeft, CiSquareChevRight, CiEdit, CiCalendar, CiMapPin, CiTrash } from "react-icons/ci";
-import { BsThreeDotsVertical, BsPlus, BsDash, BsRecycle, BsChevronDown } from "react-icons/bs";
-import { MdOutlineCalendarViewMonth, MdOutlineCalendarViewWeek, MdOutlineCalendarViewDay } from "react-icons/md";
+import { format, parseISO, addDays, startOfWeek, startOfMonth, endOfMonth} from "date-fns";
+import { CiSquareChevLeft, CiSquareChevRight, CiViewBoard, CiViewColumn, CiViewTable, CiEdit, CiMapPin, CiTrash, CiMenuKebab, CiBookmarkPlus, CiBookmarkMinus, CiRepeat } from "react-icons/ci";
 import { FcAssistant, FcCollaboration, FcBullish, FcPaid, FcAddressBook, FcFullTrash, FcAlarmClock, FcPodiumWithAudience, FcConferenceCall, FcReading } from "react-icons/fc";
 
 const socketURL = "http://localhost:3001";
@@ -140,26 +138,16 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
             {/* Pagination & View Mode Buttons */}
             <div className="flex justify-start items-center mb-3">
                 <div className="group inline-flex">
-                    <button onClick={handlePrevious} className="text-xs flex items-center"><CiSquareChevLeft size={30} /></button>
-                    <button onClick={handleNext} className="text-xs flex items-center mr-2"><CiSquareChevRight size={30} /></button>
-                    <button
-                        onClick={() => setViewMode(viewMode === "day" ? "default" : "day")}
-                        className={`text-xs flex items-center mr-2 ${viewMode === "day" ? "text-blue-500" : ""}`}
-                    >
-                        <MdOutlineCalendarViewDay size={20} />
+                    <button onClick={handlePrevious} className="text-xs flex items-center"><CiSquareChevLeft size={20} /></button>
+                    <button onClick={handleNext} className="text-xs flex items-center mr-2"><CiSquareChevRight size={20} /></button>
+                    <button title="Day" onClick={() => setViewMode(viewMode === "day" ? "default" : "day")} className={`text-xs flex items-center mr-2 ${viewMode === "day" ? "text-blue-500" : ""}`}>
+                        <CiViewBoard size={20} />
                     </button>
-                    <button
-                        onClick={() => setViewMode(viewMode === "week" ? "default" : "week")}
-                        className={`text-xs flex items-center mr-2 ${viewMode === "week" ? "text-blue-500" : ""}`}
-                    >
-                        <MdOutlineCalendarViewWeek size={20} />
+                    <button title="Week" onClick={() => setViewMode(viewMode === "week" ? "default" : "week")} className={`text-xs flex items-center mr-2 ${viewMode === "week" ? "text-blue-500" : ""}`}>
+                        <CiViewColumn size={20} />
                     </button>
-
-                    <button
-                        onClick={() => setViewMode(viewMode === "month" ? "default" : "month")}
-                        className={`text-xs flex items-center mr-2 ${viewMode === "month" ? "text-blue-500" : ""}`}
-                    >
-                        <MdOutlineCalendarViewMonth size={20} />
+                    <button title="Month" onClick={() => setViewMode(viewMode === "month" ? "default" : "month")} className={`text-xs flex items-center mr-2 ${viewMode === "month" ? "text-blue-500" : ""}`}>
+                        <CiViewTable size={20} />
                     </button>
                 </div>
                 <h3 className="text-xs font-semibold mr-4">{format(formattedDates[0], "dd MMM yyyy")} - {format(formattedDates[formattedDates.length - 1], "dd MMM yyyy")}</h3>
@@ -207,16 +195,16 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                 <h3 className="text-xs font-semibold text-gray-800 uppercase mt-3">{user.companyname}</h3>
                                                 <div className="relative mt-3">
                                                     <button onClick={() => toggleCollapse(user.id)} className="text-gray-500 hover:text-gray-700">
-                                                        {collapsedCards[user.id] ? <BsDash size={16} /> : <BsPlus size={16} />}
+                                                        {collapsedCards[user.id] ? <CiBookmarkMinus size={20} /> : <CiBookmarkPlus size={20} />}
                                                     </button>
                                                     <button className="text-gray-500 hover:text-gray-700" onClick={() => setOpenMenu(openMenu === user.id ? null : user.id)}>
-                                                        <BsThreeDotsVertical size={16} />
+                                                        <CiMenuKebab size={20} />
                                                     </button>
                                                     {/* Dropdown Menu */}
                                                     <div id={`menu-${user.id}`} className={`absolute right-0 mt-2 w-32 bg-white shadow-md p-2 rounded-md text-xs ${openMenu === user.id ? 'block' : 'hidden'} z-50`}>
                                                         <ul>
                                                             <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handleEdit(user)}><CiEdit /> Edit Details</li>
-                                                            <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => toggleStatusMenu(user.id)}><BsRecycle />Change Status</li>
+                                                            <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => toggleStatusMenu(user.id)}><CiRepeat />Change Status</li>
 
                                                             {/* Status Change Menu */}
                                                             {statusMenuVisible[user.id] && (

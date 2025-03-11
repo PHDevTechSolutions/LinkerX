@@ -14,8 +14,8 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 // Icons
-import { CiSquarePlus } from "react-icons/ci";
-import { PiHandTap } from "react-icons/pi";
+import { CiSquarePlus, CiCircleRemove, CiSaveUp1, CiTrash } from "react-icons/ci";
+import { PiHandTapThin } from "react-icons/pi";
 
 // Function to get formatted Manila timestamp
 const getFormattedTimestamp = () => {
@@ -452,13 +452,13 @@ const ListofUser: React.FC = () => {
                                                 className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
                                                 onClick={() => setShowForm(true)}
                                             >
-                                                <CiSquarePlus size={16} /> Create Task
+                                                <CiSquarePlus size={20} /> Create Task
                                             </button>
                                             <button
                                                 className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
                                                 onClick={handleButtonClick}
                                             >
-                                                <PiHandTap size={16} /> Tap
+                                                <PiHandTapThin size={20} /> Tap
                                             </button>
                                         </div>
 
@@ -510,8 +510,8 @@ const ListofUser: React.FC = () => {
 
                                                         {/* Buttons */}
                                                         <div className="mt-6 flex justify-end">
-                                                            <button type="button" className="bg-gray-400 text-xs px-5 py-2 rounded mr-2" onClick={closeForm} disabled={loading}>Cancel</button>
-                                                            <button type="submit" className="bg-blue-600 text-white text-xs px-5 py-2 rounded" disabled={loading}>{loading ? "Submitting..." : "Submit"}</button>
+                                                            <button type="button" className="bg-gray-400 text-xs text-white px-5 py-2 rounded mr-2 flex items-center gap-1" onClick={closeForm} disabled={loading}><CiCircleRemove size={20} />Cancel</button>
+                                                            <button type="submit" className="bg-blue-900 text-white text-xs px-5 py-2 rounded flex items-center gap-1" disabled={loading}><CiSaveUp1 size={20} />{loading ? "Submitting..." : "Submit"}</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -563,18 +563,8 @@ const ListofUser: React.FC = () => {
                                         <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
                                         <p className="text-xs">Are you sure you want to delete this post?</p>
                                         <div className="mt-4 flex justify-end">
-                                            <button
-                                                className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2"
-                                                onClick={handleDelete}
-                                            >
-                                                Delete
-                                            </button>
-                                            <button
-                                                className="bg-gray-300 text-xs px-4 py-2 rounded"
-                                                onClick={() => setShowDeleteModal(false)}
-                                            >
-                                                Cancel
-                                            </button>
+                                            <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2 flex items-center gap-1" onClick={handleDelete}><CiTrash size={20} />Delete</button>
+                                            <button className="bg-gray-300 text-xs px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowDeleteModal(false)}><CiCircleRemove size={20} /> Cancel</button>
                                         </div>
                                     </div>
                                 </div>

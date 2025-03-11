@@ -1,8 +1,6 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { CiTrash, CiEdit } from "react-icons/ci";
-import { BiTransfer, BiRefresh } from "react-icons/bi";
-import { Menu } from "@headlessui/react";
+import React, { useEffect, useState, useCallback } from "react";
+import { CiEdit, CiRepeat, CiSliderHorizontal   } from "react-icons/ci";
+
 import axios from "axios";
 import { toast } from 'react-toastify';
 
@@ -268,11 +266,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
           {bulkEditMode ? "Cancel Bulk Edit" : "Bulk Edit"}
         </button>
         <button onClick={toggleBulkTransferTSAMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
-          <BiTransfer size={16} />
+          <CiSliderHorizontal  size={16} />
           {bulkTransferTSAMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Another Agent"}
         </button>
         <button onClick={handleRefresh} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-gray-900 hover:text-white">
-          <BiRefresh size={16} />
+          <CiRepeat size={16} />
           Refresh
         </button>
       </div>
@@ -360,16 +358,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                   <td className="p-2 border">{post.typeclient}</td>
                   <td className="p-2 border">{post.status}</td>
                   <td className="p-2 border">
-                    <Menu as="div" className="relative inline-block align-item-center text-center">
-                      <div>
-                        <Menu.Button>
-                          <BsThreeDotsVertical />
-                        </Menu.Button>
-                      </div>
-                      <Menu.Items className="absolute right-0 mt-2 min-w-[160px] bg-white shadow-md rounded-md z-10">
-                        <button className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left" onClick={() => handleEdit(post)}>Edit</button>
-                      </Menu.Items>
-                    </Menu>
+                  <button className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left flex items-center gap-1" onClick={() => handleEdit(post)}><CiEdit /></button>
                   </td>
                 </tr>
               ))

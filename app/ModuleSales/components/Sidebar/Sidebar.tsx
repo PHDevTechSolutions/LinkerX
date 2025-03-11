@@ -3,8 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa";
-import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiCalendarDate, CiViewBoard, CiViewTimeline, CiKeyboard, CiMemoPad   } from "react-icons/ci";
-import { RiDonutChartLine, RiBuilding2Line  } from "react-icons/ri";
+import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiCalendarDate, CiViewBoard, CiViewTimeline, CiMemoPad } from "react-icons/ci";
+import { RiDonutChartLine, } from "react-icons/ri";
+
+import { BsBuildings } from "react-icons/bs";
+
 
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
@@ -61,7 +64,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
   const menuItems = [
     {
       title: 'My Companies',
-      icon: RiBuilding2Line,
+      icon: BsBuildings,
       subItems: [
         { title: 'List of Company Accounts', href: `/ModuleSales/Sales/Companies/CompanyAccounts${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Inactive Companies', href: `/ModuleSales/Sales/Companies/InactiveCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
@@ -70,7 +73,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
     },
     {
       title: 'Task',
-      icon: CiViewTimeline,
+      icon: CiMemoPad,
       subItems: [
         { title: 'Daily Activity', href: `/ModuleSales/Sales/Task/DailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Callbacks', href: `/ModuleSales/Sales/Task/Callback${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
@@ -81,7 +84,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
     },
     {
       title: 'Boards',
-      icon: CiMemoPad,
+      icon: CiViewBoard,
       subItems: [
         { title: 'Notes', href: `/ModuleSales/Sales/Boards/Notes${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],

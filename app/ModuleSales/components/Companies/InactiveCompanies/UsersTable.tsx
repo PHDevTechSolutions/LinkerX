@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import React, { useEffect, useState, useCallback, } from "react";
 import { Menu } from "@headlessui/react";
-import { CiTrash, CiEdit } from "react-icons/ci";
+import { CiEdit, CiMenuKebab } from "react-icons/ci";
 
 interface UsersCardProps {
     posts: any[];
@@ -136,7 +135,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                         <Menu as="div" className="relative inline-block align-item-center text-center">
                                             <div>
                                                 <Menu.Button>
-                                                    <BsThreeDotsVertical />
+                                                    <CiMenuKebab />
                                                 </Menu.Button>
                                             </div>
                                             <Menu.Items className="absolute right-0 mt-2 min-w-[160px] bg-white shadow-md rounded-md z-10">

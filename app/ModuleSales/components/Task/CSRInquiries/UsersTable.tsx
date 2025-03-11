@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaPaperPlane } from "react-icons/fa";
+import { CiLocationArrow1} from "react-icons/ci";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -103,7 +103,7 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit, fetchAccount 
                 <td className="px-4 py-2 capitalize">{post.companyname}</td>
                 <td className="px-4 py-2">{post.contactperson}</td>
                 <td className="px-4 py-2">{post.contactnumber}</td>
-                <td className="px-4 py-2 capitalize">{post.emailaddress}</td>
+                <td className="px-4 py-2 lowercase">{post.emailaddress}</td>
                 <td className="px-4 py-2 capitalize">{post.address}</td>
                 <td className="px-4 py-2 uppercase">{post.wrapup}</td>
                 <td className="px-4 py-2 uppercase">{post.inquiries}</td>
@@ -116,9 +116,9 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit, fetchAccount 
                     {post.status !== "Used" && (
                       <button
                         onClick={() => handlePost(post)}
-                        className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center gap-2"
+                        className="bg-gray-200 text-dark px-3 py-1 rounded-md hover:bg-gray-600 hover:text-white flex items-center gap-2"
                       >
-                        <FaPaperPlane className="text-sm" /> Post
+                        <CiLocationArrow1 className="text-sm" /> Post
                       </button>
                     )}
                   </td>

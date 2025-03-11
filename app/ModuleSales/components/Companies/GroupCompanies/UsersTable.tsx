@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import io from "socket.io-client";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { BiRefresh } from "react-icons/bi";
+import { CiMenuKebab, CiRepeat, } from "react-icons/ci";
 import { Menu } from "@headlessui/react";
 import axios from "axios";
 
@@ -72,7 +71,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
             {/* Bulk Action Buttons */}
             <div className="flex gap-2 mb-3">
                 <button onClick={handleRefresh} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-gray-900 hover:text-white">
-                    <BiRefresh size={16} />
+                    <CiRepeat size={16} />
                     Refresh
                 </button>
             </div>
@@ -95,7 +94,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                     <Menu as="div" className="relative inline-block text-left">
                                         <div>
                                             <Menu.Button>
-                                                <BsThreeDotsVertical />
+                                                <CiMenuKebab />
                                             </Menu.Button>
                                         </div>
                                         <Menu.Items className="absolute right-0 mt-2 min-w-[160px] bg-white shadow-md rounded-md z-10">
@@ -165,7 +164,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                         <div className="flex justify-center mt-6">
                             <button
                                 onClick={() => setModalData([])}
-                                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition text-xs"
+                                className="px-6 py-2 bg-gray-600 text-white font-semibold rounded-md hover:bg-blue-700 transition text-xs"
                             >
                                 Close
                             </button>

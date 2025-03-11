@@ -15,9 +15,8 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import ExcelJS from "exceljs";
 
-
 // Icons
-import { CiSquarePlus, CiImport, CiExport } from "react-icons/ci";
+import { CiSquarePlus, CiImport } from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -321,11 +320,11 @@ const ListofUser: React.FC = () => {
                                 <>
                                     <div className="flex justify-between items-center mb-4">
                                         <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
-                                            <CiSquarePlus size={16} /> Add Companies
+                                            <CiSquarePlus size={20} /> Add Companies
                                         </button>
                                         <div className="flex gap-2">
                                             <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-800 hover:text-white transition" onClick={() => setShowImportForm(true)}>
-                                                <CiImport size={16} /> Import Account
+                                                <CiImport size={20} /> Import Account
                                             </button>
                                         </div>
                                     </div>

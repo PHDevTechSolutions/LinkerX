@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Select from 'react-select';
 import { CiCircleMinus, CiSquarePlus, CiSquareMinus } from "react-icons/ci";
-import { BiMailSend } from "react-icons/bi";
+import { CiPaperplane } from "react-icons/ci";
 
 
 interface Activity {
@@ -747,7 +747,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     onClick={handleEmailSubmit}
                                     className="bg-green-800 text-white p-2 rounded mt-6 flex items-center space-x-2"
                                 >
-                                    <BiMailSend size={15} /> <span>Send</span>
+                                    <CiPaperplane size={15} /> <span>Send</span>
                                 </button>
 
                             </div>

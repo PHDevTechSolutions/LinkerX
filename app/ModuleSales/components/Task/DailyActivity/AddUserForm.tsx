@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormFields from "./UserFormFields";
-import { FcFullTrash } from "react-icons/fc";
+import { CiTrash, CiCircleRemove, CiSaveUp1, CiEdit } from "react-icons/ci";
 
 interface AddUserFormProps {
   onCancel: () => void;
@@ -54,7 +54,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [quotationamount, setquotationamount] = useState(editUser ? editUser.quotationamount : "");
   const [sonumber, setsonumber] = useState(editUser ? editUser.sonumber : "");
   const [soamount, setsoamount] = useState(editUser ? editUser.soamount : "");
-  const [actualsales, setactualsales] = useState(editUser ? editUser.actualsales: "");
+  const [actualsales, setactualsales] = useState(editUser ? editUser.actualsales : "");
   const [callstatus, setcallstatus] = useState(editUser ? editUser.callstatus : "");
 
   const [startdate, setstartdate] = useState(editUser ? editUser.startdate : "");
@@ -228,10 +228,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           editPost={editUser}
         />
         <div className="flex justify-between">
-          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs">
+          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
+            {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
             {editUser ? "Update" : "Submit"}
           </button>
-          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs" onClick={onCancel}>Cancel</button>
+          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} /> Cancel</button>
         </div>
       </form>
 
@@ -285,9 +286,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                       {activity.remarks}
                     </td>
                     <td className="px-4 py-2 border">{activity.activitystatus}</td>
-                    <td className="px-4 py-2 border text-right">
+                    <td className="px-4 py-2 flex justify-center item-center">
                       <button onClick={() => handleDeleteClick(activity.id.toString())} className="text-red-600">
-                        <FcFullTrash size={16} />
+                        <CiTrash size={16} />
                       </button>
                     </td>
                   </tr>
@@ -340,9 +341,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                 <p><strong>Q# Number:</strong> {activity.quotationnumber}</p>
                 <p><strong>Q-Amount:</strong> {activity.quotationamount}</p>
                 <p><strong>Remarks:</strong> {activity.remarks}</p>
-                <div className="flex justify-end mt-2">
+                <div className="flex justify-center item-center mt-2">
                   <button onClick={() => handleDeleteClick(activity.id.toString())} className="text-red-600">
-                    <FcFullTrash size={16} />
+                    <CiTrash size={16} />
                   </button>
 
                 </div>
@@ -384,11 +385,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
             <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
             <p className="text-xs">Are you sure you want to delete this post?</p>
             <div className="mt-4 flex justify-end">
-              <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2" onClick={confirmDelete}>
-                Delete
+              <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2 flex items-center gap-1" onClick={confirmDelete}>
+                <CiTrash size={20} /> Delete
               </button>
-              <button className="bg-gray-300 text-xs px-4 py-2 rounded" onClick={() => setShowDeleteModal(false)}>
-                Cancel
+              <button className="bg-gray-300 text-xs px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowDeleteModal(false)}>
+                <CiCircleRemove size={20} />Cancel
               </button>
             </div>
           </div>

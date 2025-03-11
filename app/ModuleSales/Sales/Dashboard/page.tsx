@@ -2,10 +2,8 @@
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../components/Layouts/ParentLayout";
 import SessionChecker from "../../components/Session/SessionChecker";
-import { BsClockHistory, BsTelephoneInbound, BsTelephoneOutbound, BsBuildings } from "react-icons/bs";
-import { CgChevronLeftR, CgChevronRightR } from "react-icons/cg";
-import { GiTakeMyMoney, GiMoneyStack, GiShoppingCart, GiClockwork } from "react-icons/gi";
-
+import { BsBuildings } from "react-icons/bs";
+import { CiTimer, CiInboxIn, CiInboxOut, CiMoneyBill, CiReceipt, CiWallet, CiStopwatch, CiSquareChevLeft, CiSquareChevRight } from "react-icons/ci";
 
 
 type Activity = {
@@ -211,7 +209,7 @@ const DashboardPage: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                 {/* Total Work Hours */}
                 <div className="bg-blue-900 text-white shadow-md rounded-lg p-6 flex items-center">
-                  <BsClockHistory className="text-4xl mr-4" />
+                  <CiTimer className="text-4xl mr-4" />
                   <div>
                     <h3 className="text-xs font-bold mb-1">Total Work Hours</h3>
                     <p className="text-sm font-semibold">{formattedTime}</p>
@@ -220,7 +218,7 @@ const DashboardPage: React.FC = () => {
 
                 {/* Total Inbound Calls */}
                 <div className="bg-green-900 text-white shadow-md rounded-lg p-6 flex items-center">
-                  <BsTelephoneInbound className="text-4xl mr-4" />
+                  <CiInboxIn className="text-4xl mr-4" />
                   <div>
                     <h3 className="text-xs font-bold mb-1">Total Inbound Calls</h3>
                     <p className="text-sm font-semibold">{totalInbound}</p>
@@ -229,7 +227,7 @@ const DashboardPage: React.FC = () => {
 
                 {/* Total Outbound Calls */}
                 <div className="bg-yellow-600 text-white shadow-md rounded-lg p-6 flex items-center">
-                  <BsTelephoneOutbound className="text-4xl mr-4" />
+                  <CiInboxOut className="text-4xl mr-4" />
                   <div>
                     <h3 className="text-xs font-bold mb-1">Total Outbound Calls</h3>
                     <p className="text-sm font-semibold">{totalOutbound}</p>
@@ -315,9 +313,9 @@ const DashboardPage: React.FC = () => {
 
                   {/* Card Footer */}
                   <div className="bg-gray-200 text-gray-800 rounded-b-lg p-4 flex justify-between">
-                    <button onClick={() => setCurrentPage(prevPage => Math.max(prevPage - 1, 1))} className="text-xs"><CgChevronLeftR size={20} /></button>
+                    <button onClick={() => setCurrentPage(prevPage => Math.max(prevPage - 1, 1))} className="text-xs"><CiSquareChevLeft size={30} /></button>
                     <span className="text-xs">{currentPage}</span>
-                    <button onClick={() => setCurrentPage(prevPage => prevPage + 1)} className="text-xs"><CgChevronRightR size={20} /></button>
+                    <button onClick={() => setCurrentPage(prevPage => prevPage + 1)} className="text-xs"><CiSquareChevRight size={30} /></button>
                   </div>
                 </div>
 
@@ -325,7 +323,7 @@ const DashboardPage: React.FC = () => {
                   {/* Cards inside Placeholder 2 */}
                   <div className="grid gap-4 w-full">
                     <div className="bg-green-700 text-white shadow-md rounded-lg p-6 flex items-center">
-                      <GiTakeMyMoney className="text-4xl mr-4" />
+                      <CiMoneyBill className="text-4xl mr-4" />
                       <div>
                         <h3 className="text-xs font-bold mb-1">Actual Sales</h3>
                         <p className="text-sm font-semibold">{totalActualSales.toLocaleString()}</p>
@@ -333,7 +331,7 @@ const DashboardPage: React.FC = () => {
                     </div>
 
                     <div className="bg-red-600 text-white shadow-md rounded-lg p-6 flex items-center">
-                      <GiShoppingCart className="text-4xl mr-4" />
+                      <CiReceipt className="text-4xl mr-4" />
                       <div>
                         <h3 className="text-xs font-bold mb-1">Sales Order</h3>
                         <p className="text-sm font-semibold">{totalSalesOrder.toLocaleString()}</p>
@@ -341,7 +339,7 @@ const DashboardPage: React.FC = () => {
                     </div>
 
                     <div className="bg-yellow-500 text-white shadow-md rounded-lg p-6 flex items-center">
-                      <GiMoneyStack className="text-4xl mr-4" />
+                      <CiWallet className="text-4xl mr-4" />
                       <div>
                         <h3 className="text-xs font-bold mb-1">Quotation Amount</h3>
                         <p className="text-sm font-semibold">{totalQuotationAmount.toLocaleString()}</p>
@@ -349,7 +347,7 @@ const DashboardPage: React.FC = () => {
                     </div>
 
                     <div className="bg-blue-900 text-white shadow-md rounded-lg p-6 flex items-center">
-                      <GiClockwork className="text-4xl mr-4" />
+                      <CiStopwatch className="text-4xl mr-4" />
                       <div>
                         <h3 className="text-xs font-bold mb-1">Total Activities</h3>
                         <p className="text-sm font-semibold">{totalActivityCount.toLocaleString()}</p>

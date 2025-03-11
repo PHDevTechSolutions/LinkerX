@@ -2,10 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { IoIosMenu } from "react-icons/io";
-import { CiClock2 } from "react-icons/ci";
-import { IoMdNotificationsOutline } from "react-icons/io";
-import { CiUser, CiSettings } from "react-icons/ci";
+import { CiClock2, CiMenuBurger, CiUser, CiSettings, CiBellOn, CiCircleRemove } from "react-icons/ci";
 
 interface Notification {
   id: number;
@@ -203,17 +200,17 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
     <div className="flex justify-between items-center p-4 bg-gray-100 text-dark shadow-md">
       <div className="flex items-center">
         <button onClick={onToggleSidebar} className="p-2">
-          <IoIosMenu size={24} />
+          <CiMenuBurger />
         </button>
         <span className="flex items-center border text-sm shadow-md text-xs font-medium bg-gray-50 px-3 py-1 rounded-full">
-          <CiClock2 className="mr-1" /> {currentTime}
+          <CiClock2 size={15} className="mr-1" /> {currentTime}
         </span>
       </div>
 
-      <div className="relative flex items-center text-center text-xs space-x-4" ref={dropdownRef}>
+      <div className="relative flex items-center text-center text-xs gap-2" ref={dropdownRef}>
         {/* Notification Icon */}
-        <button onClick={() => setShowNotifications(!showNotifications)} className="p-2 relative">
-          <IoMdNotificationsOutline size={20} />
+        <button onClick={() => setShowNotifications(!showNotifications)} className="p-2 relative flex items-center">
+          <CiBellOn size={20} />
           {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback).length > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
               {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback).length}
@@ -268,9 +265,8 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
           </div>
         )}
 
-
         {/* User Dropdown */}
-        <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-2 focus:outline-none">
+        <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-1 focus:outline-none">
           <CiUser size={20} />
           <span className="capitalize">Hello, {userName}</span>
         </button>
@@ -309,8 +305,8 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
 
               </div>
               <div className="mt-4 flex justify-end">
-                <button onClick={closeModal} className="px-4 py-2 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">
-                  Close
+                <button onClick={closeModal} className="px-4 py-2 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 flex items-center gap-1">
+                 <CiCircleRemove size={20} /> Close
                 </button>
               </div>
             </div>

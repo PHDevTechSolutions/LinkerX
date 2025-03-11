@@ -11,7 +11,7 @@ import UsersCard from "../../../components/Boards/Notes/UsersTable"; // Assuming
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { PiNotepad } from "react-icons/pi";
+import { CiTrash, CiCircleRemove, CiStickyNote} from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -207,7 +207,7 @@ const ListofUser: React.FC = () => {
                                             className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
                                             onClick={() => setShowForm(true)}
                                         >
-                                            <PiNotepad size={16} /> Create Notes
+                                            <CiStickyNote size={16} /> Create Notes
                                         </button>
                                     </div>
 
@@ -228,18 +228,8 @@ const ListofUser: React.FC = () => {
                                         <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
                                         <p className="text-xs">Are you sure you want to delete this post?</p>
                                         <div className="mt-4 flex justify-end">
-                                            <button
-                                                className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2"
-                                                onClick={handleDelete}
-                                            >
-                                                Delete
-                                            </button>
-                                            <button
-                                                className="bg-gray-300 text-xs px-4 py-2 rounded"
-                                                onClick={() => setShowDeleteModal(false)}
-                                            >
-                                                Cancel
-                                            </button>
+                                            <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2 flex items-center gap-1" onClick={handleDelete}><CiTrash size={20} />Delete</button>
+                                            <button className="bg-gray-300 text-xs px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowDeleteModal(false)}><CiCircleRemove size={20} /> Cancel</button>
                                         </div>
                                     </div>
                                 </div>

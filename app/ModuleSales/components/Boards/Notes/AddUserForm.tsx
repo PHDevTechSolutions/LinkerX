@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormFields from "./UserFormFields";
+import { CiTrash, CiCircleRemove, CiSaveUp1, CiEdit } from "react-icons/ci";
 
 interface AddUserFormProps {
     userDetails: {
@@ -62,10 +63,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
                     status={status} setstatus={setstatus}
                 />
                 <div className="flex justify-between">
-                    <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs">
+                    <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
+                        {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
                         {editUser ? "Update" : "Submit"}
                     </button>
-                    <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs" onClick={onCancel}>Cancel</button>
+                    <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} /> Cancel</button>
                 </div>
             </form>
             <ToastContainer className="text-xs" autoClose={1000} />
