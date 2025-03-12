@@ -1,10 +1,15 @@
-"use client";
+"use client";  // If you're using Next.js, ensure this is at the top of the file
+
 import React, { useState, useEffect } from "react";
+import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js';
+import { Chart } from 'react-chartjs-2';
 import ParentLayout from "../../components/Layouts/ParentLayout";
 import SessionChecker from "../../components/Session/SessionChecker";
 import { BsBuildings } from "react-icons/bs";
 import { CiTimer, CiInboxIn, CiInboxOut, CiMoneyBill, CiReceipt, CiWallet, CiStopwatch, CiSquareChevLeft, CiSquareChevRight } from "react-icons/ci";
 
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement);
 
 type Activity = {
   date_created: string; // or Date if it's a Date object
@@ -19,14 +24,34 @@ interface Post {
   date_created?: string;  // Date of creation (ISO format)
 }
 
+interface ChartData {
+  labels: string[]; // Labels should be an array of strings (dates)
+  datasets: {
+    label: string;
+    data: number[]; // Data should be an array of numbers (sales)
+    backgroundColor: string;
+    borderColor: string;
+    borderWidth: number;
+    borderRadius: number;
+  }[];
+}
+
 const DashboardPage: React.FC = () => {
   const [totalHours, setTotalHours] = useState<number>(0);
   const [formattedTime, setFormattedTime] = useState<string>("");
 
   const [totalInbound, setTotalInbound] = useState<number>(0);
+  const [tsmtotalInbound, setTsmTotalInbound] = useState<number>(0);
+
   const [totalOutbound, setTotalOutbound] = useState<number>(0);
+  const [tsmtotalOutbound, setTsmTotalOutbound] = useState<number>(0);
+
   const [totalAccounts, setTotalAccounts] = useState<number>(0);
+  const [tsmtotalAccounts, setTsmTotalAccounts] = useState<number>(0);
+
   const [totalActualSales, setTotalActualSales] = useState<number>(0);
+  const [tsmtotalActualSales, setTsmTotalActualSales] = useState<number>(0);
+
   const [totalSalesOrder, setTotalSalesOrder] = useState<number>(0);
   const [totalQuotationAmount, setTotalQuotationAmount] = useState<number>(0);
   const [totalActivityCount, setTotalActivityCount] = useState<number>(0);
@@ -50,6 +75,78 @@ const DashboardPage: React.FC = () => {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [chartData, setChartData] = useState<ChartData>({
+    labels: [], // Initial empty array for labels
+    datasets: [
+      {
+        label: "Total Actual Sales per Day",
+        data: [], // Initial empty array for data
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+        borderRadius: 10,
+      },
+    ],
+  });
+
+  useEffect(() => {
+    const fetchSalesData = async () => {
+      try {
+        const response = await fetch(
+          `/api/ModuleSales/Dashboard/TSM/FetchBarActualSales?tsm=${encodeURIComponent(userDetails.ReferenceID)}`
+        );
+        const data = await response.json();
+
+        if (data.success && Array.isArray(data.data)) {
+          // Process the sales data to get sales by day (already aggregated)
+          const salesByDay = data.data.reduce((acc: Record<string, number>, sale: { date_created: string; actualsales: number }) => {
+            const date = sale.date_created; // The date is already formatted as 'YYYY-MM-DD'
+            acc[date] = (acc[date] || 0) + sale.actualsales; // Sum up the sales for each date
+            return acc;
+          }, {});
+
+          // Sort the dates in ascending order
+          const sortedDates = Object.keys(salesByDay).sort((a, b) => (new Date(a).getTime() - new Date(b).getTime()));
+          const sortedSalesValues = sortedDates.map(date => salesByDay[date]);
+
+          // Update chart data state
+          setChartData({
+            labels: sortedDates, // Sorted dates as labels in ascending order
+            datasets: [
+              {
+                label: "Total Actual Sales per Day",
+                data: sortedSalesValues, // Sorted sales values
+                backgroundColor: "rgba(75, 192, 192, 0.6)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+                borderRadius: 10,
+              },
+            ],
+          });
+        } else {
+          console.error("Failed to fetch sales data:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching sales data:", error);
+      }
+    };
+
+    if (userDetails.ReferenceID) {
+      fetchSalesData();
+    }
+  }, [userDetails.ReferenceID]);
+
+
+  const options = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: "Total SO to DR per Day",
+      },
+    },
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -96,17 +193,43 @@ const DashboardPage: React.FC = () => {
 
     const fetchDashboardData = async () => {
       try {
-        const [hoursRes, callsRes, accountRes, actualSalesRes, salesOrderRes, quotationAmountRes, activityRes] = await Promise.all([
-          fetch(`/api/ModuleSales/Dashboard/FetchWorkingHours?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`/api/ModuleSales/Dashboard/FetchCalls?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`/api/ModuleSales/Dashboard/FetchAccount?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`/api/ModuleSales/Dashboard/FetchActualSales?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`/api/ModuleSales/Dashboard/FetchSalesOrder?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`/api/ModuleSales/Dashboard/FetchQuotationAmount?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`/api/ModuleSales/Dashboard/FetchTotalActivity?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
+        const baseUrls = `/api/ModuleSales/Dashboard/`;
+        const tsmBaseUrls = `/api/ModuleSales/Dashboard/TSM/`;
+
+        const commonCalls = [
+          fetch(`${baseUrls}FetchWorkingHours?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
+          fetch(`${baseUrls}FetchCalls?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
+          fetch(`${baseUrls}FetchAccount?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
+          fetch(`${baseUrls}FetchActualSales?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
+          fetch(`${baseUrls}FetchSalesOrder?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
+          fetch(`${baseUrls}FetchQuotationAmount?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
+          fetch(`${baseUrls}FetchTotalActivity?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
+        ];
+
+        const tsmCalls = [
+          fetch(`${tsmBaseUrls}FetchCalls?tsm=${encodeURIComponent(userDetails.ReferenceID)}`),
+          fetch(`${tsmBaseUrls}FetchAccount?tsm=${encodeURIComponent(userDetails.ReferenceID)}`),
+          fetch(`${tsmBaseUrls}FetchActualSales?tsm=${encodeURIComponent(userDetails.ReferenceID)}`),
+        ];
+
+        // Use Promise.all to fetch all common data and TSM-specific data
+        const [commonRes, tsmRes] = await Promise.all([
+          Promise.all(commonCalls),
+          Promise.all(tsmCalls),
         ]);
 
-        if (!hoursRes.ok || !callsRes.ok || !accountRes.ok || !actualSalesRes.ok || !salesOrderRes.ok || !quotationAmountRes.ok || !activityRes.ok) {
+        const [hoursRes, callsRes, accountRes, actualSalesRes, salesOrderRes, quotationAmountRes, activityRes] = commonRes;
+        const [tsmCallsRes, tsmAccountRes, tsmActualSalesRes] = tsmRes;
+
+        if (
+          !hoursRes.ok ||
+          !callsRes.ok ||
+          !accountRes.ok ||
+          !actualSalesRes.ok ||
+          !salesOrderRes.ok ||
+          !quotationAmountRes.ok ||
+          !activityRes.ok
+        ) {
           throw new Error("Failed to fetch dashboard data");
         }
 
@@ -117,9 +240,10 @@ const DashboardPage: React.FC = () => {
           actualSalesRes.json(),
           salesOrderRes.json(),
           quotationAmountRes.json(),
-          activityRes.json()
+          activityRes.json(),
         ]);
 
+        // Update common dashboard data
         if (hoursData.success) {
           setTotalHours(hoursData.totalHours);
           convertToHMS(hoursData.totalHours);
@@ -135,19 +259,41 @@ const DashboardPage: React.FC = () => {
         }
 
         if (actualSalesData.success) {
-          setTotalActualSales(actualSalesData.totalActualSales); // Set total actual sales
+          setTotalActualSales(actualSalesData.totalActualSales);
         }
 
         if (salesOrderData.success) {
-          setTotalSalesOrder(salesOrderData.totalSalesOrder); // Set total sales order
+          setTotalSalesOrder(salesOrderData.totalSalesOrder);
         }
 
         if (quotationAmountData.success) {
-          setTotalQuotationAmount(quotationAmountData.totalQuotationAmount); // Set total sales order
+          setTotalQuotationAmount(quotationAmountData.totalQuotationAmount);
         }
 
         if (activityData.success) {
           setTotalActivityCount(activityData.totalActivityCount);
+        }
+
+        // Update TSM-specific data
+        if (tsmCallsRes.ok && tsmAccountRes.ok && tsmActualSalesRes.ok) {
+          const [tsmCallsData, tsmAccountData, tsmActualSalesData] = await Promise.all([
+            tsmCallsRes.json(),
+            tsmAccountRes.json(),
+            tsmActualSalesRes.json(),
+          ]);
+
+          if (tsmCallsData.success) {
+            setTsmTotalInbound(tsmCallsData.totalInbound);
+            setTsmTotalOutbound(tsmCallsData.totalOutbound);
+          }
+
+          if (tsmAccountData.success) {
+            setTsmTotalAccounts(tsmAccountData.totalAccounts);
+          }
+
+          if (tsmActualSalesData.success) {
+            setTsmTotalActualSales(tsmActualSalesData.totalActualSales);
+          }
         }
 
       } catch (error) {
@@ -157,7 +303,6 @@ const DashboardPage: React.FC = () => {
 
     fetchDashboardData();
   }, [userDetails.ReferenceID]);
-
 
   const convertToHMS = (hours: number) => {
     const totalSeconds = Math.floor(hours * 3600);
@@ -194,7 +339,7 @@ const DashboardPage: React.FC = () => {
         })
         .catch(() => setActivityList([])); // Catch any errors and reset the activity list
     }
-  }, [userDetails.ReferenceID, currentPage]); // Trigger the effect when ReferenceID or currentPage changes
+  }, [userDetails.ReferenceID, currentPage]);
 
   return (
     <SessionChecker>
@@ -361,24 +506,53 @@ const DashboardPage: React.FC = () => {
           )}
 
           {userDetails.Role === "Territory Sales Manager" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-              {/* Empty Cards */}
-              <div className="bg-gray-300 text-gray-700 shadow-md rounded-lg p-4 flex items-center justify-center h-24">
-                <p className="text-sm font-semibold">Placeholder 1</p>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                {/* Total Inbound Calls */}
+                <div className="bg-green-900 text-white shadow-md rounded-lg p-6 flex items-center">
+                  <CiInboxIn className="text-4xl mr-4" />
+                  <div>
+                    <h3 className="text-xs font-bold mb-1">Total Inbound Calls</h3>
+                    <p className="text-sm font-semibold">{tsmtotalInbound}</p>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-600 text-white shadow-md rounded-lg p-6 flex items-center">
+                  <CiInboxOut className="text-4xl mr-4" />
+                  <div>
+                    <h3 className="text-xs font-bold mb-1">Total Outbound Calls</h3>
+                    <p className="text-sm font-semibold">{tsmtotalOutbound}</p>
+                  </div>
+                </div>
+
+                <div className="bg-red-700 text-white shadow-md rounded-lg p-6 flex items-center">
+                  <BsBuildings className="text-4xl mr-4" />
+                  <div>
+                    <h3 className="text-xs font-bold mb-1">Total Company Accounts</h3>
+                    <p className="text-sm font-semibold">{tsmtotalAccounts ?? 0}</p>
+                  </div>
+                </div>
+
+                <div className="bg-orange-500 text-white shadow-md rounded-lg p-6 flex items-center">
+                  <CiMoneyBill className="text-4xl mr-4" />
+                  <div>
+                    <h3 className="text-xs font-bold mb-1">Actual Sales</h3>
+                    <p className="text-sm font-semibold">{tsmtotalActualSales.toLocaleString()}</p>
+                  </div>
+                </div>
               </div>
 
-              <div className="bg-gray-300 text-gray-700 shadow-md rounded-lg p-4 flex items-center justify-center h-24">
-                <p className="text-sm font-semibold">Placeholder 2</p>
+              {/* Large Charts Below */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
+                <div className="bg-gray-100 text-gray-900 shadow-md rounded-lg p-2 flex flex-col lg:col-span-4">
+                  {/* Card Body */}
+                  <div className="flex-grow p-0">
+                    {/* Bar Chart Inside */}
+                    <Bar data={chartData} options={options} />
+                  </div>
+                </div>
               </div>
-
-              <div className="bg-gray-300 text-gray-700 shadow-md rounded-lg p-4 flex items-center justify-center h-24">
-                <p className="text-sm font-semibold">Placeholder 3</p>
-              </div>
-
-              <div className="bg-gray-300 text-gray-700 shadow-md rounded-lg p-4 flex items-center justify-center h-24">
-                <p className="text-sm font-semibold">Placeholder 4</p>
-              </div>
-            </div>
+            </>
           )}
         </div>
       </ParentLayout>
