@@ -17,6 +17,22 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [selectedAgent, setSelectedAgent] = useState("");
+
+  // Extract unique agents for filtering
+  const uniqueAgents = Array.from(
+    new Set(updatedUser.map((user) => `${user.AgentFirstname} ${user.AgentLastname}`))
+  );
+
+  // Filter users based on selected agent
+  const filteredUsers = selectedAgent
+    ? updatedUser.filter(
+        (post) => `${post.AgentFirstname} ${post.AgentLastname}` === selectedAgent
+      )
+    : updatedUser;
+
+
+
   useEffect(() => {
     setUpdatedUser(posts);
   }, [posts]);
@@ -42,7 +58,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
         .finally(() => setLoading(false));
     }
   }, [bulkTransferTSAMode, ReferenceID]);
-
 
   const toggleBulkTransferTSAMode = useCallback(() => {
     setBulkTransferTSAMode((prev) => !prev);
@@ -93,7 +108,21 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
           <CiSliderHorizontal size={16} />
           {bulkTransferTSAMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Another Agent"}
         </button>
+        {/* Filter by Territory Sales Associates */}
+        <select
+          className="px-2 py-1 border rounded-md text-xs capitalize"
+          value={selectedAgent}
+          onChange={(e) => setSelectedAgent(e.target.value)}
+        >
+          <option value="">Filter by Agent</option>
+          {uniqueAgents.map((agent, index) => (
+            <option key={index} value={agent}>
+              {agent}
+            </option>
+          ))}
+        </select>
       </div>
+
       {(bulkTransferTSAMode) && (
         <div className="mb-4 p-3 bg-gray-100 rounded-md text-xs">
           {/* Select All Checkbox */}
@@ -138,12 +167,19 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
           </tr>
         </thead>
         <tbody>
-          {updatedUser.length > 0 ? (
-            updatedUser.map((post) => (
+          {filteredUsers.length > 0 ? (
+            filteredUsers.map((post) => (
               <tr key={post.id} className="border-t">
-                <td className="py-2 px-2 border">{bulkTransferTSAMode && (
-                  <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4 text-purple-600"/>
-                )}</td>
+                <td className="py-2 px-2 border">
+                  {bulkTransferTSAMode && (
+                    <input
+                      type="checkbox"
+                      checked={selectedUsers.has(post.id)}
+                      onChange={() => handleSelectUser(post.id)}
+                      className="w-4 h-4 text-purple-600"
+                    />
+                  )}
+                </td>
                 <td className="py-2 px-4 border capitalize">
                   {post.AgentFirstname} {post.AgentLastname}
                   <br />
@@ -157,8 +193,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
                 <td className="py-2 px-4 border capitalize">{post.area}</td>
                 <td className="py-2 px-4 border uppercase">{post.typeclient}</td>
                 <td className="py-2 px-4 border text-center">
-                  <button className=" px-4 py-2 text-gray-700 w-full text-left"
-                    onClick={() => handleEdit(post)}>
+                  <button
+                    className="px-4 py-2 text-gray-700 w-full text-left"
+                    onClick={() => handleEdit(post)}
+                  >
                     <CiEdit size={16} />
                   </button>
                 </td>
@@ -166,7 +204,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
             ))
           ) : (
             <tr>
-              <td colSpan={9} className="text-center py-4 border">No accounts available</td>
+              <td colSpan={9} className="text-center py-4 border">
+                No accounts available
+              </td>
             </tr>
           )}
         </tbody>
