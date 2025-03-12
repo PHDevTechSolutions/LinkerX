@@ -286,8 +286,6 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
           )}
         </button>
 
-
-
         {showNotifications && notifications.length > 0 && (
           <div ref={notificationRef} className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-300 rounded shadow-lg z-50 p-2 font-sans">
             <h3 className="text-xs font-semibold px-2 py-1 border-b flex justify-between items-center">
