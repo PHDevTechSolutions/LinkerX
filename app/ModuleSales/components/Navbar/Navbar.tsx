@@ -11,6 +11,7 @@ interface Notification {
   typeactivity: string;
   typeclient: string;
   date_created: string;
+  typecall: string;
 }
 
 const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) => {
@@ -62,64 +63,70 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
 
     const fetchNotificationsAndInquiries = async () => {
       try {
-        // Fetching callback notifications
-        const callbackResponse = await fetch(
-          `/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`
-        );
-        const callbackData = await callbackResponse.json();
+        // Fetching all necessary data
+        const [callbackResponse, inquiryResponse, typecallResponse] = await Promise.all([
+          fetch(`/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`),
+          fetch(`/api/ModuleSales/Task/CSRInquiries/FetchInquiryNotif?referenceId=${userReferenceId}`),
+          fetch(`/api/ModuleSales/Task/Callback/FetchTypeCall?referenceId=${userReferenceId}`),
+        ]);
 
-        // Fetching inquiries
-        const inquiryResponse = await fetch(
-          `/api/ModuleSales/Task/CSRInquiries/FetchInquiryNotif?referenceId=${userReferenceId}`
-        );
-        const inquiryData = await inquiryResponse.json();
+        const [callbackData, inquiryData, typecallData] = await Promise.all([
+          callbackResponse.json(),
+          inquiryResponse.json(),
+          typecallResponse.json(),
+        ]);
 
-        if (callbackData.success && inquiryData.success) {
+        if (callbackData.success && inquiryData.success && typecallData.success) {
           const currentTime = new Date();
           const dismissedIds = JSON.parse(localStorage.getItem("dismissedNotifications") || "[]");
 
-          // Process all notifications: callback + inquiries (both dismissed and non-dismissed)
+          // Combine and filter all notifications
           const allNotifications = [
             ...callbackData.data
               .filter(
                 (notif: Notification) =>
                   notif.typeactivity === "Outbound Call" &&
-                  !!notif.callback && // Ensure callback is not null/empty
+                  !!notif.callback &&  // Ensure callback is not null/empty
                   new Date(notif.callback) <= currentTime &&
                   !dismissedIds.includes(notif.id)
               )
               .sort((a: Notification, b: Notification) => new Date(b.callback).getTime() - new Date(a.callback).getTime()),
 
             ...inquiryData.data
-              .filter(
-                (inquiry: any) => new Date(inquiry.date_created) <= currentTime
-              ) // No filter for dismissed, both dismissed and non-dismissed inquiries will be included
+              .filter((inquiry: any) => new Date(inquiry.date_created) <= currentTime)
               .sort((a: any, b: any) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime())
               .map((inquiry: any) => ({
                 id: inquiry.id,
                 companyname: inquiry.companyname,
-                typeactivity: "New Inquiry", // Added for distinction
+                typeactivity: "New Inquiry",
                 date_created: inquiry.date_created,
                 typeclient: inquiry.typeclient,
-              }))
+              })),
+
+            ...typecallData.data
+              .filter((typecall: any) => new Date(typecall.date_created) <= currentTime)
+              .sort((a: any, b: any) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime())
+              .map((typecall: any) => ({
+                id: typecall.id,
+                companyname: typecall.companyname,
+                typecall: typecall.typecall,
+                date_created: typecall.date_created,
+              })),
           ];
 
-          setAllNotifications(allNotifications); // Update all notifications with both types
+          setAllNotifications(allNotifications);
 
-          // Process unread callback notifications
+          // Process unread notifications
           const validCallbacks = callbackData.data
             .filter(
               (notif: Notification) =>
                 notif.typeactivity === "Outbound Call" &&
+                !!notif.callback &&  // Ensure callback is not null/empty
                 new Date(notif.callback) <= currentTime &&
                 !dismissedIds.includes(notif.id)
             )
             .sort((a: Notification, b: Notification) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime());
 
-          setNotifications(validCallbacks); // Set unread callbacks
-          setNotificationCount(validCallbacks.length); // Count unread callbacks
-
-          // Process unread inquiries notifications
           const inquiries = inquiryData.data
             .filter(
               (inquiry: any) =>
@@ -127,18 +134,33 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
             )
             .sort((a: any, b: any) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime());
 
-          setNotifications((prevNotifications) => [
-            ...prevNotifications,
+          const typecall = typecallData.data
+            .filter(
+              (type: any) =>
+                new Date(type.date_created) <= currentTime && !dismissedIds.includes(type.id)
+            )
+            .sort((a: any, b: any) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime());
+
+          setNotifications([
+            ...validCallbacks,
             ...inquiries.map((inquiry: any) => ({
               id: inquiry.id,
               companyname: inquiry.companyname,
               typeactivity: "New Inquiry",
-              date_created: inquiry.date_created, // Use date_created as the callback date
+              date_created: inquiry.date_created,
               typeclient: inquiry.typeclient,
-            }))
+            })),
+            ...typecall.map((type: any) => ({
+              id: type.id,
+              companyname: type.companyname,
+              typecall: type.typecall,
+              date_created: type.date_created,
+            })),
           ]);
 
-          setNotificationCount((prevCount) => prevCount + inquiries.length); // Count unread inquiries
+          setNotificationCount(
+            validCallbacks.length + inquiries.length + typecall.length
+          );
         }
       } catch (error) {
         console.error("Error fetching notifications and inquiries:", error);
@@ -149,6 +171,7 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
     const interval = setInterval(fetchNotificationsAndInquiries, 10000);
     return () => clearInterval(interval);
   }, [userReferenceId]);
+
 
   // Handle notification click (removes from list and stores in localStorage)
   const handleNotificationClick = (notifId: number) => {
@@ -211,19 +234,15 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
         {/* Notification Icon */}
         <button onClick={() => setShowNotifications(!showNotifications)} className="p-2 relative flex items-center">
           <CiBellOn size={20} />
-          {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback).length > 0 && (
+          {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback || !!notif.typecall).length > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback).length}
+              {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback || !!notif.typecall).length}
             </span>
           )}
-
         </button>
 
         {showNotifications && notifications.length > 0 && (
-          <div
-            ref={notificationRef}
-            className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-300 rounded shadow-lg z-50 p-2"
-          >
+          <div ref={notificationRef} className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-300 rounded shadow-lg z-50 p-2 font-sans">
             <h3 className="text-xs font-semibold px-2 py-1 border-b flex justify-between items-center">
               <span>Notifications</span>
               <button className="flex items-center gap-2 text-xs" onClick={openModal}>
@@ -231,21 +250,28 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
               </button>
             </h3>
 
-            {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback).length > 0 ? (
+            {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback || !!notif.typecall).length > 0 ? (
               <ul>
                 {notifications
-                  .filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback) // Ensure callback is not null
+                  .filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback || !!notif.typecall) // Ensure callback is not null
                   .map((notif) => (
                     <li
                       key={notif.id}
                       onClick={() => handleNotificationClick(notif.id)}
-                      className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100"
+                      className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100 capitalize"
                     >
                       {notif.typeactivity === "Outbound Call" ? (
                         <>
                           <strong>You have a callback in {notif.companyname}.</strong> Please make a call or activity.
                           <span className="text-gray-500 text-xs mt-1 block">
                             {notif.callback ? new Date(notif.callback).toLocaleString() : "Invalid Date"}
+                          </span>
+                        </>
+                      ) : notif.typecall ? (
+                        <>
+                          <strong>You have a new follow up status</strong> {notif.typecall} from <strong>{notif.companyname}.</strong>
+                          <span className="text-gray-500 text-xs mt-1 block">
+                            {new Date(notif.date_created).toLocaleString()}
                           </span>
                         </>
                       ) : (
@@ -288,6 +314,13 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
                             <strong>{notif.companyname}:</strong> Callback at{" "}
                             {new Date(notif.callback).toLocaleString()}
                           </>
+                        ) : notif.typecall ? (
+                          <>
+                            <strong>You have a new follow up status</strong> {notif.typecall} from <strong>{notif.companyname}.</strong>
+                            <span className="text-gray-500 text-xs mt-1 block">
+                              {new Date(notif.date_created).toLocaleString()}
+                            </span>
+                          </>
                         ) : (
                           <>
                             <strong>{notif.companyname}:</strong> from {notif.typeclient}.
@@ -306,7 +339,7 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
               </div>
               <div className="mt-4 flex justify-end">
                 <button onClick={closeModal} className="px-4 py-2 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 flex items-center gap-1">
-                 <CiCircleRemove size={20} /> Close
+                  <CiCircleRemove size={20} /> Close
                 </button>
               </div>
             </div>

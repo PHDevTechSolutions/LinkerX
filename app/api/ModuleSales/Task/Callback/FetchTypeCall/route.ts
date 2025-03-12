@@ -17,21 +17,22 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: false, error: "ReferenceID is required" }, { status: 400 });
         }
 
-        const progressData = await sql`
-        SELECT id, companyname, callback, typeactivity, typecall 
-        FROM progress 
-        WHERE referenceid = ${referenceId};
+        const accounts = await sql`
+            SELECT * 
+            FROM progress 
+            WHERE referenceid = ${referenceId};
         `;
 
+        console.log("Fetched accounts:", accounts); // Debugging line
 
-        return NextResponse.json({ success: true, data: progressData }, { status: 200 });
+        return NextResponse.json({ success: true, data: accounts }, { status: 200 });
     } catch (error: any) {
-        console.error("Error fetching notifications:", error);
+        console.error("Error fetching accounts:", error);
         return NextResponse.json(
-            { success: false, error: error.message || "Failed to fetch notifications." },
+            { success: false, error: error.message || "Failed to fetch accounts." },
             { status: 500 }
         );
     }
 }
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"; // Ensure fresh data fetch

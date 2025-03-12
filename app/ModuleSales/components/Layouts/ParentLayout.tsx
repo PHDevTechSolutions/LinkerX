@@ -16,7 +16,7 @@ const ParentLayout: React.FC<ParentLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex font-sans">
       <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
       <div className={`flex-grow transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"} md:ml-64`}>
         <Navbar onToggleSidebar={toggleSidebar} />
