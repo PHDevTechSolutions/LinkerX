@@ -93,7 +93,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                         {groupedUsers.length > 0 ? (
                             groupedUsers.map((agent, index) => (
                                 <tr key={index} className="border-t text-center text-xs">
-                                    <td className="py-2 px-4 border font-bold">
+                                    <td className="py-2 px-4 font-bold">
                                         <span
                                             className={`w-full rounded-lg p-2 text-[10px] ${
                                                 index === 0
@@ -108,19 +108,19 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                                             Rank {index + 1}
                                         </span>
                                     </td>
-                                    <td className="py-2 px-4 border capitalize">
+                                    <td className="py-2 px-4 capitalize">
                                         {agent.AgentFirstname} {agent.AgentLastname}
                                         <br />
                                         <span className="text-gray-900 text-[10px]">({agent.ReferenceID})</span>
                                     </td>
-                                    <td className="py-2 px-4 border text-red-700 font-semibold">
+                                    <td className="py-2 px-4 text-red-700 font-semibold">
                                         {agent.TotalOutbound}
                                     </td>
-                                    <td className="py-2 px-4 border text-green-700 font-semibold">
+                                    <td className="py-2 px-4 text-green-700 font-semibold">
                                         {agent.Successful}
                                     </td>
-                                    <td className="py-2 px-4 border">{agent.InboundCall}</td>
-                                    <td className="py-2 px-4 border font-bold">{agent.TotalCalls}</td>
+                                    <td className="py-2 px-4">{agent.InboundCall}</td>
+                                    <td className="py-2 px-4 font-bold">{agent.TotalCalls}</td>
                                 </tr>
                             ))
                         ) : (

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { CiEdit, CiSliderHorizontal, CiPaperplane } from "react-icons/ci";
+import { FcClock } from "react-icons/fc";
 
 interface UsersCardProps {
   posts: any[];
   handleEdit: (post: any) => void;
   ReferenceID: string;
-  fetchAccount: () => Promise<void>; 
+  fetchAccount: () => Promise<void>;
 }
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, fetchAccount }) => {
@@ -17,7 +17,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
 
   const calculateTimeConsumed = (startdate: string, enddate: string) => {
     if (!startdate || !enddate) return "N/A";
-    
+
     const start = new Date(startdate).getTime();
     const end = new Date(enddate).getTime();
     const diff = end - start;
@@ -46,7 +46,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
             <th className="py-2 px-4 border whitespace-nowrap">Type of Activity</th>
             <th className="py-2 px-4 border whitespace-nowrap">Call Type</th>
             <th className="py-2 px-4 border whitespace-nowrap">Remarks</th>
-            <th className="py-2 px-4 border whitespace-nowrap">File Upload</th>
+            <th className="py-2 px-4 border whitespace-nowrap">File</th>
             <th className="py-2 px-4 border whitespace-nowrap">Status</th>
             <th className="py-2 px-4 border whitespace-nowrap">Duration</th>
             <th className="py-2 px-4 border whitespace-nowrap">Time Consumed</th>
@@ -71,12 +71,22 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
                 <td className="py-2 px-4 border uppercase whitespace-nowrap overflow-hidden overflow-ellipsis">{post.callstatus}</td>
                 <td className="py-2 px-4 border uppercase whitespace-nowrap overflow-hidden overflow-ellipsis">{post.remarks}</td>
                 <td className="py-2 px-4 border uppercase whitespace-nowrap overflow-hidden overflow-ellipsis"></td>
-                <td className="py-2 px-4 border uppercase whitespace-nowrap overflow-hidden overflow-ellipsis">{post.activitystatus}</td>
                 <td className="py-2 px-4 border uppercase whitespace-nowrap overflow-hidden overflow-ellipsis">
-                  {post.startdate ? new Date(post.startdate).toLocaleString() : "N/A"} - 
+                  <span className={`px-2 py-1 rounded-full text-white text-[8px] font-bold 
+                    ${post.activitystatus === "Cold" ? "bg-blue-800" : post.activitystatus === "Hot" ? "bg-red-700" :
+                      post.activitystatus === "Warm" ? "bg-yellow-500" : post.activitystatus === "Done" ? "bg-green-900" : "bg-gray-500"}`}>
+                        {post.activitystatus}
+                  </span>
+                </td>
+
+                <td className="py-2 px-4 border uppercase whitespace-nowrap overflow-hidden overflow-ellipsis">
+                  {post.startdate ? new Date(post.startdate).toLocaleString() : "N/A"} -
                   {post.enddate ? new Date(post.enddate).toLocaleString() : "N/A"}
                 </td>
-                <td className="py-2 px-4 border uppercase whitespace-nowrap overflow-hidden overflow-ellipsis">{calculateTimeConsumed(post.startdate, post.enddate)}</td>
+                <td className="py-2 px-4 uppercase whitespace-nowrap mt-2 truncate flex items-center gap-1">
+                  <FcClock className="text-lg shrink-0" />
+                  {calculateTimeConsumed(post.startdate, post.enddate)}
+                </td>
               </tr>
             ))
           ) : (
