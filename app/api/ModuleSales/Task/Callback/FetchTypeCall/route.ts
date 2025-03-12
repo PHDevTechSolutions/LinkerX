@@ -11,16 +11,16 @@ const sql = neon(databaseUrl);
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
-        const referenceId = searchParams.get("referenceId");
+        const tsm = searchParams.get("tsm");
 
-        if (!referenceId) {
-            return NextResponse.json({ success: false, error: "ReferenceID is required" }, { status: 400 });
+        if (!tsm) {
+            return NextResponse.json({ success: false, error: "tsm is required" }, { status: 400 });
         }
 
         const accounts = await sql`
             SELECT * 
             FROM progress 
-            WHERE referenceid = ${referenceId};
+            WHERE tsm = ${tsm};
         `;
 
         console.log("Fetched accounts:", accounts); // Debugging line

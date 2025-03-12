@@ -29,6 +29,7 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
   const notificationRef = useRef<HTMLDivElement>(null);
   const [notificationCount, setNotificationCount] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
@@ -67,7 +68,7 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
         const [callbackResponse, inquiryResponse, typecallResponse] = await Promise.all([
           fetch(`/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`),
           fetch(`/api/ModuleSales/Task/CSRInquiries/FetchInquiryNotif?referenceId=${userReferenceId}`),
-          fetch(`/api/ModuleSales/Task/Callback/FetchTypeCall?referenceId=${userReferenceId}`),
+          fetch(`/api/ModuleSales/Task/Callback/FetchTypeCall?tsm=${userReferenceId}`),
         ]);
 
         const [callbackData, inquiryData, typecallData] = await Promise.all([
@@ -80,11 +81,40 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
           const currentTime = new Date();
           const dismissedIds = JSON.parse(localStorage.getItem("dismissedNotifications") || "[]");
 
+          // Helper function to handle the notification delay based on typecall
+          const getNotificationTimeLimit = (typecall: string) => {
+            const currentTime = new Date();
+          
+            // Adding time limits based on typecall
+            if (typecall === "Sent Quotation - Standard" || typecall === "Sent Quotation - With Special Price") {
+              return new Date(currentTime.getTime() - 1 * 24 * 60 * 60 * 1000); // 1 day before
+            } else if (typecall === "Follow Up Pending") {
+              return new Date(currentTime.getTime() - 1 * 24 * 60 * 60 * 1000); // 1 day before
+            } else if (typecall === "Sent Quotation - With SPF") {
+              return new Date(currentTime.getTime() - 5 * 24 * 60 * 60 * 1000); // 5 days before
+            } else if (typecall === "Ringing Only") {
+              return new Date(currentTime.getTime() - 10 * 24 * 60 * 60 * 1000); // 10 days before
+            } else if (typecall === "No Requirement") {
+              return new Date(currentTime.getTime() - 15 * 24 * 60 * 60 * 1000); // 15 days before
+            } else if (typecall === "Not Connected") {
+              return new Date(currentTime.getTime() - 15 * 60 * 1000); // 15 minutes before
+            } else if (typecall === "Waiting for Projects") {
+              return new Date(currentTime.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days before
+            } else if (typecall === "With SPFS") {
+              // Weekly notifications for 1 month (4 weeks)
+              return new Date(currentTime.getTime() + 7 * 24 * 60 * 60 * 1000); // First week notification
+            } else if (typecall === "Cannot Be Reached") {
+              return new Date(currentTime.getTime() - 3 * 24 * 60 * 60 * 1000); // 3 days before
+            }
+          
+            return currentTime; // Default to current time if no specific condition
+          };
+
           // Combine and filter all notifications
           const allNotifications = [
             ...callbackData.data
-              .filter(
-                (notif: Notification) =>
+              .filter((notif: Notification) =>
+                
                   notif.typeactivity === "Outbound Call" &&
                   !!notif.callback &&  // Ensure callback is not null/empty
                   new Date(notif.callback) <= currentTime &&
@@ -104,7 +134,10 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
               })),
 
             ...typecallData.data
-              .filter((typecall: any) => new Date(typecall.date_created) <= currentTime)
+              .filter((typecall: any) => {
+                const notificationTimeLimit = getNotificationTimeLimit(typecall.typecall);
+                return new Date(typecall.date_created) <= notificationTimeLimit && !dismissedIds.includes(typecall.id);
+              })
               .sort((a: any, b: any) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime())
               .map((typecall: any) => ({
                 id: typecall.id,
@@ -210,9 +243,10 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
         setShowDropdown(false);
       }
       if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
-        setShowNotifications(false);
+        setShowNotifications(false); // This could be closing the modal prematurely
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -232,7 +266,18 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
 
       <div className="relative flex items-center text-center text-xs gap-2" ref={dropdownRef}>
         {/* Notification Icon */}
-        <button onClick={() => setShowNotifications(!showNotifications)} className="p-2 relative flex items-center">
+        <button
+          onClick={() => {
+            // Only open modal if the notification count is 0 and modal is not already open
+            if (!modalOpen && notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback || !!notif.typecall).length === 0) {
+              openModal(); // Open modal only if it's not already open and there are no notifications
+            } else {
+              setShowNotifications(!showNotifications); // Toggle notification visibility
+            }
+          }}
+          disabled={modalOpen} // Disable the bell if the modal is open
+          className="p-2 relative flex items-center"
+        >
           <CiBellOn size={20} />
           {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback || !!notif.typecall).length > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
@@ -240,6 +285,8 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
             </span>
           )}
         </button>
+
+
 
         {showNotifications && notifications.length > 0 && (
           <div ref={notificationRef} className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-300 rounded shadow-lg z-50 p-2 font-sans">
@@ -291,12 +338,6 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
           </div>
         )}
 
-        {/* User Dropdown */}
-        <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-1 focus:outline-none">
-          <CiUser size={20} />
-          <span className="capitalize">Hello, {userName}</span>
-        </button>
-
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
             <div className="bg-white p-6 rounded-lg shadow-lg w-[30%] max-w-3xl max-h-[80vh] overflow-y-auto">
@@ -345,6 +386,12 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
             </div>
           </div>
         )}
+
+        {/* User Dropdown */}
+        <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-1 focus:outline-none">
+          <CiUser size={20} />
+          <span className="capitalize">Hello, {userName}</span>
+        </button>
 
         {showDropdown && (
           <div className="absolute top-full left-0 mt-2 w-40 bg-white border border-gray-300 rounded shadow-lg z-50">
