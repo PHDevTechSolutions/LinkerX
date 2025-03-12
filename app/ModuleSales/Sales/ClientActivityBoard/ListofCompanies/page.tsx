@@ -14,10 +14,10 @@ import Pagination from "../../../components/ClientActivityBoard/ListofCompanies/
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import ExcelJS from "exceljs";
-
+import Select from "react-select";
 
 // Icons
-import { CiExport } from "react-icons/ci";
+import { CiExport, CiSquarePlus, CiImport } from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -36,7 +36,92 @@ const ListofUser: React.FC = () => {
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const [referenceid, setreferenceid] = useState("");
+    const [tsm, settsm] = useState("");
+    const [manager, setmanager] = useState("");
+    const [status, setstatus] = useState("");
+    const [file, setFile] = useState<File | null>(null);
+
+    const [managerOptions, setManagerOptions] = useState<{ value: string; label: string }[]>([]);
+    const [selectedManager, setSelectedManager] = useState<{ value: string; label: string } | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [TSMOptions, setTSMOptions] = useState<{ value: string; label: string }[]>([]);
+    const [selectedTSM, setSelectedTSM] = useState<{ value: string; label: string } | null>(null);
+    const [TSAOptions, setTSAOptions] = useState<{ value: string; label: string }[]>([]);
+    const [selectedReferenceID, setSelectedReferenceID] = useState<{ value: string; label: string } | null>(null);
     const [usersList, setUsersList] = useState<any[]>([]);
+
+    const handleFileUpload = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!file) {
+            toast.error("Please upload a file.");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            const data = event.target?.result as ArrayBuffer;
+            const workbook = new ExcelJS.Workbook();
+
+            await workbook.xlsx.load(data);
+            const worksheet = workbook.worksheets[0];
+
+            const jsonData: any[] = [];
+
+            worksheet.eachRow((row, rowNumber) => {
+                if (rowNumber === 1) return; // Skip header row
+
+                jsonData.push({
+                    referenceid,
+                    tsm,
+                    manager,
+                    status,
+                    companyname: row.getCell(1).value || "",
+                    contactperson: row.getCell(2).value || "",
+                    contactnumber: row.getCell(3).value || "",
+                    emailaddress: row.getCell(4).value || "",
+                    typeclient: row.getCell(5).value || "",
+                    address: row.getCell(6).value || "",
+                    area: row.getCell(7).value || "",
+                });
+            });
+
+            // Debug log to check parsed data
+            console.log("Parsed Excel Data:", jsonData);
+
+            try {
+                const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/ImportAccounts", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",  // Set correct header for JSON
+                    },
+                    body: JSON.stringify({
+                        referenceid,
+                        tsm,
+                        manager,
+                        status,
+                        data: jsonData,  // Send parsed data as JSON
+                    }),
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    toast.success(`${result.insertedCount} records imported successfully!`);
+                    setreferenceid(""); // Reset input fields
+                    settsm("");
+                    setFile(null);
+                } else {
+                    toast.error(result.message || "Import failed.");
+                }
+            } catch (error) {
+                toast.error("Error uploading file.");
+            }
+        };
+
+        reader.readAsArrayBuffer(file);
+    };
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -103,46 +188,118 @@ const ListofUser: React.FC = () => {
     };
 
     useEffect(() => {
+        const fetchManagers = async () => {
+            try {
+                const response = await fetch("/api/manager?Role=Manager");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch managers");
+                }
+                const data = await response.json();
+
+                // Use ReferenceID as value
+                const options = data.map((user: any) => ({
+                    value: user.ReferenceID, // ReferenceID ang isesend
+                    label: `${user.Firstname} ${user.Lastname}`, // Pero ang nakikita sa UI ay Name
+                }));
+
+                setManagerOptions(options);
+            } catch (error) {
+                console.error("Error fetching managers:", error);
+            }
+        };
+
+        fetchManagers();
+    }, []);
+
+    useEffect(() => {
+        const fetchTSM = async () => {
+            try {
+                const response = await fetch("/api/tsm?Role=Territory Sales Manager");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch managers");
+                }
+                const data = await response.json();
+
+                // Use ReferenceID as value
+                const options = data.map((user: any) => ({
+                    value: user.ReferenceID, // ReferenceID ang isesend
+                    label: `${user.Firstname} ${user.Lastname}`, // Pero ang nakikita sa UI ay Name
+                }));
+
+                setTSMOptions(options);
+            } catch (error) {
+                console.error("Error fetching managers:", error);
+            }
+        };
+
+        fetchTSM();
+    }, []);
+
+    useEffect(() => {
+        const fetchTSA = async () => {
+            try {
+                const response = await fetch("/api/tsa?Role=Territory Sales Associate");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch agents");
+                }
+                const data = await response.json();
+
+                // Use ReferenceID as value
+                const options = data.map((user: any) => ({
+                    value: user.ReferenceID, // ReferenceID ang isesend
+                    label: `${user.Firstname} ${user.Lastname}`, // Pero ang nakikita sa UI ay Name
+                }));
+
+                setTSAOptions(options);
+            } catch (error) {
+                console.error("Error fetching agents:", error);
+            }
+        };
+
+        fetchTSA();
+    }, []);
+
+    useEffect(() => {
         fetchAccount();
     }, []);
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-    ? posts.filter((post) => {
-        const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+        ? posts.filter((post) => {
+            const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
 
-        const postDate = post.date_created ? new Date(post.date_created) : null;
-        const isWithinDateRange = (
-            (!startDate || (postDate && postDate >= new Date(startDate))) &&
-            (!endDate || (postDate && postDate <= new Date(endDate)))
-        );
+            const postDate = post.date_created ? new Date(post.date_created) : null;
+            const isWithinDateRange = (
+                (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                (!endDate || (postDate && postDate <= new Date(endDate)))
+            );
 
-        const matchesClientType = selectedClientType
-            ? post?.typeclient === selectedClientType
-            : true;
+            const matchesClientType = selectedClientType
+                ? post?.typeclient === selectedClientType
+                : true;
 
-        const referenceID = userDetails.ReferenceID;
+            const referenceID = userDetails.ReferenceID;
 
-        const matchesRole = userDetails.Role === "Super Admin"
-            ? true
-            : userDetails.Role === "Manager"
-            ? post?.manager === referenceID
-            : userDetails.Role === "Territory Sales Manager"
-            ? post?.tsm === referenceID
-            : false;
+            const matchesRole = userDetails.Role === "Super Admin"
+                ? true
+                : userDetails.Role === "Manager"
+                    ? post?.manager === referenceID
+                    : userDetails.Role === "Territory Sales Manager"
+                        ? post?.tsm === referenceID
+                        : false;
 
-        return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
-    }).map((post) => {
-        // Hanapin ang Agent na may parehong ReferenceID sa usersList
-        const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+            return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
+        }).map((post) => {
+            // Hanapin ang Agent na may parehong ReferenceID sa usersList
+            const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
 
-        return {
-            ...post,
-            AgentFirstname: agent ? agent.Firstname : "Unknown",
-            AgentLastname: agent ? agent.Lastname : "Unknown"
-        };
-    })
-    : [];
+            return {
+                ...post,
+                AgentFirstname: agent ? agent.Firstname : "Unknown",
+                AgentLastname: agent ? agent.Lastname : "Unknown"
+            };
+        })
+        : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -210,12 +367,74 @@ const ListofUser: React.FC = () => {
                                     userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
                                     editUser={editUser}
                                 />
+                            ) : showImportForm ? (
+                                <div className="bg-white p-4 shadow-md rounded-md">
+                                    <h2 className="text-lg font-bold mb-2">Import Accounts</h2>
+                                    <form onSubmit={handleFileUpload}>
+                                        <div className="flex flex-wrap -mx-4">
+                                        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                                                <label className="block text-xs font-bold mb-2" htmlFor="Manager">Manager</label>
+                                                {isEditing ? (
+                                                    <input type="text" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                                                ) : (
+                                                    <Select id="Manager" options={managerOptions} value={selectedManager} onChange={(option) => {
+                                                        setSelectedManager(option);
+                                                        setmanager(option ? option.value : ""); // Save ReferenceID as Manager
+                                                    }} className="text-xs capitalize" />
+                                                )}
+                                            </div>
+                                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                                                <label className="block text-xs font-bold mb-2" htmlFor="TSM">Territory Sales Manager</label>
+                                                {isEditing ? (
+                                                    <input type="text" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                                                ) : (
+                                                    <Select id="TSM" options={TSMOptions} value={selectedTSM} onChange={(option) => {
+                                                        setSelectedTSM(option);
+                                                        settsm(option ? option.value : ""); // Save ReferenceID as Manager
+                                                    }} className="text-xs capitalize" />
+                                                )}
+                                            </div>
+                                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                                                <label className="block text-xs font-bold mb-2" htmlFor="referenceid">Territory Sales Associate</label>
+                                                {isEditing ? (
+                                                    <input type="text" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                                                ) : (
+                                                    <Select id="ReferenceID" options={TSAOptions} value={selectedReferenceID} onChange={(option) => {
+                                                        setSelectedReferenceID(option);
+                                                        setreferenceid(option ? option.value : ""); // Save ReferenceID as Manager
+                                                    }} className="text-xs capitalize" />
+                                                )}
+                                            </div>
+                                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                                                <select value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                                    <option value="">Select Status</option>
+                                                    <option value="Active">Active</option>
+                                                    <option value="Used">Used</option>
+                                                    <option value="Inactive">Inactive</option>
+                                                </select>
+                                            </div>
+                                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                                                <input type="file" className="w-full px-3 py-2 border rounded text-xs capitalize" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button type="submit" className="bg-blue-600 text-xs text-white px-4 py-2 rounded">Upload</button>
+                                            <button type="button" className="bg-gray-500 text-xs text-white px-4 py-2 rounded" onClick={() => setShowImportForm(false)}>Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
                             ) : (
                                 <>
                                     <div className="flex justify-between items-center mb-4">
+                                        <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
+                                            <CiSquarePlus size={16} /> Add Companies
+                                        </button>
                                         <div className="flex gap-2">
                                             <button onClick={exportToExcel} className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
                                                 <CiExport size={16} /> Export
+                                            </button>
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-800 hover:text-white transition" onClick={() => setShowImportForm(true)}>
+                                                <CiImport size={16} /> Import Account
                                             </button>
                                         </div>
                                     </div>

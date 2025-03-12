@@ -36,6 +36,7 @@ const ListofUser: React.FC = () => {
     const [userDetails, setUserDetails] = useState({
         UserId: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
     });
+    
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +54,6 @@ const ListofUser: React.FC = () => {
     const [TSAOptions, setTSAOptions] = useState<{ value: string; label: string }[]>([]);
     const [selectedReferenceID, setSelectedReferenceID] = useState<{ value: string; label: string } | null>(null);
     
-
     const handleFileUpload = async (e: React.FormEvent) => {
         e.preventDefault();
 
