@@ -16,6 +16,7 @@ type Activity = {
   typeactivity: string;
   remarks: string;
   activitystatus: string;
+  companyname: string;
 };
 
 interface Post {
@@ -405,6 +406,7 @@ const DashboardPage: React.FC = () => {
                         <thead>
                           <tr>
                             <th className="py-3 px-4 text-left">Date</th>
+                            <th className="py-3 px-4 text-left">Company Name</th>
                             <th className="py-3 px-4 text-left">Type of Activity</th>
                             <th className="py-3 px-4 text-left">Status</th>
                             <th className="py-3 px-4 text-left">Remarks</th>
@@ -435,6 +437,7 @@ const DashboardPage: React.FC = () => {
                               return (
                                 <tr key={index} className="border-t border-gray-100 capitalize">
                                   <td className="py-4 px-6">{new Date(activity.date_created).toLocaleDateString()}</td>
+                                  <td className="py-4 px-6">{activity.companyname}</td>
                                   <td className="py-4 px-6">{activity.typeactivity}</td>
                                   <td className="py-4 px-6">
                                     <span className={`inline-block px-2 py-1 rounded-full text-[8px] ${statusBadgeColor}`}>

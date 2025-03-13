@@ -150,9 +150,7 @@ const ListofUser: React.FC = () => {
                                         <UsersTable
                                             posts={currentPosts}
                                             handleEdit={handleEdit}
-                                            handleDelete={confirmDelete}
-                                            Role={user ? user.Role : ""}
-                                            Department={user ? user.Department : ""}
+                                            userDetails={userDetails}
                                         />
                                         <Pagination
                                             currentPage={currentPage}

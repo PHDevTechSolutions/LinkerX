@@ -64,137 +64,99 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
 
     const fetchNotificationsAndInquiries = async () => {
       try {
-        // Fetching all necessary data
-        const [callbackResponse, inquiryResponse, typecallResponse] = await Promise.all([
+        // Fetch all necessary data concurrently
+        const [callbackRes, inquiryRes, typecallRes] = await Promise.all([
           fetch(`/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`),
           fetch(`/api/ModuleSales/Task/CSRInquiries/FetchInquiryNotif?referenceId=${userReferenceId}`),
           fetch(`/api/ModuleSales/Task/Callback/FetchTypeCall?tsm=${userReferenceId}`),
         ]);
 
         const [callbackData, inquiryData, typecallData] = await Promise.all([
-          callbackResponse.json(),
-          inquiryResponse.json(),
-          typecallResponse.json(),
+          callbackRes.json(),
+          inquiryRes.json(),
+          typecallRes.json(),
         ]);
 
-        if (callbackData.success && inquiryData.success && typecallData.success) {
-          const currentTime = new Date();
-          const dismissedIds = JSON.parse(localStorage.getItem("dismissedNotifications") || "[]");
+        if (!callbackData.success || !inquiryData.success || !typecallData.success) return;
 
-          // Helper function to handle the notification delay based on typecall
-          const getNotificationTimeLimit = (typecall: string) => {
-            const currentTime = new Date();
-          
-            // Adding time limits based on typecall
-            if (typecall === "Sent Quotation - Standard" || typecall === "Sent Quotation - With Special Price") {
-              return new Date(currentTime.getTime() - 1 * 24 * 60 * 60 * 1000); // 1 day before
-            } else if (typecall === "Follow Up Pending") {
-              return new Date(currentTime.getTime() - 1 * 24 * 60 * 60 * 1000); // 1 day before
-            } else if (typecall === "Sent Quotation - With SPF") {
-              return new Date(currentTime.getTime() - 5 * 24 * 60 * 60 * 1000); // 5 days before
-            } else if (typecall === "Ringing Only") {
-              return new Date(currentTime.getTime() - 10 * 24 * 60 * 60 * 1000); // 10 days before
-            } else if (typecall === "No Requirement") {
-              return new Date(currentTime.getTime() - 15 * 24 * 60 * 60 * 1000); // 15 days before
-            } else if (typecall === "Not Connected") {
-              return new Date(currentTime.getTime() - 15 * 60 * 1000); // 15 minutes before
-            } else if (typecall === "Waiting for Projects") {
-              return new Date(currentTime.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days before
-            } else if (typecall === "With SPFS") {
-              // Weekly notifications for 1 month (4 weeks)
-              return new Date(currentTime.getTime() + 7 * 24 * 60 * 60 * 1000); // First week notification
-            } else if (typecall === "Cannot Be Reached") {
-              return new Date(currentTime.getTime() - 3 * 24 * 60 * 60 * 1000); // 3 days before
-            }
-          
-            return currentTime; // Default to current time if no specific condition
+        const dismissedIds = new Set(JSON.parse(localStorage.getItem("dismissedNotifications") || "[]"));
+
+        // Get the current date and time in Manila timezone
+        const getManilaTime = () => {
+          return new Date(new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Manila" }).format(new Date()));
+        };
+
+        const currentTime = getManilaTime();
+
+        // Function to calculate notification time limit
+        const getNotificationTimeLimit = (typecall: string) => {
+          const timeLimits: Record<string, number> = {
+            "Sent Quotation - Standard": -1,
+            "Sent Quotation - With Special Price": -1,
+            "Follow Up Pending": -1,
+            "Sent Quotation - With SPF": -5,
+            "Ringing Only": -10,
+            "No Requirement": -15,
+            "Not Connected With The Company": -0.0104, // 15 minutes in days
+            "Waiting for Projects": -30,
+            "Cannot Be Reached": -3,
           };
 
-          // Combine and filter all notifications
-          const allNotifications = [
-            ...callbackData.data
-              .filter((notif: Notification) =>
-                
-                  notif.typeactivity === "Outbound Call" &&
-                  !!notif.callback &&  // Ensure callback is not null/empty
-                  new Date(notif.callback) <= currentTime &&
-                  !dismissedIds.includes(notif.id)
-              )
-              .sort((a: Notification, b: Notification) => new Date(b.callback).getTime() - new Date(a.callback).getTime()),
+          if (typecall in timeLimits) {
+            return new Date(currentTime.getTime() + timeLimits[typecall] * 24 * 60 * 60 * 1000);
+          }
 
-            ...inquiryData.data
-              .filter((inquiry: any) => new Date(inquiry.date_created) <= currentTime)
-              .sort((a: any, b: any) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime())
-              .map((inquiry: any) => ({
-                id: inquiry.id,
-                companyname: inquiry.companyname,
-                typeactivity: "New Inquiry",
-                date_created: inquiry.date_created,
-                typeclient: inquiry.typeclient,
-              })),
+          if (typecall === "With SPFS") {
+            return new Date(currentTime.getTime() + 7 * 24 * 60 * 60 * 1000);
+          }
 
-            ...typecallData.data
-              .filter((typecall: any) => {
-                const notificationTimeLimit = getNotificationTimeLimit(typecall.typecall);
-                return new Date(typecall.date_created) <= notificationTimeLimit && !dismissedIds.includes(typecall.id);
-              })
-              .sort((a: any, b: any) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime())
-              .map((typecall: any) => ({
-                id: typecall.id,
-                companyname: typecall.companyname,
-                typecall: typecall.typecall,
-                date_created: typecall.date_created,
-              })),
-          ];
+          return currentTime;
+        };
 
-          setAllNotifications(allNotifications);
+        // Process callback notifications
+        const validCallbacks = callbackData.data
+          .filter((notif: any) => 
+            notif.typeactivity === "Outbound Call" &&
+            notif.callback &&
+            new Date(notif.callback) <= currentTime &&
+            !dismissedIds.has(notif.id)
+          )
+          .sort((a: any, b: any) => new Date(b.callback).getTime() - new Date(a.callback).getTime());
 
-          // Process unread notifications
-          const validCallbacks = callbackData.data
-            .filter(
-              (notif: Notification) =>
-                notif.typeactivity === "Outbound Call" &&
-                !!notif.callback &&  // Ensure callback is not null/empty
-                new Date(notif.callback) <= currentTime &&
-                !dismissedIds.includes(notif.id)
-            )
-            .sort((a: Notification, b: Notification) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime());
+        // Process inquiry notifications
+        const validInquiries = inquiryData.data
+          .filter((inquiry: any) => 
+            new Date(inquiry.date_created) <= currentTime &&
+            !dismissedIds.has(inquiry.id)
+          )
+          .map((inquiry: any) => ({
+            id: inquiry.id,
+            companyname: inquiry.companyname,
+            typeactivity: "New Inquiry",
+            date_created: inquiry.date_created,
+            typeclient: inquiry.typeclient,
+          }));
 
-          const inquiries = inquiryData.data
-            .filter(
-              (inquiry: any) =>
-                new Date(inquiry.date_created) <= currentTime && !dismissedIds.includes(inquiry.id)
-            )
-            .sort((a: any, b: any) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime());
+        // Process typecall notifications
+        const validTypeCalls = typecallData.data
+          .filter((typecall: any) => {
+            const notificationTimeLimit = getNotificationTimeLimit(typecall.typecall);
+            return new Date(typecall.date_created) <= notificationTimeLimit && !dismissedIds.has(typecall.id);
+          })
+          .map((typecall: any) => ({
+            id: typecall.id,
+            companyname: typecall.companyname,
+            typecall: typecall.typecall,
+            date_created: typecall.date_created,
+          }));
 
-          const typecall = typecallData.data
-            .filter(
-              (type: any) =>
-                new Date(type.date_created) <= currentTime && !dismissedIds.includes(type.id)
-            )
-            .sort((a: any, b: any) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime());
+        // Combine all notifications and sort
+        const allNotifications = [...validCallbacks, ...validInquiries, ...validTypeCalls].sort(
+          (a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
+        );
 
-          setNotifications([
-            ...validCallbacks,
-            ...inquiries.map((inquiry: any) => ({
-              id: inquiry.id,
-              companyname: inquiry.companyname,
-              typeactivity: "New Inquiry",
-              date_created: inquiry.date_created,
-              typeclient: inquiry.typeclient,
-            })),
-            ...typecall.map((type: any) => ({
-              id: type.id,
-              companyname: type.companyname,
-              typecall: type.typecall,
-              date_created: type.date_created,
-            })),
-          ]);
-
-          setNotificationCount(
-            validCallbacks.length + inquiries.length + typecall.length
-          );
-        }
+        setNotifications(allNotifications);
+        setNotificationCount(allNotifications.length);
       } catch (error) {
         console.error("Error fetching notifications and inquiries:", error);
       }
