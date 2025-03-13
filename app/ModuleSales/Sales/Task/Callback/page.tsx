@@ -229,20 +229,7 @@ const ListofUser: React.FC = () => {
                     {(user) => (
                         <div className="container mx-auto p-4">
                             {showForm ? (
-                                <AddPostForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditUser(null);
-                                    }}
-                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
-                                    userDetails={{
-                                        id: editUser ? editUser.id : userDetails.UserId,
-                                        referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
-                                        manager: editUser ? editUser.manager : userDetails.Manager,
-                                        tsm: editUser ? editUser.tsm : userDetails.TSM,
-                                    }}   // Ensure id is passed correctly
-                                    editUser={editUser}
-                                />
+                                <></>
                             ) : (
                                 <>
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
