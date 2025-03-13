@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormFields from "./UserFormFields";
+import { CiEdit, CiSaveUp1, CiCircleRemove } from "react-icons/ci";
 
 interface AddUserFormProps {
   userDetails: { id: string };
@@ -10,7 +11,7 @@ interface AddUserFormProps {
   editUser?: any;
 }
 
-const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refreshPosts, editUser,}) => {
+const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refreshPosts, editUser, }) => {
   const [referenceid, setreferenceid] = useState("");
   const [manager, setmanager] = useState("");
   const [tsm, settsm] = useState("");
@@ -73,25 +74,26 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
         <h2 className="text-xs font-bold mb-4">
           {editUser ? "Edit Account Information" : "Add New Account"}
         </h2>
-        <FormFields 
-        referenceid={referenceid} setreferenceid={setreferenceid}
-        manager={manager} setmanager={setmanager}
-        tsm={tsm} settsm={settsm}
-        //
-        companyname={companyname} setcompanyname={setcompanyname} 
-        contactperson={contactperson} setcontactperson={setcontactperson}
-        contactnumber={contactnumber} setcontactnumber={setcontactnumber}
-        emailaddress={emailaddress} setemailaddress={setemailaddress}
-        typeclient={typeclient} settypeclient={settypeclient}
-        address={address} setaddress={setaddress}
-        area={area} setarea={setarea}
-        status={status} setstatus={setstatus}
+        <FormFields
+          referenceid={referenceid} setreferenceid={setreferenceid}
+          manager={manager} setmanager={setmanager}
+          tsm={tsm} settsm={settsm}
+          //
+          companyname={companyname} setcompanyname={setcompanyname}
+          contactperson={contactperson} setcontactperson={setcontactperson}
+          contactnumber={contactnumber} setcontactnumber={setcontactnumber}
+          emailaddress={emailaddress} setemailaddress={setemailaddress}
+          typeclient={typeclient} settypeclient={settypeclient}
+          address={address} setaddress={setaddress}
+          area={area} setarea={setarea}
+          status={status} setstatus={setstatus}
         />
         <div className="flex justify-between">
-          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs">
+          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
+            {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
             {editUser ? "Update" : "Submit"}
           </button>
-          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs" onClick={onCancel}>Cancel</button>
+          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} /> Cancel</button>
         </div>
       </form>
       <ToastContainer className="text-xs" autoClose={1000} />

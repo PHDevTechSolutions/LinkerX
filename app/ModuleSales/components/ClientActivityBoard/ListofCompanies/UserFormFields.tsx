@@ -257,9 +257,9 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         {contactPersons.map((person, index) => (
           <div key={index} className="flex items-center gap-2 mb-2">
             <input type="text" value={person} onChange={(e) => handleContactPersonChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize"/>
-            <button type="button" onClick={addContactPerson} className="p-2 bg-green-700 text-white rounded hover:bg-green-600"><CiCirclePlus size={16} /></button>
+            <button type="button" onClick={addContactPerson} className="p-2 bg-gray-100 shadow-sm text-black rounded hover:bg-gray-300"><CiCirclePlus size={18} /></button>
             {index > 0 && (
-              <button type="button" onClick={() => removeContactPerson(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600"><CiCircleMinus size={16} /></button>
+              <button type="button" onClick={() => removeContactPerson(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600"><CiCircleMinus size={18} /></button>
             )}
           </div>
         ))}
@@ -271,9 +271,9 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         {contactNumbers.map((number, index) => (
           <div key={index} className="flex items-center gap-2 mb-2">
             <input type="text" value={number} onChange={(e) => handleContactNumberChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs"/>
-            <button type="button" onClick={addContactNumber} className="p-2 bg-green-700 text-white rounded hover:bg-green-600"><CiCirclePlus size={16} /></button>
+            <button type="button" onClick={addContactNumber} className="p-2 bg-gray-100 shadow-sm text-black rounded hover:bg-gray-300"><CiCirclePlus size={18} /></button>
             {index > 0 && (
-              <button type="button" onClick={() => removeContactNumber(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600"><CiCircleMinus size={16} /></button>
+              <button type="button" onClick={() => removeContactNumber(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600"><CiCircleMinus size={18} /></button>
             )}
           </div>
         ))}
@@ -285,9 +285,9 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         {emailAddresses.map((email, index) => (
           <div key={index} className="flex items-center gap-2 mb-2">
             <input type="text" value={email} onChange={(e) => handleEmailAddressChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs"/>
-            <button type="button" onClick={addEmailAddress} className="p-2 bg-green-700 text-white rounded hover:bg-green-600"><CiCirclePlus size={16} /></button>
+            <button type="button" onClick={addEmailAddress} className="p-2 bg-gray-100 shadow-sm text-black rounded hover:bg-gray-300"><CiCirclePlus size={18} /></button>
             {index > 0 && (
-              <button type="button" onClick={() => removeEmailAddress(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600"><CiCircleMinus size={16} /></button>
+              <button type="button" onClick={() => removeEmailAddress(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600"><CiCircleMinus size={18} /></button>
             )}
           </div>
         ))}

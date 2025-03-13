@@ -17,7 +17,7 @@ import ExcelJS from "exceljs";
 import Select from "react-select";
 
 // Icons
-import { CiExport, CiSquarePlus, CiImport } from "react-icons/ci";
+import { CiExport, CiSquarePlus, CiImport, CiSaveUp2, CiCircleRemove } from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -418,8 +418,8 @@ const ListofUser: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
-                                            <button type="submit" className="bg-blue-600 text-xs text-white px-4 py-2 rounded">Upload</button>
-                                            <button type="button" className="bg-gray-500 text-xs text-white px-4 py-2 rounded" onClick={() => setShowImportForm(false)}>Cancel</button>
+                                            <button type="submit" className="bg-blue-900 text-xs text-white px-4 py-2 rounded flex items-center gap-1"><CiSaveUp2 size={20} /> Upload</button>
+                                            <button type="button" className="bg-gray-500 text-xs text-white px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowImportForm(false)}><CiCircleRemove size={20} />Cancel</button>
                                         </div>
                                     </form>
                                 </div>

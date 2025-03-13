@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import FormFields from "./UserFormFields";
+import { CiEdit, CiSaveUp1, CiCircleRemove } from "react-icons/ci";
 
 interface AddPostFormProps {
   userDetails: { id: string; };
@@ -17,8 +18,8 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
   const [Lastname, setLastname] = useState(editUser ? editUser.Lastname : "");
   const [Email, setEmail] = useState(editUser ? editUser.Email : "");
   const [userName, setuserName] = useState(editUser ? editUser.userName : "");
-  const [Status, setStatus] = useState(editUser ? editUser.Status: "");
-  const [TargetQuota, setTargetQuota] = useState(editUser ? editUser.TargetQuota: "");
+  const [Status, setStatus] = useState(editUser ? editUser.Status : "");
+  const [TargetQuota, setTargetQuota] = useState(editUser ? editUser.TargetQuota : "");
 
   // Ensure the correct ID is set depending on edit or create mode
   const [UserId, setUserId] = useState(editUser ? editUser._id : userDetails.id);
@@ -69,8 +70,11 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
           editPost={editUser}
         />
         <div className="flex justify-between">
-          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs">{editUser ? "Update" : "Submit"}</button>
-          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs" onClick={onCancel}>Cancel</button>
+          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
+            {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
+            {editUser ? "Update" : "Submit"}
+          </button>
+          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} /> Cancel</button>
         </div>
       </form>
       <ToastContainer className="text-xs" autoClose={1000} />
