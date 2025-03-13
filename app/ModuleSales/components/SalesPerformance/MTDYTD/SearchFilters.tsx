@@ -87,27 +87,32 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                 <option value="2028">2028</option>
             </select>
             <div className="flex gap-2">
-                <input 
-                    type="date" 
-                    value={startDate} 
-                    onChange={(e) => setStartDate(e.target.value)} 
+                <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
                     className="border px-3 py-2 rounded text-xs" disabled
                 />
-                <input 
-                    type="date" 
-                    value={endDate} 
-                    onChange={(e) => setEndDate(e.target.value)} 
+                <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
                     className="border px-3 py-2 rounded text-xs" disabled
                 />
                 <select
-                value={postsPerPage}
-                onChange={(e) => setPostsPerPage(parseInt(e.target.value))}
-                className="shadow-sm border px-3 py-2 rounded text-xs w-full md:w-auto"
-            >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-            </select>
+                    value={postsPerPage}
+                    onChange={(e) => setPostsPerPage(parseInt(e.target.value))}
+                    className="shadow-sm border px-3 py-2 rounded text-xs w-full md:w-auto"
+                >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                    <option value={200}>200</option>
+                    <option value={500}>500</option>
+                    <option value={1000}>1000</option>
+                </select>
             </div>
         </div>
     );
