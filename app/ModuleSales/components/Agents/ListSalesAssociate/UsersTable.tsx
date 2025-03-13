@@ -4,8 +4,10 @@ import { Menu } from "@headlessui/react";
 
 import { Doughnut } from "react-chartjs-2";
 import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
-Chart.register(ArcElement, Tooltip, Legend);
+// Register necessary Chart.js components
+Chart.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 interface UsersCardProps {
   posts: any[];
@@ -21,7 +23,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
   const [touchbaseData, setTouchbaseData] = useState<Record<string, number>>({});
   const [timeMotionData, setTimeMotionData] = useState<Record<string, number>>({});
   const [callData, setCallSummary] = useState<Record<string, number>>({});
-  const [activityData, setActivityData] = useState<Record<string, number>>({});
+
+  const [activityData, setActivityData] = useState<Record<string, number>>({
+    outbound: 0,
+    inbound: 0,
+    otherActivities: 0,
+  });
 
   const [startdate, setStartdate] = useState("");
   const [enddate, setEnddate] = useState("");
@@ -30,8 +37,32 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
   const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
   const currentYear = new Date().getFullYear().toString();
 
-  const [callsData, setCallData] = useState({ inbound: 0, outbound: 0 });
+  const chartData = {
+    labels: ["Outbound Call", "Client Engagement", "Other Activities"],
+    datasets: [
+      {
+        data: [activityData.outbound, activityData.inbound, activityData.otherActivities], // Updated dataset
+        backgroundColor: ["#990000", "#000068", "#1C3B0E"], // Colors for the segments
+        hoverOffset: 4,
+      },
+    ],
+  };
 
+  const chartOptions = {
+    plugins: {
+      legend: {
+      },
+      datalabels: {
+        color: "#FFFFFF", // Dark text color
+        font: {
+          weight: "bold" as "bold", // Ensure type compatibility
+          size: 14,
+        },
+        formatter: (value: number) => value, // Ensures values are displayed as is
+      },
+    },
+  };
+  
   useEffect(() => {
     setUpdatedUser(posts);
   }, [posts]);
@@ -70,9 +101,68 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
     let monthToDateSales = 0;
     let yearToDateSales = 0;
 
+    const countData = { outbound: 0, inbound: 0, otherActivities: 0 };
+
     const filteredData = data.filter((item) => {
       const itemDate = item.date_created.split("T")[0];
       return (!startdate || itemDate >= startdate) && (!enddate || itemDate <= enddate);
+    });
+
+    filteredData.forEach((item) => {
+      if (item.typeactivity === "Outbound Call") {
+        countData.outbound += 1;
+      } else if (
+        [
+          "Inbound Call",
+          "Assisting Other Agents Client",
+          "Preparation: Bidding Preparation",
+          "Client Meeting",
+          "Site Visit",
+          "Coordination of Pick-Up / Delivery to Client",
+          "Email and Viber Checking",
+          "Email Blast",
+          "Email, SMS & Viber Replies",
+          "Inbound Call - Existing",
+          "Payment Follow-Up",
+          "Quotation Follow-Up",
+          "Preparation: Preparation of Quote: Existing Client",
+          "Preparation: Preparation of Quote: New Client",
+          "Preparation: Preparation of Report",
+          "Walk-In Client",
+        ].includes(item.typeactivity)
+      ) {
+        countData.inbound += 1;
+      } else if (
+        [
+          "Account Development",
+          "Accounting: Accounts Receivable and Payment",
+          "Accounting: Billing Concern",
+          "Accounting: Refund Request",
+          "Accounting: Sales Order Concern",
+          "Accounting: TPC Request",
+          "Admin Concern: Coordination of Payment Terms Request",
+          "CSR Inquiries",
+          "Coordination With CS (Email Acknowledgement)",
+          "Marketing Concern",
+          "Logistic Concern: Shipping Cost Estimation",
+          "Preparation: Preparation of SPF",
+          "Preparation: Sales Order Preparation",
+          "Technical: Dialux Simulation Request",
+          "Technical: Drawing Request",
+          "Technical: Inquiry",
+          "Technical: Site Visit Request",
+          "Technical: TDS Request",
+          "Warehouse: Coordination to Billing",
+          "Warehouse: Coordination to Dispatch",
+          "Warehouse: Coordination to Inventory",
+          "Warehouse: Delivery / Helper Concern",
+          "Warehouse: Replacement Request / Concern",
+          "Warehouse: Sample Request / Concern",
+          "Warehouse: SO Status Follow Up",
+        ].includes(item.typeactivity)
+      ) {
+        countData.otherActivities += 1;
+      }
     });
 
     const activityCounts = countActivities(filteredData);
@@ -100,6 +190,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
     setTouchbaseData(touchBaseCounts);
     setTimeMotionData(timeData);
     setCallSummary(callSummary);
+    setActivityData((prevData) => ({
+      ...prevData,
+      outbound: countData.outbound,
+      inbound: countData.inbound,
+      otherActivities: countData.otherActivities,
+    }));
   };
 
   const countActivities = (data: any[]) =>
@@ -175,69 +271,69 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
       }
     );
 
-    const computeTimeSpent = (data: any[]) =>
-      data.reduce(
-        (acc: Record<string, number>, item) => {
-          if (item.startdate && item.enddate) {
-            const duration = (new Date(item.enddate).getTime() - new Date(item.startdate).getTime()) / 1000;
-  
-            // Existing logic
-            if (INBOUND_ACTIVITIES.includes(item.typeactivity)) {
-              acc["inbound"] = (acc["inbound"] || 0) + duration;
-            } else if (item.typeactivity === "Outbound Call") {
-              acc["outbound"] = (acc["outbound"] || 0) + duration;
-            } else {
-              acc["others"] = (acc["others"] || 0) + duration;
-            }
-  
-            // Additional computation for specific activities
-            if ([
-              "Account Development", 
-              "Accounting: Accounts Receivable and Payment", 
-              "Accounting: Billing Concern",
-              "Accounting: Refund Request",
-              "Accounting: Sales Order Concern",
-              "Accounting: TPC Request",
-              "Admin Concern: Coordination of Payment Terms Request",
-              "CSR Inquiries",
-              "Coordination of Pick-Up / Delivery to Client",
-              "Coordination With CS (Email Acknowledgement)",
-              "Marketing Concern",
-              "Email and Viber Checking",
-              "Email Blast",
-              "Email, SMS & Viber Replies",
-              "Inbound Call",
-              "Payment Follow-Up",
-              "Quotation Follow-Up",
-              "Logistic Concern: Shipping Cost Estimation",
-              "Outbound Call",
-              "Preparation: Bidding Preparation",
-              "Preparation: Preparation of Report",
-              "Preparation: Preparation of SPF",
-              "Preparation: Preparation of Quote: New Client",
-              "Preparation: Preparation of Quote: Existing Client",
-              "Preparation: Sales Order Preparation",
-              "Technical: Dialux Simulation Request",
-              "Technical: Drawing Request",
-              "Technical: Inquiry",
-              "Technical: Site Visit Request",
-              "Technical: TDS Request",
-              "Walk-In Client",
-              "Warehouse: Coordination to Billing",
-              "Warehouse: Coordination to Dispatch",
-              "Warehouse: Coordination to Inventory",
-              "Warehouse: Delivery / Helper Concern",
-              "Warehouse: Replacement Request / Concern",
-              "Warehouse: Sample Request / Concern",
-              "Warehouse: SO Status Follow Up",
-            ].includes(item.typeactivity)) {
-              acc[item.typeactivity] = (acc[item.typeactivity] || 0) + duration;
-            }
+  const computeTimeSpent = (data: any[]) =>
+    data.reduce(
+      (acc: Record<string, number>, item) => {
+        if (item.startdate && item.enddate) {
+          const duration = (new Date(item.enddate).getTime() - new Date(item.startdate).getTime()) / 1000;
+
+          // Existing logic
+          if (INBOUND_ACTIVITIES.includes(item.typeactivity)) {
+            acc["inbound"] = (acc["inbound"] || 0) + duration;
+          } else if (item.typeactivity === "Outbound Call") {
+            acc["outbound"] = (acc["outbound"] || 0) + duration;
+          } else {
+            acc["others"] = (acc["others"] || 0) + duration;
           }
-          return acc;
-        },
-        { inbound: 0, outbound: 0, others: 0 }
-      );
+
+          // Additional computation for specific activities
+          if ([
+            "Account Development",
+            "Accounting: Accounts Receivable and Payment",
+            "Accounting: Billing Concern",
+            "Accounting: Refund Request",
+            "Accounting: Sales Order Concern",
+            "Accounting: TPC Request",
+            "Admin Concern: Coordination of Payment Terms Request",
+            "CSR Inquiries",
+            "Coordination of Pick-Up / Delivery to Client",
+            "Coordination With CS (Email Acknowledgement)",
+            "Marketing Concern",
+            "Email and Viber Checking",
+            "Email Blast",
+            "Email, SMS & Viber Replies",
+            "Inbound Call",
+            "Payment Follow-Up",
+            "Quotation Follow-Up",
+            "Logistic Concern: Shipping Cost Estimation",
+            "Outbound Call",
+            "Preparation: Bidding Preparation",
+            "Preparation: Preparation of Report",
+            "Preparation: Preparation of SPF",
+            "Preparation: Preparation of Quote: New Client",
+            "Preparation: Preparation of Quote: Existing Client",
+            "Preparation: Sales Order Preparation",
+            "Technical: Dialux Simulation Request",
+            "Technical: Drawing Request",
+            "Technical: Inquiry",
+            "Technical: Site Visit Request",
+            "Technical: TDS Request",
+            "Walk-In Client",
+            "Warehouse: Coordination to Billing",
+            "Warehouse: Coordination to Dispatch",
+            "Warehouse: Coordination to Inventory",
+            "Warehouse: Delivery / Helper Concern",
+            "Warehouse: Replacement Request / Concern",
+            "Warehouse: Sample Request / Concern",
+            "Warehouse: SO Status Follow Up",
+          ].includes(item.typeactivity)) {
+            acc[item.typeactivity] = (acc[item.typeactivity] || 0) + duration;
+          }
+        }
+        return acc;
+      },
+      { inbound: 0, outbound: 0, others: 0 }
+    );
 
   const INBOUND_ACTIVITIES = [
     "Inbound Call",
@@ -324,36 +420,44 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
             <h2 className="text-lg font-semibold mb-4">
               {selectedUser.Firstname} {selectedUser.Lastname}'s Activities
             </h2>
-            <p className="text-xs"><strong>Email:</strong> {selectedUser.Email}</p>
-            <p className="text-xs"><strong>Role:</strong> {selectedUser.Role}</p>
-            <p className="text-xs"><strong>Department:</strong> {selectedUser.Department}</p>
-            <p className="text-xs"><strong>Status:</strong> {selectedUser.Status}</p>
 
-            <div className="flex flex-wrap -mx-4">
-              <div className="w-full sm:w-1/2 md:w-1/4 px-4 mt-4">
-                <input
-                  type="date"
-                  value={startdate}
-                  onChange={(e) => setStartdate(e.target.value)}
-                  className="w-full px-3 py-2 border rounded text-xs bg-gray-50"
-                />
-              </div>
-              <div className="w-full sm:w-1/2 md:w-1/4 px-4 mt-4">
-                <input
-                  type="date"
-                  value={enddate}
-                  onChange={(e) => setEnddate(e.target.value)}
-                  className="w-full px-3 py-2 border rounded text-xs bg-gray-50"
-                />
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <p className="text-xs px-3 py-2 border rounded bg-gray-50">
+                <strong>Email:</strong> {selectedUser.Email}
+              </p>
+              <p className="text-xs px-3 py-2 border rounded bg-gray-50">
+                <strong>Role:</strong> {selectedUser.Role}
+              </p>
+              <p className="text-xs px-3 py-2 border rounded bg-gray-50">
+                <strong>Department:</strong> {selectedUser.Department}
+              </p>
+              <p className="text-xs px-3 py-2 border rounded bg-gray-50">
+                <strong>Status:</strong> {selectedUser.Status}
+              </p>
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-4">
+              <input
+                type="date"
+                value={startdate}
+                onChange={(e) => setStartdate(e.target.value)}
+                className="w-full px-3 py-2 border rounded text-xs bg-gray-50"
+              />
+              <input
+                type="date"
+                value={enddate}
+                onChange={(e) => setEnddate(e.target.value)}
+                className="w-full px-3 py-2 border rounded text-xs bg-gray-50"
+              />
+            </div>
+
 
             {/* Grid for Activity Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
               {/* Chart Doughnut */}
               <div className="bg-gray-100 p-4 rounded-md shadow-md text-xs">
                 <h3 className="font-semibold text-sm">Chart</h3>
-                <p className="text-gray-600 mt-1">Details about Activity 1...</p>
+                <Doughnut data={chartData} options={chartOptions} />
               </div>
 
               {/* Touchbase with Table */}
@@ -500,8 +604,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
                   </tbody>
                 </table>
               </div>
-
-
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-4 mt-4">
