@@ -18,6 +18,19 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
     const [metrics, setMetrics] = useState<Metric[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // Static mapping of ReferenceID to userName
+    const referenceIdToNameMap: Record<string, string> = {
+        "MQ-CSR-170039": "Quinto, Myra",
+        "LM-CSR-809795": "Miguel, Lester",
+        "RP-CSR-451122": "Paje, Rikki",
+        "SA-CSR-517304": "Almoite, Sharmaine",
+        "AA-CSR-785895": "Arendain, Armando",
+        "GL-CSR-586725": "Myra Quinto",
+        "MD-CSR-152985": "Dungso, Mary Grace",
+        "LR-CSR-849432": "Leroux Y Xchire",
+        // Add other mappings as needed
+    };
+
     useEffect(() => {
         let isMounted = true;
 
@@ -75,20 +88,6 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
         return acc;
     }, {});
 
-    // Format Amount as Peso sign with thousands separator and 2 decimal places
-    const formatAmount = (amount: number) => {
-        if (isNaN(amount)) {
-            return "₱0.00";  // Handle invalid or non-numeric amount
-        }
-        // Convert amount to a number and format it with 2 decimal places
-        return `₱${Number(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
-    };
-
-    // Format QtySold by removing leading zeros
-    const formatQtySold = (qtySold: number) => {
-        return qtySold === 0 ? '0' : qtySold.toString().replace(/^0+/, ''); // Remove leading zeros, but show 0 if the value is 0
-    };
-
     // Calculate totals
     const totalData = Object.keys(groupedMetrics).map((key) => ({
         ReferenceID: key,
@@ -100,6 +99,36 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
         NonSales: groupedMetrics[key].NonSales,
     }));
 
+    // Calculate the total amount across all ReferenceIDs
+    const totalAmount = totalData.reduce((total, metric) => total + metric.Amount, 0);
+
+    // Format Amount as Peso sign with thousands separator and 2 decimal places
+    const formatAmount = (amount: number) => {
+        if (isNaN(amount)) {
+            return "₱0.00";  // Handle invalid or non-numeric amount
+        }
+
+        // Check if Amount is in cents (or another smaller unit), and divide by 100
+        const amountInPesos = amount / 100;
+        return `₱${Number(amountInPesos).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
+    };
+
+    // Format the totalAmount as Peso sign with thousands separator and 2 decimal places
+    const formatTotalAmount = (amount: number) => {
+        if (isNaN(amount)) {
+            return "₱0.00";  // Handle invalid or non-numeric amount
+        }
+
+        // Divide by 100 if the amount is in cents (or another smaller unit)
+        const amountInPesos = amount / 100;
+        return `₱${Number(amountInPesos).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
+    };
+
+    // Format QtySold by removing leading zeros
+    const formatQtySold = (qtySold: number) => {
+        return qtySold === 0 ? '0' : qtySold.toString().replace(/^0+/, ''); // Remove leading zeros, but show 0 if the value is 0
+    };
+
     return (
         <div className="bg-white shadow-md rounded-lg p-4">
             {loading ? (
@@ -108,7 +137,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
                 <table className="w-full border-collapse border border-gray-200 text-xs">
                     <thead>
                         <tr className="bg-gray-100">
-                            <th className="border p-2">Reference ID</th>
+                            <th className="border p-2">Agent Name</th>
                             <th className="border p-2">Traffic</th>
                             <th className="border p-2">Amount</th>
                             <th className="border p-2">Quantity Sold</th>
@@ -121,7 +150,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
                         {totalData.length > 0 ? (
                             totalData.map((metric, index) => (
                                 <tr key={index} className="text-center border-t">
-                                    <td className="border p-2">{metric.ReferenceID}</td>
+                                    <td className="border p-2">{referenceIdToNameMap[metric.ReferenceID] || "Unknown"}</td>
                                     <td className="border p-2">{metric.Traffic}</td>
                                     <td className="border p-2">{formatAmount(metric.Amount)}</td>
                                     <td className="border p-2">{formatQtySold(metric.QtySold)}</td>
@@ -132,7 +161,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={7} className="p-2 text-center text-gray-500">
+                                <td colSpan={8} className="p-2 text-center text-gray-500">
                                     No data available
                                 </td>
                             </tr>
@@ -140,6 +169,9 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
                     </tbody>
                 </table>
             )}
+            <div className="mt-4">
+                <h4 className="font-semibold">Total Amount: {formatTotalAmount(totalAmount)}</h4>
+            </div>
         </div>
     );
 };
