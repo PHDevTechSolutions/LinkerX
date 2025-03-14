@@ -124,14 +124,6 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
       ],
     },
     {
-      title: 'TSA Activities',
-      icon: CiCalendarDate,
-      subItems: [
-        { title: 'Outbound Calls', href: `/ModuleSales/Sales/Activities/OutboundCalls${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'TSA Activities', href: `/ModuleSales/Sales/Activities/QuoteToSO${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
-    {
       title: 'Client Activity Board',
       icon: CiViewBoard,
       subItems: [
@@ -191,7 +183,8 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
       return [
         "Sales Performance",
         "Conversion Rates",
-        "TSA Activities",
+        "National",
+        "My Team",
         "Client Activity Board",
         "Announcements",
         "Profile"

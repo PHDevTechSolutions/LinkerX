@@ -13,11 +13,6 @@ import Pagination from "../../../components/ClientActivityBoard/ListofCompanies/
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import ExcelJS from "exceljs";
-import Select from "react-select";
-
-// Icons
-import { CiExport, CiSquarePlus, CiImport } from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -25,7 +20,7 @@ const ListofUser: React.FC = () => {
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(12);
+    const [postsPerPage, setPostsPerPage] = useState(10);
     const [selectedClientType, setSelectedClientType] = useState("");
     const [startDate, setStartDate] = useState(""); // Default to null
     const [endDate, setEndDate] = useState(""); // Default to null
@@ -174,7 +169,6 @@ const ListofUser: React.FC = () => {
     const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
     const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
 
-
     // Handle editing a post
     const handleEdit = (post: any) => {
         setEditUser(post);
@@ -221,12 +215,6 @@ const ListofUser: React.FC = () => {
                                             totalPages={totalPages}
                                             setCurrentPage={setCurrentPage}
                                         />
-
-                                        <div className="text-xs mt-2">
-                                            Showing {indexOfFirstPost + 1} to{" "}
-                                            {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                            {filteredAccounts.length} entries
-                                        </div>
                                     </div>
                                 </>
                             )}

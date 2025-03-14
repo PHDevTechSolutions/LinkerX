@@ -13,7 +13,8 @@ interface AddPostFormProps {
 }
 
 const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refreshPosts, editUser }) => {
-
+  
+  const [ReferenceID, setReferenceID] = useState(editUser ? editUser.ReferenceID: "");
   const [Firstname, setFirstname] = useState(editUser ? editUser.Firstname : "");
   const [Lastname, setLastname] = useState(editUser ? editUser.Lastname : "");
   const [Email, setEmail] = useState(editUser ? editUser.Email : "");
@@ -61,6 +62,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
         <h2 className="text-xs font-bold mb-4">{editUser ? "Edit User Information" : "Add New User"}</h2>
         <FormFields
+          ReferenceID={ReferenceID} setReferenceID={setReferenceID}
           Firstname={Firstname} setFirstname={setFirstname}
           Lastname={Lastname} setLastname={setLastname}
           Email={Email} setEmail={setEmail}

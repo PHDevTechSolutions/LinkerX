@@ -474,7 +474,7 @@ const DashboardPage: React.FC = () => {
                       <CiMoneyBill className="text-4xl mr-4" />
                       <div>
                         <h3 className="text-xs font-bold mb-1">Actual Sales</h3>
-                        <p className="text-sm font-semibold">{totalActualSales.toLocaleString()}</p>
+                        <p className="text-sm font-semibold">₱{Number(totalActualSales).toLocaleString("en-PH")}</p>
                       </div>
                     </div>
 
@@ -482,7 +482,7 @@ const DashboardPage: React.FC = () => {
                       <CiReceipt className="text-4xl mr-4" />
                       <div>
                         <h3 className="text-xs font-bold mb-1">Sales Order</h3>
-                        <p className="text-sm font-semibold">{totalSalesOrder.toLocaleString()}</p>
+                        <p className="text-sm font-semibold">₱{Number(totalSalesOrder).toLocaleString("en-PH")}</p>
                       </div>
                     </div>
 
@@ -490,7 +490,7 @@ const DashboardPage: React.FC = () => {
                       <CiWallet className="text-4xl mr-4" />
                       <div>
                         <h3 className="text-xs font-bold mb-1">Quotation Amount</h3>
-                        <p className="text-sm font-semibold">{totalQuotationAmount.toLocaleString()}</p>
+                        <p className="text-sm font-semibold">₱{Number(totalQuotationAmount).toLocaleString("en-PH")}</p>
                       </div>
                     </div>
 

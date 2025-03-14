@@ -77,7 +77,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
     setIsModalOpen(true);
     fetchProgressData();
   };
-
+  
   const fetchProgressData = async () => {
     try {
       const response = await fetch(

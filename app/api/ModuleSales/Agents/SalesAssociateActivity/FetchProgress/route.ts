@@ -11,11 +11,11 @@ const sql = neon(databaseUrl);
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
-        const tsm = searchParams.get("tsm"); // Get TSM from query params
+        const referenceid = searchParams.get("referenceid"); // Get TSM from query params
 
         let query = `SELECT * FROM progress`;
-        if (tsm) {
-            query += ` WHERE tsm = '${tsm}'`; // Filter based on TSM
+        if (referenceid) {
+            query += ` WHERE referenceid = '${referenceid}'`; // Filter based on TSM
         }
 
         const accounts = await sql(query);

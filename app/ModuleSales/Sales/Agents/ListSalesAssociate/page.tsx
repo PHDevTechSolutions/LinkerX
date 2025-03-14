@@ -83,21 +83,23 @@ const ListofUser: React.FC = () => {
         // Check if the user's name matches the search term
         const matchesSearchTerm = [post?.Firstname, post?.Lastname]
             .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+
         // Get the reference ID from userDetails
         const referenceID = userDetails.ReferenceID; // TSM's ReferenceID from MongoDB
-    
+
         // Check role-based filtering
-        const matchesRole = userDetails.Role === "Super Admin"
-            ? post?.Role === "Territory Sales Associate" // Super Admin only sees TSAs
-            : userDetails.Role === "Territory Sales Manager"
-            ? post?.TSM === referenceID // TSM sees only assigned TSAs
-            : false; // Default false if no match
-    
-        // Return the filtered result
+        const matchesRole =
+            userDetails.Role === "Super Admin"
+                ? post?.Role === "Territory Sales Associate" // Super Admin sees all TSAs
+                : userDetails.Role === "Manager"
+                    ? post?.Role === "Territory Sales Associate" && post?.Manager === referenceID // Manager sees only TSAs assigned to them
+                    : userDetails.Role === "Territory Sales Manager"
+                        ? post?.Role === "Territory Sales Associate" && post?.TSM === referenceID // TSM sees only TSAs assigned to them
+                        : false; // Default false if no match
+
         return matchesSearchTerm && matchesRole;
     });
-    
+
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
@@ -118,7 +120,7 @@ const ListofUser: React.FC = () => {
         setPostToDelete(postId);
         setShowDeleteModal(true);
     };
-    
+
     return (
         <SessionChecker>
             <ParentLayout>

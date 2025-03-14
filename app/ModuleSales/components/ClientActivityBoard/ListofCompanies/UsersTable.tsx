@@ -5,7 +5,7 @@ interface UsersCardProps {
   posts: any[];
   handleEdit: (post: any) => void;
   ReferenceID: string;
-  fetchAccount: () => Promise<void>; 
+  fetchAccount: () => Promise<void>;
 }
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, fetchAccount }) => {
@@ -27,11 +27,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
   // Filter users based on selected agent
   const filteredUsers = selectedAgent
     ? updatedUser.filter(
-        (post) => `${post.AgentFirstname} ${post.AgentLastname}` === selectedAgent
-      )
+      (post) => `${post.AgentFirstname} ${post.AgentLastname}` === selectedAgent
+    )
     : updatedUser;
-
-
 
   useEffect(() => {
     setUpdatedUser(posts);
@@ -212,7 +210,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
         </tbody>
       </table>
     </div>
-
   );
 };
 
