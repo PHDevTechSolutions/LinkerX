@@ -43,7 +43,7 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({ startDate, endDate, Ref
   }, [startDate, endDate, ReferenceID, Role]); // Now depends on startDate and endDate
 
   const colors = [
-    "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40",
+    "#A64D79", "#452A00", "#275214", "#578FCA", "#9966FF", "#FF9F40",
     "#C9CBCF", "#8B0000", "#008080", "#FFD700", "#DC143C", "#20B2AA",
     "#8A2BE2", "#FF4500", "#00CED1", "#2E8B57", "#4682B4", "#D2691E"
   ];
@@ -76,8 +76,25 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({ startDate, endDate, Ref
     responsive: true,
     plugins: {
       legend: {
-        display: true,
-      },
+              display: true,
+              position: "bottom", // Position the legend at the bottom
+              labels: {
+                generateLabels: function (chart: ChartJS) { // Add typing here
+                  const labels = chart.data.labels as string[]; // Typecasting for labels
+                  const datasets = chart.data.datasets as any[]; // Typecasting for datasets
+                  return labels.map((label, index) => {
+                    const dataset = datasets[0]; // Assuming one dataset, adjust if more
+                    const dataValue = dataset.data[index]; // Get the data value for the current label
+                    return {
+                      text: `${label}: ${dataValue}`, // Modify legend text to include value
+                      fillStyle: dataset.backgroundColor[index], // Set the legend color
+                      strokeStyle: dataset.borderColor[index], // Set the border color
+                      lineWidth: dataset.borderWidth,
+                    };
+                  });
+                },
+              },
+            },
       title: {
         display: true,
         text: "Where Customers Found Us",
@@ -93,14 +110,19 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({ startDate, endDate, Ref
         },
       },
       datalabels: {
-        color: '#fff', // White color for the text
+        color: '#fff', // White text color for data labels
         font: {
           weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
-          size: 14, // Font size for data labels
+          size: 10, // Font size for data labels
         },
         formatter: function (value: any) {
           return value; // Display the value directly inside the chart
         },
+        backgroundColor: 'black', // Set background color of the label
+        borderRadius: 50, // Make the background circular
+        padding: 4, // Add padding inside the circle
+        align: 'center', // Center the label within the circle
+        anchor: 'center', // Anchor the label to the center of the bar
       },
     },
     layout: {
@@ -109,6 +131,9 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({ startDate, endDate, Ref
     scales: {
       x: {
         beginAtZero: true,
+        barThickness: 20, // Increase bar thickness for wider bars (adjust value)
+        categoryPercentage: 1.0, // Full width for each bar (set to 1 for maximum width)
+        barPercentage: 0.8, // Controls the proportion of each category width
       },
     },
   };

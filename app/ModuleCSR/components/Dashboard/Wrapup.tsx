@@ -1,7 +1,7 @@
-"use client";
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, Title, Tooltip, Legend, CategoryScale, LinearScale, BarElement, } from "chart.js";
+import { Chart as ChartJS, Title, Tooltip, Legend, CategoryScale, LinearScale, BarElement, ChartData } from "chart.js";
+import { BiBorderRadius } from "react-icons/bi";
 
 // Register Chart.js components
 ChartJS.register(Title, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
@@ -40,7 +40,7 @@ const Wrapup: React.FC<WrapupProps> = ({ startDate, endDate, ReferenceID, Role }
     };
 
     fetchGenderData();
-  }, [startDate, endDate, ReferenceID, Role]); // Now depends on startDate and endDate
+  }, [startDate, endDate, ReferenceID, Role]);
 
   const colors = [
     "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40",
@@ -55,28 +55,29 @@ const Wrapup: React.FC<WrapupProps> = ({ startDate, endDate, ReferenceID, Role }
     "Internal Concern", "Others"
   ];
 
-  const barChartData = {
-    labels: labels,
-    datasets: [
-      {
-        label: "Wrap Up Count",
-        data: labels.map(label => {
-          const item = genderData.find(entry => entry._id === label);
-          return item ? item.count : 0;
-        }),
-        backgroundColor: colors,
-        borderColor: "#fff",
-        borderWidth: 2,
-      },
-    ],
-  };
-
   const barChartOptions: any = {
     indexAxis: "y", // Horizontal bar chart
     responsive: true,
     plugins: {
       legend: {
         display: true,
+        position: "bottom", // Position the legend at the bottom
+        labels: {
+          generateLabels: function (chart: ChartJS) { // Add typing here
+            const labels = chart.data.labels as string[]; // Typecasting for labels
+            const datasets = chart.data.datasets as any[]; // Typecasting for datasets
+            return labels.map((label, index) => {
+              const dataset = datasets[0]; // Assuming one dataset, adjust if more
+              const dataValue = dataset.data[index]; // Get the data value for the current label
+              return {
+                text: `${label}: ${dataValue}`, // Modify legend text to include value
+                fillStyle: dataset.backgroundColor[index], // Set the legend color
+                strokeStyle: dataset.borderColor[index], // Set the border color
+                lineWidth: dataset.borderWidth,
+              };
+            });
+          },
+        },
       },
       title: {
         display: true,
@@ -92,9 +93,24 @@ const Wrapup: React.FC<WrapupProps> = ({ startDate, endDate, ReferenceID, Role }
           },
         },
       },
+      datalabels: {
+        color: '#fff', // White text color for data labels
+        font: {
+          weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
+          size: 10, // Font size for data labels
+        },
+        formatter: function (value: any) {
+          return value; // Display the value directly inside the chart
+        },
+        backgroundColor: 'black', // Set background color of the label
+        borderRadius: 50, // Make the background circular
+        padding: 4, // Add padding inside the circle
+        align: 'center', // Center the label within the circle
+        anchor: 'center', // Anchor the label to the center of the bar
+      },
     },
     layout: {
-      padding: 30,
+      padding: 2,
     },
     scales: {
       x: {
@@ -103,6 +119,22 @@ const Wrapup: React.FC<WrapupProps> = ({ startDate, endDate, ReferenceID, Role }
     },
   };
 
+  const barChartData = {
+    labels: labels,
+    datasets: [
+      {
+        label: "Wrap Up Count",
+        data: labels.map(label => {
+          const item = genderData.find(entry => entry._id === label);
+          return item ? item.count : 0;  // Default to 0 if data is missing
+        }),
+        backgroundColor: colors,
+        borderColor: "#fff",
+        borderWidth: 1,
+      },
+    ],
+  };
+  
   return (
     <div className="flex justify-center items-center w-full h-full">
       <div className="w-full h-full">
