@@ -26,7 +26,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
     useEffect(() => {
         // Group companies by companygroup and count the companies in each group
         const grouped = new Map<string, any[]>();
-    
+
         posts.forEach((post) => {
             // Skip posts with null or empty companygroup
             if (post.companygroup) {
@@ -37,10 +37,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                 }
             }
         });
-    
+
         setGroupedCompanies(grouped);
     }, [posts]);
-    
+
 
     const handleRefresh = async () => {
         try {
@@ -118,8 +118,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
             {/* Modal */}
             {modalData.length > 0 && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-8 rounded-lg shadow-lg w-3/4 md:w-1/2 lg:w-1/3">
-                        <h2 className="text-lg font-semibold mb-6 text-center">Companies in Group</h2>
+                    <div className="bg-white p-8 rounded-lg shadow-lg w-3/4 md:w-1/2 lg:w-1/1">
+                        <h2 className="text-lg font-semibold mb-2 text-center">Companies in Group</h2>
+                        <p className="text-xs text-gray-600 mb-4">
+                            This modal displays a list of companies that are part of a specific group. You can search for companies by their name using the search bar. The table below provides key details about each company, including the contact person, contact number, email address, client type, company address, and area. The table is filterable by the company name, making it easier to locate specific companies within the group.
+                        </p>
 
                         {/* Search Bar */}
                         <div className="mb-4">
@@ -148,13 +151,13 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                 <tbody>
                                     {filteredCompanies.map((company) => (
                                         <tr key={company.id} className="hover:bg-gray-50">
-                                            <td className="px-4 py-2 border-b">{company.companyname}</td>
-                                            <td className="px-4 py-2 border-b">{company.contactperson}</td>
-                                            <td className="px-4 py-2 border-b">{company.contactnumber}</td>
+                                            <td className="px-4 py-2 border-b capitalize">{company.companyname}</td>
+                                            <td className="px-4 py-2 border-b capitalize">{company.contactperson}</td>
+                                            <td className="px-4 py-2 border-b capitalize">{company.contactnumber}</td>
                                             <td className="px-4 py-2 border-b">{company.emailaddress}</td>
-                                            <td className="px-4 py-2 border-b">{company.typeclient}</td>
-                                            <td className="px-4 py-2 border-b">{company.address}</td>
-                                            <td className="px-4 py-2 border-b">{company.area}</td>
+                                            <td className="px-4 py-2 border-b capitalize">{company.typeclient}</td>
+                                            <td className="px-4 py-2 border-b capitalize">{company.address}</td>
+                                            <td className="px-4 py-2 border-b capitalize">{company.area}</td>
                                         </tr>
                                     ))}
                                 </tbody>

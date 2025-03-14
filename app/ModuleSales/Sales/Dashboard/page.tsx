@@ -138,7 +138,6 @@ const DashboardPage: React.FC = () => {
     }
   }, [userDetails.ReferenceID]);
 
-
   const options = {
     responsive: true,
     plugins: {
@@ -396,6 +395,10 @@ const DashboardPage: React.FC = () => {
                   {/* Card Header */}
                   <div className="bg-gray-200 rounded-t-lg p-4">
                     <h3 className="text-xs font-semibold">Recent Activity</h3>
+                    <p className="text-xs text-gray-600">
+                      recent activities tied to the account, showing details like the date, company name, activity type, status, and remarks. The status is color-coded (Cold, Warm, Hot, Done) for quick progress assessment.
+                    </p>
+
                   </div>
 
                   {/* Card Body */}

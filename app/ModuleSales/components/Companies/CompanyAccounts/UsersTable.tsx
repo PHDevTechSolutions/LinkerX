@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { CiEdit, CiRepeat, CiSliderHorizontal   } from "react-icons/ci";
+import { CiEdit, CiRepeat, CiSliderHorizontal } from "react-icons/ci";
 
 import axios from "axios";
 import { toast } from 'react-toastify';
@@ -266,7 +266,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
           {bulkEditMode ? "Cancel Bulk Edit" : "Bulk Edit"}
         </button>
         <button onClick={toggleBulkTransferTSAMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
-          <CiSliderHorizontal  size={16} />
+          <CiSliderHorizontal size={16} />
           {bulkTransferTSAMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Another Agent"}
         </button>
         <button onClick={handleRefresh} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-gray-900 hover:text-white">
@@ -283,7 +283,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
               <span className="ml-2">Select All</span>
               <span className="ml-4 font-semibold text-gray-700">Selected: {selectedUsers.size} / {updatedUser.length}</span>
             </div>
-  
+
             {/* Bulk Transfer to TSA */}
             {bulkTransferTSAMode && (
               <div className="flex items-center gap-2">
@@ -299,11 +299,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                 <button onClick={handleBulkTSATransfer} className="px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-xs" disabled={!selectedTsa}>Transfer</button>
               </div>
             )}
-  
+
             {bulkDeleteMode && (
               <button onClick={handleBulkDelete} className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-xs" disabled={selectedUsers.size === 0}>Bulk Delete</button>
             )}
-  
+
             {bulkEditMode && (
               <div className="flex items-center gap-2">
                 <select value={newTypeClient} onChange={(e) => setNewTypeClient(e.target.value)} className="px-2 py-1 border rounded-md">
@@ -320,6 +320,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
               </div>
             )}
           </div>
+          <p className="text-xs mt-2 text-gray-600">
+            This section allows you to perform a <strong>Bulk Transfer</strong> of selected records to a <strong>Territory Sales Associate (TSA)</strong>.
+            First, choose the appropriate TSA from the dropdown list, which displays the names of all available TSAs. After selecting the TSA,
+            click the <strong>Transfer</strong> button to assign the records to the selected TSA.
+            This is useful for batch handling of records to specific sales associates efficiently.
+          </p>
         </div>
       )}
 
@@ -358,7 +364,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                   <td className="p-2 border">{post.typeclient}</td>
                   <td className="p-2 border">{post.status}</td>
                   <td className="p-2 border">
-                  <button className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left flex items-center gap-1" onClick={() => handleEdit(post)}><CiEdit /></button>
+                    <button className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left flex items-center gap-1" onClick={() => handleEdit(post)}><CiEdit /></button>
                   </td>
                 </tr>
               ))

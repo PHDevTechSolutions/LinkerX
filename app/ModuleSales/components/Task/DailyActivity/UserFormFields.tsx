@@ -114,7 +114,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             alert("Please select an email.");
             return;
         }
-    
+
         const response = await fetch("/api/sendEmail", {
             method: "POST",
             headers: {
@@ -124,18 +124,18 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 email: emailaddress,  // Use the selected email address directly here
             }),
         });
-    
+
         const data = await response.json();
-    
+
         if (data.success) {
             alert("Email sent successfully!");
         } else {
             alert("Error sending email: " + data.message);
         }
-    
+
         // Ensure the form stays visible and doesn't reload or navigate away
     };
-    
+
     useEffect(() => {
         // Sort currentRecords by date_created in descending order
         const sortedRecords = [...currentRecords].sort((a, b) => {
@@ -538,6 +538,37 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                         <option value="Bollard Light">Bollard Light</option>
                                         <option value="Bulb Light">Bulb Light</option>
                                         <option value="Canopy Light">Canopy Light</option>
+                                        <option value="Downlight">Downlight</option>
+                                        <option value="Emergency Ligh">Emergency Light</option>
+                                        <option value="Exit Light">Exit Light</option>
+                                        <option value="Flood Light">Flood Light</option>
+                                        <option value="Garden Light">Garden Light</option>
+                                        <option value="High Bay Light">High Bay Light</option>
+                                        <option value="Lamp Post">Lamp Post</option>
+                                        <option value="Light Fixtures and Housing">Light Fixtures and Housing</option>
+                                        <option value="Linear Light">Linear Light</option>
+                                        <option value="Louver Light">Louver Light</option>
+                                        <option value="Neon Light">Neon Light</option>
+                                        <option value="Panel Light">Panel Light</option>
+                                        <option value="Pendant Light">Pendant Light</option>
+                                        <option value="Power Supply">Power Supply</option>
+                                        <option value="Rope Light">Rope Light</option>
+                                        <option value="Solar Flood Light">Solar Flood Light</option>
+                                        <option value="Solar Light">Solar Light</option>
+                                        <option value="Solar Road Light">Solar Road Light</option>
+                                        <option value="Solar Street Light">Solar Street Light</option>
+                                        <option value="Spotlight">Spotlight</option>
+                                        <option value="Street Light">Street Light</option>
+                                        <option value="Strip Light">Strip Light</option>
+                                        <option value="Swimming Pool Light">Swimming Pool Light</option>
+                                        <option value="Track Light">Track Light</option>
+                                        <option value="Tube Light">Tube Light</option>
+                                        <option value="UV Disinfection Light">UV Disinfection Light</option>
+                                        <option value="Wall Light">Wall Light</option>
+                                        <option value="Weatherproof Fixture">Weatherproof Fixture</option>
+                                        <option value="SPF ( Special Items )">SPF ( Special Items )</option>
+                                        <option value="Various Lighting">Various Lighting</option>
+                                        <option value="Item Not Carried">Item Not Carried</option>
                                     </select>
                                 </div>
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -546,6 +577,10 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                         <option value="">Select Category</option>
                                         <option value="B2B">B2B</option>
                                         <option value="B2C">B2C</option>
+                                        <option value="B2G">B2G</option>
+                                        <option value="General Trade">General Trade</option>
+                                        <option value="Personal">Personal</option>
+                                        <option value="Building Maintenance">Building Maintenance</option>
                                     </select>
                                 </div>
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -553,7 +588,10 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     <select value={source ?? ""} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                         <option value="">Select Category</option>
                                         <option value="Existing">Existing</option>
+                                        <option value="CSR Inquiries">CSR Inquiries</option>
                                         <option value="Referral">Referral</option>
+                                        <option value="New Client Development">New Client Development</option>
+                                        <option value="Ecoshift Database">Ecoshift Database</option>
                                     </select>
                                 </div>
                             </div>
@@ -828,7 +866,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <select
                             value={activitystatus || ""}
                             onChange={(e) => setactivitystatus(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-gray-100"
+                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-gray-100" required
                         >
                             <option value="">Select Status</option>
                             <option

@@ -194,6 +194,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         <h2 className="text-xs font-bold mb-4">
           {editUser ? "Edit Account Information" : "Add New Account"}
         </h2>
+        <p className="text-xs text-gray-600 mb-4">
+          The process of <strong>creating</strong> or <strong>editing an account</strong> involves updating key information associated with a company. When adding or editing an account, fields such as company name, contact details, client type, and status play an essential role in maintaining accurate and up-to-date records. These fields ensure smooth management and tracking of company accounts within the system, allowing for better organization and coordination. Properly updating these details is crucial for improving communication and ensuring the integrity of the data throughout the process.
+        </p>
         <FormFields
           referenceid={referenceid} setreferenceid={setReferenceid}
           manager={manager} setmanager={setManager}
@@ -242,6 +245,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       {/* Historical Records Table */}
       <div className="mt-6">
         <h3 className="text-xs font-bold mb-2">Historical Records</h3>
+        <p className="text-xs text-gray-600 mb-4">
+          This section displays <strong>historical records</strong> of past activities, allowing users to view key details related to calls and related actions. It includes columns such as activity type, callback, call status, and related amounts. The table helps in tracking and reviewing past interactions for better decision-making and analysis.
+        </p>
 
         {/* Desktop View */}
         <div className="hidden md:block overflow-x-auto">
@@ -298,7 +304,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center py-2 border">No activities found.</td>
+                  <td colSpan={11} className="text-center py-2 border">No activities found.</td>
                 </tr>
               )}
             </tbody>

@@ -11,7 +11,7 @@ import UsersCard from "../../../components/Boards/Notes/UsersTable"; // Assuming
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { CiTrash, CiCircleRemove, CiStickyNote} from "react-icons/ci";
+import { CiTrash, CiCircleRemove, CiStickyNote } from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -213,6 +213,9 @@ const ListofUser: React.FC = () => {
 
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                         <h2 className="text-lg font-bold mb-2">Notes</h2>
+                                        <p className="text-xs text-gray-600 mb-4">
+                                            The <strong>Kanban Board</strong> here is used to manage and track the progress of various tasks or activities. It helps in organizing the workflow and provides a clear visual representation of task status. The board is divided into different columns such as "Backlogs," "Priority," "Important", and "Finished," allowing users to move tasks across these stages. This system enhances collaboration by allowing team members to easily update and track the status of each task, making it an effective tool for managing tasks, improving productivity, and ensuring smoother coordination within the team.
+                                        </p>
                                         <UsersCard
                                             posts={currentPosts}
                                             handleDelete={confirmDelete}

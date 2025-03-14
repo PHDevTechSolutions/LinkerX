@@ -67,19 +67,19 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                     <button onClick={handleNext} className="text-xs flex items-center mr-2">
                         <CiSquareChevRight size={30} />
                     </button>
-                    <button
+                    <button title="Day"
                         onClick={() => setViewMode(viewMode === "day" ? "default" : "day")}
                         className={`text-xs flex items-center mr-2 ${viewMode === "day" ? "text-blue-500" : ""}`}
                     >
                         <MdOutlineCalendarViewDay size={20} />
                     </button>
-                    <button
+                    <button title="Weekly"
                         onClick={() => setViewMode(viewMode === "week" ? "default" : "week")}
                         className={`text-xs flex items-center mr-2 ${viewMode === "week" ? "text-blue-500" : ""}`}
                     >
                         <MdOutlineCalendarViewWeek size={20} />
                     </button>
-                    <button
+                    <button title="Monthly"
                         onClick={() => setViewMode(viewMode === "month" ? "default" : "month")}
                         className={`text-xs flex items-center mr-2 ${viewMode === "month" ? "text-blue-500" : ""}`}
                     >

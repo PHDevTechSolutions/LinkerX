@@ -88,50 +88,50 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-    ? posts
-        .filter((post) => {
-            // Ensure companyname exists
-            const hasCompanyName = !!post?.companyname;
+        ? posts
+            .filter((post) => {
+                // Ensure companyname exists
+                const hasCompanyName = !!post?.companyname;
 
-            // Search term filter (company name)
-            const matchesSearchTerm =
-                hasCompanyName &&
-                post.companyname.toLowerCase().includes(searchTerm.toLowerCase());
+                // Search term filter (company name)
+                const matchesSearchTerm =
+                    hasCompanyName &&
+                    post.companyname.toLowerCase().includes(searchTerm.toLowerCase());
 
-            // Date range filter
-            const postDate = post.date_created ? new Date(post.date_created) : null;
-            const isWithinDateRange =
-                (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                (!endDate || (postDate && postDate <= new Date(endDate)));
+                // Date range filter
+                const postDate = post.date_created ? new Date(post.date_created) : null;
+                const isWithinDateRange =
+                    (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                    (!endDate || (postDate && postDate <= new Date(endDate)));
 
-            // Client type filter
-            const matchesClientType = selectedClientType
-                ? post?.typeclient === selectedClientType
-                : true;
+                // Client type filter
+                const matchesClientType = selectedClientType
+                    ? post?.typeclient === selectedClientType
+                    : true;
 
-            // Get the reference ID from userDetails
-            const userReferenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
+                // Get the reference ID from userDetails
+                const userReferenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
 
-            // Match reference ID (PostgreSQL "referenceid" or MongoDB "ReferenceID")
-            const matchesReferenceID =
-                post?.referenceid === userReferenceID || post?.ReferenceID === userReferenceID;
+                // Match reference ID (PostgreSQL "referenceid" or MongoDB "ReferenceID")
+                const matchesReferenceID =
+                    post?.referenceid === userReferenceID || post?.ReferenceID === userReferenceID;
 
-            // User role filter
-            const matchesRole =
-                userDetails.Role === "Super Admin" || userDetails.Role === "Territory Sales Associate";
+                // User role filter
+                const matchesRole =
+                    userDetails.Role === "Super Admin" || userDetails.Role === "Territory Sales Associate";
 
-            // Final filtering condition
-            return (
-                hasCompanyName && // Ensure company name exists
-                matchesSearchTerm &&
-                isWithinDateRange &&
-                matchesClientType &&
-                matchesReferenceID && // Ensure only relevant posts appear
-                matchesRole
-            );
-        })
-        .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
-    : [];
+                // Final filtering condition
+                return (
+                    hasCompanyName && // Ensure company name exists
+                    matchesSearchTerm &&
+                    isWithinDateRange &&
+                    matchesClientType &&
+                    matchesReferenceID && // Ensure only relevant posts appear
+                    matchesRole
+                );
+            })
+            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
+        : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -150,6 +150,9 @@ const ListofUser: React.FC = () => {
                                 <>
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                         <h2 className="text-lg font-bold mb-2">Client Coverage Guide</h2>
+                                        <p className="text-xs text-gray-600 mb-4">
+                                            The <strong>Client Coverage Guide</strong> provides a comprehensive overview of all transaction histories for each company. It serves as a detailed record of discussions and agreements made with clients, helping to track important conversations, updates, and transactions. By reviewing this guide, users can quickly access relevant information about each client, ensuring efficient management of customer relations and providing a reliable reference for future interactions.
+                                        </p>
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}

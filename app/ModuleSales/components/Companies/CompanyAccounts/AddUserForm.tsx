@@ -82,6 +82,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         <h2 className="text-xs font-bold mb-4">
           {editUser ? "Edit Account Information" : "Add New Account"}
         </h2>
+        <p className="text-xs text-gray-600 mb-4">
+          The process of <strong>creating</strong> or <strong>editing an account</strong> involves updating key information associated with a company. When adding or editing an account, fields like company name, contact details, client type, and status are essential for ensuring accurate and up-to-date records. This ensures smooth management and tracking of company accounts within the system.
+        </p>
         <FormFields
           referenceid={referenceid} setreferenceid={setReferenceid}
           manager={manager} setmanager={setManager}

@@ -234,6 +234,10 @@ const ListofUser: React.FC = () => {
                                 <>
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                         <h2 className="text-lg font-bold mb-2">Callback's</h2>
+                                        <p className="text-xs text-gray-600 mb-4">
+                                            This section displays all the callbacks that are scheduled, along with their set times. You can track the callback timings and stay updated with the upcoming tasks.
+                                            The calendar and timer functionality allows for better scheduling and monitoring of each callback, ensuring no callback is missed.
+                                        </p>
                                         <UsersTable
                                             posts={currentPosts}
                                             handleDelete={confirmDelete}

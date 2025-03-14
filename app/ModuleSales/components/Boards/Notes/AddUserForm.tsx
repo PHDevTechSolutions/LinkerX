@@ -54,8 +54,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
         <>
             <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
                 <h2 className="text-xs font-bold mb-4">
-                    {editUser ? "Edit Account Information" : "Add New Account"}
+                    {editUser ? "Edit Notes Information" : "Add New Notes"}
                 </h2>
+                <p className="text-xs text-gray-600 mb-4">
+                    This section allows you to <strong>{editUser ? "update" : "create"}</strong> notes. If you're editing existing notes, you can update fields such as the note's title, description, and status. If you're adding new notes, you can fill in these fields to create a new entry. The form helps to efficiently manage and organize notes by tracking their key information, ensuring that all necessary details are captured and easy to access for future reference.
+                </p>
+
                 <FormFields
                     referenceid={referenceid} setreferenceid={setReferenceid}
                     title={title} settitle={settitle}

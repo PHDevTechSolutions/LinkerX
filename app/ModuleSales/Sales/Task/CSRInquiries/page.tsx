@@ -87,23 +87,23 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-    ? posts.filter((post) => {
-        // Check if the company name matches the search term
-        const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+        ? posts.filter((post) => {
+            // Check if the company name matches the search term
+            const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
 
-        // Parse the date_created field
-        const postDate = post.date_created ? new Date(post.date_created) : null;
+            // Parse the date_created field
+            const postDate = post.date_created ? new Date(post.date_created) : null;
 
-        // Check if the post's date is within the selected date range
-        const isWithinDateRange = (
-            (!startDate || (postDate && postDate >= new Date(startDate))) &&
-            (!endDate || (postDate && postDate <= new Date(endDate)))
-        );
+            // Check if the post's date is within the selected date range
+            const isWithinDateRange = (
+                (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                (!endDate || (postDate && postDate <= new Date(endDate)))
+            );
 
-        // Return the filtered result
-        return matchesSearchTerm && isWithinDateRange;
-    }).sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
-    : [];
+            // Return the filtered result
+            return matchesSearchTerm && isWithinDateRange;
+        }).sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
+        : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -133,11 +133,14 @@ const ListofUser: React.FC = () => {
                                     userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
                                     editUser={editUser}
                                 />
-                                
+
                             ) : (
                                 <>
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                         <h2 className="text-lg font-bold mb-2">CSR Inquiries</h2>
+                                        <p className="text-xs text-gray-600 mb-4">
+                                            The table under <strong>CSR Inquiries</strong> displays all company accounts that have been endorsed by the CSR department. These accounts come from various sources, including the company website and other channels. This section serves as a comprehensive record of all CSR-endorsed inquiries and transactions, allowing users to track and manage client interactions effectively.
+                                        </p>
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}

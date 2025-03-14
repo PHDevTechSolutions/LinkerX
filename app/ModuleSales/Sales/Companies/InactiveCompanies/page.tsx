@@ -105,40 +105,40 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-    ? posts.filter((post) => {
-        // Check if the company name matches the search term
-        const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+        ? posts.filter((post) => {
+            // Check if the company name matches the search term
+            const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
 
-        // Parse the date_created field
-        const postDate = post.date_created ? new Date(post.date_created) : null;
+            // Parse the date_created field
+            const postDate = post.date_created ? new Date(post.date_created) : null;
 
-        // Check if the post's date is within the selected date range
-        const isWithinDateRange = (
-            (!startDate || (postDate && postDate >= new Date(startDate))) &&
-            (!endDate || (postDate && postDate <= new Date(endDate)))
-        );
+            // Check if the post's date is within the selected date range
+            const isWithinDateRange = (
+                (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                (!endDate || (postDate && postDate <= new Date(endDate)))
+            );
 
-        // Check if the post matches the selected client type
-        const matchesClientType = selectedClientType
-            ? post?.typeclient === selectedClientType
-            : true;
+            // Check if the post matches the selected client type
+            const matchesClientType = selectedClientType
+                ? post?.typeclient === selectedClientType
+                : true;
 
-        // Get the reference ID from userDetails
-        const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
+            // Get the reference ID from userDetails
+            const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
 
-        const matchesRole = userDetails.Role === "Super Admin"
-            ? true // Super Admin sees all
-            : userDetails.Role === "Territory Sales Associate"
-                ? post?.referenceid === referenceID // Manager sees only assigned companies
-                : false; // Default false if no match
+            const matchesRole = userDetails.Role === "Super Admin"
+                ? true // Super Admin sees all
+                : userDetails.Role === "Territory Sales Associate"
+                    ? post?.referenceid === referenceID // Manager sees only assigned companies
+                    : false; // Default false if no match
 
-        // Check if the status is 'Inactive' and if the filters match
-        const matchesStatus = post?.status === "Inactive";
+            // Check if the status is 'Inactive' and if the filters match
+            const matchesStatus = post?.status === "Inactive";
 
-        // Return the filtered result, ensuring 'Inactive' status is considered
-        return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole && matchesStatus;
-    })
-    : [];
+            // Return the filtered result, ensuring 'Inactive' status is considered
+            return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole && matchesStatus;
+        })
+        : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -151,7 +151,7 @@ const ListofUser: React.FC = () => {
         setEditUser(post);
         setShowForm(true);
     };
-    
+
 
     return (
         <SessionChecker>
@@ -161,25 +161,27 @@ const ListofUser: React.FC = () => {
                         <div className="container mx-auto p-4">
                             {showForm ? (
                                 <AddPostForm
-                                onCancel={() => {
-                                  setShowForm(false);
-                                  setEditUser(null);
-                                }}
-                                refreshPosts={fetchAccount} // Pass the refreshPosts callback
-                                userDetails={{
-                                  id: editUser ? editUser.id : userDetails.UserId,
-                                  referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
-                                  manager: editUser ? editUser.manager : userDetails.Manager,
-                                  tsm: editUser ? editUser.tsm : userDetails.TSM,
-                                }} 
-                                editUser={editUser}
-                              />
-                                
+                                    onCancel={() => {
+                                        setShowForm(false);
+                                        setEditUser(null);
+                                    }}
+                                    refreshPosts={fetchAccount} // Pass the refreshPosts callback
+                                    userDetails={{
+                                        id: editUser ? editUser.id : userDetails.UserId,
+                                        referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
+                                        manager: editUser ? editUser.manager : userDetails.Manager,
+                                        tsm: editUser ? editUser.tsm : userDetails.TSM,
+                                    }}
+                                    editUser={editUser}
+                                />
+
                             ) : (
                                 <>
-                                    
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                         <h2 className="text-lg font-bold mb-2">Inactive Companies</h2>
+                                        <p className="text-xs text-gray-600 mb-4">
+                                            This section displays a list of <strong>Inactive Companies</strong> within the system. You can filter the companies based on various criteria such as client type, start date, end date, and search term. Use the filters to narrow down your search and quickly find the relevant inactive companies you need to manage or review.
+                                        </p>
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}

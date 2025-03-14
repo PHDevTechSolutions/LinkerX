@@ -129,47 +129,47 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-    ? posts
-        .filter((post) => {
-            // Check if company name or activity status matches the search term
-            const matchesSearchTerm =
-                (post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                (post?.activitystatus?.toLowerCase().includes(searchTerm.toLowerCase()));
+        ? posts
+            .filter((post) => {
+                // Check if company name or activity status matches the search term
+                const matchesSearchTerm =
+                    (post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                    (post?.activitystatus?.toLowerCase().includes(searchTerm.toLowerCase()));
 
-            // Parse the date_created field safely
-            const postDate = post?.date_created ? new Date(post.date_created) : null;
+                // Parse the date_created field safely
+                const postDate = post?.date_created ? new Date(post.date_created) : null;
 
-            // Check if the post's date is within the selected date range
-            const isWithinDateRange =
-                (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                (!endDate || (postDate && postDate <= new Date(endDate)));
+                // Check if the post's date is within the selected date range
+                const isWithinDateRange =
+                    (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                    (!endDate || (postDate && postDate <= new Date(endDate)));
 
-            // Check if the post matches the selected client type
-            const matchesClientType = selectedClientType
-                ? post?.typeclient === selectedClientType
-                : true;
+                // Check if the post matches the selected client type
+                const matchesClientType = selectedClientType
+                    ? post?.typeclient === selectedClientType
+                    : true;
 
-            // Check if the post matches the current user's ReferenceID (PostgreSQL or MongoDB)
-            const matchesReferenceID =
-                post?.referenceid === userDetails.ReferenceID || // PostgreSQL referenceid
-                post?.ReferenceID === userDetails.ReferenceID;   // MongoDB ReferenceID
+                // Check if the post matches the current user's ReferenceID (PostgreSQL or MongoDB)
+                const matchesReferenceID =
+                    post?.referenceid === userDetails.ReferenceID || // PostgreSQL referenceid
+                    post?.ReferenceID === userDetails.ReferenceID;   // MongoDB ReferenceID
 
-            // Check the user's role for filtering
-            const matchesRole =
-                userDetails.Role === "Super Admin" ||
-                userDetails.Role === "Territory Sales Associate";
+                // Check the user's role for filtering
+                const matchesRole =
+                    userDetails.Role === "Super Admin" ||
+                    userDetails.Role === "Territory Sales Associate";
 
-            // Return the final filtering condition
-            return (
-                matchesSearchTerm &&
-                isWithinDateRange &&
-                matchesClientType &&
-                matchesReferenceID && // Ensures the user sees only their data
-                matchesRole
-            );
-        })
-        .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
-    : [];
+                // Return the final filtering condition
+                return (
+                    matchesSearchTerm &&
+                    isWithinDateRange &&
+                    matchesClientType &&
+                    matchesReferenceID && // Ensures the user sees only their data
+                    matchesRole
+                );
+            })
+            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
+        : [];
 
     const currentPosts = filteredAccounts.slice();
     const totalPages = Math.ceil(filteredAccounts.length);
@@ -267,7 +267,7 @@ const ListofUser: React.FC = () => {
                 break;
             case "15 Minutes":
                 manilaDate.setMinutes(manilaDate.getMinutes() + 15);
-                break;    
+                break;
             case "20 Minutes":
                 manilaDate.setMinutes(manilaDate.getMinutes() + 20);
                 break;
@@ -392,30 +392,30 @@ const ListofUser: React.FC = () => {
 
     const startCountdown = (durationInSeconds: number) => {
         if (timer) clearInterval(timer); // Clear existing timer before starting a new one
-    
+
         setCountdown(durationInSeconds);
         setShowTimerModal(true);
         setTimerRunning(true);
-    
+
         timer = setInterval(() => {
             setCountdown((prev) => {
                 if (prev <= 1) {
                     clearInterval(timer!);
                     setShowTimerModal(false);
                     setTimerRunning(false);
-    
+
                     // Refresh the entire page after timer ends
                     setTimeout(() => {
                         window.location.reload();
                     }, 500);
-    
+
                     return 0;
                 }
                 return prev - 1;
             });
         }, 1000);
     };
-    
+
     // Cleanup timer when component unmounts
     useEffect(() => {
         return () => {
@@ -468,6 +468,9 @@ const ListofUser: React.FC = () => {
                                             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                                                 <div className="bg-white p-8 rounded shadow-lg w-96 max-w-lg">
                                                     <h2 className="text-sm font-bold mb-4">Personal Activity</h2>
+                                                    <p className="text-xs text-gray-600 mb-4">
+                                                        This form helps track your <strong>personal activities</strong> by selecting an activity type, adding remarks, and specifying the time spent. It assists in managing tasks, time allocation, and productivity analysis.
+                                                    </p>
 
                                                     <form onSubmit={handleSubmit}>
                                                         <input type="hidden" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
@@ -509,6 +512,9 @@ const ListofUser: React.FC = () => {
                                                             <option value="2 Hours">2 Hours</option>
                                                             <option value="3 Hours">3 Hours</option>
                                                         </select>
+                                                        <p className="text-xs text-gray-600 mb-4">
+                                                            Select the <strong>activity duration</strong> to log the time spent on the task, ranging from minutes to hours.
+                                                        </p>
 
                                                         {/* Buttons */}
                                                         <div className="mt-6 flex justify-end">
@@ -536,9 +542,12 @@ const ListofUser: React.FC = () => {
                                             </div>
                                         )}
                                     </div>
-                                    
+
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                         <h2 className="text-lg font-bold mb-2">My Task</h2>
+                                        <p className="text-xs text-gray-600 mb-4">
+                                            This section displays your <strong>tasks</strong> in a <strong>card layout</strong>. Each task is represented as a card, offering a visually appealing and more flexible design compared to traditional tables. You can filter tasks based on various criteria like <strong>client type</strong>, <strong>date range</strong>, and other parameters using the search filters.
+                                        </p>
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}

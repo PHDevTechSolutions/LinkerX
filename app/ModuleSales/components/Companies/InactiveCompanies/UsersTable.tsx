@@ -94,6 +94,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                             </div>
                         )}
                     </div>
+                    <p className="text-xs mt-2 text-gray-600">
+                        This section allows you to <strong>update the status</strong> of selected companies from <strong>Inactive</strong> to <strong>Active</strong>.
+                        First, select the companies you want to update. Then, choose the new status from the dropdown list (either "Inactive" or "Active").
+                        Finally, click the <strong>Apply Changes</strong> button to update the selected records in bulk. This feature makes it easy to manage and update company statuses efficiently.
+                    </p>
                 </div>
             )}
 
