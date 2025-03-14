@@ -5,7 +5,9 @@ import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, Li
 
 // Register Chart.js components
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
+// Type for chart data (optional, to help with typing)
 interface GenderPieChartProps {
   startDate?: string;
   endDate?: string;
@@ -36,25 +38,23 @@ const GenderPieChart: React.FC<GenderPieChartProps> = ({ startDate, endDate, Ref
         const data = await res.json();
         if (res.ok) {
           setGenderData(data);
-        } else {
-          
         }
       } catch (error) {
-        
+        console.error(error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchGenderData();
-  }, [startDate, endDate, ReferenceID, Role]); // Re-fetch data when startDate or endDate change
+  }, [startDate, endDate, ReferenceID, Role]);
 
   const pieChartData = {
     labels: genderData ? genderData.map((item: any) => item._id) : [], // Gender status
     datasets: [
       {
         data: genderData ? genderData.map((item: any) => item.count) : [], // Count of each gender
-        backgroundColor: ["#3A7D44", "#FBA518"], // Custom colors for gender
+        backgroundColor: ["#B8742C", "#162F0B"], // Custom colors for gender
         borderColor: "#fff", // Border color for better contrast
         borderWidth: 2,
       },
@@ -82,6 +82,16 @@ const GenderPieChart: React.FC<GenderPieChartProps> = ({ startDate, endDate, Ref
           },
         },
       },
+      datalabels: {
+        color: '#fff', // White color for the text
+        font: {
+          weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
+          size: 14, // Font size for data labels
+        },
+        formatter: function (value: any) {
+          return value; // Display the value directly inside the chart
+        },
+      },
     },
     layout: {
       padding: 30, // Added padding for better view
@@ -96,10 +106,14 @@ const GenderPieChart: React.FC<GenderPieChartProps> = ({ startDate, endDate, Ref
   return (
     <div className="flex justify-center items-center w-full h-full">
       <div className="w-full h-full">
+        <p className="text-xs text-gray-600 mb-4">
+          Shows a <strong>pie chart</strong> tracking the count of <strong>male</strong> and <strong>female</strong> entries in the dataset. A loading message appears while data is fetched, and "No data available" will display if there's no data.
+        </p>
+
         {loading ? (
           <p className="text-center text-gray-600 text-xs">Loading data...</p>
         ) : genderData ? (
-          <Pie data={pieChartData} options={pieChartOptions} />
+          <Pie data={pieChartData} options={pieChartOptions} plugins={[ChartDataLabels]} />
         ) : (
           <p className="text-center text-gray-600 text-xs">No data available</p>
         )}

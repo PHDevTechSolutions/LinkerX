@@ -90,11 +90,15 @@ const DashboardPage: React.FC = () => {
           {/* Card 1: Bar Charts */}
           <div className="flex gap-4 mb-4">
             <div className="bg-white shadow-md rounded-lg p-4 w-full">
+
               <div className="flex border-b mb-4 text-xs font-bold">
                 <button className={`p-2 flex-1 ${activeTable === "barchart" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("barchart")}>Bar Chart</button>
                 <button className={`p-2 flex-1 ${activeTable === "metrictable" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("metrictable")}>Metrics</button>
               </div>
               <div className="p-4">
+                <p className="text-xs text-gray-600 mb-4">
+                  This chart tracks the traffic count from various sources such as <strong>Google Maps</strong>, <strong>Website</strong>, <strong>Facebook Main</strong>, <strong>Facebook Home</strong>, <strong>Viber</strong>, and other channels. It visualizes the volume of traffic coming from each source, providing insights into where your audience is engaging from. This data helps in understanding the reach and effectiveness of your various online platforms.
+                </p>
                 {activeTable === "barchart" && <BarChart
                   startDate={startDate}
                   endDate={endDate}
@@ -160,35 +164,35 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
           </div>
-      
+
           {/* Card 4: Tables */}
           {userDetails.Role !== "Staff" && (
-          <div className="flex gap-4 mt-4 mb-4">
-            <div className="bg-white shadow-md rounded-lg p-2 w-full">
-              <div className="border-b mb-4 text-xs font-bold">
-                <button className="p-2 flex-1 border-b-2 border-blue-500">
-                  Traffic to Sales Conversion
-                </button>
-              </div>
-              <div className="p-4">
-                <AgentSalesConversion 
-                ReferenceID={userDetails.ReferenceID}
-                Role={userDetails.Role}/>
+            <div className="flex gap-4 mt-4 mb-4">
+              <div className="bg-white shadow-md rounded-lg p-2 w-full">
+                <div className="border-b mb-4 text-xs font-bold">
+                  <button className="p-2 flex-1 border-b-2 border-blue-500">
+                    Traffic to Sales Conversion
+                  </button>
+                </div>
+                <div className="p-4">
+                  <AgentSalesConversion
+                    ReferenceID={userDetails.ReferenceID}
+                    Role={userDetails.Role} />
+                </div>
               </div>
             </div>
-          </div>
           )}
 
           {/* Card 5: Tables */}
           {userDetails.Role !== "Staff" && (
-          <div className="flex gap-4 mt-4 mb-4">
-            <div className="bg-white shadow-md rounded-lg p-4 w-full">
-              <h3 className="text-sm font-bold mb-2">TSA Traffic to Sales Conversion</h3>
-              <div className="flex border-b mb-4 text-xs font-bold">
-                <TSASalesConversion />
+            <div className="flex gap-4 mt-4 mb-4">
+              <div className="bg-white shadow-md rounded-lg p-4 w-full">
+                <h3 className="text-sm font-bold mb-2">TSA Traffic to Sales Conversion</h3>
+                <div className="flex border-b mb-4 text-xs font-bold">
+                  <TSASalesConversion />
+                </div>
               </div>
             </div>
-          </div>
           )}
 
         </div>
