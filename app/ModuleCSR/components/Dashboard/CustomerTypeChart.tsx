@@ -84,7 +84,7 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ startDate, endDat
       },
     },
     layout: {
-      padding: 30, // Added padding for better view
+      padding: 2, // Added padding for better view
     },
     elements: {
       arc: {

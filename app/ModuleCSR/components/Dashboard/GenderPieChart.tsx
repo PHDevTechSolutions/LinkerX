@@ -94,7 +94,7 @@ const GenderPieChart: React.FC<GenderPieChartProps> = ({ startDate, endDate, Ref
       },
     },
     layout: {
-      padding: 30, // Added padding for better view
+      padding: 2, // Added padding for better view
     },
     elements: {
       arc: {
