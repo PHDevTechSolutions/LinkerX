@@ -106,7 +106,7 @@ const GenderPieChart: React.FC<GenderPieChartProps> = ({ startDate, endDate, Ref
   return (
     <div className="flex justify-center items-center w-full h-full">
       <div className="w-full h-full">
-        <p className="text-xs text-gray-600 mb-4">
+        <p className="text-xs text-gray-600">
           Shows a <strong>pie chart</strong> tracking the count of <strong>male</strong> and <strong>female</strong> entries in the dataset. A loading message appears while data is fetched, and "No data available" will display if there's no data.
         </p>
 

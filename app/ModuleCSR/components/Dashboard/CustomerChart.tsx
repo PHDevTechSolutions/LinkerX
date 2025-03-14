@@ -5,6 +5,7 @@ import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, Li
 
 // Register Chart.js components
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 interface CustomerChartProps {
   startDate?: string;
@@ -15,7 +16,7 @@ interface CustomerChartProps {
 
 const CustomerChart: React.FC<CustomerChartProps> = ({ startDate, endDate, ReferenceID, Role }) => {
   const [genderData, setGenderData] = useState<any>(null);
-  
+
   const getCurrentMonthRange = () => {
     const currentDate = new Date();
     const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -46,9 +47,9 @@ const CustomerChart: React.FC<CustomerChartProps> = ({ startDate, endDate, Refer
     datasets: [
       {
         data: genderData ? genderData.map((item: any) => item.count) : [],
-        backgroundColor: ["#FBA518", "#3A7D44", "#F5F5F5", "#3674B5"],
+        backgroundColor: ["#0B293F", "#332753", "#4C0000", "#1B360D"],
         borderColor: "#fff",
-        borderWidth: 2,
+        borderWidth: 1,
       },
     ],
   };
@@ -62,7 +63,7 @@ const CustomerChart: React.FC<CustomerChartProps> = ({ startDate, endDate, Refer
     plugins: {
       title: {
         display: true,
-        text: "Inbound Traffic Per Customer Status",
+        text: "Inbound Traffic Per Gender",
         font: {
           size: 15,
         },
@@ -70,17 +71,27 @@ const CustomerChart: React.FC<CustomerChartProps> = ({ startDate, endDate, Refer
       tooltip: {
         callbacks: {
           label: function (tooltipItem: any) {
-            return `${tooltipItem.label}: ${tooltipItem.raw}`;
+            return `${tooltipItem.label}: ${tooltipItem.raw}`; // Tooltip format
           },
+        },
+      },
+      datalabels: {
+        color: '#fff', // White color for the text
+        font: {
+          weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
+          size: 14, // Font size for data labels
+        },
+        formatter: function (value: any) {
+          return value; // Display the value directly inside the chart
         },
       },
     },
     layout: {
-      padding: 30,
+      padding: 30, // Added padding for better view
     },
     elements: {
       arc: {
-        borderWidth: 6,
+        borderWidth: 6, // Add border width for distinct arcs
       },
     },
   };
@@ -88,10 +99,16 @@ const CustomerChart: React.FC<CustomerChartProps> = ({ startDate, endDate, Refer
   return (
     <div className="flex justify-center items-center w-full h-full">
       <div className="w-full h-full">
+        <p className="text-xs">
+          <strong>Pie chart</strong> showing the count of <strong>customer statuses</strong> in the dataset. It updates
+          dynamically based on <strong>start</strong> and <strong>end dates</strong>. "Loading data..." is shown during fetch,
+          and "No data available" appears if there's no data.
+        </p>
+
         {genderData ? (
-          <Pie data={pieChartData} options={pieChartOptions} />
+          <Pie data={pieChartData} options={pieChartOptions} plugins={[ChartDataLabels]} />
         ) : (
-          <p className="text-center text-gray-600 text-xs">Loading data...</p>
+          <p className="text-center text-white text-xs">Loading data...</p>
         )}
       </div>
     </div>
