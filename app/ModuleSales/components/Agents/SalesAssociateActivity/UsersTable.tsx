@@ -33,7 +33,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full bg-white border border-gray-200 text-xs">
+      <table className="bg-white border border-gray-200 text-xs">
         <thead>
           <tr className="bg-gray-100 text-left">
             <th className="py-2 px-4 border whitespace-nowrap">Agent</th>
@@ -56,30 +56,30 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
           {updatedUser.length > 0 ? (
             updatedUser.map((post) => (
               <tr key={post.id} className="border-t">
-                <td className="py-2 px-4 border capitalize whitespace-nowrap overflow-hidden overflow-ellipsis">
+                <td className="py-2 px-4 border capitalize whitespace-nowrap ">
                   {post.AgentFirstname} {post.AgentLastname}
                   <br />
                   <span className="text-gray-900 text-[8px]">({post.referenceid})</span>
                 </td>
-                <td className="py-2 px-4 border capitalize whitespace-nowrap overflow-hidden overflow-ellipsis">{post.companyname}</td>
-                <td className="py-2 px-4 border capitalize whitespace-nowrap overflow-hidden overflow-ellipsis">{post.actualsales}</td>
-                <td className="py-2 px-4 border whitespace-nowrap overflow-hidden overflow-ellipsis">{post.soamount}</td>
-                <td className="py-2 px-4 border whitespace-nowrap overflow-hidden overflow-ellipsis">{post.sonumber}</td>
-                <td className="py-2 px-4 border capitalize whitespace-nowrap overflow-hidden overflow-ellipsis">{post.typeclient}</td>
-                <td className="py-2 px-4 border capitalize whitespace-nowrap overflow-hidden overflow-ellipsis">{post.typecall}</td>
-                <td className="py-2 px-4 border uppercase whitespace-nowrap overflow-hidden overflow-ellipsis">{post.typeactivity}</td>
-                <td className="py-2 px-4 border uppercase whitespace-nowrap overflow-hidden overflow-ellipsis">{post.callstatus}</td>
-                <td className="py-2 px-4 border uppercase whitespace-nowrap overflow-hidden overflow-ellipsis">{post.remarks}</td>
-                <td className="py-2 px-4 border uppercase whitespace-nowrap overflow-hidden overflow-ellipsis"></td>
-                <td className="py-2 px-4 border uppercase whitespace-nowrap overflow-hidden overflow-ellipsis">
+                <td className="py-2 px-4 border capitalize whitespace-nowrap ">{post.companyname}</td>
+                <td className="py-2 px-4 border capitalize whitespace-nowrap">{post.actualsales}</td>
+                <td className="py-2 px-4 border whitespace-nowrap">{post.soamount}</td>
+                <td className="py-2 px-4 border whitespace-nowrap ">{post.sonumber}</td>
+                <td className="py-2 px-4 border capitalize whitespace-nowrap ">{post.typeclient}</td>
+                <td className="py-2 px-4 border capitalize whitespace-nowrap ">{post.typecall}</td>
+                <td className="py-2 px-4 border uppercase whitespace-nowrap ">{post.typeactivity}</td>
+                <td className="py-2 px-4 border uppercase whitespace-nowrap ">{post.callstatus}</td>
+                <td className="py-2 px-4 border uppercase whitespace-nowrap ">{post.remarks}</td>
+                <td className="py-2 px-4 border uppercase whitespace-nowrap "></td>
+                <td className="py-2 px-4 border uppercase whitespace-nowrap ">
                   <span className={`px-2 py-1 rounded-full text-white text-[8px] font-bold 
                     ${post.activitystatus === "Cold" ? "bg-blue-800" : post.activitystatus === "Hot" ? "bg-red-700" :
                       post.activitystatus === "Warm" ? "bg-yellow-500" : post.activitystatus === "Done" ? "bg-green-900" : "bg-gray-500"}`}>
-                        {post.activitystatus}
+                    {post.activitystatus}
                   </span>
                 </td>
 
-                <td className="py-2 px-4 border uppercase whitespace-nowrap overflow-hidden overflow-ellipsis">
+                <td className="py-2 px-4 border uppercase whitespace-nowrap ">
                   {post.startdate ? new Date(post.startdate).toLocaleString() : "N/A"} -
                   {post.enddate ? new Date(post.enddate).toLocaleString() : "N/A"}
                 </td>

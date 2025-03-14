@@ -368,7 +368,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     <>
       <div className="bg-white w-full max-width mx-auto mb-4">
         {/* Grid Container */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Profile Picture Card */}
           <div className="flex flex-col items-center justify-center border rounded-lg p-6">
             <div className="w-32 h-32 bg-gray-300 rounded-full flex items-center justify-center">
@@ -470,22 +470,27 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         </div>
 
         {/* Additional Information Cards */}
-        <div className="grid grid-cols-3 gap-6 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
           {/* Chart Doughnut */}
           <div className="border rounded-lg p-4 text-center">
-            <h3 className="font-semibold text-sm">Chart</h3>
+            <h3 className="font-semibold text-sm mb-2">Call Activity Chart</h3>
+            <p className="text-xs text-gray-600 mb-4">
+              This chart provides a visual representation of daily call activities, categorized into outbound calls, inbound calls, and other related activities. It helps in analyzing call distribution and performance trends over time.
+            </p>
             <Doughnut data={chartData} options={chartOptions} />
           </div>
 
           {/* Touch Base Summary */}
           <div className="border rounded-lg p-4 text-center">
-            <h3 className="font-semibold text-sm">Touchbase</h3>
-            <p className="text-gray-600 mt-1 mb-2">Summary of Touchbase Counts</p>
+            <h3 className="font-semibold text-sm mb-2">Client Engagement Overview</h3>
+            <p className="text-gray-600 mt-1 mb-4 text-xs">
+              This table provides a summary of client interactions, categorized by client type. It helps in tracking engagement levels and understanding communication patterns.
+            </p>
             <table className="w-full text-xs border-collapse border-gray-300">
               <thead>
                 <tr className="bg-gray-200 text-left">
                   <th className="border border-gray-300 px-2 py-1">Type of Client</th>
-                  <th className="border border-gray-300 px-2 py-1">Counts</th>
+                  <th className="border border-gray-300 px-2 py-1 text-center">Counts</th>
                 </tr>
               </thead>
               <tbody>
@@ -493,8 +498,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                   const [typeclient] = key.split("-");
                   return (
                     <tr key={index}>
-                      <td className="border border-gray-300 px-2 py-1">{typeclient}</td>
-                      <td className="border border-gray-300 px-2 py-1">{count}</td>
+                      <td className="border border-gray-300 px-2 py-1 text-left">{typeclient}</td>
+                      <td className="border border-gray-300 px-2 py-1 text-center">{count}</td>
                     </tr>
                   );
                 })}
@@ -504,8 +509,10 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
           {/* Time Motion */}
           <div className="border rounded-lg p-4 text-center">
-            <h3 className="font-semibold text-sm">Time and Motion Daily Summary</h3>
-            <p className="text-gray-600 mt-1 mb-2">Summary of Time and Motion</p>
+            <h3 className="font-semibold text-sm mb-2">Daily Time and Motion Analysis</h3>
+            <p className="text-gray-600 mt-1 mb-4 text-xs">
+              This summary provides an overview of time spent on client interactions, outbound calls, and other activities. It helps in assessing productivity and optimizing workflow efficiency.
+            </p>
             <table className="w-full text-xs border-collapse border-gray-300">
               <thead>
                 <tr className="bg-gray-200 text-left">
@@ -526,8 +533,10 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
           {/* Daily Productivity */}
           <div className="border rounded-lg p-4 text-center">
-            <h3 className="font-semibold text-sm">Daily Productivity</h3>
-            <p className="text-gray-600 mt-1 mb-2">Details about Activity 4...</p>
+            <h3 className="font-semibold text-sm mb-2">Daily Call Productivity Report</h3>
+            <p className="text-gray-600 mt-1 mb-4 text-xs">
+              This table provides an overview of daily and month-to-date (MTD) call productivity, including total outbound calls, successful and unsuccessful attempts, and inbound call volume.
+            </p>
             <table className="w-full text-xs border-collapse border-gray-300">
               <thead>
                 <tr className="bg-gray-200">
@@ -563,8 +572,10 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
           {/* Quote Productivity */}
           <div className="border rounded-lg p-4 text-center">
-            <h3 className="font-semibold text-sm">Quote Productivity</h3>
-            <p className="text-gray-600 mt-1 mb-2">Details about Activity 5...</p>
+            <h3 className="font-semibold text-sm mb-2">Quotation Productivity Overview</h3>
+            <p className="text-gray-600 mt-1 mb-4 text-xs">
+              This table presents a summary of quotation-related activities, including new account development and quotes prepared for existing clients. The data is categorized into daily and month-to-date (MTD) metrics.
+            </p>
             <table className="w-full text-xs border-collapse border-gray-300">
               <thead>
                 <tr className="bg-gray-200 text-left">
@@ -590,8 +601,10 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
           {/* Performance */}
           <div className="border rounded-lg p-4 text-center">
-            <h3 className="font-semibold text-sm">Performance</h3>
-            <p className="text-gray-600 mt-1 mb-2">Sales Performance Overview</p>
+            <h3 className="font-semibold text-sm mb-2">Sales Performance Summary</h3>
+            <p className="text-gray-600 mt-1 mb-4 text-xs">
+              This table provides an overview of sales performance, tracking actual sales from Sales Orders (SO) to Delivery Receipts (DR). Metrics include Month-to-Date (MTD) and Year-to-Date (YTD) sales figures.
+            </p>
             <table className="w-full text-xs border-collapse border-gray-300">
               <thead>
                 <tr className="bg-gray-200 text-left">
@@ -615,31 +628,33 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
               </tbody>
             </table>
           </div>
-
           {/* Large Card - Full Width */}
-          <div className="border rounded-lg p-6 col-span-3">
-            <h3 className="font-semibold text-sm">Daily Activities</h3>
-            <p className="text-gray-600 mt-1 mb-2">Details about Activity 7...</p>
-            <table className="w-full text-xs border-collapse border-gray-300">
-              <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="border border-gray-300 px-2 py-1">Daily Activities Breakdown</th>
-                  <th className="border border-gray-300 px-2 py-1 text-center">Time Spent</th>
-                </tr>
-              </thead>
-              <tbody className="capitalize">
-                {Object.entries(timeMotionData)
-                  .filter(([activity]) => validActivities.has(activity)) // Filter only valid activities
-                  .sort(([a], [b]) => a.localeCompare(b)) // Sort activities alphabetically
-                  .map(([activity, duration]) => (
-                    <tr key={activity} className="bg-white">
-                      <td className="px-2 py-1">{activity}</td>
-                      <td className="text-center">{formatDuration(duration)}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
+        </div>
+
+        <div className="border rounded-lg p-6 col-span-3 mt-6">
+          <h3 className="font-semibold text-sm mb-2">Daily Activity Summary</h3>
+          <p className="text-gray-600 mt-1 mb-4 text-xs">
+            A detailed breakdown of time spent on various daily activities, providing insights into productivity and task distribution.
+          </p>
+          <table className="w-full text-xs border-collapse border-gray-300">
+            <thead>
+              <tr className="bg-gray-200 text-left">
+                <th className="border border-gray-300 px-2 py-1">Daily Activities Breakdown</th>
+                <th className="border border-gray-300 px-2 py-1 text-center">Time Spent</th>
+              </tr>
+            </thead>
+            <tbody className="capitalize">
+              {Object.entries(timeMotionData)
+                .filter(([activity]) => validActivities.has(activity)) // Filter only valid activities
+                .sort(([a], [b]) => a.localeCompare(b)) // Sort activities alphabetically
+                .map(([activity, duration]) => (
+                  <tr key={activity} className="bg-white">
+                    <td className="px-2 py-1">{activity}</td>
+                    <td className="text-center">{formatDuration(duration)}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         </div>
       </div >
     </>

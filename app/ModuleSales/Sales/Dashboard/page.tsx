@@ -143,7 +143,7 @@ const DashboardPage: React.FC = () => {
     responsive: true,
     plugins: {
       title: {
-        display: true,
+        display: false,
         text: "Total SO to DR per Day",
       },
     },
@@ -546,11 +546,16 @@ const DashboardPage: React.FC = () => {
               </div>
 
               {/* Large Charts Below */}
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
-                <div className="bg-gray-100 text-gray-900 shadow-md rounded-lg p-2 flex flex-col lg:col-span-4">
-                  {/* Card Body */}
-                  <div className="flex-grow p-0">
-                    {/* Bar Chart Inside */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+                <div className="bg-white shadow-md rounded-lg p-4 flex flex-col lg:col-span-4">
+                  {/* Card Header */}
+                  <div className="mb-3">
+                    <h3 className="text-base font-semibold text-gray-800">Daily Sales Order to Delivery Summary</h3>
+                    <p className="text-xs text-gray-600">An overview of the daily sales orders successfully converted into deliveries.</p>
+                  </div>
+
+                  {/* Chart Container */}
+                  <div className="flex-grow">
                     <Bar data={chartData} options={options} />
                   </div>
                 </div>

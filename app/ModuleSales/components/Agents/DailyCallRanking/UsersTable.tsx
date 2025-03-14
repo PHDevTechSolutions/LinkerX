@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 
 interface UsersCardProps {
@@ -12,6 +13,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
         totalInbound: 0,
         totalCalls: 0,
     });
+
+    // Pagination States
+    const [currentPage, setCurrentPage] = useState(1);
+    const postsPerPage = 10; // Number of items per page
 
     useEffect(() => {
         let totalOutbound = 0;
@@ -57,7 +62,16 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
 
         setGroupedUsers(sortedUsers);
         setTotals({ totalOutbound, totalSuccessful, totalInbound, totalCalls });
+
+        // Reset to first page when data changes
+        setCurrentPage(1);
     }, [posts]);
+
+    // Pagination Logic
+    const totalPages = Math.ceil(groupedUsers.length / postsPerPage);
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentUsers = groupedUsers.slice(indexOfFirstPost, indexOfLastPost);
 
     return (
         <div className="overflow-x-auto px-2">
@@ -90,37 +104,36 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {groupedUsers.length > 0 ? (
-                            groupedUsers.map((agent, index) => (
+                        {currentUsers.length > 0 ? (
+                            currentUsers.map((agent, index) => (
                                 <tr key={index} className="border-t text-center text-xs">
-                                    <td className="py-2 px-4 border font-bold">
+                                    <td className="py-2 px-4 font-bold">
                                         <span
-                                            className={`w-full rounded-lg p-2 text-[10px] ${
-                                                index === 0
+                                            className={`w-full rounded-lg p-2 text-[10px] ${index === 0
                                                     ? "bg-green-300"
                                                     : index === 1
-                                                    ? "bg-gray-300"
-                                                    : index >= 2 && index <= 9
-                                                    ? "bg-yellow-300"
-                                                    : "bg-red-300"
-                                            }`}
+                                                        ? "bg-gray-300"
+                                                        : index >= 2 && index <= 9
+                                                            ? "bg-yellow-300"
+                                                            : "bg-red-300"
+                                                }`}
                                         >
-                                            Rank {index + 1}
+                                            Rank {indexOfFirstPost + index + 1}
                                         </span>
                                     </td>
-                                    <td className="py-2 px-4 border capitalize">
+                                    <td className="py-2 px-4 capitalize">
                                         {agent.AgentFirstname} {agent.AgentLastname}
                                         <br />
                                         <span className="text-gray-900 text-[10px]">({agent.ReferenceID})</span>
                                     </td>
-                                    <td className="py-2 px-4 border text-red-700 font-semibold">
+                                    <td className="py-2 px-4 text-red-700 font-semibold">
                                         {agent.TotalOutbound}
                                     </td>
-                                    <td className="py-2 px-4 border text-green-700 font-semibold">
+                                    <td className="py-2 px-4 text-green-700 font-semibold">
                                         {agent.Successful}
                                     </td>
-                                    <td className="py-2 px-4 border">{agent.InboundCall}</td>
-                                    <td className="py-2 px-4 border font-bold">{agent.TotalCalls}</td>
+                                    <td className="py-2 px-4">{agent.InboundCall}</td>
+                                    <td className="py-2 px-4 font-bold">{agent.TotalCalls}</td>
                                 </tr>
                             ))
                         ) : (
@@ -133,6 +146,42 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                     </tbody>
                 </table>
             </div>
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-4 text-xs">
+                    <button
+                        className="bg-gray-200 px-3 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                    >
+                        «
+                    </button>
+                    <button
+                        className="bg-gray-200 px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </button>
+                    <span className="px-4">
+                        Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+                    </span>
+                    <button
+                        className="bg-gray-200 px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage >= totalPages}
+                    >
+                        Next
+                    </button>
+                    <button
+                        className="bg-gray-200 px-3 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                    >
+                        »
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

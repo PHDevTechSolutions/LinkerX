@@ -369,11 +369,18 @@ const ListofUser: React.FC = () => {
                                 />
                             ) : showImportForm ? (
                                 <div className="bg-white p-4 shadow-md rounded-md">
-                                    <h2 className="text-lg font-bold mb-2">Import Accounts</h2>
+                                    <h2 className="text-lg font-bold mb-2">Account Import Section</h2>
+                                    <p className="text-xs text-gray-600 mb-4">
+                                        The <strong>Account Import Section</strong> allows users to upload and integrate bulk account data into the system.
+                                        This feature facilitates the efficient addition of multiple accounts, enabling streamlined data management and reducing manual entry errors.
+                                    </p>
                                     <form onSubmit={handleFileUpload}>
                                         <div className="flex flex-wrap -mx-4">
-                                        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                                                <label className="block text-xs font-bold mb-2" htmlFor="Manager">Manager</label>
+                                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                                                <label className="block text-xs font-bold mb-2" htmlFor="Manager">Regional Manager</label>
+                                                <p className="text-xs text-gray-600 mb-4">
+                                                    Select the <strong>Regional Manager</strong> responsible for overseeing regional operations.
+                                                </p>
                                                 {isEditing ? (
                                                     <input type="text" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
                                                 ) : (
@@ -383,8 +390,11 @@ const ListofUser: React.FC = () => {
                                                     }} className="text-xs capitalize" />
                                                 )}
                                             </div>
-                                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                                                 <label className="block text-xs font-bold mb-2" htmlFor="TSM">Territory Sales Manager</label>
+                                                <p className="text-xs text-gray-600 mb-4">
+                                                    Select the <strong>Territory Sales Manager</strong> overseeing sales performance in a specific territory.
+                                                </p>
                                                 {isEditing ? (
                                                     <input type="text" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
                                                 ) : (
@@ -394,7 +404,7 @@ const ListofUser: React.FC = () => {
                                                     }} className="text-xs capitalize" />
                                                 )}
                                             </div>
-                                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                                                 <label className="block text-xs font-bold mb-2" htmlFor="referenceid">Territory Sales Associate</label>
                                                 {isEditing ? (
                                                     <input type="text" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
@@ -404,18 +414,30 @@ const ListofUser: React.FC = () => {
                                                         setreferenceid(option ? option.value : ""); // Save ReferenceID as Manager
                                                     }} className="text-xs capitalize" />
                                                 )}
+                                                <p className="text-xs text-gray-600 mt-4">
+                                                    Select the <strong>Territory Sales Associate</strong> assisting the Territory Sales Manager.
+                                                </p>
                                             </div>
-                                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                                                <label className="block text-xs font-bold mb-2" htmlFor="status">Status</label>
                                                 <select value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                                     <option value="">Select Status</option>
                                                     <option value="Active">Active</option>
                                                     <option value="Used">Used</option>
                                                     <option value="Inactive">Inactive</option>
                                                 </select>
+                                                <p className="text-xs text-gray-600 mt-4">
+                                                    Select the <strong>Status</strong> of the account to indicate its current state (Active, Used, or Inactive).
+                                                </p>
                                             </div>
-                                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                                                <label className="block text-xs font-bold mb-2" htmlFor="fileUpload">File Upload</label>
                                                 <input type="file" className="w-full px-3 py-2 border rounded text-xs capitalize" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+                                                <p className="text-xs text-gray-600 mt-4">
+                                                    Upload a file by selecting it from your device. The uploaded file can be used for further processing.
+                                                </p>
                                             </div>
+
                                         </div>
                                         <div className="flex gap-2">
                                             <button type="submit" className="bg-blue-900 text-xs text-white px-4 py-2 rounded flex items-center gap-1"><CiSaveUp2 size={20} /> Upload</button>
@@ -440,7 +462,10 @@ const ListofUser: React.FC = () => {
                                     </div>
 
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Company Accounts</h2>
+                                        <h2 className="text-lg font-bold mb-2">Company Accounts Overview</h2>
+                                        <p className="text-xs text-gray-600 mb-4">
+                                            The <strong>Company Accounts Overview</strong> section displays a comprehensive list of all accounts related to various companies. It allows users to filter accounts based on various criteria like client type, date range, and more, ensuring efficient navigation and analysis of company data. The table below showcases the detailed information about each account.
+                                        </p>
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}

@@ -108,41 +108,41 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-    ? posts.filter((post) => {
-        const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+        ? posts.filter((post) => {
+            const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
 
-        const postDate = post.date_created ? new Date(post.date_created) : null;
-        const isWithinDateRange = (
-            (!startDate || (postDate && postDate >= new Date(startDate))) &&
-            (!endDate || (postDate && postDate <= new Date(endDate)))
-        );
+            const postDate = post.date_created ? new Date(post.date_created) : null;
+            const isWithinDateRange = (
+                (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                (!endDate || (postDate && postDate <= new Date(endDate)))
+            );
 
-        const matchesClientType = selectedClientType
-            ? post?.typeclient === selectedClientType
-            : true;
+            const matchesClientType = selectedClientType
+                ? post?.typeclient === selectedClientType
+                : true;
 
-        const referenceID = userDetails.ReferenceID;
+            const referenceID = userDetails.ReferenceID;
 
-        const matchesRole = userDetails.Role === "Super Admin"
-            ? true
-            : userDetails.Role === "Manager"
-            ? post?.manager === referenceID
-            : userDetails.Role === "Territory Sales Manager"
-            ? post?.tsm === referenceID
-            : false;
+            const matchesRole = userDetails.Role === "Super Admin"
+                ? true
+                : userDetails.Role === "Manager"
+                    ? post?.manager === referenceID
+                    : userDetails.Role === "Territory Sales Manager"
+                        ? post?.tsm === referenceID
+                        : false;
 
-        return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
-    }).map((post) => {
-        // Hanapin ang Agent na may parehong ReferenceID sa usersList
-        const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+            return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
+        }).map((post) => {
+            // Hanapin ang Agent na may parehong ReferenceID sa usersList
+            const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
 
-        return {
-            ...post,
-            AgentFirstname: agent ? agent.Firstname : "Unknown",
-            AgentLastname: agent ? agent.Lastname : "Unknown"
-        };
-    }).sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sorting by date_created
-    : [];
+            return {
+                ...post,
+                AgentFirstname: agent ? agent.Firstname : "Unknown",
+                AgentLastname: agent ? agent.Lastname : "Unknown"
+            };
+        }).sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sorting by date_created
+        : [];
 
 
     const indexOfLastPost = currentPage * postsPerPage;
@@ -175,8 +175,16 @@ const ListofUser: React.FC = () => {
                                 />
                             ) : (
                                 <>
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg overflow-x-auto w-full">
                                         <h2 className="text-lg font-bold mb-2">Team Daily Activities</h2>
+                                        <p className="text-xs text-gray-600 mb-4">
+                                            The <strong>Team Daily Activities</strong> section provides a detailed overview
+                                            of daily operations, tracking key metrics related to sales and client interactions.
+                                            It includes information such as the <strong>company name, sales order (SO) details, client type,
+                                                type of call, activity type, call outcome, remarks, attached files, status,
+                                                duration,</strong> and <strong>time consumed</strong>. This report helps monitor team performance,
+                                            ensuring efficient follow-ups and effective client engagement.
+                                        </p>
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}

@@ -143,6 +143,13 @@ const ListofUser: React.FC = () => {
                                 <>
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                         <h2 className="text-lg font-bold mb-2">Territory Sales Associates</h2>
+                                        <p className="text-xs text-gray-600 mb-4">
+                                            <strong>Territory Sales Associates (TSAs)</strong> are responsible for managing client relationships,
+                                            driving sales, and expanding market reach within their designated territories.
+                                            They play a key role in engaging with customers, following up on leads,
+                                            and ensuring excellent service. Their performance is evaluated based on
+                                            client interactions, successful conversions, and overall contribution to sales growth.
+                                        </p>
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}

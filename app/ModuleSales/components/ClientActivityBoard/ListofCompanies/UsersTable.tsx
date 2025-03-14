@@ -147,8 +147,15 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
               </div>
             )}
           </div>
+          <p className="text-xs text-gray-600 mt-2">
+            This section allows you to perform a <strong>Bulk Transfer</strong> of selected records to a <strong>Territory Sales Associate (TSA)</strong>.
+            First, choose the appropriate TSA from the dropdown list, which displays the names of all available TSAs. After selecting the TSA,
+            click the <strong>Transfer</strong> button to assign the records to the selected TSA.
+            This is useful for batch handling of records to specific sales associates efficiently.
+          </p>
         </div>
       )}
+
       <table className="min-w-full bg-white border border-gray-200 text-xs">
         <thead>
           <tr className="bg-gray-100 text-left">

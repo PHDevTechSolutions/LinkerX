@@ -8,7 +8,6 @@ import UserFetcher from "../../../components/User/UserFetcher";
 import AddPostForm from "../../../components/ClientActivityBoard/ListofCompanies/AddUserForm";
 import SearchFilters from "../../../components/ClientActivityBoard/ListofCompanies/SearchFilters";
 import UsersTable from "../../../components/ClientActivityBoard/AccountRecords/UsersTable";
-import Pagination from "../../../components/ClientActivityBoard/ListofCompanies/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -164,11 +163,6 @@ const ListofUser: React.FC = () => {
         })
         : [];
 
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
-    const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
-
     // Handle editing a post
     const handleEdit = (post: any) => {
         setEditUser(post);
@@ -194,7 +188,14 @@ const ListofUser: React.FC = () => {
                             ) : (
                                 <>
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">History of Company Transactions</h2>
+                                        <h2 className="text-lg font-bold mb-2">Historical Company Transaction Overview</h2>
+                                        <p className="text-xs text-gray-600 mb-4">
+                                            The <strong>Historical Company Transaction Overview</strong> section provides a detailed record of past business activities,
+                                            focusing on key metrics such as sales, client interactions, and team performance over time. It includes information such as
+                                            the <strong>company name, sales order (SO) details, client type, call type, activity type, call outcome, remarks,
+                                                attached files, status, duration,</strong> and <strong>time spent</strong>. This report serves as a valuable tool for tracking
+                                            long-term trends, enabling better decision-making and ensuring effective follow-ups and client engagement.
+                                        </p>
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}
@@ -208,12 +209,7 @@ const ListofUser: React.FC = () => {
                                             setEndDate={setEndDate}
                                         />
                                         <UsersTable
-                                            posts={currentPosts}
-                                        />
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
+                                            posts={filteredAccounts}
                                         />
                                     </div>
                                 </>

@@ -8,16 +8,10 @@ import UserFetcher from "../../../components/User/UserFetcher";
 import AddPostForm from "../../../components/ClientActivityBoard/ListofCompanies/AddUserForm";
 import SearchFilters from "../../../components/National/DailyCallRanking/SearchFilters";
 import UsersTable from "../../../components/Agents/DailyCallRanking/UsersTable";
-import Pagination from "../../../components/ClientActivityBoard/ListofCompanies/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import ExcelJS from "exceljs";
-
-
-// Icons
-import { CiExport } from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -26,7 +20,7 @@ const ListofUser: React.FC = () => {
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(12);
+    const [postsPerPage, setPostsPerPage] = useState(10);
     const [selectedClientType, setSelectedClientType] = useState("");
     const [startDate, setStartDate] = useState(""); // Default to null
     const [endDate, setEndDate] = useState(""); // Default to null
@@ -109,45 +103,40 @@ const ListofUser: React.FC = () => {
     const today = new Date().toISOString().split("T")[0]; // Kunin ang YYYY-MM-DD format ng today
 
     const filteredAccounts = Array.isArray(posts)
-    ? posts.filter((post) => {
-        const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+        ? posts.filter((post) => {
+            const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
 
-        const postDate = post.date_created ? new Date(post.date_created).toISOString().split("T")[0] : null;
-        const isWithinDateRange = 
-            postDate && 
-            (!startDate || postDate >= startDate) && 
-            (!endDate || postDate <= endDate);
+            const postDate = post.date_created ? new Date(post.date_created).toISOString().split("T")[0] : null;
+            const isWithinDateRange =
+                postDate &&
+                (!startDate || postDate >= startDate) &&
+                (!endDate || postDate <= endDate);
 
-        const matchesClientType = selectedClientType ? post?.typeclient === selectedClientType : true;
+            const matchesClientType = selectedClientType ? post?.typeclient === selectedClientType : true;
 
-        const referenceID = userDetails.ReferenceID;
+            const referenceID = userDetails.ReferenceID;
 
-        // Role-based filtering logic
-        const matchesRole = userDetails.Role === "Super Admin"
-            ? true
-            : userDetails.Role === "Manager"
-            ? post?.manager === referenceID
-            : userDetails.Role === "Territory Sales Manager"
-            ? post?.tsm === referenceID
-            : false;
+            // Role-based filtering logic
+            const matchesRole = userDetails.Role === "Super Admin"
+                ? true
+                : userDetails.Role === "Manager"
+                    ? post?.manager === referenceID
+                    : userDetails.Role === "Territory Sales Manager"
+                        ? post?.tsm === referenceID
+                        : false;
 
-        return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
-    }).map((post) => {
-        // Hanapin ang Agent na may parehong ReferenceID sa usersList
-        const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+            return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
+        }).map((post) => {
+            // Hanapin ang Agent na may parehong ReferenceID sa usersList
+            const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
 
-        return {
-            ...post,
-            AgentFirstname: agent ? agent.Firstname : "Unknown",
-            AgentLastname: agent ? agent.Lastname : "Unknown",
-        };
-    })
-    : [];
-
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
-    const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
+            return {
+                ...post,
+                AgentFirstname: agent ? agent.Firstname : "Unknown",
+                AgentLastname: agent ? agent.Lastname : "Unknown",
+            };
+        })
+        : [];
 
     return (
         <SessionChecker>
@@ -169,6 +158,12 @@ const ListofUser: React.FC = () => {
                                 <>
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                         <h2 className="text-lg font-bold mb-2">Team Daily Ranking</h2>
+                                        <p className="text-xs text-gray-600 mb-4">
+                                            The **Team Daily Ranking** tracks the performance of our <strong>Territory Sales Associates (TSA)</strong> within our team on a daily basis.
+                                            Rankings are based on the number of <strong>outbound calls, inbound calls,</strong> and <strong>successful call outcomes</strong>.
+                                            This leaderboard helps identify top-performing TSAs within the team, recognizing those who achieve the highest call volumes
+                                            and the most successful client engagements.
+                                        </p>
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}
@@ -180,19 +175,8 @@ const ListofUser: React.FC = () => {
                                             setEndDate={setEndDate}
                                         />
                                         <UsersTable
-                                            posts={currentPosts}
+                                            posts={filteredAccounts}
                                         />
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                        />
-
-                                        <div className="text-xs mt-2">
-                                            Showing {indexOfFirstPost + 1} to{" "}
-                                            {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                            {filteredAccounts.length} entries
-                                        </div>
                                     </div>
                                 </>
                             )}

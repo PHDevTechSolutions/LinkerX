@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 
 interface UsersCardProps {
@@ -12,6 +13,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
         totalInbound: 0,
         totalCalls: 0,
     });
+
+    // Pagination States
+    const [currentPage, setCurrentPage] = useState(1);
+    const postsPerPage = 10; // Number of items per page
 
     useEffect(() => {
         let totalOutbound = 0;
@@ -57,13 +62,22 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
 
         setGroupedUsers(sortedUsers);
         setTotals({ totalOutbound, totalSuccessful, totalInbound, totalCalls });
+
+        // Reset to first page when data changes
+        setCurrentPage(1);
     }, [posts]);
+
+    // Pagination Logic
+    const totalPages = Math.ceil(groupedUsers.length / postsPerPage);
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentUsers = groupedUsers.slice(indexOfFirstPost, indexOfLastPost);
 
     return (
         <div className="overflow-x-auto px-2">
             {/* Cards for Summary */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                {[
+                {[ 
                     { title: "Total Outbound", value: totals.totalOutbound, bg: "bg-blue-900" },
                     { title: "Successful Calls", value: totals.totalSuccessful, bg: "bg-red-700" },
                     { title: "Inbound Calls", value: totals.totalInbound, bg: "bg-green-900" },
@@ -90,8 +104,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {groupedUsers.length > 0 ? (
-                            groupedUsers.map((agent, index) => (
+                        {currentUsers.length > 0 ? (
+                            currentUsers.map((agent, index) => (
                                 <tr key={index} className="border-t text-center text-xs">
                                     <td className="py-2 px-4 font-bold">
                                         <span
@@ -105,7 +119,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                                                     : "bg-red-300"
                                             }`}
                                         >
-                                            Rank {index + 1}
+                                            Rank {indexOfFirstPost + index + 1}
                                         </span>
                                     </td>
                                     <td className="py-2 px-4 capitalize">
@@ -133,6 +147,43 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                     </tbody>
                 </table>
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-4 text-xs">
+                    <button
+                        className="bg-gray-200 px-3 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                    >
+                        «
+                    </button>
+                    <button
+                        className="bg-gray-200 px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </button>
+                    <span className="px-4">
+                        Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+                    </span>
+                    <button
+                        className="bg-gray-200 px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage >= totalPages}
+                    >
+                        Next
+                    </button>
+                    <button
+                        className="bg-gray-200 px-3 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                    >
+                        »
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

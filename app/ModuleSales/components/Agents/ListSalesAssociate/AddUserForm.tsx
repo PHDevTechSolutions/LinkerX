@@ -61,6 +61,13 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
     <>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
         <h2 className="text-xs font-bold mb-4">{editUser ? "Edit User Information" : "Add New User"}</h2>
+        <div className="flex justify-end gap-2 mb-4">
+          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
+            {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
+            {editUser ? "Update" : "Submit"}
+          </button>
+          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} /> Cancel</button>
+        </div>
         <FormFields
           ReferenceID={ReferenceID} setReferenceID={setReferenceID}
           Firstname={Firstname} setFirstname={setFirstname}
@@ -71,13 +78,6 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
           TargetQuota={TargetQuota} setTargetQuota={setTargetQuota}
           editPost={editUser}
         />
-        <div className="flex justify-between">
-          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
-            {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
-            {editUser ? "Update" : "Submit"}
-          </button>
-          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} /> Cancel</button>
-        </div>
       </form>
       <ToastContainer className="text-xs" autoClose={1000} />
     </>

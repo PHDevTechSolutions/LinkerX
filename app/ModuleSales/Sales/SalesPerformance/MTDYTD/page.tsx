@@ -8,7 +8,6 @@ import UserFetcher from "../../../components/User/UserFetcher";
 import AddPostForm from "../../../components/ClientActivityBoard/ListofCompanies/AddUserForm";
 import SearchFilters from "../../../components/SalesPerformance/MTDYTD/SearchFilters";
 import UsersTable from "../../../components/SalesPerformance/MTDYTD/UsersTable";
-import Pagination from "../../../components/ClientActivityBoard/ListofCompanies/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -19,8 +18,6 @@ const ListofUser: React.FC = () => {
     const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(12);
     const [selectedClientType, setSelectedClientType] = useState("");
     const [startDate, setStartDate] = useState(""); // Default to null
     const [endDate, setEndDate] = useState(""); // Default to null
@@ -102,52 +99,49 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-        ? posts.filter((post) => {
-            const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
-            const agentFirstname = agent ? agent.Firstname.toLowerCase() : "";
-            const agentLastname = agent ? agent.Lastname.toLowerCase() : "";
-            const searchLower = searchTerm.toLowerCase();
+  ? posts
+      .filter((post) => {
+        const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+        const agentFirstname = agent ? agent.Firstname.toLowerCase() : "";
+        const agentLastname = agent ? agent.Lastname.toLowerCase() : "";
+        const searchLower = searchTerm.toLowerCase();
 
-            const matchesSearchTerm = agentFirstname.includes(searchLower) || agentLastname.includes(searchLower);
+        const matchesSearchTerm =
+          agentFirstname.includes(searchLower) || agentLastname.includes(searchLower);
 
-            const postDate = post.date_created ? new Date(post.date_created) : null;
-            const isWithinDateRange = (
-                (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                (!endDate || (postDate && postDate <= new Date(endDate)))
-            );
+        const postDate = post.date_created ? new Date(post.date_created) : null;
+        const isWithinDateRange =
+          (!startDate || (postDate && postDate >= new Date(startDate))) &&
+          (!endDate || (postDate && postDate <= new Date(endDate)));
 
-            const matchesClientType = selectedClientType
-                ? post?.typeclient === selectedClientType
-                : true;
+        const matchesClientType = selectedClientType
+          ? post?.typeclient === selectedClientType
+          : true;
 
-            const referenceID = userDetails.ReferenceID;
+        const referenceID = userDetails.ReferenceID;
 
-            const matchesRole = userDetails.Role === "Super Admin"
-                ? true
-                : userDetails.Role === "Manager"
-                    ? post?.manager === referenceID
-                    : userDetails.Role === "Territory Sales Manager"
-                        ? post?.tsm === referenceID
-                        : false;
+        const matchesRole =
+          userDetails.Role === "Super Admin"
+            ? true
+            : userDetails.Role === "Manager"
+            ? post?.manager === referenceID
+            : userDetails.Role === "Territory Sales Manager"
+            ? post?.tsm === referenceID
+            : false;
 
-            return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
-        }).map((post) => {
-            // Hanapin ang Agent na may parehong ReferenceID sa usersList
-            const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+        return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
+      })
+      .map((post) => {
+        const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
 
-            return {
-                ...post,
-                AgentFirstname: agent ? agent.Firstname : "Unknown",
-                AgentLastname: agent ? agent.Lastname : "Unknown"
-            };
-        }).sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sorting by date_created
-        : [];
-
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
-    const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
-
+        return {
+          ...post,
+          AgentFirstname: agent ? agent.Firstname : "Unknown",
+          AgentLastname: agent ? agent.Lastname : "Unknown",
+        };
+      })
+      .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sorting by date_created
+  : [];
 
     // Handle editing a post
     const handleEdit = (post: any) => {
@@ -174,36 +168,25 @@ const ListofUser: React.FC = () => {
                             ) : (
                                 <>
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Sales Performance</h2>
+                                        <h2 className="text-lg font-bold mb-2">Agent Sales Performance Overview</h2>
+                                        <p className="text-xs text-gray-600 mb-2">
+                                            This section provides an overview of each agent’s sales performance, tracking both Month-to-Date (MTD) and Year-to-Date (YTD) sales.
+                                            It assesses whether they are meeting sales targets and evaluates their performance based on achievements and overall sales ratings.
+                                        </p>
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}
-                                            postsPerPage={postsPerPage}
-                                            setPostsPerPage={setPostsPerPage}
-                                            selectedClientType={selectedClientType}
-                                            setSelectedClientType={setSelectedClientType}
                                             startDate={startDate}
                                             setStartDate={setStartDate}
                                             endDate={endDate}
                                             setEndDate={setEndDate}
                                         />
                                         <UsersTable
-                                            posts={currentPosts}
+                                            posts={filteredAccounts}
                                             handleEdit={handleEdit}
                                             ReferenceID={userDetails.ReferenceID}
                                             fetchAccount={fetchAccount}
                                         />
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                        />
-
-                                        <div className="text-xs mt-2">
-                                            Showing {indexOfFirstPost + 1} to{" "}
-                                            {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                            {filteredAccounts.length} entries
-                                        </div>
                                     </div>
                                 </>
                             )}
