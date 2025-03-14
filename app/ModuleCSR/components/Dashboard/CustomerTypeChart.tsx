@@ -44,7 +44,7 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ startDate, endDat
     datasets: [
       {
         data: genderData ? genderData.map((item: any) => item.count) : [],
-        backgroundColor: ["#3A7D44", "#FBA518", "#F5F5F5", "F9CB43", "#3674B5"], // Customer types color scheme
+        backgroundColor: ["#1B360D", "#744700", "#A64D79"], // Customer types color scheme
         borderColor: "#fff", // Border color for better contrast
         borderWidth: 2,
       },
@@ -72,6 +72,16 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ startDate, endDat
           },
         },
       },
+      datalabels: {
+        color: '#fff', // White color for the text
+        font: {
+          weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
+          size: 14, // Font size for data labels
+        },
+        formatter: function (value: any) {
+          return value; // Display the value directly inside the chart
+        },
+      },
     },
     layout: {
       padding: 30, // Added padding for better view
@@ -87,6 +97,11 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ startDate, endDat
   return (
     <div className="flex justify-center items-center w-full h-full">
       <div className="w-full h-full">
+      <p className="text-xs">
+          <strong>Doughnut chart</strong> showing the count of <strong>customer type</strong> in the dataset. It updates
+          dynamically based on <strong>start</strong> and <strong>end dates</strong>. "Loading data..." is shown during fetch,
+          and "No data available" appears if there's no data.
+        </p>
         {genderData ? (
           <Doughnut data={doughnutChartData} options={doughnutChartOptions} />
         ) : (

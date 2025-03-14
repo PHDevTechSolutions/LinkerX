@@ -81,10 +81,17 @@ const ChannelBarChart: React.FC<ChannelBarChartProps> = ({ startDate, endDate, R
       title: {
         display: true,
         text: "Traffic Count by Channel",
-        font: { size: 16 },
+        font: { size: 15 },
       },
       datalabels: {
-        display: true, // Enable data labels
+        color: '#fff', // White color for the text
+        font: {
+          weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
+          size: 14, // Font size for data labels
+        },
+        formatter: function (value: any) {
+          return value; // Display the value directly inside the chart
+        },
       },
     },
     scales: {
