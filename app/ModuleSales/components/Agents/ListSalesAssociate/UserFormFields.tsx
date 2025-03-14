@@ -110,15 +110,14 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   const currentMonth = new Date().toISOString().slice(0, 7);
 
   const chartData = {
-    labels: ["Outbound Call", "Inbound Call", "Other Activities"],
+    labels: ["Outbound Call", "Inbound Call"],
     datasets: [
       {
         data: [
           callData.dailyOutbound || 0, // Total Outbound Calls
           callData.dailyInbound || 0, // Total Inbound Calls
-          (callData.dailySuccessful + callData.dailyUnsuccessful) || 0, // Other Activities
         ],
-        backgroundColor: ["#990000", "#000068", "#1C3B0E"], // Colors for the segments
+        backgroundColor: ["#990000", "#000068"], // Colors for the segments
         hoverOffset: 4,
       },
     ],
