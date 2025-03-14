@@ -25,7 +25,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
         "RP-CSR-451122": "Paje, Rikki",
         "SA-CSR-517304": "Almoite, Sharmaine",
         "AA-CSR-785895": "Arendain, Armando",
-        "GL-CSR-586725": "Myra Quinto",
+        "GL-CSR-586725": "Lumabao, Grace",
         "MD-CSR-152985": "Dungso, Mary Grace",
         "LR-CSR-849432": "Leroux Y Xchire",
         // Add other mappings as needed
@@ -107,10 +107,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
         if (isNaN(amount)) {
             return "₱0.00";  // Handle invalid or non-numeric amount
         }
-
-        // Check if Amount is in cents (or another smaller unit), and divide by 100
-        const amountInPesos = amount / 100;
-        return `₱${Number(amountInPesos).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
+        return `₱${Number(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
     };
 
     // Format the totalAmount as Peso sign with thousands separator and 2 decimal places
@@ -118,10 +115,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
         if (isNaN(amount)) {
             return "₱0.00";  // Handle invalid or non-numeric amount
         }
-
-        // Divide by 100 if the amount is in cents (or another smaller unit)
-        const amountInPesos = amount / 100;
-        return `₱${Number(amountInPesos).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
+        return `₱${Number(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
     };
 
     // Format QtySold by removing leading zeros
