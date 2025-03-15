@@ -28,7 +28,7 @@ const ListofUser: React.FC = () => {
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
     const [userDetails, setUserDetails] = useState({
-        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
+        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "", Manager: "", TSM: "",
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -53,6 +53,8 @@ const ListofUser: React.FC = () => {
                         Role: data.Role || "",
                         Department: data.Department || "",
                         Company: data.Company || "",
+                        Manager: data.Manager || "",
+                        TSM: data.TSM || "",
                     });
                 } catch (err: unknown) {
                     console.error("Error fetching user data:", err);
@@ -86,21 +88,21 @@ const ListofUser: React.FC = () => {
         // Check if the user's name matches the search term
         const matchesSearchTerm = [post?.Firstname, post?.Lastname]
             .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+
         // Get the reference ID from userDetails
         const referenceID = userDetails.ReferenceID; // TSM's ReferenceID from MongoDB
-    
+
         // Check role-based filtering
         const matchesRole = userDetails.Role === "Super Admin"
-  ? post?.Role === "Territory Sales Manager" && post?.Department === "Sales" // Super Admin sees TSM in Sales department
-  : userDetails.Role === "Admin"
-  ? post?.Role === "Territory Sales Manager" && post?.Department === "Sales" && post?.Role !== "Super Admin" // Admin sees TSM in Sales department but not Super Admin
-  : false; // Default false if no match
+            ? post?.Role === "Territory Sales Manager" && post?.Department === "Sales" // Super Admin sees TSM in Sales department
+            : userDetails.Role === "Admin"
+                ? post?.Role === "Territory Sales Manager" && post?.Department === "Sales" && post?.Role !== "Super Admin" // Admin sees TSM in Sales department but not Super Admin
+                : false; // Default false if no match
 
-    
+
         // Return the filtered result
         return matchesSearchTerm && matchesRole;
-    });    
+    });
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -149,7 +151,7 @@ const ListofUser: React.FC = () => {
             setPostToDelete(null);
         }
     };
-    
+
     return (
         <SessionChecker>
             <ParentLayout>
@@ -190,6 +192,9 @@ const ListofUser: React.FC = () => {
                                             handleDelete={confirmDelete}
                                             Role={user ? user.Role : ""}
                                             Department={user ? user.Department : ""}
+                                            TSM={user ? user.TSM : ""}
+                                            Manager={user ? user.Manager : ""}
+                                            fetchUsers={fetchUsers}
                                         />
                                         <Pagination
                                             currentPage={currentPage}
