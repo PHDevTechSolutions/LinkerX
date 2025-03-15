@@ -12,6 +12,7 @@ import Pagination from "../../../components/Database/Pagination";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import ExcelJS from 'exceljs';
+import { CiExport } from "react-icons/ci";
 
 // Main Page Component
 const OutboundCallPage: React.FC = () => {
@@ -125,7 +126,10 @@ const OutboundCallPage: React.FC = () => {
         <UserFetcher>
           {(userName) => (
             <div className="container mx-auto p-4">
-              <h2 className="text-lg font-bold mb-2">Database</h2>
+              <h2 className="text-lg font-bold mb-2">Account Records Management</h2>
+              <p className="text-xs mb-2">
+                This section displays the Account Management Database, which serves as a central hub for storing and managing account-related records. It provides an organized way to track and update account details efficiently.
+              </p>
 
               {/* Display total entries */}
               <div className="mb-4 text-xs text-gray-700">
@@ -147,12 +151,7 @@ const OutboundCallPage: React.FC = () => {
                   endDate={endDate}
                   setEndDate={setEndDate}
                 />
-                <button
-                  onClick={exportToExcel}
-                  className="bg-green-800 text-white px-4 py-2 rounded text-xs"
-                >
-                  Export to Excel
-                </button>
+                <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"><CiExport size={20} /> Export to Excel</button>
               </div>
               <OutboundTable posts={currentPosts} />
               <Pagination

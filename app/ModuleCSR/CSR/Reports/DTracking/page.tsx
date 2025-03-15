@@ -12,6 +12,7 @@ import DTrackingTable from "../../../components/Reports/DTracking/DTrackingTable
 import Pagination from "../../../components/Reports/DTracking/Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { CiCirclePlus, CiExport  } from "react-icons/ci";
 
 const ReceivedPO: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -44,7 +45,7 @@ const ReceivedPO: React.FC = () => {
         const isDateInRange =
             (!startDate || new Date(post.createdAt) >= new Date(startDate)) &&
             (!endDate || new Date(post.createdAt) <= new Date(endDate));
-        
+
         return isSearchMatch && isDateInRange;
     });
 
@@ -61,51 +62,51 @@ const ReceivedPO: React.FC = () => {
     };
 
     const exportToExcel = async () => {
-            const workbook = new ExcelJS.Workbook();
-            const worksheet = workbook.addWorksheet("Receive PO");
-        
-            // Add headers to the worksheet
-            worksheet.columns = [
-                { header: "User Name", key: "userName" },
-                { header: "Company Name", key: "companyName" },
-                { header: "Customer Name", key: "customerName" },
-                { header: "Contact Number", key: "contactNumber" },
-                { header: "Ticket Type", key: "ticketType" },
-                { header: "Ticket Concern", key: "ticketConcern" },
-                { header: "Department", key: "department" },
-                { header: "Pending Days", key: "pendingDays" },
-                { header: "Endorsed Date", key: "endorsedDate" },
-                { header: "Closed Date", key: "closedDate" },
-                { header: "Tracking Remarks", key: "trackingRemarks" },
-                { header: "Tracking Status", key: "trackingStatus" },
-            ];
-        
-            // Filter data to include only records with "PO Received" remarks
-            const filteredData = filteredAccounts.filter(post => post.Department);
-        
-            // Add data to the worksheet
-            filteredData.forEach((post) => {
-                worksheet.addRow({
-                    userName: post.userName,
-                    companyName: post.CompanyName,
-                    customerName: post.CustomerName,
-                    contactNumber: post.ContactNumber,
-                    ticketType: post.TicketType,
-                    ticketConcern: post.TicketConcern,
-                    department: post.Department,
-                    pendingDays: post.PendingDays,
-                    endorsedDate: post.EndorsedDate,
-                    closedDate: post.ClosedDate,
-                    trackingRemarks: post.TrackingRemarks,
-                    trackingStatus: post.TrackingStatus
-                });
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("Receive PO");
+
+        // Add headers to the worksheet
+        worksheet.columns = [
+            { header: "User Name", key: "userName" },
+            { header: "Company Name", key: "companyName" },
+            { header: "Customer Name", key: "customerName" },
+            { header: "Contact Number", key: "contactNumber" },
+            { header: "Ticket Type", key: "ticketType" },
+            { header: "Ticket Concern", key: "ticketConcern" },
+            { header: "Department", key: "department" },
+            { header: "Pending Days", key: "pendingDays" },
+            { header: "Endorsed Date", key: "endorsedDate" },
+            { header: "Closed Date", key: "closedDate" },
+            { header: "Tracking Remarks", key: "trackingRemarks" },
+            { header: "Tracking Status", key: "trackingStatus" },
+        ];
+
+        // Filter data to include only records with "PO Received" remarks
+        const filteredData = filteredAccounts.filter(post => post.Department);
+
+        // Add data to the worksheet
+        filteredData.forEach((post) => {
+            worksheet.addRow({
+                userName: post.userName,
+                companyName: post.CompanyName,
+                customerName: post.CustomerName,
+                contactNumber: post.ContactNumber,
+                ticketType: post.TicketType,
+                ticketConcern: post.TicketConcern,
+                department: post.Department,
+                pendingDays: post.PendingDays,
+                endorsedDate: post.EndorsedDate,
+                closedDate: post.ClosedDate,
+                trackingRemarks: post.TrackingRemarks,
+                trackingStatus: post.TrackingStatus
             });
-        
-            // Create the Excel file and trigger the download
-            const buffer = await workbook.xlsx.writeBuffer();
-            const blob = new Blob([buffer], { type: "application/octet-stream" });
-            saveAs(blob, "dtracking.xlsx");
-        };
+        });
+
+        // Create the Excel file and trigger the download
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: "application/octet-stream" });
+        saveAs(blob, "dtracking.xlsx");
+    };
 
     return (
         <SessionChecker>
@@ -126,9 +127,13 @@ const ReceivedPO: React.FC = () => {
                                     />
                                 ) : (
                                     <> <div className="flex justify-between items-center mb-4">
-                                        <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded" onClick={() => setShowForm(true)}>Add Record</button>
+
+                                        <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded flex items-center gap-1" onClick={() => setShowForm(true)}>
+                                            <CiCirclePlus size={20} />Add Record
+                                        </button>
                                     </div>
                                         <h2 className="text-lg font-bold mb-2">D-Tracking</h2>
+                                        <p className="text-xs mb-2">This section provides tracking details for deliveries or distribution (D-Tracking). It helps monitor the status and progress of shipments, ensuring timely and efficient tracking of dispatched items.</p>
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                             <SearchFilters
                                                 searchTerm={searchTerm}
@@ -140,7 +145,7 @@ const ReceivedPO: React.FC = () => {
                                                 endDate={endDate}
                                                 setEndDate={setEndDate}
                                             />
-                                            <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-blue-500 text-white text-xs rounded">Export to Excel</button>
+                                            <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"><CiExport size={20} /> Export to Excel</button>
                                             <DTrackingTable
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}

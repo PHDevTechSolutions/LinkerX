@@ -12,6 +12,7 @@ import Pagination from "../../../components/Outbound/Pagination";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import ExcelJS from 'exceljs';
+import { CiExport } from "react-icons/ci";
 
 // Main Page Component
 const OutboundCallPage: React.FC = () => {
@@ -59,7 +60,7 @@ const OutboundCallPage: React.FC = () => {
     const agentFullname = post.agent_fullname ? post.agent_fullname.toLowerCase() : '';
 
     const matchesSearch = accountName.includes(searchTerm.toLowerCase()) ||
-                          agentFullname.includes(searchTerm.toLowerCase());
+      agentFullname.includes(searchTerm.toLowerCase());
 
     const matchesClientType = selectedClientType ? post.type_of_client === selectedClientType : true;
 
@@ -67,11 +68,11 @@ const OutboundCallPage: React.FC = () => {
     const postStartDate = post.start_date ? new Date(post.start_date) : null;
     const postEndDate = post.end_date ? new Date(post.end_date) : null;
     const isWithinDateRange = (!startDate || (postStartDate && postStartDate >= new Date(startDate))) &&
-                              (!endDate || (postEndDate && postEndDate <= new Date(endDate)));
+      (!endDate || (postEndDate && postEndDate <= new Date(endDate)));
 
     return matchesSearch && matchesClientType && isWithinDateRange;
   });
-  
+
 
   // Pagination logic
   const indexOfLastPost = currentPage * postsPerPage;
@@ -82,7 +83,7 @@ const OutboundCallPage: React.FC = () => {
   const exportToExcel = () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Outbound Calls");
-  
+
     // Set column headers
     worksheet.columns = [
       { header: 'Company Name', key: 'account_name', width: 20 },
@@ -98,7 +99,7 @@ const OutboundCallPage: React.FC = () => {
       { header: 'Call Duration', key: 'start_date_end_date', width: 30 },
       { header: 'Time Consumed', key: 'time_consumed', width: 20 }
     ];
-  
+
     // Loop through all filtered posts to ensure the full set of data is exported
     filteredPosts.forEach((post) => {
       worksheet.addRow({
@@ -116,7 +117,7 @@ const OutboundCallPage: React.FC = () => {
         time_consumed: post.time_consumed
       });
     });
-  
+
     // Save to file
     workbook.xlsx.writeBuffer().then((buffer) => {
       const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
@@ -134,6 +135,9 @@ const OutboundCallPage: React.FC = () => {
           {(userName) => (
             <div className="container mx-auto p-4">
               <h2 className="text-lg font-bold mb-2">Outbound Calls</h2>
+              <p className="text-xs mb-2">
+                This section displays details about outbound calls made to clients. It includes a search and filter functionality to refine call records based on client type, date range, and other criteria. The total number of entries is shown to provide an overview of recorded outbound calls.
+              </p>
 
               {/* Display total entries */}
               <div className="mb-4 text-xs text-gray-700">
@@ -153,12 +157,7 @@ const OutboundCallPage: React.FC = () => {
                   endDate={endDate}
                   setEndDate={setEndDate}
                 />
-                <button
-                onClick={exportToExcel}
-                className="bg-green-800 text-white px-4 py-2 rounded text-xs"
-          >
-            Export to Excel
-          </button>
+                <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"><CiExport size={20} /> Export to Excel</button>
               </div>
               <OutboundTable posts={currentPosts} />
               <Pagination

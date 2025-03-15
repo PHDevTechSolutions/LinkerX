@@ -12,6 +12,7 @@ import SkuTable from "../../../components/Reports/SKUListing/SkuTable";
 import Pagination from "../../../components/Reports/SKUListing/Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { CiExport  } from "react-icons/ci";
 
 const SKUListing: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -47,7 +48,7 @@ const SKUListing: React.FC = () => {
         const isDateInRange =
             (!startDate || new Date(post.createdAt) >= new Date(startDate)) &&
             (!endDate || new Date(post.createdAt) <= new Date(endDate));
-        
+
         return isSearchMatch && isDateInRange;
     });
 
@@ -100,7 +101,7 @@ const SKUListing: React.FC = () => {
     const exportToExcel = async () => {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("SKU Listings");
-    
+
         // Add headers to the worksheet
         worksheet.columns = [
             { header: "User Name", key: "userName" },
@@ -115,7 +116,7 @@ const SKUListing: React.FC = () => {
 
         // Filter data to include only records with "PO Received" remarks
         const filteredData = filteredAccounts.filter(post => post.Remarks === "Item Not Carried" || post.Remarks === "No Stocks / Insufficient Stocks" || post.Remarks === "Non Standard Item");
-    
+
         // Add data to the worksheet
         filteredData.forEach((post) => {
             worksheet.addRow({
@@ -129,13 +130,13 @@ const SKUListing: React.FC = () => {
                 salesAgent: post.SalesAgent
             });
         });
-    
+
         // Create the Excel file and trigger the download
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: "application/octet-stream" });
         saveAs(blob, "sku_listing.xlsx");
     };
-    
+
     return (
         <SessionChecker>
             <ParentLayout>
@@ -156,6 +157,7 @@ const SKUListing: React.FC = () => {
                                 ) : (
                                     <>
                                         <h2 className="text-lg font-bold mb-2">SKU Listing's</h2>
+                                        <p className="text-xs mb-2">This section displays a list of SKUs (Stock Keeping Units) and includes filtering options to refine the data. Users can search by keyword, adjust the number of displayed entries, and filter results within a specific date range. Additionally, an "Export to Excel" button allows users to download the SKU data for further analysis.</p>
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                             <SearchFilters
                                                 searchTerm={searchTerm}
@@ -167,7 +169,7 @@ const SKUListing: React.FC = () => {
                                                 endDate={endDate}
                                                 setEndDate={setEndDate}
                                             />
-                                            <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-blue-500 text-white text-xs rounded">Export to Excel</button>
+                                            <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"><CiExport size={20} /> Export to Excel</button>
                                             <SkuTable
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}

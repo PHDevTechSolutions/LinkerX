@@ -82,11 +82,14 @@ const ProfilePage: React.FC = () => {
         <SessionChecker>
             <ParentLayout>
 
-            <div className="container mx-auto p-4">
-                    <h1 className="text-lg font-bold mb-4">CSR FAQ's</h1>
+                <div className="container mx-auto p-4">
+                    <h1 className="text-lg font-bold mb-4">CSR Frequently Asked Questions</h1>
+                    <p className="text-xs mb-2">
+                        This section displays the CSR FAQs (Customer Service Representative Frequently Asked Questions). It provides answers to common inquiries related to CSR processes, ensuring quick access to essential information. If an error occurs, a message will be shown in red. The CSRFaqs component is responsible for rendering the list of frequently asked questions.
+                    </p>
                     {error && <div className="text-red-500 mb-4">{error}</div>}
                     {/* Use ProfileForm component here */}
-                    <CSRFaqs/>
+                    <CSRFaqs />
                 </div>
                 <ToastContainer />
             </ParentLayout>

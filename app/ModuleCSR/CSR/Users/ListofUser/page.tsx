@@ -9,6 +9,7 @@ import AddPostForm from "../../../components/Users/AddUserForm";
 import SearchFilters from "../../../components/Users/SearchFilters";
 import UsersTable from "../../../components/Users/UsersTable";
 import Pagination from "../../../components/Users/Pagination";
+import { CiCirclePlus } from "react-icons/ci";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -125,9 +126,9 @@ const ListofUser: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
-                                            <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded" onClick={() => setShowForm(true)}>
-                                                Add User
-                                            </button>
+                                            <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded flex items-center gap-1" onClick={() => setShowForm(true)}>
+                                                                                            <CiCirclePlus size={20} />Add Ticket
+                                                                                        </button>
                                         </div>
 
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">

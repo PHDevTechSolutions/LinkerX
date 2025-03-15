@@ -12,6 +12,7 @@ import ReceivedPOTable from "../../../components/Reports/ReceivedPO/ReceivedPOTa
 import Pagination from "../../../components/Reports/ReceivedPO/Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { CiExport  } from "react-icons/ci";
 
 const ReceivedPO: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -166,6 +167,7 @@ const ReceivedPO: React.FC = () => {
                                 ) : (
                                     <>
                                         <h2 className="text-lg font-bold mb-2">Received PO Monitoring</h2>
+                                        <p className="text-xs mb-2">This section tracks and monitors received purchase orders (POs). It helps users review and manage incoming orders, ensuring accurate record-keeping and efficient processing.</p>
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                             <SearchFilters
                                                 searchTerm={searchTerm}
@@ -177,7 +179,7 @@ const ReceivedPO: React.FC = () => {
                                                 endDate={endDate}
                                                 setEndDate={setEndDate}
                                             />
-                                            <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-blue-500 text-white text-xs rounded">Export to Excel</button>
+                                            <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"><CiExport size={20} /> Export to Excel</button>
                                             <ReceivedPOTable
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}

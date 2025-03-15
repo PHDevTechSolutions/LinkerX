@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import FormFields from "./UserFormFields";
+import { CiSaveUp1, CiCircleRemove, CiEdit } from "react-icons/ci";
 
 interface AddPostFormProps {
   userDetails: { id: string; };
@@ -19,7 +20,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
   const [userName, setUserName] = useState(editUser ? editUser.userName : "");
   const [Password, setPassword] = useState(editUser ? editUser.Password : "");
   const [Role, setRole] = useState(editUser ? editUser.Role : "");
-  const [Department, setDepartment] = useState(editUser ? editUser.Department: "");
+  const [Department, setDepartment] = useState(editUser ? editUser.Department : "");
 
   // Ensure the correct ID is set depending on edit or create mode
   const [UserId, setUserId] = useState(editUser ? editUser._id : userDetails.id);
@@ -59,7 +60,10 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
   return (
     <>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
-        <h2 className="text-xs font-bold mb-4">{editUser ? "Edit User Information" : "Add New User"}</h2>
+        <h2 className="text-xs font-bold mb-4">{editUser ? "Edit User Profile" : "Add User Profile"}</h2>
+        <p className="text-xs mb-2">
+          This section is responsible for managing user data, allowing the creation of new users or updating existing user details. It includes form fields for entering user-related information such as name, email, role, department, and login credentials. The heading dynamically changes based on whether a user is being edited or a new one is being added.
+        </p>
         <FormFields
           UserId={UserId} setUserId={setUserId}
           ReferenceID={ReferenceID} setReferenceID={setReferenceID}
@@ -73,8 +77,11 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
           editPost={editUser}
         />
         <div className="flex justify-between">
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded text-xs">{editUser ? "Update" : "Submit"}</button>
-          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs" onClick={onCancel}>Cancel</button>
+          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
+            {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
+            {editUser ? "Update" : "Submit"}
+          </button>
+          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} />Cancel</button>
         </div>
       </form>
       <ToastContainer className="text-xs" autoClose={1000} />
