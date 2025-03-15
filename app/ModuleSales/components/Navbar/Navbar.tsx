@@ -54,36 +54,36 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  
-const handleSearch = (e: React.FormEvent) => {
-  e.preventDefault();
 
-  setIsSearching(true); // Start loading state
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
 
-  setTimeout(() => {
-    if (!sidebarLinks || sidebarLinks.length === 0) {
-      alert("No menu items available.");
-      setIsSearching(false);
-      return;
-    }
+    setIsSearching(true); // Start loading state
 
-    // Flatten subItems into a single array
-    const allLinks = sidebarLinks.flatMap(item => item.subItems || []);
+    setTimeout(() => {
+      if (!sidebarLinks || sidebarLinks.length === 0) {
+        alert("No menu items available.");
+        setIsSearching(false);
+        return;
+      }
 
-    // Search within subItems
-    const matchedLink = allLinks.find(link =>
-      link.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+      // Flatten subItems into a single array
+      const allLinks = sidebarLinks.flatMap(item => item.subItems || []);
 
-    if (matchedLink) {
-      router.push(matchedLink.href);
-    } else {
-      alert("No matching page found.");
-    }
+      // Search within subItems
+      const matchedLink = allLinks.find(link =>
+        link.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
 
-    setIsSearching(false); // Stop loading state after search
-  }, 1000); // Simulated delay for UX
-};
+      if (matchedLink) {
+        router.push(matchedLink.href);
+      } else {
+        alert("No matching page found.");
+      }
+
+      setIsSearching(false); // Stop loading state after search
+    }, 1000); // Simulated delay for UX
+  };
 
 
   // Ensure dark mode applies correctly when `isDarkMode` changes
@@ -289,15 +289,15 @@ const handleSearch = (e: React.FormEvent) => {
         </span>
 
         {/* Search Bar */}
-      <form onSubmit={handleSearch} className="relative">
-        <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-        <input type="text" placeholder="Search directories.." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 pr-3 py-1 text-sm border rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 capitalize"/>
-        {isSearching && (
-    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">
-      Loading...
-    </span>
-  )}
-      </form>
+        <form onSubmit={handleSearch} className="relative">
+          <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+          <input type="text" placeholder="Search directories.." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 pr-3 py-1 text-xs text-gray-900 border rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 capitalize" />
+          {isSearching && (
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">
+              Loading...
+            </span>
+          )}
+        </form>
       </div>
 
       <div className="relative flex items-center text-center text-xs gap-2" ref={dropdownRef}>
