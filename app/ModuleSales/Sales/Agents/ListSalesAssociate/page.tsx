@@ -20,7 +20,7 @@ const ListofUser: React.FC = () => {
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(10);
+    const [postsPerPage, setPostsPerPage] = useState(12);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
