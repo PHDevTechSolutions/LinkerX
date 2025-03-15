@@ -36,6 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [TargetQuota, setUserTargetQuota] = useState("");
+  const [Role, setUserRole] = useState("");
   const [userReferenceId, setUserReferenceId] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -122,6 +123,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           setUserEmail(data.Email);
           setUserReferenceId(data.ReferenceID || "");
           setUserTargetQuota(data.TargetQuota || "");
+          setUserRole(data.Role || "");
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -478,7 +480,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         )}
 
         {/* Modal when TargetQuota is null, zero, or an empty value */}
-        {(!TargetQuota && isModalVisible) && (
+        {(Role === "Territory Sales Associate" && !TargetQuota && isModalVisible) && (
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-[70%] max-w-3xl max-h-[80vh]">
               <p className="text-gray-900 text-xs font-semibold mb-2">
@@ -504,7 +506,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
             </div>
           </div>
         )}
-
 
       </div>
     </div>
