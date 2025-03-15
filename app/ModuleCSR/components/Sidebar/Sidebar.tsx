@@ -131,7 +131,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
   });
 
   return (
-    <div className={`fixed inset-y-0 left-0 z-50 h-screen bg-green-900 text-white transition-all duration-300 flex flex-col ${collapsed ? "w-16" : "w-64"} ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
+    <div className={`fixed inset-y-0 left-0 z-50 h-screen bg-[#172E0B] text-white transition-all duration-300 flex flex-col ${collapsed ? "w-16" : "w-64"} ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
       {/* Logo Section */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center">
