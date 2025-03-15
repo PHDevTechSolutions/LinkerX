@@ -13,13 +13,13 @@ import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
 
-const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, onClose }) => {
+const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: boolean }> = ({ isOpen, onClose, isDarkMode }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
-  const [userDetails, setUserDetails] = useState({Firstname: "", Lastname: "", Location: "", Role: "", Company: "",});
+  const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", });
   const router = useRouter();
-  
+
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -175,10 +175,10 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
       ],
     },
   ];
-  
+
 
   // Filter menu items based on the user's role
-  const filteredMenuItems = userDetails.Role === "Admin" || userDetails.Role === "Super Admin" ? menuItems: menuItems.filter((item) => {
+  const filteredMenuItems = userDetails.Role === "Admin" || userDetails.Role === "Super Admin" ? menuItems : menuItems.filter((item) => {
     if (userDetails.Role === "Manager") {
       return [
         "Sales Performance",
@@ -216,22 +216,23 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
     <>
       {/* Overlay Background (Closes Sidebar on Click) */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40" 
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={onClose}
         ></div>
       )}
-  
+
       {/* Sidebar Container */}
-      <div 
-        className={`fixed inset-y-0 left-0 z-50 h-screen bg-white text-black shadow-lg transition-all duration-300 flex flex-col 
-        ${collapsed ? "w-16" : "w-64"} 
-        ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
+      <div
+        className={`fixed inset-y-0 left-0 z-50 h-screen transition-all duration-300 flex flex-col shadow-lg 
+      ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"} 
+      ${collapsed ? "w-16" : "w-64"} 
+      ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-between p-5 border-b">
           <div className="flex items-center">
-            <img src="/taskflow.png" alt="Logo" className="h-8 mr-2"/>
+            <img src="/taskflow.png" alt="Logo" className="h-8 mr-2" />
             <Link href={`/ModuleSales/Sales/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}>
               <h1 className={`text-md font-bold transition-opacity ${collapsed ? "opacity-0" : "opacity-100"}`}>
                 TASKFLOW
@@ -239,7 +240,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
             </Link>
           </div>
         </div>
-  
+
         {/* User Details Section */}
         {!collapsed && (
           <div className="p-8 text-xs text-left border-b">
@@ -250,19 +251,19 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
             <p>( {userDetails.Role} )</p>
           </div>
         )}
-  
+
         {/* Menu Section */}
         <div className="flex flex-col items-center flex-grow overflow-y-auto text-xs p-2">
           <div className="w-full">
-            <Link 
-              href={`/ModuleSales/Sales/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} 
+            <Link
+              href={`/ModuleSales/Sales/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}
               className="flex items-center w-full p-4 bg-green-900 mb-1 text-white rounded transition-all duration-300 ease-in-out hover:shadow-md active:scale-95"
             >
               <CiGrid42 size={22} className="mr-1" />
               Dashboard
             </Link>
           </div>
-  
+
           {/* Dynamic Menu Items */}
           {filteredMenuItems.map((item, index) => (
             <div key={index} className="w-full">
@@ -280,10 +281,10 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
                   </span>
                 )}
               </button>
-  
+
               {/* Submenu Items (Collapsible) */}
               <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out 
+                className={`overflow-hidden transition-all duration-300 ease-in-out text-gray-900
                   ${openSections[item.title] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
               >
                 {openSections[item.title] && !collapsed && (
@@ -293,7 +294,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
                         key={subIndex}
                         href={subItem.href}
                         prefetch={true}
-                        className="flex items-center text-dark w-full p-4 bg-gray-200 hover:bg-green-900 hover:text-white transition-all border-transparent duration-300 ease-in-out"
+                        className="flex items-center w-full p-4 bg-gray-200 hover:bg-green-900 hover:text-white transition-all border-transparent duration-300 ease-in-out"
                       >
                         <FaRegCircle size={10} className="mr-2 ml-2" />
                         {subItem.title}
@@ -308,8 +309,8 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
       </div>
     </>
   );
-  
-  
+
+
 };
 
 export default Sidebar;

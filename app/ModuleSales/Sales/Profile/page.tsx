@@ -85,7 +85,7 @@ const ProfilePage: React.FC = () => {
     return (
         <SessionChecker>
             <ParentLayout>
-                <div className="max-w-4xl mx-auto p-6">
+                <div className="max-w-4xl mx-auto p-6 text-gray-900 bg-white rounded-md">
                     <h1 className="text-lg font-bold mb-4">Update Profile</h1>
                     {error && <div className="text-red-500 mb-4">{error}</div>}
                     {/* Use ProfileForm component here */}

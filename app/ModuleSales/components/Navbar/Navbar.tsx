@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { CiClock2, CiMenuBurger, CiUser, CiSettings, CiBellOn, CiCircleRemove } from "react-icons/ci";
+import { CiClock2, CiMenuBurger, CiUser, CiSettings, CiBellOn, CiCircleRemove, CiDark, CiSun } from "react-icons/ci";
 
 interface Notification {
   id: number;
@@ -14,7 +14,12 @@ interface Notification {
   typecall: string;
 }
 
-const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) => {
+interface NavbarProps {
+  onToggleSidebar: () => void;
+  onToggleTheme: () => void;
+}
+
+const Navbar: React.FC<{ onToggleSidebar: () => void; onToggleTheme: () => void; isDarkMode: boolean }> = ({ onToggleSidebar, onToggleTheme, isDarkMode, }) => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userReferenceId, setUserReferenceId] = useState("");
@@ -33,6 +38,17 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
+
+  // Ensure dark mode applies correctly when `isDarkMode` changes
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDarkMode]);
 
   // Fetch user data
   useEffect(() => {
@@ -115,7 +131,7 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
 
         // Process callback notifications
         const validCallbacks = callbackData.data
-          .filter((notif: any) => 
+          .filter((notif: any) =>
             notif.typeactivity === "Outbound Call" &&
             notif.callback &&
             new Date(notif.callback) <= currentTime &&
@@ -125,7 +141,7 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
 
         // Process inquiry notifications
         const validInquiries = inquiryData.data
-          .filter((inquiry: any) => 
+          .filter((inquiry: any) =>
             new Date(inquiry.date_created) <= currentTime &&
             !dismissedIds.has(inquiry.id)
           )
@@ -166,7 +182,6 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
     const interval = setInterval(fetchNotificationsAndInquiries, 10000);
     return () => clearInterval(interval);
   }, [userReferenceId]);
-
 
   // Handle notification click (removes from list and stores in localStorage)
   const handleNotificationClick = (notifId: number) => {
@@ -216,17 +231,34 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
   }, []);
 
   return (
-    <div className="flex justify-between items-center p-4 bg-gray-100 text-dark shadow-md">
+    <div className={`sticky top-0 z-100 flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center">
         <button onClick={onToggleSidebar} className="p-2">
           <CiMenuBurger />
         </button>
-        <span className="flex items-center border text-sm shadow-md text-xs font-medium bg-gray-50 px-3 py-1 rounded-full">
+        <span className="flex items-center border shadow-md text-xs font-medium  px-3 py-1 rounded-full">
           <CiClock2 size={15} className="mr-1" /> {currentTime}
         </span>
       </div>
 
       <div className="relative flex items-center text-center text-xs gap-2" ref={dropdownRef}>
+        <button
+          onClick={onToggleTheme}
+          className="relative flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-16 h-8 p-1 transition-all duration-300"
+        >
+          {/* Toggle Knob with Icon Centered */}
+          <div
+            className={`w-6 h-6 bg-white dark:bg-yellow-400 rounded-full shadow-md flex justify-center items-center transform transition-transform duration-300 ${isDarkMode ? "translate-x-8" : "translate-x-0"
+              }`}
+          >
+            {isDarkMode ? (
+              <CiDark size={16} className="text-gray-900 dark:text-gray-300" />
+            ) : (
+              <CiSun size={16} className="text-yellow-500" />
+            )}
+          </div>
+        </button>
+
         {/* Notification Icon */}
         <button
           onClick={() => {
@@ -251,9 +283,9 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
         {showNotifications && notifications.length > 0 && (
           <div ref={notificationRef} className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-300 rounded shadow-lg z-50 p-2">
             <h3 className="text-xs font-semibold px-2 py-1 border-b flex justify-between items-center">
-              <span>Notifications</span>
-              <button className="flex items-center gap-2 text-xs" onClick={openModal}>
-                <CiSettings className="text-xs" /> All
+              <span className="text-gray-900" >Notifications</span>
+              <button className="flex items-center gap-2 text-xs text-gray-900" onClick={openModal}>
+                <CiSettings className="text-xs " /> All
               </button>
             </h3>
 
@@ -265,26 +297,26 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
                     <li
                       key={notif.id}
                       onClick={() => handleNotificationClick(notif.id)}
-                      className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100 capitalize"
+                      className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100 text-xs text-gray-900 capitalize"
                     >
                       {notif.typeactivity === "Outbound Call" ? (
                         <>
                           <strong>You have a callback in {notif.companyname}.</strong> Please make a call or activity.
-                          <span className="text-gray-500 text-xs mt-1 block">
+                          <span className="text-[8px] mt-1 block">
                             {notif.callback ? new Date(notif.callback).toLocaleString() : "Invalid Date"}
                           </span>
                         </>
                       ) : notif.typecall ? (
                         <>
                           <strong>You have a new follow up status</strong> {notif.typecall} from <strong>{notif.companyname}.</strong>
-                          <span className="text-gray-500 text-xs mt-1 block">
+                          <span className="text-[8px] mt-1 block">
                             {new Date(notif.date_created).toLocaleString()}
                           </span>
                         </>
                       ) : (
                         <>
                           <strong>You have a new Inquiry from {notif.companyname}.</strong> From: {notif.typeclient}.
-                          <span className="text-gray-500 text-xs mt-1 block">
+                          <span className="text-[8px] mt-1 block">
                             {new Date(notif.date_created).toLocaleString()}
                           </span>
                         </>

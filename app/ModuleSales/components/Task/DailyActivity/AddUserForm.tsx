@@ -191,6 +191,13 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   return (
     <>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
+        <div className="flex justify-end gap-2">
+          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
+            {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
+            {editUser ? "Update" : "Submit"}
+          </button>
+          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} /> Cancel</button>
+        </div>
         <h2 className="text-xs font-bold mb-4">
           {editUser ? "Edit Account Information" : "Add New Account"}
         </h2>
@@ -233,16 +240,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
           editPost={editUser}
         />
-        <div className="flex justify-between">
-          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
-            {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
-            {editUser ? "Update" : "Submit"}
-          </button>
-          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} /> Cancel</button>
-        </div>
-      </form>
-
-      {/* Historical Records Table */}
+        {/* Historical Records Table */}
       <div className="mt-6">
         <h3 className="text-xs font-bold mb-2">Historical Records</h3>
         <p className="text-xs text-gray-600 mb-4">
@@ -386,6 +384,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           </div>
         )}
       </div>
+      
+      </form>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

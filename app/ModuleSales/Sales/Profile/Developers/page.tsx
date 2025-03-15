@@ -81,12 +81,11 @@ const ProfilePage: React.FC = () => {
     return (
         <SessionChecker>
             <ParentLayout>
-
-            <div className="container mx-auto p-4">
+                <div className="container mx-auto p-4">
                     <h1 className="text-lg font-bold mb-4">Developers Team</h1>
                     {error && <div className="text-red-500 mb-4">{error}</div>}
                     {/* Use ProfileForm component here */}
-                    <Developers/>
+                    <Developers />
                 </div>
                 <ToastContainer />
             </ParentLayout>

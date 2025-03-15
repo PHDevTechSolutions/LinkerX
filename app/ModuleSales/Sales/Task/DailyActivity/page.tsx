@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
@@ -14,8 +14,10 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 // Icons
-import { CiSquarePlus, CiCircleRemove, CiSaveUp1, CiTrash } from "react-icons/ci";
+import { CiSquarePlus, CiCircleRemove, CiSaveUp1, CiTrash, CiCamera } from "react-icons/ci";
 import { PiHandTapThin } from "react-icons/pi";
+
+import html2canvas from "html2canvas";
 
 // Function to get formatted Manila timestamp
 const getFormattedTimestamp = () => {
@@ -70,6 +72,25 @@ const ListofUser: React.FC = () => {
     const [showTimerModal, setShowTimerModal] = useState(false);
     const [countdown, setCountdown] = useState(0);
     const [timerRunning, setTimerRunning] = useState(false);
+
+    const taskRef = useRef<HTMLDivElement | null>(null); // Reference for My Task div
+    
+    const handleScreenshot = async () => {
+        if (!taskRef.current) {
+            console.error("Target element not found!");
+            return;
+        }
+
+        const element = taskRef.current as HTMLElement; // Ensure type safety
+        const canvas = await html2canvas(element);
+        const imgData = canvas.toDataURL("image/png");
+
+        // Create a download link for the screenshot
+        const link = document.createElement("a");
+        link.href = imgData;
+        link.download = "screenshot.png";
+        link.click();
+    };
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -429,7 +450,7 @@ const ListofUser: React.FC = () => {
             <ParentLayout>
                 <UserFetcher>
                     {(user) => (
-                        <div className="container mx-auto p-4">
+                        <div className="container mx-auto p-4 text-gray-900">
                             {showForm ? (
                                 <AddPostForm
                                     onCancel={() => {
@@ -461,6 +482,9 @@ const ListofUser: React.FC = () => {
                                                 onClick={handleButtonClick}
                                             >
                                                 <PiHandTapThin size={20} /> Tap
+                                            </button>
+                                            <button onClick={handleScreenshot} title="Take a Screenshot" className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition">
+                                                <CiCamera size={20} /> Take a Screenshot
                                             </button>
                                         </div>
 
@@ -543,7 +567,7 @@ const ListofUser: React.FC = () => {
                                         )}
                                     </div>
 
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                    <div ref={taskRef} className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                         <h2 className="text-lg font-bold mb-2">My Task</h2>
                                         <p className="text-xs text-gray-600 mb-4">
                                             This section displays your <strong>tasks</strong> in a <strong>card layout</strong>. Each task is represented as a card, offering a visually appealing and more flexible design compared to traditional tables. You can filter tasks based on various criteria like <strong>client type</strong>, <strong>date range</strong>, and other parameters using the search filters.
