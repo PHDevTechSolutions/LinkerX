@@ -92,8 +92,11 @@ const ListofUser: React.FC = () => {
     
         // Check role-based filtering
         const matchesRole = userDetails.Role === "Super Admin"
-            ? (post?.Role === "Territory Sales Manager") && post?.Department === "Sales"
-            : false; // Default false if no match
+  ? post?.Role === "Territory Sales Manager" && post?.Department === "Sales" // Super Admin sees TSM in Sales department
+  : userDetails.Role === "Admin"
+  ? post?.Role === "Territory Sales Manager" && post?.Department === "Sales" && post?.Role !== "Super Admin" // Admin sees TSM in Sales department but not Super Admin
+  : false; // Default false if no match
+
     
         // Return the filtered result
         return matchesSearchTerm && matchesRole;

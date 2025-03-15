@@ -86,17 +86,19 @@ const ListofUser: React.FC = () => {
         // Check if the user's name matches the search term
         const matchesSearchTerm = [post?.Firstname, post?.Lastname]
             .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+
         // Get the reference ID from userDetails
         const referenceID = userDetails.ReferenceID; // TSM's ReferenceID from MongoDB
-    
+
         // Check role-based filtering
         const matchesRole = userDetails.Role === "Super Admin"
-            ? post?.Role === "Territory Sales Associate" // Super Admin only sees TSAs
-            : userDetails.Role === "Territory Sales Manager"
-            ? post?.TSM === referenceID // TSM sees only assigned TSAs
-            : false; // Default false if no match
-    
+            ? post?.Role === "Territory Sales Associate" && post?.Department === "Sales" // Super Admin only sees TSAs in the Sales department
+            : userDetails.Role === "Admin" && post?.Department === "Sales"
+                ? post?.Role !== "Super Admin" // Admin cannot see Super Admin
+                : userDetails.Role === "Territory Sales Manager"
+                    ? post?.Department === "Sales" && post?.TSM === referenceID // TSM sees only assigned TSAs in the Sales department
+                    : false; // Default false if no match
+
         // Return the filtered result
         return matchesSearchTerm && matchesRole;
     });
@@ -148,7 +150,7 @@ const ListofUser: React.FC = () => {
             setPostToDelete(null);
         }
     };
-    
+
     return (
         <SessionChecker>
             <ParentLayout>
