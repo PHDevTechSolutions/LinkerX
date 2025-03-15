@@ -19,7 +19,6 @@ type ProfileFormProps = {
 };
 
 const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, handleChange, handleSelectChange }) => {
-    // Generate a unique avatar URL using RoboHash
     const avatarURL = `https://robohash.org/${userDetails.Email}?size=200x200`;
     const [activeTab, setActiveTab] = useState('profile');
     const [generatedCode, setGeneratedCode] = useState('');
@@ -33,22 +32,30 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
         }
     }, [userDetails]);
 
-    // Function to generate QR Code based on userDetails (Firstname and Lastname)
+    // Automatically generate QR Code when generatedCode is set
+    useEffect(() => {
+        if (generatedCode) {
+            generateQRCode(generatedCode);
+        }
+    }, [generatedCode]);
+
     const generateQRCode = async (text: string) => {
         try {
-            // Store the user's first and last name in a format you want
-            const qrData = JSON.stringify({
-                Firstname: userDetails.Firstname,
-                Lastname: userDetails.Lastname
-            });
-
-            const qr = await QRCode.toDataURL(qrData); // Generate QR with user info
+            // Modify the format to match the desired output with line breaks
+            const qrData = `Taskflow System Ecoshift Corporation,\n
+            AgentName: ${userDetails.Firstname} ${userDetails.Lastname}\n
+            Position: ${userDetails.Role}\n
+            Email: ${userDetails.Email}\n
+            Link: https://ecoshiftcorp.com`;
+            
+            // Generate QR code with the custom formatted text
+            const qr = await QRCode.toDataURL(qrData); 
             setQrCode(qr);
         } catch (err) {
             console.error('Error generating QR code', err);
         }
     };
-
+    
     return (
         <div className="grid grid-cols-2 gap-6 p-6 text-xs">
             <div className="bg-white shadow-md rounded-lg p-6">
@@ -76,20 +83,18 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
 
                 {activeTab === 'blank' && (
                     <div className="flex flex-col items-center mt-6">
-                        <p className="text-sm font-semibold">Generated Code: {generatedCode}</p>
-                        {generatedCode && (
-                            <div>
-                                <button
-                                    onClick={() => generateQRCode(generatedCode)}
-                                    className="mt-4 bg-blue-600 text-white text-xs px-4 py-2 rounded"
-                                >
-                                    Generate QR Code
-                                </button>
-                                {qrCode && <img src={qrCode} alt="Generated QR Code" className="mt-4" />}
-                            </div>
+                        {generatedCode && <p className="text-sm font-semibold">Generated Code: {generatedCode}</p>}
+                        {qrCode && (
+                            <img
+                                src={qrCode}
+                                alt="Generated QR Code"
+                                className="mt-4"
+                                style={{ width: '300px', height: '300px' }} // Set the width and height directly with inline styles
+                            />
                         )}
                     </div>
                 )}
+
             </div>
 
             {/* User Details Form Card */}
