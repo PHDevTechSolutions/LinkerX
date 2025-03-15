@@ -81,7 +81,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     ItemCode, setItemCode, ItemDescription, setItemDescription,
     Traffic, setTraffic, Inquiries, setInquiries, Department, setDepartment,
 
-    SONumber, setSONumber, PONumber, setPONumber, SODate, setSODate, PaymentTerms, setPaymentTerms, 
+    SONumber, setSONumber, PONumber, setPONumber, SODate, setSODate, PaymentTerms, setPaymentTerms,
     PaymentDate, setPaymentDate, DeliveryDate, setDeliveryDate, POStatus, setPOStatus, POSource, setPOSource,
 
     createdAt, setcreatedAt,
@@ -162,7 +162,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     const generateTicketReferenceNumber = () => {
         const randomNumber = Math.floor(100000000 + Math.random() * 1000000000); // Ensures a 9-digit number
         return `CSR-TICKET-${randomNumber}`;
-    };    
+    };
 
     useEffect(() => {
         if (editPost) {
@@ -181,29 +181,38 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     return (
         <>
             <div className="flex flex-wrap -mx-4">
-            <div className="w-full sm:w-1/1 md:w-1/6 px-4 mb-4">
-                <label className="block text-xs font-bold mb-2" htmlFor="ticketReferenceNumber">Ticket Reference Number</label>
-                <input type="text" id="ticketReferenceNumber" value={TicketReferenceNumber} className="w-full px-3 py-2 border rounded text-xs bg-gray-100"readOnly/>
-            </div>
-            <div className="w-full sm:w-1/1 md:w-1/6 px-4 mb-4">
-                <label className="block text-xs font-bold mb-2" htmlFor="ticketReferenceNumber">Date Today</label>
-                <input type="datetime-local" id="createdAt" value={createdAt} onChange={(e) => setcreatedAt(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required/>
-            </div>
+                <div className="w-full sm:w-1/1 md:w-1/6 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2" htmlFor="ticketReferenceNumber">Ticket Reference Number</label>
+                    <input type="text" id="ticketReferenceNumber" value={TicketReferenceNumber} className="w-full px-3 py-2 border rounded text-xs bg-gray-100" readOnly />
+                    <p className="mt-1 text-green-900 text-[10px]">Auto Generate Ticket</p>
+                </div>
+                <div className="w-full sm:w-1/1 md:w-1/6 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2" htmlFor="ticketReferenceNumber">Date Today</label>
+                    <input type="datetime-local" id="createdAt" value={createdAt} onChange={(e) => setcreatedAt(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+                </div>
             </div>
             <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                 <h1 className="text-lg font-bold mb-2">Account Information</h1>
+                <p className="mb-4">
+                    This section manages account details, including company name, customer information, and contact details.
+                    Certain fields like Role, User ID, and Reference ID are hidden and non-editable. When adding a new account,
+                    users can select a company from a dropdown, while in edit mode, the company name is read-only. Other fields
+                    allow input for customer details to ensure accurate record-keeping.
+                </p>
+
                 <div className="flex flex-wrap -mx-4">
                     <div className="w-full sm:w-1/2 md:w-1/3 px-4 mb-4">
                         <input type="hidden" id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                         <input type="hidden" id="UserId" value={UserId || ""} onChange={(e) => setUserId(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                         <input type="hidden" id="Username" value={userName || ""} onChange={(e) => setuserName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
-                        <input type="hidden" id="ReferenceID" value={ReferenceID || ""} onChange={(e) => setReferenceID(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" disabled/>
+                        <input type="hidden" id="ReferenceID" value={ReferenceID || ""} onChange={(e) => setReferenceID(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" disabled />
                         <label className="block text-xs font-bold mb-2" htmlFor="CompanyName">Company Name</label>
                         {editPost ? (
                             <input type="text" id="CompanyName" value={CompanyName} readOnly className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" />
                         ) : (
                             <Select id="CompanyName" options={CompanyOptions} onChange={handleCompanyChange} className="w-full text-xs capitalize" placeholder="Select Company" isClearable />
                         )}
+                        <p className="text-[10px]">Click Select to Choose a Company</p>
                     </div>
                     <div className="w-full sm:w-1/2 md:w-1/3 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2" htmlFor="CustomerName">Customer Name</label>
@@ -233,7 +242,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
             </div>
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                <label className="block text-xs font-bold mb-2 bg-yellow-300 px-2 py-1 rounded w-40" htmlFor="Traffic"><span>Traffic</span></label>
+                    <label className="block text-xs font-bold mb-2 bg-yellow-300 px-2 py-1 rounded w-40" htmlFor="Traffic"><span>Traffic</span></label>
                     <select id="Traffic" value={Traffic || ""} onChange={(e) => setTraffic(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
                         <option value="">Select Traffic</option>
                         <option value="Sales">Sales</option>
@@ -567,11 +576,21 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 </div>
             ) : null}
 
-
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/1 md:w-1/1 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="Inquiries">Inquiry / Concern</label>
-                    <textarea id="Inquiries" value={Inquiries || ""} onChange={(e) => setInquiries(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" rows={5}></textarea>
+                    <label className="block text-xs font-bold mb-2" htmlFor="Inquiries">
+                        Inquiry / Concern
+                    </label>
+                    <textarea
+                        id="Inquiries"
+                        value={Inquiries || ""}
+                        onChange={(e) => setInquiries(e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-xs"
+                        rows={5}
+                    ></textarea>
+                    <p className="text-xs text-gray-500 mt-1">
+                        {Inquiries.length} / 5000 characters
+                    </p>
                 </div>
             </div>
 

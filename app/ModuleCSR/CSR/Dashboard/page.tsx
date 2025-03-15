@@ -171,9 +171,12 @@ const DashboardPage: React.FC = () => {
               <div className="bg-white shadow-md rounded-lg p-2 w-full">
                 <div className="border-b mb-4 text-xs font-bold">
                   <button className="p-2 flex-1 border-b-2 border-blue-500">
-                    Traffic to Sales Conversion ( ON Developing )
+                    Traffic to Sales Conversion
                   </button>
                 </div>
+                <p className="text-xs px-4">
+                  Performance of CSR Agents, showing their total sales, the number of sales and non-sales transactions, as well as the total amount and quantity of sold products.
+                </p>
                 <div className="p-4">
                   <AgentSalesConversion
                     ReferenceID={userDetails.ReferenceID}

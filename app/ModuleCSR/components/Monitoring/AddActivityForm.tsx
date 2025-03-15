@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import FormFields from "./ActivityFormFields";
 import { FetchUserName } from "./FetchUsername";
+import { CiSaveUp1, CiCircleRemove, CiEdit } from "react-icons/ci";
 
 interface AddAccountFormProps {
   onCancel: () => void;
@@ -71,12 +72,12 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     const url = editPost
       ? "/api/ModuleCSR/Monitorings/EditActivity"
       : "/api/ModuleCSR/Monitorings/CreateActivity"; // API endpoint changes based on edit or add
     const method = editPost ? "PUT" : "POST"; // HTTP method changes based on edit or add
-  
+
     try {
       // Submit main request (EditActivity or CreateActivity)
       const response = await fetch(url, {
@@ -131,11 +132,11 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
           id: editPost ? editPost._id : undefined, // Send post ID if editing
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error(`Failed to submit: ${response.status}`);
       }
-  
+
       // Forward SalesManager & SalesAgent to data.php
       const dataResponse = await fetch("https://ecoshiftcorp.com.ph/data.php", {
         method: "POST",
@@ -156,11 +157,11 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
           Inquiries,
         }),
       });
-  
+
       if (!dataResponse.ok) {
         throw new Error(`Failed to forward SalesManager & SalesAgent: ${dataResponse.status}`);
       }
-  
+
       // Show success message and refresh posts
       toast.success(editPost ? "Account updated successfully" : "Account added successfully", {
         autoClose: 1000,
@@ -175,7 +176,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
         autoClose: 1000,
       });
     }
-  };  
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -189,6 +190,13 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
     <>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
         <h2 className="text-xs font-bold mb-4">{editPost ? "Edit Account" : "Add New Account"}</h2>
+        <p className="text-xs text-gray-600 mb-4">
+          This form is used to create and manage tickets. It allows users to enter
+          detailed information such as customer details, ticket reference numbers,
+          sales data, handling times, and other relevant fields. Users can also
+          update existing tickets to reflect changes in status, endorsements,
+          and remarks.
+        </p>
         <FormFields
           UserId={UserId} setUserId={setUserId}
 
@@ -285,8 +293,11 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
           editPost={editPost}
         />
         <div className="flex justify-between">
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded text-xs">{editPost ? "Update" : "Submit"}</button>
-          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs" onClick={onCancel}>Cancel</button>
+          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
+            {editPost ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
+            {editPost ? "Update" : "Submit"}
+          </button>
+          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} />Cancel</button>
         </div>
       </form>
       <ToastContainer className="text-xs" autoClose={1000} />

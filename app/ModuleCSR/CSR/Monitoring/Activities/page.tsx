@@ -9,6 +9,7 @@ import SearchFilters from "../../../components/Monitoring/SearchFilters";
 import AccountsTable from "../../../components/Monitoring/ActivityTable";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { CiCirclePlus } from "react-icons/ci";
 
 const ActivityPage: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -25,8 +26,8 @@ const ActivityPage: React.FC = () => {
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
     const [userDetails, setUserDetails] = useState({
-            UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "",
-        });
+        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "",
+    });
 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -36,7 +37,7 @@ const ActivityPage: React.FC = () => {
         const fetchUserData = async () => {
             const params = new URLSearchParams(window.location.search);
             const userId = params.get("id");
-    
+
             if (userId) {
                 try {
                     const response = await fetch(`/api/user?id=${encodeURIComponent(userId)}`);
@@ -61,10 +62,10 @@ const ActivityPage: React.FC = () => {
                 setLoading(false);
             }
         };
-    
+
         fetchUserData();
     }, []);
-    
+
 
     // Fetch accounts from the API
     const fetchActivity = async () => {
@@ -89,7 +90,7 @@ const ActivityPage: React.FC = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id, Status: newStatus }),
             });
-    
+
             if (response.ok) {
                 setPosts((prevPosts) =>
                     prevPosts.map((post) =>
@@ -105,7 +106,7 @@ const ActivityPage: React.FC = () => {
             toast.error("Failed to update status.");
             console.error("Error updating status:", error);
         }
-    };    
+    };
 
     const handleRemarksUpdate = async (id: string, NewRemarks: string) => {
         try {
@@ -114,7 +115,7 @@ const ActivityPage: React.FC = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id, Remarks: NewRemarks }),
             });
-    
+
             if (response.ok) {
                 setPosts((prevPosts) =>
                     prevPosts.map((post) =>
@@ -130,7 +131,7 @@ const ActivityPage: React.FC = () => {
             toast.error("Failed to update status.");
             console.error("Error updating status:", error);
         }
-    };    
+    };
 
     // Filter accounts based on search term, channel, sales agent, and date range
     const filteredAccounts = posts.filter((post) => {
@@ -139,14 +140,14 @@ const ActivityPage: React.FC = () => {
             post.CustomerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (post.TicketReferenceNumber && post.TicketReferenceNumber.includes(searchTerm)) ||
             post.ContactNumber.includes(searchTerm);
-    
+
         const matchesStatus = selectedStatus ? post.Status.includes(selectedStatus) : true;
         const matchesSalesAgent = salesAgent ? post.SalesAgent.toLowerCase().includes(salesAgent.toLowerCase()) : true;
-    
+
         const matchesDateRange =
             (!TicketReceived || new Date(post.TicketReceived) >= new Date(TicketReceived)) &&
             (!TicketEndorsed || new Date(post.TicketEndorsed) <= new Date(TicketEndorsed));
-    
+
         if (userDetails.Role === "Super Admin") {
             return matchesSearchTerm && matchesStatus && matchesSalesAgent && matchesDateRange;
         } else if (userDetails.Role === "Admin") {
@@ -154,10 +155,10 @@ const ActivityPage: React.FC = () => {
         } else if (userDetails.Role === "Staff") {
             return post.ReferenceID === userDetails.ReferenceID && matchesSearchTerm && matchesStatus && matchesSalesAgent && matchesDateRange;
         }
-    
+
         return false; // Default case: if none of the roles match, return false
     });
-    
+
     // Pagination logic
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -212,26 +213,32 @@ const ActivityPage: React.FC = () => {
                             <div className="grid grid-cols-1 md:grid-cols-1">
                                 {showForm ? (
                                     <AddAccountForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditPost(null);
-                                    }}
-                                    refreshPosts={fetchActivity}
-                                    userName={user ? user.userName : ""}
-                                    userDetails={{
-                                        id: editPost ? editPost.UserId : userDetails.UserId,
-                                        Role: user ? user.Role : "",
-                                        ReferenceID: user ? user.ReferenceID : "", // <-- Ito ang dapat mong suriin
-                                    }}
-                                    editPost={editPost}
-                                />
-                                
+                                        onCancel={() => {
+                                            setShowForm(false);
+                                            setEditPost(null);
+                                        }}
+                                        refreshPosts={fetchActivity}
+                                        userName={user ? user.userName : ""}
+                                        userDetails={{
+                                            id: editPost ? editPost.UserId : userDetails.UserId,
+                                            Role: user ? user.Role : "",
+                                            ReferenceID: user ? user.ReferenceID : "", // <-- Ito ang dapat mong suriin
+                                        }}
+                                        editPost={editPost}
+                                    />
+
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
-                                            <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded" onClick={() => setShowForm(true)}>Add Ticket</button>
+                                            <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded flex items-center gap-1" onClick={() => setShowForm(true)}>
+                                                <CiCirclePlus size={20} />Add Ticket</button>
                                         </div>
-                                        <h2 className="text-lg font-bold mb-2">Customer's Information</h2>
+                                        <h2 className="text-lg font-bold mb-2">Tickets Summary</h2>
+                                        <p className="text-xs text-gray-600 mb-4">
+                                            This section provides an overview of ticket management, including the creation of new tickets and
+                                            a list of endorsed, closed, and open tickets. It allows filtering based on various criteria to help
+                                            track and manage ticket statuses efficiently.
+                                        </p>
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                             <SearchFilters
                                                 searchTerm={searchTerm}
