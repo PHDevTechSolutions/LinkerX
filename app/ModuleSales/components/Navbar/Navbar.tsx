@@ -477,16 +477,35 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           </div>
         )}
 
-        {/* Modal when TargetQuota is null or empty */}
-        {isModalVisible && (
+        {/* Modal when TargetQuota is null, zero, or an empty value */}
+        {(!TargetQuota && isModalVisible) && (
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-[70%] max-w-3xl max-h-[80vh]">
-              <p className="text-gray-900 text-xs font-semibold">
+              <p className="text-gray-900 text-xs font-semibold mb-2">
                 The Target Quota has not been set yet. Please coordinate with your Territory Sales Manager to set the quota in order to begin using the Taskflow System.
               </p>
+              <button
+                className="w-full text-left px-4 py-2 text-xs text-red-600 bg-red-700 rounded text-white hover:bg-red-900 flex justify-center items-center"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 mr-2 text-red-500" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="2" />
+                      <path fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    Logging out...
+                  </>
+                ) : (
+                  "Logout"
+                )}
+              </button>
             </div>
           </div>
         )}
+
+
       </div>
     </div>
   );
