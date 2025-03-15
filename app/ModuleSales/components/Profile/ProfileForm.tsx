@@ -19,10 +19,19 @@ type ProfileFormProps = {
 };
 
 const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, handleChange, handleSelectChange }) => {
-    const avatarURL = `https://robohash.org/${userDetails.Email}?size=200x200`;
     const [activeTab, setActiveTab] = useState('profile');
     const [generatedCode, setGeneratedCode] = useState('');
     const [qrCode, setQrCode] = useState('');
+    const [selectedAvatar, setSelectedAvatar] = useState<string>(`https://robohash.org/${userDetails.Email}?size=200x200`);
+
+    // List of avatars
+    const avatars = [
+        `https://robohash.org/${userDetails.Email}?set=set1&size=200x200`,
+        `https://robohash.org/${userDetails.Email}?set=set2&size=200x200`,
+        `https://robohash.org/${userDetails.Email}?set=set3&size=200x200`,
+        `https://robohash.org/${userDetails.Email}?set=set4&size=200x200`,
+        `https://robohash.org/${userDetails.Email}?set=set5&size=200x200`,
+    ];
 
     // Generate a code based on userDetails
     useEffect(() => {
@@ -55,7 +64,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
             console.error('Error generating QR code', err);
         }
     };
-    
+
+    const handleAvatarChange = (avatar: string) => {
+        setSelectedAvatar(avatar);
+    };
+
     return (
         <div className="grid grid-cols-2 gap-6 p-6 text-xs">
             <div className="bg-white shadow-md rounded-lg p-6">
@@ -75,8 +88,26 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
                 {activeTab === 'profile' && (
                     <div className="flex flex-col items-center mt-6">
                         <div className="w-full bg-gray-200 rounded-lg overflow-hidden">
-                            <img src={avatarURL} alt="Profile" className="w-full h-full object-cover" />
+                            <img src={selectedAvatar} alt="Profile" className="w-full h-full object-cover" />
                         </div>
+
+                        {/* Avatar Carousel */}
+                        <div className="mt-4 flex space-x-4 overflow-x-auto">
+                            {avatars.map((avatar, index) => (
+                                <div
+                                    key={index}
+                                    onClick={() => handleAvatarChange(avatar)}
+                                    className="cursor-pointer"
+                                >
+                                    <img
+                                        src={avatar}
+                                        alt={`Avatar ${index + 1}`}
+                                        className="w-16 h-16 object-cover rounded-lg border-2 border-gray-300 hover:border-blue-500"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
                         <p className="mt-4 text-sm font-semibold">{userDetails.Firstname} {userDetails.Lastname}</p>
                     </div>
                 )}
@@ -94,7 +125,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
                         )}
                     </div>
                 )}
-
             </div>
 
             {/* User Details Form Card */}
