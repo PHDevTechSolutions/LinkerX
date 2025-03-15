@@ -259,7 +259,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
                       ? "bg-gray-500"
                       : userDetails.Status === "Busy"
                         ? "bg-yellow-500"
-                        : userDetails.Status === "Do Not Disturb"
+                        : userDetails.Status === "Do not Disturb"
                           ? "bg-gray-800"
                           : "bg-blue-500"
                 }`}

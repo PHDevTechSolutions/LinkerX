@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ProfileForm from "../../components/Profile/ProfileForm"; // Import the form component
 
 const ProfilePage: React.FC = () => {
-    const [userDetails, setUserDetails] = useState({id: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "",});
+    const [userDetails, setUserDetails] = useState({id: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Status: "",});
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -29,6 +29,7 @@ const ProfilePage: React.FC = () => {
                         Email: data.Email || "",
                         Role: data.Role || "",
                         Department: data.Department || "",
+                        Status: data.Status || "",
                     });
                 } catch (err: unknown) {
                     console.error("Error fetching user data:", err);

@@ -9,7 +9,7 @@ export default async function updateProfile(req: NextApiRequest, res: NextApiRes
     return;
   }
 
-  const { id, Firstname, Lastname, Email, Role, Department } = req.body;
+  const { id, Firstname, Lastname, Email, Role, Department, Status } = req.body;
 
   if (!id) {
     return res.status(400).json({ error: "User ID is required" });
@@ -19,7 +19,7 @@ export default async function updateProfile(req: NextApiRequest, res: NextApiRes
     const db = await connectToDatabase();
     const userCollection = db.collection("users");
 
-    const updatedUser = {Firstname, Lastname, Email, Role, Department, updatedAt: new Date(),
+    const updatedUser = {Firstname, Lastname, Email, Role, Department, Status, updatedAt: new Date(),
     };
 
     await userCollection.updateOne(
