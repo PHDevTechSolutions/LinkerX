@@ -9,6 +9,7 @@ interface UsersCardProps {
   handleDelete: (postId: string) => void;
   Role: string;
   Department: string;
+  TSM: string;
 }
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete }) => {
@@ -142,9 +143,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete }
                 <p><strong>Department:</strong> {post.Department}</p>
                 <p><strong>Location:</strong> {post.Location}</p>
                 <p className="mt-2">
-                  <span className={`badge text-white px-2 py-1 rounded-xl ${statusColors[post.Status] || 'bg-gray-400'}`}>
+                  <span className={`badge text-white px-2 py-1 mr-2 rounded-xl ${statusColors[post.Status] || 'bg-gray-400'}`}>
                     {post.Status}
                   </span>
+                  {post.TSM}
                 </p>
               </div>
             </div>

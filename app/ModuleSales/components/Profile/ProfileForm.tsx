@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import QRCode from 'qrcode';
 
 type ProfileFormProps = {
@@ -50,24 +50,19 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
 
     const generateQRCode = async (text: string) => {
         try {
-            // Modify the format to include the link as a clickable URL
-            const qrData = `Taskflow System Ecoshift Corporation,\n
-            AgentName: ${userDetails.Firstname} ${userDetails.Lastname}\n
-            Position: ${userDetails.Role}\n
-            Email: ${userDetails.Email}\n
-            Link: https://ecoshiftcorp.com`;
-    
-            // Generate QR code with the custom formatted text
-            const qr = await QRCode.toDataURL(qrData); 
+            const qrData = `Taskflow System Ecoshift Corporation,\nAgentName: ${userDetails.Firstname} ${userDetails.Lastname}\nPosition: ${userDetails.Role}\nEmail: ${userDetails.Email}\nLink: https://ecoshiftcorp.com`;
+            const qr = await QRCode.toDataURL(qrData);
             setQrCode(qr);
         } catch (err) {
             console.error('Error generating QR code', err);
         }
     };
 
-    const handleAvatarChange = (avatar: string) => {
+    const handleAvatarChange = useCallback((avatar: string) => {
         setSelectedAvatar(avatar);
-    };
+        // Save selected avatar in localStorage immediately
+        localStorage.setItem('selectedAvatar', avatar);
+    }, []);
 
     return (
         <div className="grid grid-cols-2 gap-6 p-6 text-xs">

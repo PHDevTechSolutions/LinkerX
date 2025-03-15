@@ -20,6 +20,9 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", });
   const router = useRouter();
 
+  // Retrieve the selected avatar from localStorage or default if not set
+  const selectedAvatar = localStorage.getItem('selectedAvatar') || `https://robohash.org/${userDetails.Firstname}${userDetails.Lastname}?size=200x200`;
+
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -245,6 +248,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         {/* User Details Section */}
         {!collapsed && (
           <div className="p-6 text-xs text-left border-b">
+            <img src={selectedAvatar} alt="Avatar" className="w-12 h-12 object-cover rounded-full mb-2"/>
             <p className="font-bold uppercase text-sm">
               {userDetails.Firstname}, {userDetails.Lastname}
             </p>
@@ -252,16 +256,16 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
             <p className="italic">( {userDetails.Role} )</p>
             <span
               className={`text-white text-[8px] font-semibold px-3 py-1 rounded-full inline-block mt-2 ${userDetails.Status === "Active"
-                  ? "bg-green-900"
-                  : userDetails.Status === "Inactive"
-                    ? "bg-red-700"
-                    : userDetails.Status === "Locked"
-                      ? "bg-gray-500"
-                      : userDetails.Status === "Busy"
-                        ? "bg-yellow-500"
-                        : userDetails.Status === "Do not Disturb"
-                          ? "bg-gray-800"
-                          : "bg-blue-500"
+                ? "bg-green-900"
+                : userDetails.Status === "Inactive"
+                  ? "bg-red-700"
+                  : userDetails.Status === "Locked"
+                    ? "bg-gray-500"
+                    : userDetails.Status === "Busy"
+                      ? "bg-yellow-500"
+                      : userDetails.Status === "Do not Disturb"
+                        ? "bg-gray-800"
+                        : "bg-blue-500"
                 }`}
             >
               {userDetails.Status}

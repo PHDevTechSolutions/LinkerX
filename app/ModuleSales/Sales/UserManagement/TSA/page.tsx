@@ -28,7 +28,7 @@ const ListofUser: React.FC = () => {
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
     const [userDetails, setUserDetails] = useState({
-        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
+        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "", TSM: "",
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -53,6 +53,7 @@ const ListofUser: React.FC = () => {
                         Role: data.Role || "",
                         Department: data.Department || "",
                         Company: data.Company || "",
+                        TSM: data.TSM || "",
                     });
                 } catch (err: unknown) {
                     console.error("Error fetching user data:", err);
@@ -84,7 +85,7 @@ const ListofUser: React.FC = () => {
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = posts.filter((post) => {
         // Check if the user's name matches the search term
-        const matchesSearchTerm = [post?.Firstname, post?.Lastname]
+        const matchesSearchTerm = [post?.Firstname, post?.Lastname, post?.TSM, post?.ReferenceID]
             .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
 
         // Get the reference ID from userDetails
@@ -191,6 +192,7 @@ const ListofUser: React.FC = () => {
                                             handleDelete={confirmDelete}
                                             Role={user ? user.Role : ""}
                                             Department={user ? user.Department : ""}
+                                            TSM={user ? user.TSM : ""}
                                         />
                                         <Pagination
                                             currentPage={currentPage}
