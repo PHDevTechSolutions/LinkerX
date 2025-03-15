@@ -41,13 +41,13 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
 
     const generateQRCode = async (text: string) => {
         try {
-            // Modify the format to match the desired output with line breaks
+            // Modify the format to include the link as a clickable URL
             const qrData = `Taskflow System Ecoshift Corporation,\n
             AgentName: ${userDetails.Firstname} ${userDetails.Lastname}\n
             Position: ${userDetails.Role}\n
             Email: ${userDetails.Email}\n
             Link: https://ecoshiftcorp.com`;
-            
+    
             // Generate QR code with the custom formatted text
             const qr = await QRCode.toDataURL(qrData); 
             setQrCode(qr);
