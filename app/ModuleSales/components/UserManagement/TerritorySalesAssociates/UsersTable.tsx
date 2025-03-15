@@ -136,7 +136,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete, 
           className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white"
         >
           <CiSliderHorizontal size={16} />
-          {bulkTransferMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Another Agent"}
+          {bulkTransferMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Another Manager"}
         </button>
       </div>
 
