@@ -35,6 +35,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkMode, sidebarLinks }) => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [TargetQuota, setUserTargetQuota] = useState("");
   const [userReferenceId, setUserReferenceId] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -52,8 +53,16 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+
+  // Check if TargetQuota is null or empty
+  useEffect(() => {
+    if (!TargetQuota) {
+      setIsModalVisible(true);
+    }
+  }, [TargetQuota]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,6 +121,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           setUserName(data.Firstname);
           setUserEmail(data.Email);
           setUserReferenceId(data.ReferenceID || "");
+          setUserTargetQuota(data.TargetQuota || "");
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -464,6 +474,17 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 "Logout"
               )}
             </button>
+          </div>
+        )}
+
+        {/* Modal when TargetQuota is null or empty */}
+        {isModalVisible && (
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-[70%] max-w-3xl max-h-[80vh]">
+              <p className="text-gray-900 text-xs font-semibold">
+                The Target Quota has not been set yet. Please coordinate with your Territory Sales Manager to set the quota in order to begin using the Taskflow System.
+              </p>
+            </div>
           </div>
         )}
       </div>
