@@ -193,6 +193,7 @@ const ListofUser: React.FC = () => {
                                             Role={user ? user.Role : ""}
                                             Department={user ? user.Department : ""}
                                             TSM={user ? user.TSM : ""}
+                                            fetchUsers={fetchUsers}
                                         />
                                         <Pagination
                                             currentPage={currentPage}
