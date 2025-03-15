@@ -22,6 +22,7 @@ interface GroupedData {
     targetQuota: number;
     parPercentage: number;
     preparationQuoteCount: number;
+    salesorderCount: number;
     OutboundCalls: number;
     records: Post[];
 }
@@ -82,6 +83,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                     targetQuota: post.targetquota * (activeTab === "YTD" ? 12 : 1),
                     parPercentage,
                     preparationQuoteCount: 0,
+                    salesorderCount: 0,
                     OutboundCalls: 0,
                     records: [],
                 };
@@ -91,6 +93,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
             acc[key].totalSOAmount += post.soamount;
             acc[key].totalActualSales += post.actualsales;
             acc[key].preparationQuoteCount += post.typeactivity === "Preparation: Preparation of Quote: Existing Client" || post.typeactivity === "Preparation: Preparation of Quote: New Client" ? 1 : 0;
+            acc[key].salesorderCount += post.typeactivity === "Preparation: Sales Order Preparation" ? 1 : 0;
             acc[key].OutboundCalls += post.typeactivity === "Outbound Call" ? 1 : 0;
 
             return acc;
@@ -114,17 +117,17 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                         <th className="py-2 px-4 border">Agent</th>
                         <th className="py-2 px-4 border">{activeTab === "MTD" ? "Month" : "Year"}</th>
                         <th className="py-2 px-4 border">Target</th>
-                        <th className="py-2 px-4 border">(MTD) # of Calls</th>
                         <th className="py-2 px-4 border">(MTD) # of Quote</th>
-                        <th className="py-2 px-4 border">% Calls to Quote</th>
+                        <th className="py-2 px-4 border">(MTD) # of SO</th>
+                        <th className="py-2 px-4 border">% Quote to SO</th>
                         <th className="py-2 px-4 border">Target</th>
                     </tr>
                 </thead>
                 <tbody>
                     {Object.keys(groupedData).length > 0 ? (
                         Object.values(groupedData).map((group) => {
-                            const percentageCalls = group.OutboundCalls > 0
-                                ? (group.preparationQuoteCount / group.OutboundCalls) * 100
+                            const percentageCalls = group.preparationQuoteCount > 0
+                                ? (group.salesorderCount / group.preparationQuoteCount) * 100
                                 : 0;
 
                             return (
@@ -132,7 +135,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                                     <td className="py-2 px-4 border capitalize font-bold bg-gray-100">{group.AgentFirstname} {group.AgentLastname}<br /><span className="text-gray-900 text-[8px]">({group.ReferenceID})</span></td>
                                     <td className="py-2 px-4 border capitalize">{group.date_created}</td>
                                     <td className="py-2 px-4 border">₱{formatCurrency(group.targetQuota)}</td>
-                                    <td className="py-2 px-4 border">{group.OutboundCalls}</td>
+                                    <td className="py-2 px-4 border">{group.salesorderCount}</td>
                                     <td className="py-2 px-4 border">{group.preparationQuoteCount}</td>
                                     <td className="py-2 px-4 border">{percentageCalls.toFixed(2)}%</td>
                                     <td className="py-2 px-4 border font-semibold">

@@ -7,7 +7,7 @@ import UserFetcher from "../../../components/User/UserFetcher";
 // Components
 import AddPostForm from "../../../components/ClientActivityBoard/ListofCompanies/AddUserForm";
 import SearchFilters from "../../../components/ConversionRates/CallsToQuote/SearchFilters";
-import UsersTable from "../../../components/ConversionRates/CallsToQuote/UsersTable";
+import UsersTable from "../../../components/ConversionRates/QuoteToSO/UsersTable";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -168,7 +168,7 @@ const ListofUser: React.FC = () => {
                             ) : (
                                 <>
                                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Calls to Quote</h2>
+                                        <h2 className="text-lg font-bold mb-2">Quote to SO</h2>
                                         <p className="text-xs text-gray-600 mb-2">
                                             This section offers a comprehensive overview of each agent's sales performance, tracking both Month-to-Date (MTD) and Year-to-Date (YTD) sales. It highlights the agent’s progress in meeting sales targets and provides a detailed evaluation of their overall performance, including achievements and sales ratings.
                                         </p>
