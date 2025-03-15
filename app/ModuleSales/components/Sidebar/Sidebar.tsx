@@ -17,7 +17,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
-  const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", });
+  const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", });
   const router = useRouter();
 
 
@@ -41,6 +41,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
           Location: data.Location || "Philippines",
           Role: data.Role || "Admin",
           Company: data.Company || "Ecoshift Corporation",
+          Status: data.Status || "None",
         });
       } catch (error) {
         console.error("Error fetching user details:", error);
@@ -243,12 +244,28 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
 
         {/* User Details Section */}
         {!collapsed && (
-          <div className="p-8 text-xs text-left border-b">
-            <p className="font-bold uppercase">
+          <div className="p-6 text-xs text-left border-b">
+            <p className="font-bold uppercase text-sm">
               {userDetails.Firstname}, {userDetails.Lastname}
             </p>
             <p>{userDetails.Company}</p>
-            <p>( {userDetails.Role} )</p>
+            <p className="italic">( {userDetails.Role} )</p>
+            <span
+              className={`text-white text-[8px] font-semibold px-3 py-1 rounded-full inline-block mt-2 ${userDetails.Status === "Active"
+                  ? "bg-green-900"
+                  : userDetails.Status === "Inactive"
+                    ? "bg-red-700"
+                    : userDetails.Status === "Locked"
+                      ? "bg-gray-500"
+                      : userDetails.Status === "Busy"
+                        ? "bg-yellow-500"
+                        : userDetails.Status === "Do Not Disturb"
+                          ? "bg-gray-800"
+                          : "bg-blue-500"
+                }`}
+            >
+              {userDetails.Status}
+            </span>
           </div>
         )}
 
