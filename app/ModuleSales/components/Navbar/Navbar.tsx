@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { CiClock2, CiMenuBurger, CiUser, CiSettings, CiBellOn, CiCircleRemove, CiDark, CiSun } from "react-icons/ci";
+import { CiClock2, CiMenuBurger, CiUser, CiSettings, CiBellOn, CiCircleRemove, CiDark, CiSun, CiSearch } from "react-icons/ci";
 
 interface Notification {
   id: number;
@@ -14,12 +14,25 @@ interface Notification {
   typecall: string;
 }
 
+interface SidebarSubLink {
+  title: string;
+  href: string;
+}
+
+interface SidebarLink {
+  title: string;
+  href?: string; // Main links may not have href if they contain subItems
+  subItems?: SidebarSubLink[]; // Nested subItems
+}
+
 interface NavbarProps {
   onToggleSidebar: () => void;
   onToggleTheme: () => void;
+  isDarkMode: boolean;
+  sidebarLinks: SidebarLink[];
 }
 
-const Navbar: React.FC<{ onToggleSidebar: () => void; onToggleTheme: () => void; isDarkMode: boolean }> = ({ onToggleSidebar, onToggleTheme, isDarkMode, }) => {
+const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkMode, sidebarLinks }) => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userReferenceId, setUserReferenceId] = useState("");
@@ -38,6 +51,40 @@ const Navbar: React.FC<{ onToggleSidebar: () => void; onToggleTheme: () => void;
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  
+const handleSearch = (e: React.FormEvent) => {
+  e.preventDefault();
+
+  setIsSearching(true); // Start loading state
+
+  setTimeout(() => {
+    if (!sidebarLinks || sidebarLinks.length === 0) {
+      alert("No menu items available.");
+      setIsSearching(false);
+      return;
+    }
+
+    // Flatten subItems into a single array
+    const allLinks = sidebarLinks.flatMap(item => item.subItems || []);
+
+    // Search within subItems
+    const matchedLink = allLinks.find(link =>
+      link.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    if (matchedLink) {
+      router.push(matchedLink.href);
+    } else {
+      alert("No matching page found.");
+    }
+
+    setIsSearching(false); // Stop loading state after search
+  }, 1000); // Simulated delay for UX
+};
+
 
   // Ensure dark mode applies correctly when `isDarkMode` changes
   useEffect(() => {
@@ -232,13 +279,25 @@ const Navbar: React.FC<{ onToggleSidebar: () => void; onToggleTheme: () => void;
 
   return (
     <div className={`sticky top-0 z-100 flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
-      <div className="flex items-center">
+      <div className="flex items-center space-x-4">
         <button onClick={onToggleSidebar} className="p-2">
           <CiMenuBurger />
         </button>
-        <span className="flex items-center border shadow-md text-xs font-medium  px-3 py-1 rounded-full">
+
+        <span className="flex items-center border shadow-md text-xs font-medium px-3 py-1 rounded-full">
           <CiClock2 size={15} className="mr-1" /> {currentTime}
         </span>
+
+        {/* Search Bar */}
+      <form onSubmit={handleSearch} className="relative">
+        <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+        <input type="text" placeholder="Search directories.." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 pr-3 py-1 text-sm border rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 capitalize"/>
+        {isSearching && (
+    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">
+      Loading...
+    </span>
+  )}
+      </form>
       </div>
 
       <div className="relative flex items-center text-center text-xs gap-2" ref={dropdownRef}>
