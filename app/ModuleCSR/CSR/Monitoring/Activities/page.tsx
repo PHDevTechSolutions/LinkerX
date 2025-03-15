@@ -231,7 +231,8 @@ const ActivityPage: React.FC = () => {
                                     <>
                                         <div className="flex justify-between items-center mb-4">
                                             <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded flex items-center gap-1" onClick={() => setShowForm(true)}>
-                                                <CiCirclePlus size={20} />Add Ticket</button>
+                                                <CiCirclePlus size={20} />Add Ticket
+                                            </button>
                                         </div>
                                         <h2 className="text-lg font-bold mb-2">Tickets Summary</h2>
                                         <p className="text-xs text-gray-600 mb-4">

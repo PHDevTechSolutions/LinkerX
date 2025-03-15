@@ -10,6 +10,7 @@ import AccountsTable from "../../../components/Accounts/AccountsTable";
 import Pagination from "../../../components/Accounts/Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { CiCirclePlus } from "react-icons/ci";
 
 const AccountListPage: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -27,7 +28,7 @@ const AccountListPage: React.FC = () => {
         try {
             const response = await fetch("/api/ModuleCSR/Accounts/FetchAccounts"); // Correct API route
             if (!response.ok) throw new Error("Failed to fetch accounts");
-    
+
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -35,7 +36,7 @@ const AccountListPage: React.FC = () => {
             console.error("Error fetching accounts:", error);
         }
     };
-    
+
 
     useEffect(() => {
         fetchAccounts();
@@ -116,9 +117,14 @@ const AccountListPage: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
-                                            <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded" onClick={() => setShowForm(true)}>Add Account</button>
+                                            <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded flex items-center gap-1" onClick={() => setShowForm(true)}>
+                                                <CiCirclePlus size={20} />Add Account
+                                            </button>
                                         </div>
-                                        <h2 className="text-lg font-bold mb-2">Client Accounts</h2>
+                                        <h2 className="text-lg font-bold mb-2">Client Account Management</h2>
+                                        <p className="text-xs text-gray-600 mb-4">
+                                            This section provides an overview of client accounts, allowing users to search, filter, and manage records efficiently. Users can refine the results by entering a search term, selecting a city address, or adjusting the number of records displayed per page.
+                                        </p>
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                             <SearchFilters
                                                 searchTerm={searchTerm}

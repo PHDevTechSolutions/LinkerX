@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import { CiSquareChevLeft, CiSquareChevRight } from "react-icons/ci";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -143,12 +143,12 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
     return (
         <div className="p-4 bg-white rounded-lg shadow">
             <div className="flex items-center justify-between mb-4">
-                <button onClick={handlePrevDate} className="p-2 border rounded">
-                    <AiOutlineLeft size={15} />
+                <button onClick={handlePrevDate} className="rounded">
+                    <CiSquareChevLeft size={30} />
                 </button>
                 <h3 className="text-md font-bold">{currentFormattedDate}</h3>
-                <button onClick={handleNextDate} className="p-2 border rounded">
-                    <AiOutlineRight size={15} />
+                <button onClick={handleNextDate} className="rounded">
+                    <CiSquareChevRight size={30} />
                 </button>
             </div>
 

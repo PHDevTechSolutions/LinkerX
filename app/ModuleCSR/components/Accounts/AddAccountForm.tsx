@@ -4,11 +4,12 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import FormFields from "./AccountFormFields";
+import { CiSaveUp1, CiCircleRemove, CiEdit } from "react-icons/ci";
 
-interface AddAccountFormProps { 
-  onCancel: () => void; 
+interface AddAccountFormProps {
+  onCancel: () => void;
   refreshPosts: () => void;  // Add a refreshPosts callback
-  userName: any; 
+  userName: any;
   editPost?: any; // Optional prop for the post being edited
 }
 
@@ -64,7 +65,8 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ onCancel, refreshPosts,
   return (
     <>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
-        <h2 className="text-xs font-bold mb-4">{editPost ? "Edit Account" : "Add New Account"}</h2>
+        <h2 className="text-xs font-bold mb-4">{editPost ? "Modify Account Details" : "Register New"}</h2>
+        <p className="mb-2">This section allows users to either add a new client account or edit an existing one. The form captures essential details such as the company name, customer name, gender, contact number, email, city address, customer segment, and customer type. When editing an account, the fields are pre-filled with existing data for easy modification.</p>
         <FormFields
           CompanyName={CompanyName}
           setCompanyName={setCompanyName}
@@ -85,8 +87,11 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ onCancel, refreshPosts,
           editPost={editPost}
         />
         <div className="flex justify-between">
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded text-xs">{editPost ? "Update" : "Submit"}</button>
-          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs" onClick={onCancel}>Cancel</button>
+          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
+            {editPost ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
+            {editPost ? "Update" : "Submit"}
+          </button>
+          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} />Cancel</button>
         </div>
       </form>
       <ToastContainer className="text-xs" autoClose={1000} />
