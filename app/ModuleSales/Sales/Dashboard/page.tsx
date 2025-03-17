@@ -1,15 +1,27 @@
 "use client";  // If you're using Next.js, ensure this is at the top of the file
 
 import React, { useState, useEffect } from "react";
-import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js';
-import { Chart } from 'react-chartjs-2';
 import ParentLayout from "../../components/Layouts/ParentLayout";
 import SessionChecker from "../../components/Session/SessionChecker";
+
+// Charts
+import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js';
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement);
+
+// Icons
 import { BsBuildings } from "react-icons/bs";
 import { CiTimer, CiInboxIn, CiInboxOut, CiMoneyBill, CiReceipt, CiWallet, CiStopwatch, CiSquareChevLeft, CiSquareChevRight } from "react-icons/ci";
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement);
+// Maps
+import dynamic from "next/dynamic";
+import "leaflet/dist/leaflet.css";
+// Import Leaflet components dynamically to avoid SSR issues
+const MapContainer = dynamic(() => import("react-leaflet").then((mod) => mod.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import("react-leaflet").then((mod) => mod.TileLayer), { ssr: false });
+const Marker = dynamic(() => import("react-leaflet").then((mod) => mod.Marker), { ssr: false });
+const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), { ssr: false });
+
 
 type Activity = {
   date_created: string; // or Date if it's a Date object
@@ -83,6 +95,57 @@ const DashboardPage: React.FC = () => {
 
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
+
+  const [L, setL] = useState<any>(null);
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [customIcon, setCustomIcon] = useState<any>(null);
+  const [address, setAddress] = useState<string>("Fetching address...");
+
+  useEffect(() => {
+    (async () => {
+      const leaflet = await import("leaflet");
+      setL(leaflet);
+
+      // Fix for Next.js marker icon issue
+      setCustomIcon(
+        leaflet.divIcon({
+          className: "custom-marker",
+          html: `<div style="font-size: 24px; color: red;">📍</div>`,
+          iconSize: [24, 24],
+          iconAnchor: [12, 24],
+        })
+      );
+    })();
+  }, []);
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation({ lat: latitude, lng: longitude });
+
+          // Fetch address from Nominatim API
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.display_name) {
+                setAddress(data.display_name);
+              } else {
+                setAddress("Address not found");
+              }
+            })
+            .catch(() => setAddress("Error fetching address"));
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          setAddress("Unable to get location");
+        }
+      );
+    } else {
+      setAddress("Geolocation is not supported by this browser.");
+    }
+  }, []);
 
   const [chartData, setChartData] = useState<ChartData>({
     labels: [], // Initial empty array for labels
@@ -385,7 +448,6 @@ const DashboardPage: React.FC = () => {
 
     fetchDashboardData();
   }, [userDetails.ReferenceID]);
-
 
   const convertToHMS = (hours: number) => {
     const totalSeconds = Math.floor(hours * 3600);
@@ -755,6 +817,24 @@ const DashboardPage: React.FC = () => {
               </div>
             </>
           )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 mb-4">
+            <h3 className="text-xs font-semibold">Current Location</h3>
+            <div className="bg-white text-white shadow-md rounded-lg p-2 flex items-center w-full h-64">
+              {location ? (
+                <MapContainer center={[location.lat, location.lng]} zoom={13} className="w-full h-full rounded-lg">
+                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                  <Marker position={[location.lat, location.lng]} icon={customIcon}>
+                    <Popup>You are here</Popup>
+                  </Marker>
+                </MapContainer>
+              ) : (
+                <p>Loading map...</p>
+              )}
+            </div>
+            {/* Display Address Here */}
+            <p className="text-xs font-semibold">📍 {address}</p>
+          </div>
         </div>
       </ParentLayout>
     </SessionChecker>
