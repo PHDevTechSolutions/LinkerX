@@ -16,21 +16,30 @@ export async function POST(req: NextRequest) {
 
     const { activitystatus, activityremarks, startdate, enddate, referenceid, manager, tsm } = data;
 
-    // Prepare SQL query
-    const query = `
+    // Prepare SQL queries for both tables
+    const activityQuery = `
       INSERT INTO activity (activitystatus, activityremarks, startdate, enddate, referenceid, manager, tsm, date_created)
       VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') RETURNING *;
     `;
+    const progressQuery = `
+      INSERT INTO progress (activitystatus, activityremarks, startdate, enddate, referenceid, manager, tsm, date_created)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') RETURNING *;
+    `;
+    
     const values = [activitystatus, activityremarks, startdate, enddate, referenceid, manager, tsm];
 
-    // Execute query
-    const result = await sql(query, values);
+    // Execute queries for both tables
+    const activityResult = await sql(activityQuery, values);
+    const progressResult = await sql(progressQuery, values);
 
-    return NextResponse.json({ success: true, data: result }, { status: 201 });
-  } catch (error: any) {
-    console.error("Error inserting activity:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to submit activity." },
+      { success: true, activityData: activityResult, progressData: progressResult },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.error("Error inserting data:", error);
+    return NextResponse.json(
+      { success: false, error: error.message || "Failed to submit data." },
       { status: 500 }
     );
   }
