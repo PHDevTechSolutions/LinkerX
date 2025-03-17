@@ -10,6 +10,7 @@ interface Post {
     soamount: number;
     actualsales: number;
     typeactivity: string;
+    activitystatus: string;
 }
 
 interface GroupedData {
@@ -23,6 +24,7 @@ interface GroupedData {
     parPercentage: number;
     preparationQuoteCount: number;
     salesorderCount: number;
+    siCount: number;
     OutboundCalls: number;
     records: Post[];
 }
@@ -84,6 +86,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                     parPercentage,
                     preparationQuoteCount: 0,
                     salesorderCount: 0,
+                    siCount: 0,
                     OutboundCalls: 0,
                     records: [],
                 };
@@ -94,6 +97,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
             acc[key].totalActualSales += post.actualsales;
             acc[key].preparationQuoteCount += post.typeactivity === "Preparation: Preparation of Quote: Existing Client" || post.typeactivity === "Preparation: Preparation of Quote: New Client" ? 1 : 0;
             acc[key].salesorderCount += post.typeactivity === "Preparation: Sales Order Preparation" ? 1 : 0;
+            acc[key].siCount += post.activitystatus === "Done" ? 1 : 0;
             acc[key].OutboundCalls += post.typeactivity === "Outbound Call" ? 1 : 0;
 
             return acc;
@@ -117,9 +121,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                         <th className="py-2 px-4 border">Agent</th>
                         <th className="py-2 px-4 border">{activeTab === "MTD" ? "Month" : "Year"}</th>
                         <th className="py-2 px-4 border">Target</th>
-                        <th className="py-2 px-4 border">(MTD) # of Quote</th>
                         <th className="py-2 px-4 border">(MTD) # of SO</th>
-                        <th className="py-2 px-4 border">% Quote to SO</th>
+                        <th className="py-2 px-4 border">(MTD) # of SI</th>
+                        <th className="py-2 px-4 border">% SO to SI</th>
                         <th className="py-2 px-4 border">Target</th>
                     </tr>
                 </thead>
@@ -127,7 +131,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                     {Object.keys(groupedData).length > 0 ? (
                         Object.values(groupedData).map((group) => {
                             const percentageCalls = group.preparationQuoteCount > 0
-                                ? (group.salesorderCount / group.preparationQuoteCount) * 100
+                                ? (group.siCount / group.salesorderCount) * 100
                                 : 0;
 
                             return (
@@ -136,15 +140,15 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                                     <td className="py-2 px-4 border capitalize">{group.date_created}</td>
                                     <td className="py-2 px-4 border">₱{formatCurrency(group.targetQuota)}</td>
                                     <td className="py-2 px-4 border">{group.salesorderCount}</td>
-                                    <td className="py-2 px-4 border">{group.preparationQuoteCount}</td>
+                                    <td className="py-2 px-4 border">{group.siCount}</td>
                                     <td className="py-2 px-4 border">{percentageCalls.toFixed(2)}%</td>
                                     <td className="py-2 px-4 border font-semibold">
-                                        {percentageCalls > 30 ? (
+                                        {percentageCalls > 70 ? (
                                             <span className="text-green-600 ml-2 mr-2">&#8593;</span>
                                         ) : (
                                             <span className="text-red-600 ml-2 mr-2">&#8595;</span>
                                         )}
-                                         30%
+                                         70%
                                     </td>
                                 </tr>
                             );
