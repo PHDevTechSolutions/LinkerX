@@ -69,7 +69,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
                 <td className="py-2 px-4 border capitalize whitespace-nowrap ">{post.typecall}</td>
                 <td className="py-2 px-4 border uppercase whitespace-nowrap ">{post.typeactivity}</td>
                 <td className="py-2 px-4 border uppercase whitespace-nowrap ">{post.callstatus}</td>
-                <td className="py-2 px-4 border uppercase whitespace-nowrap ">{post.remarks}</td>
+                <td className="py-2 px-4 border uppercase whitespace-nowrap">
+                  {post.remarks ? post.remarks : post.activityremarks}
+                </td>
+
                 <td className="py-2 px-4 border uppercase whitespace-nowrap "></td>
                 <td className="py-2 px-4 border uppercase whitespace-nowrap ">
                   <span className={`px-2 py-1 rounded-full text-white text-[8px] font-bold 

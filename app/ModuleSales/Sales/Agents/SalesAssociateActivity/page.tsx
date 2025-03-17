@@ -109,7 +109,10 @@ const ListofUser: React.FC = () => {
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
         ? posts.filter((post) => {
-            const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesSearchTerm =
+                post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                post?.activitystatus?.toLowerCase().includes(searchTerm.toLowerCase());
+
 
             const postDate = post.date_created ? new Date(post.date_created) : null;
             const isWithinDateRange = (
