@@ -14,6 +14,9 @@ import { BsBuildings } from "react-icons/bs";
 import { CiTimer, CiInboxIn, CiInboxOut, CiMoneyBill, CiReceipt, CiWallet, CiStopwatch, CiSquareChevLeft, CiSquareChevRight, CiPlay1, CiSaveDown1 } from "react-icons/ci";
 import { BsRecord } from "react-icons/bs";
 
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 // Maps
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
@@ -48,6 +51,13 @@ interface ChartData {
     borderWidth: number;
     borderRadius: number;
   }[];
+}
+
+interface ActivityPayload {
+  activitystatus: string;
+  startdate: string;  // Assuming both startdate and enddate are strings (ISO 8601 datetime format)
+  enddate: string;
+  activityremarks: string;
 }
 
 const DashboardPage: React.FC = () => {
@@ -107,6 +117,12 @@ const DashboardPage: React.FC = () => {
   const [currentDateTime, setCurrentDateTime] = useState("");
   const [currentDateTimeTimer, setCurrentDateTimeTimer] = useState("");
   const [timerDisplay, setTimerDisplay] = useState("--:--:--");
+
+  const [activitystatus, setActivityStatus] = useState(""); // For the activity status
+  const [activityremarks, setActivityRemarks] = useState<string>(''); // Initialize the state
+ // For the activity status
+  const [startdate, setStartDate] = useState(""); // For the start date
+  const [enddate, setEndDate] = useState(""); // For the end date
 
   useEffect(() => {
     (async () => {
@@ -270,9 +286,9 @@ const DashboardPage: React.FC = () => {
   };
 
   // Handle Save button logic
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsTimerRunning(false);
-    setIsTimerStopped(true);  // Mark timer as stopped
+    setIsTimerStopped(true); // Mark timer as stopped
     setTimerDisplay("--:--:--");
     setCurrentDateTimeTimer(""); // Reset the timer display
 
@@ -286,7 +302,51 @@ const DashboardPage: React.FC = () => {
 
     // Restart the timer from the current time
     setCurrentDateTimeTimer(newCurrentDateTime); // Set timer display to the new time
+
+    // Check if all required fields are filled except activityremarks (since it's hidden)
+    if (!activitystatus || !currentDateTime || !currentDateTimeTimer) {
+      alert("Please ensure all fields are filled before saving.");
+      return; // Stop the function if any required field is missing
+    }
+
+    // Prepare the payload for submission
+    const payload: ActivityPayload = {
+      activitystatus,
+      activityremarks: address, // Adding the remarks field (it will be included even if hidden)
+      startdate: currentDateTime, // This should represent the start time
+      enddate: currentDateTimeTimer, // This should represent the stop time
+    };
+
+    // Trigger handleSubmit for API submission
+    await handleSubmit(payload);
   };
+
+  const handleSubmit = async (payload: ActivityPayload) => {
+    try {
+      const response = await fetch('/api/ModuleSales/Task/DailyActivity/CreateActivity', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      // Check if the response is okay
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Activity saved:", data);
+        toast.success("Activity saved successfully!"); // Show success toast
+      } else {
+        const errorText = await response.text(); // Get raw error message or HTML
+        console.error("Error saving activity:", errorText);
+        toast.error("Error saving activity: " + errorText); // Show error toast
+      }
+    } catch (error) {
+      console.error("Error saving activity:", error);
+      toast.error("An unexpected error occurred while saving activity."); // Show unexpected error toast
+    }
+  };
+  
 
   const [chartData, setChartData] = useState<ChartData>({
     labels: [], // Initial empty array for labels
@@ -800,7 +860,7 @@ const DashboardPage: React.FC = () => {
 
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
                   <div className="flex flex-col items-center">
-                    <select
+                    <select value={activitystatus} onChange={(e) => setActivityStatus(e.target.value)}
                       className="text-xs text-gray-900 px-3 py-2 border rounded w-full"
                       required
                     >
@@ -809,12 +869,14 @@ const DashboardPage: React.FC = () => {
                       <option value="On Site">On Site</option>
                       <option value="On Field">On Field</option>
                     </select>
+                    <input type="hidden" value={address} onChange={(e) => setActivityRemarks(e.target.value)} className="text-xs text-gray-900 px-3 py-2 border rounded w-full" />
+
                   </div>
 
                   <div className="flex flex-col items-center">
                     <input
                       type="datetime-local"
-                      value={currentDateTime}
+                      value={currentDateTime} onChange={(e) => setStartDate(e.target.value)}
                       readOnly
                       className="text-xs text-gray-900 px-3 py-2 border rounded w-full"
                     />
@@ -823,7 +885,7 @@ const DashboardPage: React.FC = () => {
                   <div className="flex flex-col items-center">
                     <input
                       type="datetime-local"
-                      value={currentDateTimeTimer}
+                      value={currentDateTimeTimer} onChange={(e) => setEndDate(e.target.value)}
                       readOnly
                       className="text-xs text-gray-900 px-3 py-2 border rounded w-full"
                     />
@@ -1046,7 +1108,7 @@ const DashboardPage: React.FC = () => {
               </div>
             </>
           )}
-
+          <ToastContainer className="text-xs" />
         </div>
       </ParentLayout>
     </SessionChecker>
