@@ -95,7 +95,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }, 1000); // Simulated delay for UX
   };
 
-
   // Ensure dark mode applies correctly when `isDarkMode` changes
   useEffect(() => {
     if (isDarkMode) {

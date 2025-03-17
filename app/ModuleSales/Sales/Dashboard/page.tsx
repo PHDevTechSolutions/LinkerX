@@ -11,7 +11,8 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale,
 
 // Icons
 import { BsBuildings } from "react-icons/bs";
-import { CiTimer, CiInboxIn, CiInboxOut, CiMoneyBill, CiReceipt, CiWallet, CiStopwatch, CiSquareChevLeft, CiSquareChevRight } from "react-icons/ci";
+import { CiTimer, CiInboxIn, CiInboxOut, CiMoneyBill, CiReceipt, CiWallet, CiStopwatch, CiSquareChevLeft, CiSquareChevRight, CiPlay1, CiSaveDown1 } from "react-icons/ci";
+import { BsRecord } from "react-icons/bs";
 
 // Maps
 import dynamic from "next/dynamic";
@@ -101,6 +102,12 @@ const DashboardPage: React.FC = () => {
   const [customIcon, setCustomIcon] = useState<any>(null);
   const [address, setAddress] = useState<string>("Fetching address...");
 
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [isTimerStopped, setIsTimerStopped] = useState(false);
+  const [currentDateTime, setCurrentDateTime] = useState("");
+  const [currentDateTimeTimer, setCurrentDateTimeTimer] = useState("");
+  const [timerDisplay, setTimerDisplay] = useState("--:--:--");
+
   useEffect(() => {
     (async () => {
       const leaflet = await import("leaflet");
@@ -146,6 +153,140 @@ const DashboardPage: React.FC = () => {
       setAddress("Geolocation is not supported by this browser.");
     }
   }, []);
+
+  const formatDateTime = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Manila",
+    });
+  };
+
+  // Effect to update currentDateTime continuously unless the timer is running
+
+  useEffect(() => {
+    const now = new Date();
+    const manilaTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+
+    // Set initial datetime when the component mounts (stays fixed)
+    setCurrentDateTime(formatDateTime(manilaTime));
+    setCurrentDateTimeTimer(formatDateTime(manilaTime));
+
+    const storedTimer = localStorage.getItem("timerState");
+    const storedCurrentDateTime = localStorage.getItem("currentDateTime");
+
+    if (storedCurrentDateTime) {
+      setCurrentDateTime(storedCurrentDateTime);  // Update `currentDateTime` from storage
+    }
+
+    if (storedTimer) {
+      const { isRunning, startTime, elapsedTime } = JSON.parse(storedTimer);
+
+      if (isRunning) {
+        setIsTimerRunning(true);
+        const updatedTime = new Date(new Date().getTime() - elapsedTime);
+        setTimerDisplay(formatTime(updatedTime));
+        setCurrentDateTimeTimer(formatDateTime(updatedTime)); // Timer keeps updating when running
+      }
+    }
+  }, []);
+
+  // Effect to handle timer running state
+  useEffect(() => {
+    if (isTimerRunning) return; // Don't update currentDateTime when the timer is running
+
+    const updateCurrentTime = () => {
+      const now = new Date();
+      const manilaTime = new Date(
+        now.toLocaleString("en-US", { timeZone: "Asia/Manila" })
+      );
+      setCurrentDateTime(formatDateTime(manilaTime)); // Continuously update currentDateTime
+    };
+
+    updateCurrentTime();
+    const interval = setInterval(updateCurrentTime, 1000); // Update every second
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [isTimerRunning]);
+
+  useEffect(() => {
+    if (!isTimerRunning) return;
+
+    const updateTime = () => {
+      const now = new Date();
+      const manilaTime = new Date(
+        now.toLocaleString("en-US", { timeZone: "Asia/Manila" })
+      );
+      setCurrentDateTimeTimer(formatDateTime(manilaTime)); // Update timer display
+      setTimerDisplay(formatTime(manilaTime)); // Display time in readable format
+
+      localStorage.setItem(
+        "timerState",
+        JSON.stringify({ isRunning: true, startTime: manilaTime })
+      );
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+
+    return () => clearInterval(interval);
+  }, [isTimerRunning]);
+
+  // Handle Start/Stop button logic
+  const handleStartStop = () => {
+    if (!isTimerRunning) {
+      const startTime = new Date();
+      setIsTimerRunning(true);
+      setIsTimerStopped(false);
+      localStorage.setItem(
+        "timerState",
+        JSON.stringify({
+          isRunning: true,
+          startTime: startTime.toISOString(),
+          elapsedTime: 0,
+        })
+      );
+    } else {
+      setLoading(true);
+      setTimeout(() => {
+        setIsTimerRunning(false);
+        setIsTimerStopped(true);
+        setLoading(false);
+        localStorage.removeItem("timerState");
+        localStorage.setItem("currentDateTime", currentDateTime); // Store current time when stopped
+      }, 2000);
+    }
+  };
+
+  // Handle Save button logic
+  const handleSave = () => {
+    setIsTimerRunning(false);
+    setIsTimerStopped(true);  // Mark timer as stopped
+    setTimerDisplay("--:--:--");
+    setCurrentDateTimeTimer(""); // Reset the timer display
+
+    // Set currentDateTime to the current time and resume its update
+    const now = new Date();
+    const newCurrentDateTime = formatDateTime(now);
+    setCurrentDateTime(newCurrentDateTime); // Set currentDateTime to the new time
+
+    // Store the new currentDateTime in localStorage
+    localStorage.setItem("currentDateTime", newCurrentDateTime);
+
+    // Restart the timer from the current time
+    setCurrentDateTimeTimer(newCurrentDateTime); // Set timer display to the new time
+  };
 
   const [chartData, setChartData] = useState<ChartData>({
     labels: [], // Initial empty array for labels
@@ -653,6 +794,94 @@ const DashboardPage: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-1 flex items-center gap-4 mb-4">
+                <h3 className="text-xs font-semibold">Current Location</h3>
+
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
+                  <div className="flex flex-col items-center">
+                    <select
+                      className="text-xs text-gray-900 px-3 py-2 border rounded w-full"
+                      required
+                    >
+                      <option>Select Activity</option>
+                      <option value="Client Visit">Client Visit</option>
+                      <option value="On Site">On Site</option>
+                      <option value="On Field">On Field</option>
+                    </select>
+                  </div>
+
+                  <div className="flex flex-col items-center">
+                    <input
+                      type="datetime-local"
+                      value={currentDateTime}
+                      readOnly
+                      className="text-xs text-gray-900 px-3 py-2 border rounded w-full"
+                    />
+                  </div>
+
+                  <div className="flex flex-col items-center">
+                    <input
+                      type="datetime-local"
+                      value={currentDateTimeTimer}
+                      readOnly
+                      className="text-xs text-gray-900 px-3 py-2 border rounded w-full"
+                    />
+                  </div>
+
+                  {/* Timer and Buttons */}
+                  <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+                    {!isTimerStopped ? (
+                      <button
+                        onClick={handleStartStop}
+                        className={`flex items-center justify-center gap-2 text-xs text-white px-4 py-2 rounded w-full
+                          ${isTimerRunning ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"}`}
+                        disabled={loading}
+                      >
+                        {!isTimerRunning ? (
+                          <CiPlay1 size={20} />
+                        ) : (
+                          <>
+                            <BsRecord size={20} />
+                            {loading && (
+                              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                            )}
+                          </>
+                        )}
+                        {isTimerRunning ? "Stop" : "Start"}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleSave}
+                        className="flex items-center gap-2 text-xs text-white bg-green-500 px-4 py-2 rounded hover:bg-green-600 w-full"
+                      >
+                        <CiSaveDown1 size={20} />
+                        Save
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Timer Display */}
+                  <div className="flex items-center text-xs font-medium text-center w-full">
+                    Timer: {timerDisplay || "--:--:--"}
+                  </div>
+                </div>
+
+                <div className="bg-white text-white shadow-md rounded-lg p-2 flex items-center w-full h-64">
+                  {location ? (
+                    <MapContainer center={[location.lat, location.lng]} zoom={13} className="w-full h-full rounded-lg">
+                      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                      <Marker position={[location.lat, location.lng]} icon={customIcon}>
+                        <Popup>You are here</Popup>
+                      </Marker>
+                    </MapContainer>
+                  ) : (
+                    <p>Loading map...</p>
+                  )}
+                </div>
+                {/* Display Address Here */}
+                <p className="text-xs font-semibold">📍 {address}</p>
+              </div>
             </>
           )}
 
@@ -818,23 +1047,6 @@ const DashboardPage: React.FC = () => {
             </>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 mb-4">
-            <h3 className="text-xs font-semibold">Current Location</h3>
-            <div className="bg-white text-white shadow-md rounded-lg p-2 flex items-center w-full h-64">
-              {location ? (
-                <MapContainer center={[location.lat, location.lng]} zoom={13} className="w-full h-full rounded-lg">
-                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                  <Marker position={[location.lat, location.lng]} icon={customIcon}>
-                    <Popup>You are here</Popup>
-                  </Marker>
-                </MapContainer>
-              ) : (
-                <p>Loading map...</p>
-              )}
-            </div>
-            {/* Display Address Here */}
-            <p className="text-xs font-semibold">📍 {address}</p>
-          </div>
         </div>
       </ParentLayout>
     </SessionChecker>
