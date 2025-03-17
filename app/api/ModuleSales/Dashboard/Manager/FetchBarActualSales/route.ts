@@ -16,26 +16,23 @@ const sql = neon(databaseUrl);
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const tsm = searchParams.get("tsm");
-    let selectedMonth = searchParams.get("month");
-    let selectedYear = searchParams.get("year");
+    const manager = searchParams.get("manager");
+    const selectedMonth = searchParams.get("month");
+    const selectedYear = searchParams.get("year");
 
-    if (!tsm) {
-      return NextResponse.json({ success: false, error: "tsm is required." }, { status: 400 });
+    if (!manager) {
+      return NextResponse.json({ success: false, error: "manager is required." }, { status: 400 });
     }
 
-    // If no month or year is provided, use the current month and year
     if (!selectedMonth || !selectedYear) {
-      const currentDate = new Date();
-      selectedMonth = (currentDate.getMonth() + 1).toString(); // Months are 0-based
-      selectedYear = currentDate.getFullYear().toString();
+      return NextResponse.json({ success: false, error: "Month and Year are required." }, { status: 400 });
     }
 
     // Fetch total actual sales filtered by selected month and year
     const salesResult = await sql`
       SELECT DATE(date_created) AS date_created, COALESCE(SUM(actualsales), 0) AS totalActualSales
       FROM progress 
-      WHERE tsm = ${tsm}
+      WHERE manager = ${manager}
       AND EXTRACT(MONTH FROM date_created) = ${selectedMonth}
       AND EXTRACT(YEAR FROM date_created) = ${selectedYear}
       GROUP BY DATE(date_created)

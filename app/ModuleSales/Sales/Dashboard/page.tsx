@@ -43,15 +43,19 @@ const DashboardPage: React.FC = () => {
 
   const [totalInbound, setTotalInbound] = useState<number>(0);
   const [tsmtotalInbound, setTsmTotalInbound] = useState<number>(0);
+  const [managertotalInbound, setManagerTotalInbound] = useState<number>(0);
 
   const [totalOutbound, setTotalOutbound] = useState<number>(0);
   const [tsmtotalOutbound, setTsmTotalOutbound] = useState<number>(0);
+  const [managertotalOutbound, setManagerTotalOutbound] = useState<number>(0);
 
   const [totalAccounts, setTotalAccounts] = useState<number>(0);
   const [tsmtotalAccounts, setTsmTotalAccounts] = useState<number>(0);
+  const [managertotalAccounts, setManagerTotalAccounts] = useState<number>(0);
 
   const [totalActualSales, setTotalActualSales] = useState<number>(0);
   const [tsmtotalActualSales, setTsmTotalActualSales] = useState<number>(0);
+  const [managertotalActualSales, setManagerTotalActualSales] = useState<number>(0);
 
   const [totalSalesOrder, setTotalSalesOrder] = useState<number>(0);
   const [totalQuotationAmount, setTotalQuotationAmount] = useState<number>(0);
@@ -77,6 +81,9 @@ const DashboardPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+
   const [chartData, setChartData] = useState<ChartData>({
     labels: [], // Initial empty array for labels
     datasets: [
@@ -91,53 +98,6 @@ const DashboardPage: React.FC = () => {
     ],
   });
 
-  useEffect(() => {
-    const fetchSalesData = async () => {
-      try {
-        const response = await fetch(
-          `/api/ModuleSales/Dashboard/TSM/FetchBarActualSales?tsm=${encodeURIComponent(userDetails.ReferenceID)}`
-        );
-        const data = await response.json();
-
-        if (data.success && Array.isArray(data.data)) {
-          // Process the sales data to get sales by day (already aggregated)
-          const salesByDay = data.data.reduce((acc: Record<string, number>, sale: { date_created: string; actualsales: number }) => {
-            const date = sale.date_created; // The date is already formatted as 'YYYY-MM-DD'
-            acc[date] = (acc[date] || 0) + sale.actualsales; // Sum up the sales for each date
-            return acc;
-          }, {});
-
-          // Sort the dates in ascending order
-          const sortedDates = Object.keys(salesByDay).sort((a, b) => (new Date(a).getTime() - new Date(b).getTime()));
-          const sortedSalesValues = sortedDates.map(date => salesByDay[date]);
-
-          // Update chart data state
-          setChartData({
-            labels: sortedDates, // Sorted dates as labels in ascending order
-            datasets: [
-              {
-                label: "Total Actual Sales per Day",
-                data: sortedSalesValues, // Sorted sales values
-                backgroundColor: "rgba(75, 192, 192, 0.6)",
-                borderColor: "rgba(75, 192, 192, 1)",
-                borderWidth: 1,
-                borderRadius: 10,
-              },
-            ],
-          });
-        } else {
-          console.error("Failed to fetch sales data:", data.error);
-        }
-      } catch (error) {
-        console.error("Error fetching sales data:", error);
-      }
-    };
-
-    if (userDetails.ReferenceID) {
-      fetchSalesData();
-    }
-  }, [userDetails.ReferenceID]);
-
   const options = {
     responsive: true,
     plugins: {
@@ -147,6 +107,111 @@ const DashboardPage: React.FC = () => {
       },
     },
   };
+
+  const [chartManagerData, setChartManagerData] = useState<ChartData>({
+    labels: [], // Initial empty array for labels
+    datasets: [
+      {
+        label: "Total Actual Sales per Day",
+        data: [], // Initial empty array for data
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+        borderRadius: 10,
+      },
+    ],
+  });
+
+  const fetchSalesData = async (month: string, year: string) => {
+    try {
+      if (!month || !year) return;
+
+      const tsmResponse = await fetch(
+        `/api/ModuleSales/Dashboard/TSM/FetchBarActualSales?tsm=${encodeURIComponent(userDetails.ReferenceID)}&month=${month}&year=${year}`
+      );
+      const tsmData = await tsmResponse.json();
+
+      const managerResponse = await fetch(
+        `/api/ModuleSales/Dashboard/Manager/FetchBarActualSales?manager=${encodeURIComponent(userDetails.ReferenceID)}&month=${month}&year=${year}`
+      );
+      const managerData = await managerResponse.json();
+
+      const filterDataByMonthYear = (data: { date_created: string; actualsales: number }[]) => {
+        return data.filter((sale) => {
+          const saleDate = new Date(sale.date_created);
+          const saleMonth = saleDate.getMonth() + 1; // Months are 0-based
+          const saleYear = saleDate.getFullYear();
+          return saleMonth === parseInt(month) && saleYear === parseInt(year);
+        });
+      };
+
+      if (tsmData.success && Array.isArray(tsmData.data)) {
+        const filteredTSMData = filterDataByMonthYear(tsmData.data);
+        const salesByDayTSM = filteredTSMData.reduce((acc: Record<string, number>, sale) => {
+          const date = sale.date_created;
+          acc[date] = (acc[date] || 0) + sale.actualsales;
+          return acc;
+        }, {});
+
+        const sortedDatesTSM = Object.keys(salesByDayTSM).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+        const sortedSalesTSM = sortedDatesTSM.map((date) => salesByDayTSM[date]);
+
+        setChartData({
+          labels: sortedDatesTSM,
+          datasets: [
+            {
+              label: "Total Actual Sales per Day (TSM)",
+              data: sortedSalesTSM,
+              backgroundColor: "rgba(75, 192, 192, 0.6)",
+              borderColor: "rgba(75, 192, 192, 1)",
+              borderWidth: 1,
+              borderRadius: 10,
+            },
+          ],
+        });
+      }
+
+      if (managerData.success && Array.isArray(managerData.data)) {
+        const filteredManagerData = filterDataByMonthYear(managerData.data);
+        const salesByDayManager = filteredManagerData.reduce((acc: Record<string, number>, sale) => {
+          const date = sale.date_created;
+          acc[date] = (acc[date] || 0) + sale.actualsales;
+          return acc;
+        }, {});
+
+        const sortedDatesManager = Object.keys(salesByDayManager).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+        const sortedSalesManager = sortedDatesManager.map((date) => salesByDayManager[date]);
+
+        setChartManagerData({
+          labels: sortedDatesManager,
+          datasets: [
+            {
+              label: "Total Actual Sales per Day (Manager)",
+              data: sortedSalesManager,
+              backgroundColor: "rgba(29, 168, 150, 0.6)",
+              borderColor: "rgb(31, 164, 187)",
+              borderWidth: 1,
+              borderRadius: 10,
+            },
+          ],
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching sales data:", error);
+    }
+  };
+
+  const handleFilterChange = (month: string, year: string) => {
+    setSelectedMonth(month);
+    setSelectedYear(year);
+  };
+
+  // Fetch data when month/year changes
+  useEffect(() => {
+    if (userDetails.ReferenceID && selectedMonth && selectedYear) {
+      fetchSalesData(selectedMonth, selectedYear);
+    }
+  }, [userDetails.ReferenceID, selectedMonth, selectedYear]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -193,57 +258,61 @@ const DashboardPage: React.FC = () => {
 
     const fetchDashboardData = async () => {
       try {
-        const baseUrls = `/api/ModuleSales/Dashboard/`;
-        const tsmBaseUrls = `/api/ModuleSales/Dashboard/TSM/`;
+        const baseURL = "/api/ModuleSales/Dashboard/";
+        const tsmBaseURL = "/api/ModuleSales/Dashboard/TSM/";
+        const managerBaseURL = "/api/ModuleSales/Dashboard/Manager/";
 
-        const commonCalls = [
-          fetch(`${baseUrls}FetchWorkingHours?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`${baseUrls}FetchCalls?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`${baseUrls}FetchAccount?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`${baseUrls}FetchActualSales?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`${baseUrls}FetchSalesOrder?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`${baseUrls}FetchQuotationAmount?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`${baseUrls}FetchTotalActivity?referenceID=${encodeURIComponent(userDetails.ReferenceID)}`),
-        ];
+        const encodeID = encodeURIComponent(userDetails.ReferenceID);
 
-        const tsmCalls = [
-          fetch(`${tsmBaseUrls}FetchCalls?tsm=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`${tsmBaseUrls}FetchAccount?tsm=${encodeURIComponent(userDetails.ReferenceID)}`),
-          fetch(`${tsmBaseUrls}FetchActualSales?tsm=${encodeURIComponent(userDetails.ReferenceID)}`),
-        ];
+        // Common API calls
+        const commonEndpoints = [
+          `FetchWorkingHours?referenceID=${encodeID}`,
+          `FetchCalls?referenceID=${encodeID}`,
+          `FetchAccount?referenceID=${encodeID}`,
+          `FetchActualSales?referenceID=${encodeID}`,
+          `FetchSalesOrder?referenceID=${encodeID}`,
+          `FetchQuotationAmount?referenceID=${encodeID}`,
+          `FetchTotalActivity?referenceID=${encodeID}`,
+        ].map((endpoint) => fetch(baseURL + endpoint));
 
-        // Use Promise.all to fetch all common data and TSM-specific data
-        const [commonRes, tsmRes] = await Promise.all([
-          Promise.all(commonCalls),
-          Promise.all(tsmCalls),
+        // TSM API calls
+        const tsmEndpoints = [
+          `FetchCalls?tsm=${encodeID}`,
+          `FetchAccount?tsm=${encodeID}`,
+          `FetchActualSales?tsm=${encodeID}`,
+        ].map((endpoint) => fetch(tsmBaseURL + endpoint));
+
+        // Manager API calls
+        const managerEndpoints = [
+          `FetchCalls?manager=${encodeID}`,
+          `FetchAccount?manager=${encodeID}`,
+          `FetchActualSales?manager=${encodeID}`,
+        ].map((endpoint) => fetch(managerBaseURL + endpoint));
+
+        // Fetch all data concurrently
+        const [commonRes, tsmRes, managerRes] = await Promise.all([
+          Promise.all(commonEndpoints),
+          Promise.all(tsmEndpoints),
+          Promise.all(managerEndpoints),
         ]);
 
+        // Extract responses
         const [hoursRes, callsRes, accountRes, actualSalesRes, salesOrderRes, quotationAmountRes, activityRes] = commonRes;
         const [tsmCallsRes, tsmAccountRes, tsmActualSalesRes] = tsmRes;
+        const [managerCallsRes, managerAccountRes, managerActualSalesRes] = managerRes;
 
-        if (
-          !hoursRes.ok ||
-          !callsRes.ok ||
-          !accountRes.ok ||
-          !actualSalesRes.ok ||
-          !salesOrderRes.ok ||
-          !quotationAmountRes.ok ||
-          !activityRes.ok
-        ) {
-          throw new Error("Failed to fetch dashboard data");
+        // Validate all responses
+        const allCommonResponses = [hoursRes, callsRes, accountRes, actualSalesRes, salesOrderRes, quotationAmountRes, activityRes];
+        if (!allCommonResponses.every((res) => res.ok)) {
+          throw new Error("Failed to fetch common dashboard data");
         }
 
-        const [hoursData, callsData, accountData, actualSalesData, salesOrderData, quotationAmountData, activityData] = await Promise.all([
-          hoursRes.json(),
-          callsRes.json(),
-          accountRes.json(),
-          actualSalesRes.json(),
-          salesOrderRes.json(),
-          quotationAmountRes.json(),
-          activityRes.json(),
-        ]);
+        // Convert responses to JSON
+        const [hoursData, callsData, accountData, actualSalesData, salesOrderData, quotationAmountData, activityData] = await Promise.all(
+          allCommonResponses.map((res) => res.json())
+        );
 
-        // Update common dashboard data
+        // Update state for common data
         if (hoursData.success) {
           setTotalHours(hoursData.totalHours);
           convertToHMS(hoursData.totalHours);
@@ -274,13 +343,9 @@ const DashboardPage: React.FC = () => {
           setTotalActivityCount(activityData.totalActivityCount);
         }
 
-        // Update TSM-specific data
-        if (tsmCallsRes.ok && tsmAccountRes.ok && tsmActualSalesRes.ok) {
-          const [tsmCallsData, tsmAccountData, tsmActualSalesData] = await Promise.all([
-            tsmCallsRes.json(),
-            tsmAccountRes.json(),
-            tsmActualSalesRes.json(),
-          ]);
+        // Fetch and update TSM data
+        if (tsmRes.every((res) => res.ok)) {
+          const [tsmCallsData, tsmAccountData, tsmActualSalesData] = await Promise.all(tsmRes.map((res) => res.json()));
 
           if (tsmCallsData.success) {
             setTsmTotalInbound(tsmCallsData.totalInbound);
@@ -296,6 +361,23 @@ const DashboardPage: React.FC = () => {
           }
         }
 
+        // Fetch and update Manager data
+        if (managerRes.every((res) => res.ok)) {
+          const [managerCallsData, managerAccountData, managerActualSalesData] = await Promise.all(managerRes.map((res) => res.json()));
+
+          if (managerCallsData.success) {
+            setManagerTotalInbound(managerCallsData.totalInbound);
+            setManagerTotalOutbound(managerCallsData.totalOutbound);
+          }
+
+          if (managerAccountData.success) {
+            setManagerTotalAccounts(managerAccountData.totalAccounts);
+          }
+
+          if (managerActualSalesData.success) {
+            setManagerTotalActualSales(managerActualSalesData.totalActualSales);
+          }
+        }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       }
@@ -303,6 +385,7 @@ const DashboardPage: React.FC = () => {
 
     fetchDashboardData();
   }, [userDetails.ReferenceID]);
+
 
   const convertToHMS = (hours: number) => {
     const totalSeconds = Math.floor(hours * 3600);
@@ -345,8 +428,8 @@ const DashboardPage: React.FC = () => {
     <SessionChecker>
       <ParentLayout>
         <div className="container mx-auto p-4">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xs font-semibold">My Activity Today</h3>
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <h3 className="text-xs font-semibold whitespace-nowrap">My Activity Today</h3>
           </div>
 
           {userDetails.Role === "Territory Sales Associate" && (
@@ -511,6 +594,87 @@ const DashboardPage: React.FC = () => {
             </>
           )}
 
+          {userDetails.Role === "Manager" && (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                {/* Total Inbound Calls */}
+                <div className="bg-green-900 text-white shadow-md rounded-lg p-6 flex items-center">
+                  <CiInboxIn className="text-4xl mr-4" />
+                  <div>
+                    <h3 className="text-xs font-bold mb-1">Total Inbound Calls</h3>
+                    <p className="text-sm font-semibold">{managertotalInbound}</p>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-600 text-white shadow-md rounded-lg p-6 flex items-center">
+                  <CiInboxOut className="text-4xl mr-4" />
+                  <div>
+                    <h3 className="text-xs font-bold mb-1">Total Outbound Calls</h3>
+                    <p className="text-sm font-semibold">{managertotalOutbound}</p>
+                  </div>
+                </div>
+
+                <div className="bg-red-700 text-white shadow-md rounded-lg p-6 flex items-center">
+                  <BsBuildings className="text-4xl mr-4" />
+                  <div>
+                    <h3 className="text-xs font-bold mb-1">Total Company Accounts</h3>
+                    <p className="text-sm font-semibold">{managertotalAccounts ?? 0}</p>
+                  </div>
+                </div>
+
+                <div className="bg-orange-500 text-white shadow-md rounded-lg p-6 flex items-center">
+                  <CiMoneyBill className="text-4xl mr-4" />
+                  <div>
+                    <h3 className="text-xs font-bold mb-1">Actual Sales</h3>
+                    <p className="text-sm font-semibold">{managertotalActualSales.toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Large Charts Below */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+                <div className="bg-white shadow-md rounded-lg p-4 flex flex-col lg:col-span-4">
+                  {/* Card Header */}
+                  <div className="mb-3">
+                    <h3 className="text-base font-semibold text-gray-800">Daily Sales Order to Delivery Summary</h3>
+                    <p className="text-xs text-gray-600">An overview of the daily sales orders successfully converted into deliveries.</p>
+                  </div>
+
+                  {/* Chart Container */}
+                  <div className="flex-grow">
+                    <div className="flex flex-wrap items-center justify-end gap-2 mb-4">
+                      <select
+                        className="px-3 py-2 border rounded text-xs text-gray-900 capitalize bg-gray-100 max-w-[150px]"
+                        value={selectedMonth}
+                        onChange={(e) => handleFilterChange(e.target.value, selectedYear)}
+                      >
+                        <option value="">Select Month</option>
+                        {[
+                          "January", "February", "March", "April", "May", "June",
+                          "July", "August", "September", "October", "November", "December"
+                        ].map((month, index) => (
+                          <option key={month} value={index + 1}>{month}</option>
+                        ))}
+                      </select>
+
+                      <select
+                        className="px-3 py-2 border rounded text-xs text-gray-900 capitalize bg-gray-100 max-w-[150px]"
+                        value={selectedYear}
+                        onChange={(e) => handleFilterChange(selectedMonth, e.target.value)}
+                      >
+                        <option value="">Select Year</option>
+                        {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map((year) => (
+                          <option key={year} value={year}>{year}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <Bar data={chartManagerData} options={options} />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
           {userDetails.Role === "Territory Sales Manager" && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
@@ -559,6 +723,32 @@ const DashboardPage: React.FC = () => {
 
                   {/* Chart Container */}
                   <div className="flex-grow">
+                    <div className="flex flex-wrap items-center justify-end gap-2 mb-4">
+                      <select
+                        className="px-3 py-2 border rounded text-xs text-gray-900 capitalize bg-gray-100 max-w-[150px]"
+                        value={selectedMonth}
+                        onChange={(e) => handleFilterChange(e.target.value, selectedYear)}
+                      >
+                        <option value="">Select Month</option>
+                        {[
+                          "January", "February", "March", "April", "May", "June",
+                          "July", "August", "September", "October", "November", "December"
+                        ].map((month, index) => (
+                          <option key={month} value={index + 1}>{month}</option>
+                        ))}
+                      </select>
+
+                      <select
+                        className="px-3 py-2 border rounded text-xs text-gray-900 capitalize bg-gray-100 max-w-[150px]"
+                        value={selectedYear}
+                        onChange={(e) => handleFilterChange(selectedMonth, e.target.value)}
+                      >
+                        <option value="">Select Year</option>
+                        {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map((year) => (
+                          <option key={year} value={year}>{year}</option>
+                        ))}
+                      </select>
+                    </div>
                     <Bar data={chartData} options={options} />
                   </div>
                 </div>
