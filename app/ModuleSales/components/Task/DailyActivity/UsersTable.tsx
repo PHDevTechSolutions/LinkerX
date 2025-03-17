@@ -2,8 +2,9 @@ import React, { useEffect, useState, useRef } from "react";
 import { format, parseISO, addDays, startOfWeek, startOfMonth, endOfMonth} from "date-fns";
 import { CiSquareChevLeft, CiSquareChevRight, CiViewBoard, CiViewColumn, CiViewTable, CiEdit, CiMapPin, CiTrash, CiMenuKebab, CiBookmarkPlus, CiBookmarkMinus, CiRepeat } from "react-icons/ci";
 import { FcAssistant, FcCollaboration, FcBullish, FcPaid, FcAddressBook, FcFullTrash, FcAlarmClock, FcPodiumWithAudience, FcConferenceCall, FcReading } from "react-icons/fc";
-
-const socketURL = "http://localhost:3001";
+import { FaMapLocationDot } from "react-icons/fa6";
+import { MdLocationCity } from "react-icons/md";
+import { RiUserLocationLine } from "react-icons/ri";
 
 interface UsersCardProps {
     posts: any[];
@@ -184,7 +185,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
 
 
                                         {/* Card Header - Company Name */}
-                                        {!["Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
+                                        {!["Client Visit", "On Site", "On Field", "Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
                                             <div className="card-header mb-2 pb-2 flex justify-between items-center relative">
                                                 {/* CSR Inquiries Label - Centered at the Top */}
                                                 {user.typeclient === "CSR Inquiries" && (
@@ -315,8 +316,32 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                             </div>
                                         )}
 
+                                        {/* Only show certain fields based on activitystatus */}
+                                        {["Client Visit", "On Site", "On Field"].includes(user.activitystatus) && (
+                                            <div className="mt-2 text-xs">
+                                                {/* Background and Icon Changes based on Activity Status */}
+                                                <div className={`p-2 rounded-lg text-white flex items-center gap-2
+                                                ${user.activitystatus === "Client Visit" ? "bg-gray-700" :
+                                                        user.activitystatus === "On Site" ? "bg-violet-700" :
+                                                            user.activitystatus === "On Field" ? "bg-yellow-700" :
+                                                                                ""}`}>
+
+                                                    {user.activitystatus === "Client Visit" && (<FaMapLocationDot size={20} />)}
+                                                    {user.activitystatus === "On Site" && (<MdLocationCity size={20} />)}
+                                                    {user.activitystatus === "On Field" && (<RiUserLocationLine size={20} />)}
+
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <p>{user.activitystatus}</p>
+                                                    </div>
+                                                </div>
+                                                <p className="mt-2">Location: {user.activityremarks}</p>
+                                                <p className="mt-2"><strong>Duration:</strong> {format(parseISO(user.startdate), "MMM dd, yyyy - h:mm:ss a")} - {format(parseISO(user.enddate), "MMM dd, yyyy - h:mm:ss a")}</p>
+
+                                            </div>
+                                        )}
+
                                         {/* Status Badge */}
-                                        {!["Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
+                                        {!["Client Visit", "On Site", "On Field", "Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
                                             <div className="card-footer text-xs flex justify-between items-center mt-2 border-t-2 pt-2">
                                                 <p><strong>Date Created:</strong> {format(parseISO(user.date_created), "MMM dd, yyyy - h:mm:ss a")}</p>
 

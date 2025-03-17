@@ -58,6 +58,9 @@ interface ActivityPayload {
   startdate: string;  // Assuming both startdate and enddate are strings (ISO 8601 datetime format)
   enddate: string;
   activityremarks: string;
+  referenceid: string;
+  manager: string;
+  tsm: string;
 }
 
 const DashboardPage: React.FC = () => {
@@ -120,6 +123,9 @@ const DashboardPage: React.FC = () => {
 
   const [activitystatus, setActivityStatus] = useState(""); // For the activity status
   const [activityremarks, setActivityRemarks] = useState<string>(''); // Initialize the state
+  const [ReferenceID, setReferenceID] = useState<string>('');
+  const [Manager, setManager] = useState<string>('');
+  const [TSM, setTsm] = useState<string>('');
  // For the activity status
   const [startdate, setStartDate] = useState(""); // For the start date
   const [enddate, setEndDate] = useState(""); // For the end date
@@ -313,6 +319,9 @@ const DashboardPage: React.FC = () => {
     const payload: ActivityPayload = {
       activitystatus,
       activityremarks: address, // Adding the remarks field (it will be included even if hidden)
+      referenceid: userDetails.ReferenceID,
+      manager: userDetails.Manager,
+      tsm: userDetails.TSM,
       startdate: currentDateTime, // This should represent the start time
       enddate: currentDateTimeTimer, // This should represent the stop time
     };
@@ -870,6 +879,9 @@ const DashboardPage: React.FC = () => {
                       <option value="On Field">On Field</option>
                     </select>
                     <input type="hidden" value={address} onChange={(e) => setActivityRemarks(e.target.value)} className="text-xs text-gray-900 px-3 py-2 border rounded w-full" />
+                    <input type="hidden" value={userDetails.ReferenceID} onChange={(e) => setReferenceID(e.target.value)} className="text-xs text-gray-900 px-3 py-2 border rounded w-full" />
+                    <input type="hidden" value={userDetails.TSM} onChange={(e) => setTsm(e.target.value)} className="text-xs text-gray-900 px-3 py-2 border rounded w-full" />
+                    <input type="hidden" value={userDetails.Manager} onChange={(e) => setManager(e.target.value)} className="text-xs text-gray-900 px-3 py-2 border rounded w-full" />
 
                   </div>
 
