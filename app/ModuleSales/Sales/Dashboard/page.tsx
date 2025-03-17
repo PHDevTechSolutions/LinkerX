@@ -126,7 +126,7 @@ const DashboardPage: React.FC = () => {
   const [ReferenceID, setReferenceID] = useState<string>('');
   const [Manager, setManager] = useState<string>('');
   const [TSM, setTsm] = useState<string>('');
- // For the activity status
+  // For the activity status
   const [startdate, setStartDate] = useState(""); // For the start date
   const [enddate, setEndDate] = useState(""); // For the end date
 
@@ -339,7 +339,7 @@ const DashboardPage: React.FC = () => {
         },
         body: JSON.stringify(payload),
       });
-  
+
       // Check if the response is okay
       if (response.ok) {
         const data = await response.json();
@@ -355,7 +355,7 @@ const DashboardPage: React.FC = () => {
       toast.error("An unexpected error occurred while saving activity."); // Show unexpected error toast
     }
   };
-  
+
 
   const [chartData, setChartData] = useState<ChartData>({
     labels: [], // Initial empty array for labels
@@ -941,7 +941,7 @@ const DashboardPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-white text-white shadow-md rounded-lg p-2 flex items-center w-full h-64">
+                <div className="bg-white text-white shadow-md rounded-lg p-2 flex items-center w-full" style={{ height: "80vh" }}>
                   {location ? (
                     <MapContainer center={[location.lat, location.lng]} zoom={13} className="w-full h-full rounded-lg">
                       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -953,6 +953,7 @@ const DashboardPage: React.FC = () => {
                     <p>Loading map...</p>
                   )}
                 </div>
+
                 {/* Display Address Here */}
                 <p className="text-xs font-semibold">📍 {address}</p>
               </div>
