@@ -33,6 +33,7 @@ type Activity = {
   remarks: string;
   activitystatus: string;
   companyname: string;
+  activityremarks: string;
 };
 
 interface Post {
@@ -802,7 +803,9 @@ const DashboardPage: React.FC = () => {
                                       {activity.activitystatus}
                                     </span>
                                   </td>
-                                  <td className="py-4 px-6">{activity.remarks}</td>
+                                  <td className="py-4 px-6">
+                                    {activity.remarks ? activity.remarks : activity.activityremarks}
+                                  </td>
                                 </tr>
                               );
                             })
