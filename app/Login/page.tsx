@@ -19,8 +19,9 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!captchaValue) {
-      alert("Please verify that you are not a robot!");
+      toast.error("Please verify that you are not a robot!");
       return;
     }
 
@@ -35,7 +36,7 @@ const Login: React.FC = () => {
       const response = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ Email, Password, Department, recaptchaToken: captchaValue, }),
+        body: JSON.stringify({ Email, Password, Department, recaptchaToken: captchaValue }),
       });
 
       const result = await response.json();
@@ -62,7 +63,6 @@ const Login: React.FC = () => {
           const lockTime = new Date(result.lockUntil);
           setLockUntil(lockTime.toLocaleString());
           toast.error(`Account locked! Try again after ${lockTime.toLocaleString()}.`);
-
         } else {
           toast.error(result.message || "Login failed!");
         }
@@ -126,9 +126,7 @@ const Login: React.FC = () => {
           )}
 
           <div className="mb-4">
-            <ReCAPTCHA
-              sitekey="6Ld7uPcqAAAAAGg0XRahPebOA9nXeJh9ymt-hj7m" // Palitan ng actual site key mo
-              onChange={(value) => setCaptchaValue(value)}
+            <ReCAPTCHA className="mb-2" sitekey="6Ld7uPcqAAAAAGg0XRahPebOA9nXeJh9ymt-hj7m" onChange={(value) => setCaptchaValue(value)}
             />
             <button
               type="submit"

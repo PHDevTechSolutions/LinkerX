@@ -3,6 +3,19 @@ import { validateUser } from "@/lib/MongoDB";
 import { serialize } from "cookie";
 import { connectToDatabase } from "@/lib/MongoDB";
 
+const RECAPTCHA_SECRET = process.env.RECAPTCHA_SECRET_KEY;
+
+async function verifyRecaptcha(token: string) {
+  const response = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `secret=${RECAPTCHA_SECRET}&response=${token}`,
+  });
+
+  const data = await response.json();
+  return data.success;
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -11,23 +24,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { Email, Password, Department, recaptchaToken } = req.body;
 
   if (!Email || !Password || !Department || !recaptchaToken) {
-    return res.status(400).json({ message: "All fields are required, including reCAPTCHA." });
+    return res.status(400).json({ message: "All fields and reCAPTCHA are required." });
   }
 
-  // **Step 1: Verify reCAPTCHA Token**
-  const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
-  const recaptchaResponse = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `secret=${recaptchaSecret}&response=${recaptchaToken}`,
-  });
-
-  const recaptchaData = await recaptchaResponse.json();
-  if (!recaptchaData.success || recaptchaData.score < 0.5) {
+  // Verify reCAPTCHA
+  const isHuman = await verifyRecaptcha(recaptchaToken);
+  if (!isHuman) {
     return res.status(400).json({ message: "reCAPTCHA verification failed. Please try again." });
   }
 
-  // **Step 2: Database Operations After Captcha Validation**
   const db = await connectToDatabase();
   const usersCollection = db.collection("users");
 
@@ -37,8 +42,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json({ message: "Invalid credentials." });
   }
 
+  // Lock account logic (50 years)
   const now = new Date();
-  const lockDuration = 50 * 365 * 24 * 60 * 60 * 1000; // 50 years
+  const lockDuration = 50 * 365 * 24 * 60 * 60 * 1000;
   const lockUntil = user.LockUntil ? new Date(user.LockUntil) : null;
 
   if (user.Status === "Locked" && lockUntil && lockUntil > now) {
@@ -103,7 +109,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       sameSite: "strict",
-      maxAge: 60 * 60 * 24, // 1 day
+      maxAge: 60 * 60 * 24,
       path: "/",
     })
   );
