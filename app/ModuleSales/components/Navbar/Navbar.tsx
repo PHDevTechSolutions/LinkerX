@@ -138,99 +138,24 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
     const fetchNotificationsAndInquiries = async () => {
       try {
-        // Fetch all necessary data concurrently
-        const [callbackRes, inquiryRes, typecallRes] = await Promise.all([
-          fetch(`/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`),
-          fetch(`/api/ModuleSales/Task/CSRInquiries/FetchInquiryNotif?referenceId=${userReferenceId}`),
-          fetch(`/api/ModuleSales/Task/Callback/FetchTypeCall?tsm=${userReferenceId}`),
-        ]);
+        // Fetch the callback data
+        const callbackRes = await fetch(`/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`);
+        const callbackData = await callbackRes.json();
 
-        const [callbackData, inquiryData, typecallData] = await Promise.all([
-          callbackRes.json(),
-          inquiryRes.json(),
-          typecallRes.json(),
-        ]);
-
-        if (!callbackData.success || !inquiryData.success || !typecallData.success) return;
+        if (!callbackData.success) return;
 
         const dismissedIds = new Set(JSON.parse(localStorage.getItem("dismissedNotifications") || "[]"));
-
-        // Get the current date and time in Manila timezone
-        const getManilaTime = () => {
-          return new Date(new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Manila" }).format(new Date()));
-        };
-
-        const currentTime = getManilaTime();
-
-        // Function to calculate notification time limit
-        const getNotificationTimeLimit = (typecall: string) => {
-          const timeLimits: Record<string, number> = {
-            "Sent Quotation - Standard": -1,
-            "Sent Quotation - With Special Price": -1,
-            "Follow Up Pending": -1,
-            "Sent Quotation - With SPF": -5,
-            "Ringing Only": -10,
-            "No Requirement": -15,
-            "Not Connected With The Company": -0.0104, // 15 minutes in days
-            "Waiting for Projects": -30,
-            "Cannot Be Reached": -3,
-          };
-
-          if (typecall in timeLimits) {
-            return new Date(currentTime.getTime() + timeLimits[typecall] * 24 * 60 * 60 * 1000);
-          }
-
-          if (typecall === "With SPFS") {
-            return new Date(currentTime.getTime() + 7 * 24 * 60 * 60 * 1000);
-          }
-
-          return currentTime;
-        };
 
         // Process callback notifications
         const validCallbacks = callbackData.data
           .filter((notif: any) =>
-            notif.typeactivity === "Outbound Call" &&
-            notif.callback &&
-            new Date(notif.callback) <= currentTime &&
-            !dismissedIds.has(notif.id)
+            notif.typeactivity === "Outbound Call" && notif.callback && !dismissedIds.has(notif.id)
           )
-          .sort((a: any, b: any) => new Date(b.callback).getTime() - new Date(a.callback).getTime());
+          .sort((a: any, b: any) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime());
 
-        // Process inquiry notifications
-        const validInquiries = inquiryData.data
-          .filter((inquiry: any) =>
-            new Date(inquiry.date_created) <= currentTime &&
-            !dismissedIds.has(inquiry.id)
-          )
-          .map((inquiry: any) => ({
-            id: inquiry.id,
-            companyname: inquiry.companyname,
-            typeactivity: "New Inquiry",
-            date_created: inquiry.date_created,
-            typeclient: inquiry.typeclient,
-          }));
-
-        // Process typecall notifications
-        const validTypeCalls = typecallData.data
-          .filter((typecall: any) => {
-            const notificationTimeLimit = getNotificationTimeLimit(typecall.typecall);
-            return new Date(typecall.date_created) <= notificationTimeLimit && !dismissedIds.has(typecall.id);
-          })
-          .map((typecall: any) => ({
-            id: typecall.id,
-            companyname: typecall.companyname,
-            typecall: typecall.typecall,
-            date_created: typecall.date_created,
-          }));
-
-        // Combine all notifications and sort
-        const allNotifications = [...validCallbacks, ...validInquiries, ...validTypeCalls].sort(
-          (a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
-        );
-
-        setNotifications(allNotifications);
-        setNotificationCount(allNotifications.length);
+        // Update notifications state
+        setNotifications(validCallbacks);
+        setNotificationCount(validCallbacks.length);
       } catch (error) {
         console.error("Error fetching notifications and inquiries:", error);
       }
@@ -240,6 +165,8 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     const interval = setInterval(fetchNotificationsAndInquiries, 10000);
     return () => clearInterval(interval);
   }, [userReferenceId]);
+
+
 
   // Handle notification click (removes from list and stores in localStorage)
   const handleNotificationClick = (notifId: number) => {
@@ -329,66 +256,47 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           </div>
         </button>
 
-        {/* Notification Icon */}
+        {/* Notifications */}
         <button
           onClick={() => {
-            // Only open modal if the notification count is 0 and modal is not already open
-            if (!modalOpen && notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback || !!notif.typecall).length === 0) {
-              openModal(); // Open modal only if it's not already open and there are no notifications
-            } else {
-              setShowNotifications(!showNotifications); // Toggle notification visibility
-            }
+            setShowNotifications((prevState) => !prevState); // Toggle notification visibility
           }}
-          disabled={modalOpen} // Disable the bell if the modal is open
+          disabled={modalOpen} // Disable button if modal is open
           className="p-2 relative flex items-center"
         >
           <CiBellOn size={20} />
-          {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback || !!notif.typecall).length > 0 && (
+          {notifications.length > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback || !!notif.typecall).length}
+              {notifications.length}
             </span>
           )}
         </button>
 
+        {/* Notification Dropdown */}
         {showNotifications && notifications.length > 0 && (
           <div ref={notificationRef} className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-300 rounded shadow-lg z-50 p-2">
             <h3 className="text-xs font-semibold px-2 py-1 border-b flex justify-between items-center">
-              <span className="text-gray-900" >Notifications</span>
+              <span className="text-gray-900">Notifications</span>
               <button className="flex items-center gap-2 text-xs text-gray-900" onClick={openModal}>
-                <CiSettings className="text-xs " /> All
+                <CiSettings className="text-xs" /> All
               </button>
             </h3>
 
-            {notifications.filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback || !!notif.typecall).length > 0 ? (
+            {notifications.length > 0 ? (
               <ul className="overflow-auto max-h-60">
                 {notifications
-                  .filter((notif) => notif.typeactivity !== "Outbound Call" || !!notif.callback || !!notif.typecall) // Ensure callback is not null
+                  .filter((notif) => !!notif.callback) // Only show notifications with a callback
+                  .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created
                   .map((notif) => (
                     <li
                       key={notif.id}
                       onClick={() => handleNotificationClick(notif.id)}
-                      className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100 text-xs text-gray-900 capitalize"
+                      className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100 text-gray-900 capitalize"
                     >
-                      {notif.typeactivity === "Outbound Call" ? (
+                      {notif.typeactivity === "Outbound Call" && (
                         <>
                           <strong>You have a callback in {notif.companyname}.</strong> Please make a call or activity.
-                          <span className="text-[8px] mt-1 block">
-                            {notif.callback ? new Date(notif.callback).toLocaleString() : "Invalid Date"}
-                          </span>
-                        </>
-                      ) : notif.typecall ? (
-                        <>
-                          <strong>You have a new follow up status</strong> {notif.typecall} from <strong>{notif.companyname}.</strong>
-                          <span className="text-[8px] mt-1 block">
-                            {new Date(notif.date_created).toLocaleString()}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <strong>You have a new Inquiry from {notif.companyname}.</strong> From: {notif.typeclient}.
-                          <span className="text-[8px] mt-1 block">
-                            {new Date(notif.date_created).toLocaleString()}
-                          </span>
+                          <span className="text-[8px] mt-1 block">{new Date(notif.callback).toLocaleString()}</span>
                         </>
                       )}
                     </li>
@@ -397,55 +305,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
             ) : (
               <p className="text-xs p-2 text-gray-500 text-center">No new notifications</p>
             )}
-          </div>
-        )}
-
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-[30%] max-w-3xl max-h-[80vh] overflow-y-auto">
-              <h2 className="text-lg font-semibold mb-4">All Past Notifications</h2>
-              <div className="max-h-[60vh] overflow-y-auto text-left">
-                {allNotifications.length > 0 ? (
-                  <ul>
-                    {allNotifications.map((notif) => (
-                      <li
-                        key={notif.id}
-                        className="px-4 py-3 border-b text-xs hover:bg-gray-100 whitespace-normal break-words capitalize"
-                      >
-                        {notif.typeactivity === "Outbound Call" ? (
-                          <>
-                            <strong>{notif.companyname}:</strong> Callback at{" "}
-                            {new Date(notif.callback).toLocaleString()}
-                          </>
-                        ) : notif.typecall ? (
-                          <>
-                            <strong>You have a new follow up status</strong> {notif.typecall} from <strong>{notif.companyname}.</strong>
-                            <span className="text-gray-500 text-xs mt-1 block">
-                              {new Date(notif.date_created).toLocaleString()}
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <strong>{notif.companyname}:</strong> from {notif.typeclient}.
-                            <span className="text-gray-500 text-xs mt-1 block">
-                              {new Date(notif.date_created).toLocaleString()}
-                            </span>
-                          </>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-center text-gray-500 text-sm">No past notifications available.</p>
-                )}
-
-              </div>
-              <div className="mt-4 flex justify-end">
-                <button onClick={closeModal} className="px-4 py-2 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 flex items-center gap-1">
-                  <CiCircleRemove size={20} /> Close
-                </button>
-              </div>
-            </div>
           </div>
         )}
 
