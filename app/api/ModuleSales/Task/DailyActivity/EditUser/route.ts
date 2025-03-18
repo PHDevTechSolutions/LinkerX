@@ -9,7 +9,7 @@ if (!databaseUrl) {
 const sql = neon(databaseUrl);
 
 /**
- * Updates an existing user in the database and inserts progress.
+ * Updates an existing user in the database and inserts progress and notification.
  * @param userDetails - The updated details of the user.
  * @returns Success or error response.
  */
@@ -52,6 +52,17 @@ async function updateUser(userDetails: any) {
                 ${activitynumber}, ${typeactivity}, ${activitystatus}, ${remarks}, ${callback}, ${typecall}, 
                 ${quotationnumber}, ${quotationamount}, ${sonumber}, ${soamount}, ${callstatus}, 
                 CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', ${actualsales}, ${targetquota}
+            );
+        `;
+
+        // Construct the message for the notification
+        const message = `You have a callback in "${companyname}". Please make a call or activity.`;
+
+        // Insert into notification table with referenceid, manager, tsm, and the message
+        await sql`
+            INSERT INTO notification (referenceid, manager, tsm, message, callback, date_created)
+            VALUES (
+                ${referenceid}, ${manager}, ${tsm}, ${message}, ${callback}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
             );
         `;
 

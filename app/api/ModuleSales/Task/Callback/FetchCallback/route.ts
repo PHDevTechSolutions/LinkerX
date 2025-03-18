@@ -17,12 +17,12 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: false, error: "ReferenceID is required" }, { status: 400 });
         }
 
+        // Fetch only callback from the notification table
         const progressData = await sql`
-        SELECT id, companyname, callback, typeactivity, typecall 
-        FROM progress 
+        SELECT callback
+        FROM notification 
         WHERE referenceid = ${referenceId};
         `;
-
 
         return NextResponse.json({ success: true, data: progressData }, { status: 200 });
     } catch (error: any) {
