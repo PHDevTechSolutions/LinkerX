@@ -19,7 +19,7 @@ async function AddUser({ UserId, ReferenceID, Firstname, Lastname, Email, userNa
 
   // Check if email or username already exists
   const existingUser = await userCollection.findOne({
-    $or: [{ Email }, { userName }],
+    $or: [{ Email }],
   });
   if (existingUser) {
     throw new Error("Email or username already in use");
