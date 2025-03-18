@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { CiEdit, CiRepeat, CiSliderHorizontal } from "react-icons/ci";
+import { CiEdit, CiRepeat, CiSliderHorizontal, CiTrash } from "react-icons/ci";
 
 import axios from "axios";
 import { toast } from 'react-toastify';
@@ -13,16 +13,23 @@ interface UsersCardProps {
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, fetchAccount }) => {
   const [updatedUser, setUpdatedUser] = useState<any[]>([]);
+  // Bulk
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
   const [bulkEditMode, setBulkEditMode] = useState(false);
+  const [bulkRemoveMode, setBulkRemoveMode] = useState(false);
   const [bulkTransferMode, setBulkTransferMode] = useState(false);
   const [bulkTransferTSAMode, setBulkTransferTSAMode] = useState(false);
+  // Checkbox
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  // Accounts
   const [tsmList, setTsmList] = useState<any[]>([]);
   const [selectedTsm, setSelectedTsm] = useState("");
   const [tsaList, setTsaList] = useState<any[]>([]);
   const [selectedTsa, setSelectedTsa] = useState("");
+
   const [newTypeClient, setNewTypeClient] = useState("");
+  const [newStatus, setNewStatus] = useState("");
+  const [newRemarks, setNewRemarks] = useState("");
 
   useEffect(() => {
     setUpdatedUser(posts);
@@ -130,6 +137,13 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
     setNewTypeClient("");
   }, []);
 
+  const toggleBulkRemoveMode = useCallback(() => {
+    setBulkRemoveMode((prev) => !prev);
+    setSelectedUsers(new Set());
+    setNewStatus("");
+    setNewRemarks("");
+  }, []);
+
   const toggleBulkTransferMode = useCallback(() => {
     setBulkTransferMode((prev) => !prev);
     setSelectedUsers(new Set());
@@ -194,6 +208,28 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
     }
   }, [selectedUsers, newTypeClient]);
 
+  const handleBulkRemove = useCallback(async () => {
+    if (selectedUsers.size === 0 || !newStatus || !newRemarks) return;
+    try {
+      const response = await fetch(`/api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Remove`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userIds: Array.from(selectedUsers), status: newStatus, remarks: newRemarks }),
+      });
+      if (response.ok) {
+        setUpdatedUser((prev) => prev.map((user) =>
+          selectedUsers.has(user.id) ? { ...user, status: newStatus, remarks: newRemarks } : user
+        ));
+        setSelectedUsers(new Set());
+        setBulkRemoveMode(false);
+      } else {
+        console.error("Failed to update users");
+      }
+    } catch (error) {
+      console.error("Error updating users:", error);
+    }
+  }, [selectedUsers, newStatus, newRemarks]);
+
   const handleSelectAll = useCallback(() => {
     if (selectedUsers.size === updatedUser.length) {
       setSelectedUsers(new Set());
@@ -242,7 +278,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
     }
   }, [selectedUsers, selectedTsa, fetchAccount]);
 
-
   const handleRefresh = async () => {
     try {
       const response = await axios.get(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`);
@@ -265,17 +300,24 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
           <CiEdit size={16} />
           {bulkEditMode ? "Cancel Bulk Edit" : "Bulk Edit"}
         </button>
+
         <button onClick={toggleBulkTransferTSAMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
           <CiSliderHorizontal size={16} />
           {bulkTransferTSAMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Another Agent"}
         </button>
+
+        <button onClick={toggleBulkRemoveMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-900 hover:text-white">
+          <CiTrash size={16} />
+          {bulkRemoveMode ? "Cancel Remove Edit" : "Bulk Remove"}
+        </button>
+
         <button onClick={handleRefresh} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-gray-900 hover:text-white">
           <CiRepeat size={16} />
           Refresh
         </button>
       </div>
       {/* Bulk Action Panel */}
-      {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode) && (
+      {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
         <div className="mb-4 p-3 bg-gray-100 rounded-md text-xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -319,7 +361,27 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                 <button onClick={handleBulkEdit} className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs" disabled={!newTypeClient}>Apply Changes</button>
               </div>
             )}
+
+            {bulkRemoveMode && (
+              <div className="flex items-center gap-2">
+                <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="px-2 py-1 border rounded-md">
+                  <option value="">Select Status</option>
+                  <option value="Remove">Remove</option>
+                  <option value="For Deletion">For Deletion</option>
+                </select>
+                <input type="text" value={newRemarks} onChange={(e) => setNewRemarks(e.target.value)} placeholder="Reason/Remarks..." className="px-2 py-1 border rounded-md" />
+                <button
+                  onClick={handleBulkRemove}
+                  className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs"
+                  disabled={!newStatus} // Prevent click if no status or remarks
+                >
+                  Apply Changes
+                </button>
+
+              </div>
+            )}
           </div>
+
           <p className="text-xs mt-2 text-gray-600">
             This section allows you to perform a <strong>Bulk Transfer</strong> of selected records to a <strong>Territory Sales Associate (TSA)</strong>.
             First, choose the appropriate TSA from the dropdown list, which displays the names of all available TSAs. After selecting the TSA,
@@ -351,7 +413,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
               updatedUser.map((post) => (
                 <tr key={post.id} className="hover:bg-gray-50 capitalize">
                   <td className="p-2 border text-center">
-                    {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode) && (
+                    {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
                       <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4" />
                     )}
                   </td>

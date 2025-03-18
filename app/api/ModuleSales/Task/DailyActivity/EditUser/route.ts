@@ -15,19 +15,17 @@ const sql = neon(databaseUrl);
  */
 async function updateUser(userDetails: any) {
     try {
-
         const {
             id, referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient,
             address, area, projectname, projectcategory, projecttype, source, startdate, enddate, activitynumber,
             typeactivity, activitystatus, remarks, callback, typecall, quotationnumber, quotationamount,
-            sonumber, soamount, callstatus, actualsales, targetquota,
+            sonumber, soamount, callstatus, actualsales, targetquota, ticketreferencenumber, wrapup, inquiries,
         } = userDetails;
 
         // Update the activity table
         const updateResult = await sql`
             UPDATE activity
-            SET referenceid = ${referenceid}, manager = ${manager}, tsm = ${tsm}, companyname = ${companyname}, 
-            contactperson = ${contactperson}, contactnumber = ${contactnumber}, emailaddress = ${emailaddress}, 
+            SET contactperson = ${contactperson}, contactnumber = ${contactnumber}, emailaddress = ${emailaddress}, 
             typeclient = ${typeclient}, address = ${address}, area = ${area}, projectname = ${projectname}, 
             projectcategory = ${projectcategory}, projecttype = ${projecttype}, source = ${source}, 
             activitystatus = ${activitystatus}, date_updated = CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
@@ -39,18 +37,21 @@ async function updateUser(userDetails: any) {
             return { success: false, error: "User not found or already updated." };
         }
 
-        // Insert all fields into the progress table
+        // ✅ Insert all fields including ticketreferencenumber, wrapup, and inquiries into the progress table
         await sql`
             INSERT INTO progress (
-                referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient,
-                address, area, projectname, projectcategory, projecttype, source, startdate, enddate, activitynumber,
-                typeactivity, activitystatus, remarks, callback, typecall, quotationnumber, quotationamount,
-                sonumber, soamount, callstatus, date_created, actualsales, targetquota
+                ticketreferencenumber, wrapup, inquiries, referenceid, manager, tsm, companyname, contactperson, 
+                contactnumber, emailaddress, typeclient, address, area, projectname, projectcategory, projecttype, 
+                source, startdate, enddate, activitynumber, typeactivity, activitystatus, remarks, callback, 
+                typecall, quotationnumber, quotationamount, sonumber, soamount, callstatus, date_created, 
+                actualsales, targetquota
             ) VALUES (
-                ${referenceid}, ${manager}, ${tsm}, ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient},
-                ${address}, ${area}, ${projectname}, ${projectcategory}, ${projecttype}, ${source}, ${startdate}, ${enddate}, ${activitynumber},
-                ${typeactivity}, ${activitystatus}, ${remarks}, ${callback}, ${typecall}, ${quotationnumber}, ${quotationamount}, 
-                ${sonumber}, ${soamount}, ${callstatus}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', ${actualsales}, ${targetquota}
+                ${ticketreferencenumber}, ${wrapup}, ${inquiries}, ${referenceid}, ${manager}, ${tsm}, 
+                ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${address}, 
+                ${area}, ${projectname}, ${projectcategory}, ${projecttype}, ${source}, ${startdate}, ${enddate}, 
+                ${activitynumber}, ${typeactivity}, ${activitystatus}, ${remarks}, ${callback}, ${typecall}, 
+                ${quotationnumber}, ${quotationamount}, ${sonumber}, ${soamount}, ${callstatus}, 
+                CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', ${actualsales}, ${targetquota}
             );
         `;
 

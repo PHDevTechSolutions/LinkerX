@@ -15,10 +15,12 @@ const generateActivityNumber = (companyname: string, referenceid: string) => {
     const firstTwoRef = referenceid.substring(0, 2).toUpperCase();
 
     const now = new Date();
-    const formattedDate = now.toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-    }).replace("/", "");
+    const formattedDate = now
+        .toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+        })
+        .replace("/", "");
 
     const randomNumber = String(Math.floor(100000 + Math.random() * 900000)).slice(0, 6);
 
@@ -29,8 +31,18 @@ const generateActivityNumber = (companyname: string, referenceid: string) => {
 async function addUser(data: any) {
     try {
         const {
-            ticketreferencenumber, referenceid, tsm, companyname, contactperson,
-            contactnumber, emailaddress, address, wrapup, inquiries,
+            ticketreferencenumber,
+            referenceid,
+            tsm,
+            companyname,
+            contactperson,
+            contactnumber,
+            emailaddress,
+            address,
+            wrapup,
+            inquiries,
+            remarks,
+            targetquota, // ✅ Added targetquota
         } = data;
 
         // Validate required fields
@@ -41,15 +53,39 @@ async function addUser(data: any) {
         // Generate the activity number
         const activitynumber = generateActivityNumber(companyname, referenceid);
 
-        // Insert into activity table
+        // ✅ Insert into activity table
         const activityColumns = [
-            "ticketreferencenumber", "referenceid", "tsm", "companyname", "contactperson",
-            "contactnumber", "emailaddress", "address", "wrapup", "inquiries", "activitystatus", "typeclient", "activitynumber"
+            "ticketreferencenumber",
+            "referenceid",
+            "tsm",
+            "companyname",
+            "contactperson",
+            "contactnumber",
+            "emailaddress",
+            "address",
+            "wrapup",
+            "inquiries",
+            "activitystatus",
+            "typeclient",
+            "activitynumber",
+            "targetquota", // ✅ Added targetquota
         ];
 
         const activityValues = [
-            ticketreferencenumber, referenceid, tsm, companyname, contactperson,
-            contactnumber, emailaddress, address, wrapup, inquiries, "Cold", "CSR Inquiries", activitynumber
+            ticketreferencenumber,
+            referenceid,
+            tsm,
+            companyname,
+            contactperson,
+            contactnumber,
+            emailaddress,
+            address,
+            wrapup,
+            inquiries,
+            "Cold",
+            "CSR Inquiries",
+            activitynumber,
+            targetquota || "0", // ✅ Default to "0" if targetquota is not provided
         ];
 
         const activityPlaceholders = activityValues.map((_, index) => `$${index + 1}`).join(", ");
@@ -64,18 +100,69 @@ async function addUser(data: any) {
             return { success: false, error: "Failed to insert into activity table." };
         }
 
-        // Update inquiries table status to "Used"
+        // ✅ Insert into progress table with typeactivity, remarks, and targetquota
+        const progressColumns = [
+            "ticketreferencenumber",
+            "referenceid",
+            "tsm",
+            "companyname",
+            "contactperson",
+            "contactnumber",
+            "emailaddress",
+            "address",
+            "wrapup",
+            "inquiries",
+            "activitynumber",
+            "typeclient",
+            "activitystatus",
+            "remarks",
+            "typeactivity",
+            "targetquota", // ✅ Added targetquota
+        ];
+
+        const progressValues = [
+            ticketreferencenumber,
+            referenceid,
+            tsm,
+            companyname,
+            contactperson,
+            contactnumber,
+            emailaddress,
+            address,
+            wrapup,
+            inquiries,
+            activitynumber,
+            "CSR Inquiries",
+            "Cold",
+            remarks || "N/A",
+            "CSR Inquiries",
+            targetquota || "0", // ✅ Default to "0" if targetquota is not provided
+        ];
+
+        const progressPlaceholders = progressValues.map((_, index) => `$${index + 1}`).join(", ");
+        const progressQuery = `
+            INSERT INTO progress (${progressColumns.join(", ")}, date_created) 
+            VALUES (${progressPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') 
+            RETURNING *;
+        `;
+
+        const progressResult = await sql(progressQuery, progressValues);
+        if (!progressResult || progressResult.length === 0) {
+            return { success: false, error: "Failed to insert into progress table." };
+        }
+
+        // ✅ Update inquiries table status to "Used"
         const updateQuery = `
-    UPDATE inquiries 
-    SET status = 'Used', date_updated = CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila' 
-    WHERE ticketreferencenumber = $1
-`;
+            UPDATE inquiries 
+            SET status = 'Used', date_updated = CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila' 
+            WHERE ticketreferencenumber = $1
+        `;
 
         await sql(updateQuery, [ticketreferencenumber]);
 
-        return { success: true, data: activityResult[0] };
+        return { success: true, data: { activity: activityResult[0], progress: progressResult[0] } };
     } catch (error: any) {
-        console.error("Error inserting activity and updating inquiries:", error);
+        console.error("Error inserting activity, progress, and updating inquiries:", error);
         return { success: false, error: error.message || "Failed to process request." };
     }
 }

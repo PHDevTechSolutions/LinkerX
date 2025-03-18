@@ -27,8 +27,9 @@ const ListofUser: React.FC = () => {
     const [endDate, setEndDate] = useState(""); // Default to null
 
     const [userDetails, setUserDetails] = useState({
-        UserId: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
+        UserId: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "", TargetQuota: "",
     });
+    const [TargetQuota, setTargetQuota] = useState("");
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -51,6 +52,7 @@ const ListofUser: React.FC = () => {
                         Role: data.Role || "",
                         Department: data.Department || "",
                         Company: data.Company || "",
+                        TargetQuota: data.TargetQuota || "",
                     });
                 } catch (err: unknown) {
                     console.error("Error fetching user data:", err);
@@ -66,7 +68,6 @@ const ListofUser: React.FC = () => {
 
         fetchUserData();
     }, []);
-
 
     // Fetch all users from the API
     const fetchAccount = async () => {
@@ -109,7 +110,6 @@ const ListofUser: React.FC = () => {
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
     const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
-
 
     // Handle editing a post
     const handleEdit = (post: any) => {
@@ -154,6 +154,7 @@ const ListofUser: React.FC = () => {
                                         <UsersTable
                                             posts={currentPosts}
                                             handleEdit={handleEdit}
+                                            TargetQuota={userDetails.TargetQuota}
                                             fetchAccount={fetchAccount}
                                         />
                                         <Pagination

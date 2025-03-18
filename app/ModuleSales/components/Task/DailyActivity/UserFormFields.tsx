@@ -3,7 +3,6 @@ import Select from 'react-select';
 import { CiCircleMinus, CiSquarePlus, CiSquareMinus } from "react-icons/ci";
 import { CiPaperplane } from "react-icons/ci";
 
-
 interface Activity {
     id: number;
     typeactivity: string;
@@ -51,6 +50,11 @@ interface FormFieldsProps {
     enddate: string; setenddate: (value: string) => void;
     activitynumber: string; setactivitynumber: (value: string) => void;
     activitystatus: string; setactivitystatus: (value: string) => void;
+    
+    ticketreferencenumber: string; setticketreferencenumber: (value: string) => void;
+    wrapup: string; setwrapup: (value: string) => void;
+    inquiries: string; setinquiries: (value: string) => void;
+
     currentRecords: Activity[];
     editPost?: any;
 }
@@ -87,6 +91,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     enddate, setenddate,
     activitynumber, setactivitynumber,
     activitystatus, setactivitystatus,
+
+    ticketreferencenumber, setticketreferencenumber,
+    wrapup, setwrapup,
+    inquiries, setinquiries,
+
     currentRecords, // Destructure the `currentRecords` prop
     editPost,
 }) => {
@@ -95,6 +104,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const [contactNumbers, setContactNumbers] = useState<string[]>([]);
     const [emailAddresses, setEmailAddresses] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
+
+    const [companyStatus, setCompanyStatus] = useState<string>('Active'); // State for company status
 
     const [showFields, setShowFields] = useState(false);
     const [showOutboundFields, setShowOutboundFields] = useState(false);
@@ -107,6 +118,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const isQuotationEmpty = !quotationnumber || !quotationamount;
 
     const [showInput, setShowInput] = useState(false);
+    const [previousCompany, setPreviousCompany] = useState<any>(null);
 
     // Handle the email selection and send request to the API
     const handleEmailSubmit = async () => {
@@ -199,7 +211,12 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.success) {
-                        setCompanies(data.data.map((company: any) => ({
+                        // Filter companies with status 'Active' or 'Used'
+                        const filteredCompanies = data.data.filter((company: any) => 
+                            company.status === 'Active' || company.status === 'Used'
+                        );
+    
+                        setCompanies(filteredCompanies.map((company: any) => ({
                             value: company.companyname,
                             label: company.companyname,
                             contactperson: company.contactperson,
@@ -216,7 +233,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 .catch((error) => console.error("Error fetching companies:", error));
         }
     }, [referenceid]);
-
+    
     useEffect(() => {
         setContactPersons(contactperson ? contactperson.split(", ") : [""]);
         setContactNumbers(contactnumber ? contactnumber.split(", ") : [""]);
@@ -224,15 +241,79 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     }, [contactperson, contactnumber, emailaddress]);
 
     const handleCompanySelect = (selectedOption: any) => {
-        setcompanyname(selectedOption ? selectedOption.value : "");
-        setcontactperson(selectedOption ? selectedOption.contactperson : "");
-        setcontactnumber(selectedOption ? selectedOption.contactnumber : "");
-        setemailaddress(selectedOption ? selectedOption.emailaddress : "");
-        settypeclient(selectedOption ? selectedOption.typeclient : "");
-        setaddress(selectedOption ? selectedOption.address : "");
-        setarea(selectedOption ? selectedOption.area : "");
+        const newStatus = selectedOption ? 'Used' : 'Active';
+    
+        // If a company was previously selected, set its status back to Active
+        if (previousCompany && previousCompany.value !== selectedOption?.value) {
+            // Update previous company status to Active
+            fetch(`/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    companyname: previousCompany.value,
+                    status: 'Active', // Set the status to Active for the previous company
+                }),
+            })
+            .then(response => response.json())
+            .then((data) => {
+                if (data.success) {
+                    console.log("Previous company status updated to Active.");
+                } else {
+                    console.error("Error updating previous company status:", data.error);
+                }
+            })
+            .catch((error) => {
+                console.error("Error updating previous company status:", error);
+            });
+        }
+    
+        // Update the current selected company's status to Used and the form fields
+        if (selectedOption) {
+            setPreviousCompany(selectedOption); // Track the current selection for future reference
+            setcompanyname(selectedOption.value);
+            setcontactperson(selectedOption.contactperson);
+            setcontactnumber(selectedOption.contactnumber);
+            setemailaddress(selectedOption.emailaddress);
+            settypeclient(selectedOption.typeclient);
+            setaddress(selectedOption.address);
+            setarea(selectedOption.area);
+        } else {
+            // If no company is selected, reset all fields and set the previous company as null
+            setPreviousCompany(null);
+            setcompanyname("");
+            setcontactperson("");
+            setcontactnumber("");
+            setemailaddress("");
+            settypeclient("");
+            setaddress("");
+            setarea("");
+        }
+    
+        // Ensure both companyname and status are passed in the request body
+        fetch(`/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                companyname: selectedOption ? selectedOption.value : "", // Ensure companyname is passed
+                status: newStatus, // Ensure status is passed
+            }),
+        })
+        .then(response => response.json())
+        .then((data) => {
+            if (data.success) {
+                console.log("Company status updated successfully.");
+            } else {
+                
+            }
+        })
+        .catch((error) => {
+        });
     };
-
+    
     const handleContactPersonChange = (index: number, value: string) => {
         const newContactPersons = [...contactPersons];
         newContactPersons[index] = value;
@@ -250,7 +331,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         newEmailAddresses[index] = value;
         setEmailAddresses(newEmailAddresses);
     };
-
 
     // Remove specific contact info
     const removeContactPerson = (index: number) => {
@@ -429,9 +509,15 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     <input type="hidden" id="targetquota" value={targetquota ?? ""} onChange={(e) => settargetquota(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                     <input type="hidden" value={startdate ?? ""} onChange={(e) => setstartdate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
                     <input type="hidden" value={enddate ?? ""} onChange={(e) => setenddate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
+
+                    <input type="hidden" value={ticketreferencenumber ?? ""} onChange={(e) => setticketreferencenumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
+                    <input type="hidden" value={wrapup ?? ""} onChange={(e) => setwrapup(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
+                    <input type="hidden" value={inquiries ?? ""} onChange={(e) => setinquiries(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
                 </div>
             </div>
+
             <div className="flex flex-wrap -mx-4">
+                {/* Company Name */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="companyname">Company Name</label>
                     {editPost ? (
@@ -455,6 +541,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     )}
                 </div>
 
+                {/* Contact Person */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Contact Person</label>
                     {contactPersons.map((person, index) => (
@@ -469,6 +556,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     ))}
                 </div>
 
+                {/* Contact Number */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Contact Number</label>
                     {contactNumbers.map((number, index) => (
@@ -483,6 +571,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     ))}
                 </div>
 
+                {/* Email Address */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Email Address</label>
                     {emailAddresses.map((email, index) => (
@@ -497,21 +586,25 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     ))}
                 </div>
 
+                {/* Type Client */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Type Client</label>
-                    <input type="text" id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                    <input type="text" id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled/>
                 </div>
 
+                {/* Address */}
                 <div className="w-full sm:w-1/2 md:w-1/8 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Address</label>
                     <input type="text" id="address" value={address ?? ""} onChange={(e) => setaddress(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                 </div>
 
+                {/* Area */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Area</label>
                     <input type="text" id="area" value={area ?? ""} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                 </div>
             </div>
+
             <div>
                 <div className="mb-4">
                     <div className="border rounded-lg shadow-sm">
@@ -527,10 +620,14 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         {/* Accordion Content */}
                         <div className={`overflow-hidden transition-all duration-300 ${isOpen ? "p-4" : "max-h-0 p-0"}`}>
                             <div className="flex flex-wrap -mx-4 rounded">
+
+                                {/* Project Name */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Project Name ( Optional )</label>
                                     <input type="text" id="projectname" value={projectname ?? ""} onChange={(e) => setprojectname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                                 </div>
+
+                                {/* Project Category */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Project Category</label>
                                     <select value={projectcategory ?? ""} onChange={(e) => setprojectcategory(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
@@ -571,6 +668,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                         <option value="Item Not Carried">Item Not Carried</option>
                                     </select>
                                 </div>
+
+                                {/* Type */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Type</label>
                                     <select value={projecttype ?? ""} onChange={(e) => setprojecttype(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
@@ -583,6 +682,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                         <option value="Building Maintenance">Building Maintenance</option>
                                     </select>
                                 </div>
+
+                                {/* Source */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Source</label>
                                     <select value={source ?? ""} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
@@ -603,13 +704,12 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <div className="mb-4 border rounded-lg shadow-sm p-4">
                 <div className="flex flex-wrap -mx-4 rounded">
                     {/* Activity Dropdown */}
+                    {/* Type Activity */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Type of Activity</label>
-                        <select
-                            value={typeactivity ?? ""}
+                        <select value={typeactivity ?? ""}
                             onChange={(e) => handleActivitySelection(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm"
-                        >
+                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm">
                             <option value="" disabled>Select an activity</option>
                             {[
                                 "Account Development",
@@ -851,6 +951,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                 </div>
                 <div className="flex flex-wrap -mx-4">
+
+                    {/* Remarks */}
                     <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Remarks</label>
                         <textarea
@@ -861,46 +963,32 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         ></textarea>
                     </div>
 
+                    {/* Status */}
                     <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Status</label>
-                        <select
-                            value={activitystatus || ""}
-                            onChange={(e) => setactivitystatus(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-gray-100" required
-                        >
+                        <select value={activitystatus || ""} onChange={(e) => setactivitystatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize bg-gray-100" required>
                             <option value="">Select Status</option>
-                            <option
-                                value="Cold"
-                                disabled={activitystatus === "Warm" || activitystatus === "Hot" || activitystatus === "Done"}
-                            >
-                                Cold (Progress 20% to 30%) Touchbase
-                            </option>
-                            <option
-                                value="Warm"
+                            <option value="Cold" disabled={activitystatus === "Warm" || activitystatus === "Hot" || activitystatus === "Done"}>Cold (Progress 20% to 30%) Touchbase</option>
+                            <option value="Warm"
                                 disabled={
                                     !(quotationnumber && quotationamount) ||
                                     activitystatus === "Hot" ||
                                     activitystatus === "Done" ||
                                     activitystatus === "Cancelled"
-                                }
-                            >
+                                }>
                                 Warm (Progress 50% to 60%) With Quotation
                             </option>
-                            <option
-                                value="Hot"
+                            <option value="Hot"
                                 disabled={
                                     !(sonumber && soamount) ||
                                     activitystatus === "Done" ||
                                     activitystatus === "Warm" ||
                                     activitystatus === "Cancelled"
-                                }
-                            >
+                                }>
                                 Hot (Progress 80% to 90%) Quotation with Confirmation W/PO
                             </option>
-                            <option
-                                value="Done"
-                                disabled={activitystatus === "Done" || activitystatus === "Cancelled" || activitystatus === "Warm"}
-                            >
+                            <option value="Done"
+                                disabled={activitystatus === "Done" || activitystatus === "Cancelled" || activitystatus === "Warm"}>
                                 Done (Progress 100%) Delivered
                             </option>
                             <option value="Loss" disabled={activitystatus === "Done" || activitystatus === "Cancelled"}>
