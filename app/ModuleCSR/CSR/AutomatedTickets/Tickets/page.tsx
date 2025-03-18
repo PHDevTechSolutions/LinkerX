@@ -25,18 +25,20 @@ const ActivityPage: React.FC = () => {
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
     const [userDetails, setUserDetails] = useState({
-            UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "",
-        });
+        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "",
+    });
 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const [showAccessModal, setShowAccessModal] = useState(false);
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
         const fetchUserData = async () => {
             const params = new URLSearchParams(window.location.search);
             const userId = params.get("id");
-    
+
             if (userId) {
                 try {
                     const response = await fetch(`/api/user?id=${encodeURIComponent(userId)}`);
@@ -61,10 +63,10 @@ const ActivityPage: React.FC = () => {
                 setLoading(false);
             }
         };
-    
+
         fetchUserData();
     }, []);
-    
+
 
     // Fetch accounts from the API
     const fetchActivity = async () => {
@@ -89,7 +91,7 @@ const ActivityPage: React.FC = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id, Status: newStatus }),
             });
-    
+
             if (response.ok) {
                 setPosts((prevPosts) =>
                     prevPosts.map((post) =>
@@ -105,7 +107,7 @@ const ActivityPage: React.FC = () => {
             toast.error("Failed to update status.");
             console.error("Error updating status:", error);
         }
-    };    
+    };
 
     const handleRemarksUpdate = async (id: string, NewRemarks: string) => {
         try {
@@ -114,7 +116,7 @@ const ActivityPage: React.FC = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id, Remarks: NewRemarks }),
             });
-    
+
             if (response.ok) {
                 setPosts((prevPosts) =>
                     prevPosts.map((post) =>
@@ -130,7 +132,7 @@ const ActivityPage: React.FC = () => {
             toast.error("Failed to update status.");
             console.error("Error updating status:", error);
         }
-    };    
+    };
 
     // Filter accounts based on search term, channel, sales agent, and date range
     const filteredAccounts = posts.filter((post) => {
@@ -139,14 +141,14 @@ const ActivityPage: React.FC = () => {
             post.CustomerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (post.TicketReferenceNumber && post.TicketReferenceNumber.includes(searchTerm)) ||
             post.ContactNumber.includes(searchTerm);
-    
+
         const matchesStatus = selectedStatus ? post.Status.includes(selectedStatus) : true;
         const matchesSalesAgent = salesAgent ? post.SalesAgent.toLowerCase().includes(salesAgent.toLowerCase()) : true;
-    
+
         const matchesDateRange =
             (!TicketReceived || new Date(post.TicketReceived) >= new Date(TicketReceived)) &&
             (!TicketEndorsed || new Date(post.TicketEndorsed) <= new Date(TicketEndorsed));
-    
+
         if (userDetails.Role === "Super Admin") {
             return matchesSearchTerm && matchesStatus && matchesSalesAgent && matchesDateRange;
         } else if (userDetails.Role === "Admin") {
@@ -154,10 +156,10 @@ const ActivityPage: React.FC = () => {
         } else if (userDetails.Role === "Staff") {
             return post.ReferenceID === userDetails.ReferenceID && matchesSearchTerm && matchesStatus && matchesSalesAgent && matchesDateRange;
         }
-    
+
         return false; // Default case: if none of the roles match, return false
     });
-    
+
     // Pagination logic
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -203,29 +205,41 @@ const ActivityPage: React.FC = () => {
         }
     };
 
+    const isRestrictedUser =
+        userDetails?.Role !== "Super Admin" && userDetails?.ReferenceID !== "LR-CSR-849432";
+
+    // Automatically show modal if the user is restricted
+    useEffect(() => {
+        if (isRestrictedUser) {
+            setShowAccessModal(true);
+        } else {
+            setShowAccessModal(false);
+        }
+    }, [isRestrictedUser]);
+
     return (
         <SessionChecker>
             <ParentLayout>
                 <UserFetcher>
                     {(user) => (
-                        <div className="container mx-auto p-4">
+                        <div className="container mx-auto p-4 relative">
                             <div className="grid grid-cols-1 md:grid-cols-1">
                                 {showForm ? (
                                     <AddAccountForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditPost(null);
-                                    }}
-                                    refreshPosts={fetchActivity}
-                                    userName={user ? user.userName : ""}
-                                    userDetails={{
-                                        id: editPost ? editPost.UserId : userDetails.UserId,
-                                        Role: user ? user.Role : "",
-                                        ReferenceID: user ? user.ReferenceID : "", // <-- Ito ang dapat mong suriin
-                                    }}
-                                    editPost={editPost}
-                                />
-                                
+                                        onCancel={() => {
+                                            setShowForm(false);
+                                            setEditPost(null);
+                                        }}
+                                        refreshPosts={fetchActivity}
+                                        userName={user ? user.userName : ""}
+                                        userDetails={{
+                                            id: editPost ? editPost.UserId : userDetails.UserId,
+                                            Role: user ? user.Role : "",
+                                            ReferenceID: user ? user.ReferenceID : "", // <-- Ito ang dapat mong suriin
+                                        }}
+                                        editPost={editPost}
+                                    />
+
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
@@ -256,6 +270,18 @@ const ActivityPage: React.FC = () => {
                                             />
                                         </div>
                                     </>
+                                )}
+
+                                {showAccessModal && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 rounded-md">
+                                        <div className="bg-white p-6 rounded shadow-lg w-96">
+                                            <h2 className="text-lg font-bold text-red-600 mb-4">⚠️ Access Denied</h2>
+                                            <p className="text-sm text-gray-700 mb-4">
+                                                You do not have the necessary permissions to perform this action.
+                                                Only <strong>Super Admin</strong> or <strong>Leroux Y Xchire</strong> can access this section.
+                                            </p>
+                                        </div>
+                                    </div>
                                 )}
 
                                 {showDeleteModal && (
