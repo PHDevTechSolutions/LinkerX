@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Login: React.FC = () => {
   const [Email, setEmail] = useState('');
@@ -14,9 +15,14 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [lockUntil, setLockUntil] = useState<string | null>(null); // Added state for lock time
   const router = useRouter();
+  const [captchaValue, setCaptchaValue] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!captchaValue) {
+      alert("Please verify that you are not a robot!");
+      return;
+    }
 
     if (!Email || !Password || !Department) {
       toast.error("All fields are required!");
@@ -29,7 +35,7 @@ const Login: React.FC = () => {
       const response = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ Email, Password, Department }),
+        body: JSON.stringify({ Email, Password, Department, recaptchaToken: captchaValue, }),
       });
 
       const result = await response.json();
@@ -120,6 +126,10 @@ const Login: React.FC = () => {
           )}
 
           <div className="mb-4">
+            <ReCAPTCHA
+              sitekey="6Ld7uPcqAAAAAGg0XRahPebOA9nXeJh9ymt-hj7m" // Palitan ng actual site key mo
+              onChange={(value) => setCaptchaValue(value)}
+            />
             <button
               type="submit"
               className="w-full text-xs py-3 bg-green-800 text-white font-medium rounded-md hover:bg-green-600 shadow-lg"

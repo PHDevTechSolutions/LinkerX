@@ -154,7 +154,7 @@ const DashboardPage: React.FC = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           setLocation({ lat: latitude, lng: longitude });
-
+  
           // Fetch address from Nominatim API
           fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
             .then((res) => res.json())
@@ -168,14 +168,27 @@ const DashboardPage: React.FC = () => {
             .catch(() => setAddress("Error fetching address"));
         },
         (error) => {
-          console.error("Error getting location:", error);
-          setAddress("Unable to get location");
+          // Handle different types of errors
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              setAddress("Location access denied.");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              setAddress("Location information is unavailable.");
+              break;
+            case error.TIMEOUT:
+              setAddress("The request to get location timed out.");
+              break;
+            default:
+              setAddress("An unknown error occurred.");
+              break;
+          }
         }
       );
     } else {
       setAddress("Geolocation is not supported by this browser.");
     }
-  }, []);
+  }, []);  
 
   const formatDateTime = (date: Date) => {
     const year = date.getFullYear();

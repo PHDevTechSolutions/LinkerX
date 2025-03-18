@@ -444,7 +444,6 @@ const ListofUser: React.FC = () => {
         };
     }, []);
 
-
     return (
         <SessionChecker>
             <ParentLayout>
