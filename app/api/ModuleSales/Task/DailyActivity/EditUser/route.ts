@@ -69,7 +69,15 @@ async function updateUser(userDetails: any) {
         }
 
         // ✅ CASE 2: Insert Follow-Up Notification if applicable
-        if (typecall === "Ringing Only" || typecall === "No Requirements") {
+        if (typecall === "Ringing Only" || 
+            typecall === "No Requirements" || 
+            typecall === "Sent Quotation - Standard" ||
+            typecall === "Sent Quotation - With Special Price" ||
+            typecall === "Follow Up Pending" ||
+            typecall === "Sent Quotation - With SPF" ||
+            typecall === "Not Connected With The Company" ||
+            typecall === "Waiting for Projects" ||
+            typecall === "Cannot Be Reached") {
             const followUpMessage = `You have a new follow-up from "${companyname}". and the Status is "${typecall}" Please make an update.`;
 
             await sql`

@@ -109,12 +109,24 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
               case "Follow-Up Notification":
                 if (notif.date_created && notif.tsm === userReferenceId) {
                   const followUpDate = new Date(notif.date_created).setHours(0, 0, 0, 0);
+
+                  // ✅ Check if message contains "Ringing Only"
+                  if (notif.message?.includes("Ringing Only")) {
+                    const oneMinuteLater = new Date(notif.date_created);
+                    oneMinuteLater.setMinutes(oneMinuteLater.getMinutes() + 1);
+
+                    // ✅ Show notification after 1 minute
+                    return new Date() >= oneMinuteLater;
+                  }
+
+                  // ✅ No delay for other follow-up notifications
                   return followUpDate <= today;
                 }
                 return false;
 
               default:
                 return false; // Ignore other notification types
+
             }
           })
           // ✅ Sort notifications by date_created or callback in DESCENDING order
