@@ -12,7 +12,7 @@ import ReceivedPOTable from "../../../components/Reports/ReceivedPO/ReceivedPOTa
 import Pagination from "../../../components/Reports/ReceivedPO/Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { CiExport  } from "react-icons/ci";
+import { CiExport, CiCirclePlus } from "react-icons/ci";
 
 const ReceivedPO: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -25,6 +25,15 @@ const ReceivedPO: React.FC = () => {
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
     const [startDate, setStartDate] = useState("");  // Start date for filtering
     const [endDate, setEndDate] = useState("");  // End date for filtering
+    
+    const [usersList, setUsersList] = useState<any[]>([]);
+
+    const [userDetails, setUserDetails] = useState({
+        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "",
+    });
+
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     // Fetch accounts from the API
     const fetchAccounts = async () => {
@@ -42,16 +51,87 @@ const ReceivedPO: React.FC = () => {
         fetchAccounts();
     }, []);
 
-    const filteredAccounts = posts.filter((post) => {
-        const isSearchMatch = post.CompanyName.toLowerCase().includes(searchTerm.toLowerCase());
-        const isDateInRange =
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const params = new URLSearchParams(window.location.search);
+            const userId = params.get("id");
+
+            if (userId) {
+                try {
+                    const response = await fetch(`/api/user?id=${encodeURIComponent(userId)}`);
+                    if (!response.ok) throw new Error("Failed to fetch user data");
+                    const data = await response.json();
+                    setUserDetails({
+                        UserId: data._id, // Set the user's id here
+                        ReferenceID: data.ReferenceID || "",  // <-- Siguraduhin na ito ay may value
+                        Firstname: data.Firstname || "",
+                        Lastname: data.Lastname || "",
+                        Email: data.Email || "",
+                        Role: data.Role || "",
+                    });
+                } catch (err: unknown) {
+                    console.error("Error fetching user data:", err);
+                    setError("Failed to load user data. Please try again later.");
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setError("User ID is missing.");
+                setLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+    useEffect(() => {
+            const fetchUsers = async () => {
+                try {
+                    const response = await fetch("/api/getUsers"); // API endpoint mo
+                    const data = await response.json();
+                    setUsersList(data);
+                } catch (error) {
+                    console.error("Error fetching users:", error);
+                }
+            };
+    
+            fetchUsers();
+        }, []);
+
+        const filteredAccounts = posts
+        .filter((post) => {
+          const isSearchMatch = post.CompanyName?.toLowerCase().includes(searchTerm.toLowerCase());
+          const isDateInRange =
             (!startDate || new Date(post.createdAt) >= new Date(startDate)) &&
             (!endDate || new Date(post.createdAt) <= new Date(endDate));
-        const isPoReceived = post.Remarks === "PO Received"; // ✅ Added "PO Received" filter
-    
-        return isSearchMatch && isDateInRange && isPoReceived;
-    });
-    
+          const isPoReceived = post.Remarks === "PO Received"; // ✅ PO Received filter
+      
+          // ✅ Base filters applied to all roles
+          const baseFilters = isSearchMatch && isDateInRange && isPoReceived;
+      
+          // ✅ Apply role-based filtering
+          if (userDetails.Role === "Super Admin" || userDetails.Role === "Admin") {
+            // ✅ Super Admin & Admin can see all posts
+            return baseFilters;
+          } else if (userDetails.Role === "Staff") {
+            // ✅ Staff can only see posts with matching ReferenceID
+            return post.ReferenceID === userDetails.ReferenceID && baseFilters;
+          }
+      
+          return false; // Return false if no matching role
+        })
+        .map((post) => {
+          // ✅ Find matching agent by ReferenceID
+          const agent = usersList.find((user) => user.ReferenceID === post.ReferenceID);
+      
+          return {
+            ...post,
+            AgentFirstname: agent?.Firstname || "Unknown",
+            AgentLastname: agent?.Lastname || "Unknown",
+          };
+        })
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // ✅ Sorted by createdAt
+      
 
     // Pagination logic
     const indexOfLastPost = currentPage * postsPerPage;
@@ -101,7 +181,7 @@ const ReceivedPO: React.FC = () => {
     const exportToExcel = async () => {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Receive PO");
-    
+
         // Add headers to the worksheet
         worksheet.columns = [
             { header: "User Name", key: "userName" },
@@ -118,10 +198,10 @@ const ReceivedPO: React.FC = () => {
             { header: "PO Source", key: "posource" },
             { header: "Remarks", key: "remarks" }
         ];
-    
+
         // Filter data to include only records with "PO Received" remarks
         const filteredData = filteredAccounts.filter(post => post.Remarks === "PO Received");
-    
+
         // Add data to the worksheet
         filteredData.forEach((post) => {
             worksheet.addRow({
@@ -140,13 +220,13 @@ const ReceivedPO: React.FC = () => {
                 remarks: post.Remarks
             });
         });
-    
+
         // Create the Excel file and trigger the download
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: "application/octet-stream" });
         saveAs(blob, "po_monitoring.xlsx");
     };
-    
+
     return (
         <SessionChecker>
             <ParentLayout>
@@ -162,10 +242,19 @@ const ReceivedPO: React.FC = () => {
                                         }}
                                         refreshPosts={fetchAccounts}  // Pass the refreshPosts callback
                                         userName={user ? user.userName : ""}
+                                        userDetails={{
+                                            id: editPost ? editPost.UserId : userDetails.UserId,
+                                            Role: user ? user.Role : "",
+                                            ReferenceID: user ? user.ReferenceID : "", // <-- Ito ang dapat mong suriin
+                                        }}
                                         editPost={editPost}
                                     />
                                 ) : (
-                                    <>
+                                    <>  <div className="flex justify-between items-center mb-4">
+                                        <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded flex items-center gap-1" onClick={() => setShowForm(true)}>
+                                            <CiCirclePlus size={20} />Add PO
+                                        </button>
+                                    </div>
                                         <h2 className="text-lg font-bold mb-2">Received PO Monitoring</h2>
                                         <p className="text-xs mb-2">This section tracks and monitors received purchase orders (POs). It helps users review and manage incoming orders, ensuring accurate record-keeping and efficient processing.</p>
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg text-gray-900">

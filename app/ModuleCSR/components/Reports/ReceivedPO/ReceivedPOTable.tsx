@@ -1,7 +1,6 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import moment from "moment";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 
 interface Post {
   _id: string;
@@ -10,15 +9,18 @@ interface Post {
   CompanyName: string;
   ContactNumber: string;
   PONumber: string;
-  Amount: string;
+  Amount: string | number;
   SONumber: string;
   SODate: string;
   PaymentTerms: string;
   PaymentDate: string;
-  DeliveryDate: string;
+  DeliveryPickupDate: string;
   POStatus: string;
   POSource: string;
   Remarks: string;
+  AgentFirstname: string;
+  AgentLastname: string;
+  SalesAgent: string;
 }
 
 interface AccountsTableProps {
@@ -28,120 +30,140 @@ interface AccountsTableProps {
 }
 
 const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, handleDelete }) => {
-  const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
   const [menuVisible, setMenuVisible] = useState<Record<string, boolean>>({});
 
-  const toggleExpand = useCallback((postId: string) => {
-    setExpandedRows((prev) => ({
-      ...prev,
-      [postId]: !prev[postId],
-    }));
-  }, []);
-
-  const toggleMenu = useCallback((postId: string) => {
+  const toggleMenu = (postId: string) => {
     setMenuVisible((prev) => ({
       ...prev,
       [postId]: !prev[postId],
     }));
-  }, []);
+  };
 
   const formatTimestamp = (timestamp: string) => {
-    return timestamp ? moment(timestamp).format("MMM D, YYYY") : "N/A";
+    if (!timestamp) return ""; // ✅ Show blank if no value
+    return moment(timestamp).isValid() ? moment(timestamp).format("MMM D, YYYY") : "";
   };
 
-  const calculatePendingDays = (startDate: string, endDate: string) => {
-    if (!startDate || !endDate) return "N/A";
-    const start = moment(startDate, "YYYY-MM-DD");
-    const end = moment(endDate, "YYYY-MM-DD");
-
-    return start.isValid() && end.isValid() ? `${end.diff(start, "days")} days` : "Invalid Date";
-  };
-
-  // Removed filtering by "PO Received"
+  // ✅ Calculate Total Amount
   const TotalAmount = useMemo(() => {
     return posts.reduce((total, post) => {
-        const amount = parseFloat(post.Amount?.replace(/,/g, "") || "0"); // Remove commas if present & handle empty values
-        return total + (isNaN(amount) ? 0 : amount); // Ensure NaN values are treated as 0
+      const amountStr = typeof post.Amount === "string" ? post.Amount : post.Amount?.toString();
+      const amount = parseFloat(amountStr?.replace(/,/g, "") || "0");
+      return total + (isNaN(amount) ? 0 : amount);
     }, 0);
-}, [posts]);
+  }, [posts]);
 
+  // ✅ Calculate Pending Days from SO Date
+  const calculatePendingDays = (SODate: string) => {
+    if (!SODate || !moment(SODate).isValid()) return ""; // ✅ Return blank if invalid date
+    const today = moment();
+    const soDateMoment = moment(SODate);
+    const pendingDays = today.diff(soDateMoment, "days");
+    return pendingDays >= 0 ? `${pendingDays} day(s)` : "0 day(s)";
+  };
+
+  // ✅ Calculate Pending Days from Payment to Delivery
+  const calculatePendingPaymentDays = (PaymentDate: string, DeliveryPickupDate: string) => {
+    if (!PaymentDate || !DeliveryPickupDate) return ""; // ✅ Return blank if either date is missing
+    const paymentMoment = moment(PaymentDate);
+    const deliveryMoment = moment(DeliveryPickupDate);
+
+    if (!paymentMoment.isValid() || !deliveryMoment.isValid()) return "0 day(s)";
+    const pendingPaymentDays = deliveryMoment.diff(paymentMoment, "days");
+
+    return pendingPaymentDays >= 0 ? `${pendingPaymentDays} day(s)` : "0 day(s)";
+  };
 
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white border border-gray-300 shadow-md">
-        <thead className="bg-gray-100 text-xs uppercase text-gray-700">
+        <thead className="bg-gray-100 text-xs uppercase text-gray-700 text-left">
           <tr>
+            <th className="px-4 py-2 border">CSR Agent</th>
             <th className="px-4 py-2 border">Company</th>
             <th className="px-4 py-2 border">PO Number</th>
-            <th className="px-4 py-2 border">SO Number</th>
             <th className="px-4 py-2 border">Amount</th>
+            <th className="px-4 py-2 border">SO Number</th>
             <th className="px-4 py-2 border">SO Date</th>
+            <th className="px-4 py-2 border">Sales Agent</th>
+            <th className="px-4 py-2 border">Pending From SO Date</th>
+            <th className="px-4 py-2 border">Payment Terms</th>
             <th className="px-4 py-2 border">Payment Date</th>
-            <th className="px-4 py-2 border">Delivery Date</th>
+            <th className="px-4 py-2 border">Delivery/Pick-Up Date</th>
+            <th className="px-4 py-2 border">Pending Days from Payment</th>
             <th className="px-4 py-2 border">Status</th>
+            <th className="px-4 py-2 border">Source</th>
+            <th className="px-4 py-2 border">Created At</th>
             <th className="px-4 py-2 border">Actions</th>
           </tr>
         </thead>
         <tbody>
           {posts.length > 0 ? (
             posts.map((post) => (
-              <React.Fragment key={post._id}>
-                <tr className="text-xs text-gray-700 capitalize border">
-                  <td className="px-4 py-2 border">{post.CompanyName}</td>
-                  <td className="px-4 py-2 border">{post.PONumber}</td>
-                  <td className="px-4 py-2 border">{post.SONumber}</td>
-                  <td className="px-4 py-2 border">{parseFloat(post.Amount).toFixed(2)}</td>
-                  <td className="px-4 py-2 border">{formatTimestamp(post.SODate)}</td>
-                  <td className="px-4 py-2 border">{formatTimestamp(post.PaymentDate)}</td>
-                  <td className="px-4 py-2 border">{formatTimestamp(post.DeliveryDate)}</td>
-                  <td className="px-4 py-2 border">{post.POStatus}</td>
-                  <td className="px-4 py-2 border text-center relative">
-                    <button onClick={() => toggleExpand(post._id)} className="text-gray-500 hover:text-gray-800 mr-2">
-                      {expandedRows[post._id] ? <AiOutlineMinus size={14} /> : <AiOutlinePlus size={14} />}
-                    </button>
-                    <button onClick={() => toggleMenu(post._id)} className="text-gray-500 hover:text-gray-800">
-                      <BsThreeDotsVertical size={14} />
-                    </button>
+              <tr key={post._id} className="text-xs text-gray-700 capitalize border">
+                <td className="px-4 py-2 border whitespace-nowrap">
+                  {post.AgentLastname}, {post.AgentFirstname}
+                </td>
+                <td className="px-4 py-2 border uppercase whitespace-nowrap">{post.CompanyName}</td>
+                <td className="px-4 py-2 border italic uppercase whitespace-nowrap">{post.PONumber}</td>
+                <td className="px-4 py-2 border whitespace-nowrap">
+                  {isNaN(parseFloat(post.Amount?.toString() || "0"))
+                    ? "0.00"
+                    : parseFloat(post.Amount?.toString() || "0").toLocaleString("en-PH", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                </td>
+                <td className="px-4 py-2 border whitespace-nowrap">{post.SONumber}</td>
+                <td className="px-4 py-2 border whitespace-nowrap">{formatTimestamp(post.SODate)}</td>
+                <td className="px-4 py-2 border whitespace-nowrap">{post.SalesAgent}</td>
+                <td className="px-4 py-2 border whitespace-nowrap text-red-700 font-semibold">{calculatePendingDays(post.SODate)}</td>
+                <td className="px-4 py-2 border whitespace-nowrap">{post.PaymentTerms}</td>
+                <td className="px-4 py-2 border whitespace-nowrap">{formatTimestamp(post.PaymentDate)}</td>
+                <td className="px-4 py-2 border whitespace-nowrap">{formatTimestamp(post.DeliveryPickupDate)}</td>
+                <td className="px-4 py-2 border whitespace-nowrap text-red-700 font-semibold">
+                  {calculatePendingPaymentDays(post.PaymentDate, post.DeliveryPickupDate)}
+                </td>
+                <td className="px-4 py-2 border whitespace-nowrap">{post.POStatus}</td>
+                <td className="px-4 py-2 border whitespace-nowrap">{post.POSource}</td>
+                <td className="px-4 py-2 border whitespace-nowrap">{new Date(post.createdAt).toLocaleString()}</td>
 
-                    {menuVisible[post._id] && (
-                      <div className="absolute right-0 bg-white shadow-md rounded-md border w-32 text-xs z-10">
-                        <button onClick={() => handleEdit(post)} className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-                          Edit
-                        </button>
-                        <button onClick={() => handleDelete(post._id)} className="border-t w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100">
-                          Delete
-                        </button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
+                {/* Actions Menu */}
+                <td className="px-4 py-2 border text-center">
+                  <button onClick={() => toggleMenu(post._id)} className="text-gray-500 hover:text-gray-800">
+                    <BsThreeDotsVertical size={14} />
+                  </button>
 
-                {expandedRows[post._id] && (
-                  <tr className="text-xs bg-gray-50">
-                    <td colSpan={9} className="px-4 py-2 border">
-                      <p><strong>Contact Number:</strong> {post.ContactNumber}</p>
-                      <p><strong>Payment Terms:</strong> {post.PaymentTerms}</p>
-                      <p><strong>Pending Days (SO to Payment):</strong> {calculatePendingDays(post.SODate, post.PaymentDate)}</p>
-                      <p><strong>Pending Days (Payment to Delivery):</strong> {calculatePendingDays(post.PaymentDate, post.DeliveryDate)}</p>
-                      <p><strong>Source:</strong> {post.POSource}</p>
-                      <p><strong>Remarks:</strong> {post.Remarks}</p>
-                    </td>
-                  </tr>
-                )}
-              </React.Fragment>
+                  {menuVisible[post._id] && (
+                    <div className="absolute right-0 bg-white shadow-md rounded-md border w-32 text-xs z-10">
+                      <button onClick={() => handleEdit(post)} className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        Edit
+                      </button>
+                      <button onClick={() => handleDelete(post._id)} className="border-t w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100">
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </td>
+              </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={9} className="text-center text-gray-500 text-xs py-3">No records found</td>
+              <td colSpan={17} className="text-center text-gray-500 text-xs py-3">
+                No records found
+              </td>
             </tr>
           )}
         </tbody>
 
+        {/* Total Amount Footer */}
         <tfoot>
           <tr className="bg-gray-100 text-xs font-semibold">
             <td colSpan={3} className="px-4 py-2 border text-right">Total Amount:</td>
-            <td className="px-4 py-2 border">{TotalAmount.toFixed(2)}</td>
-            <td colSpan={5} className="border"></td>
+            <td className="px-4 py-2 border">
+              ₱{TotalAmount.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </td>
+            <td colSpan={13} className="border"></td>
           </tr>
         </tfoot>
       </table>

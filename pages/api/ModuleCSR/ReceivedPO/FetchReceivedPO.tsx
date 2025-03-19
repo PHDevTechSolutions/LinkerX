@@ -10,7 +10,7 @@ export default async function fetchAccounts(req: NextApiRequest, res: NextApiRes
 
   try {
     const db = await connectToDatabase();
-    const accountCollection = db.collection('MonitoringRecords');
+    const accountCollection = db.collection('monitoring');
     const accounts = await accountCollection.find({}).toArray();
     res.status(200).json(accounts);
   } catch (error) {

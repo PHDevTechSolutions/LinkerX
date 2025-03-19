@@ -2,8 +2,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectToDatabase
 
 // Function to add an account directly in this file
-async function AddTracking({ UserID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, TicketType, TicketConcern, TrackingStatus, TrackingRemarks, Department, EndorsedDate, ClosedDate }: {
-  UserID: string;
+async function AddTracking({ ReferenceID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, 
+  TicketType, TicketConcern, TrackingStatus, TrackingRemarks, Department, EndorsedDate, ClosedDate, SalesAgent, SalesManager, NatureConcern, }: {
+
+  ReferenceID: string;
   userName: string;
   DateRecord: string;
   CompanyName: string;
@@ -16,10 +18,14 @@ async function AddTracking({ UserID, userName, DateRecord, CompanyName, Customer
   Department: string;
   EndorsedDate: string;
   ClosedDate: string;
+  SalesAgent: string;
+  SalesManager:  string;
+  NatureConcern: string;
 }) {
   const db = await connectToDatabase();
   const accountsCollection = db.collection("Tracking");
-  const newAccount = { UserID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, TicketType, TicketConcern, TrackingStatus, TrackingRemarks, Department, EndorsedDate, ClosedDate, createdAt: new Date(), };
+  const newAccount = { ReferenceID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, TicketType, TicketConcern, TrackingStatus, 
+    TrackingRemarks, Department, EndorsedDate, ClosedDate, SalesAgent, SalesManager, NatureConcern, createdAt: new Date(), };
   await accountsCollection.insertOne(newAccount);
 
   // Broadcast logic if needed
@@ -32,7 +38,8 @@ async function AddTracking({ UserID, userName, DateRecord, CompanyName, Customer
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
-    const { UserID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, TicketType, TicketConcern, TrackingStatus, TrackingRemarks, Department, EndorsedDate, ClosedDate } = req.body;
+    const { ReferenceID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, TicketType, TicketConcern, TrackingStatus, 
+      TrackingRemarks, Department, EndorsedDate, ClosedDate, SalesAgent, SalesManager, NatureConcern } = req.body;
 
     // Validate required fields
     if (!CompanyName) {
@@ -42,7 +49,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-      const result = await AddTracking({ UserID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, TicketType, TicketConcern, TrackingStatus, TrackingRemarks, Department, EndorsedDate, ClosedDate });
+      const result = await AddTracking({ ReferenceID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, TicketType, TicketConcern, TrackingStatus, 
+        TrackingRemarks, Department, EndorsedDate, ClosedDate, SalesAgent, SalesManager, NatureConcern });
       res.status(200).json(result);
     } catch (error) {
       console.error("Error adding account:", error);

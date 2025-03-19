@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 
+type OptionType = {
+    value: string;
+    label: string;
+};
+
 interface ReceivedFieldsProps {
     userName: string;
     setuserName: (value: string) => void;
-    UserID: string;
-    setUserID: (value: string) => void;
+    ReferenceID: string;
+    setReferenceID: (value: string) => void;
     DateRecord: string;
     setDateRecord: (value: string) => void;
     CompanyName: string;
@@ -29,12 +34,23 @@ interface ReceivedFieldsProps {
     setEndorsedDate: (value: string) => void;
     ClosedDate: string;
     setClosedDate: (value: string) => void;
+
+    SalesManager: any;
+    setSalesManager: (value: any) => void;
+    SalesAgent: any;
+    setSalesAgent: (value: any) => void;
+    SalesAgentName: any;
+    setSalesAgentName: (value: any) => void;
+
+    NatureConcern: string;
+    setNatureConcern: (value: string) => void;
+
     editPost?: any;
 }
 
 const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
     userName, setuserName,
-    UserID, setUserID,
+    ReferenceID, setReferenceID,
     DateRecord, setDateRecord,
     CompanyName, setCompanyName,
     CustomerName, setCustomerName,
@@ -47,62 +63,109 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
     Department, setDepartment,
     EndorsedDate, setEndorsedDate,
     ClosedDate, setClosedDate,
+
+    SalesAgent, setSalesAgent,
+    SalesManager, setSalesManager,
+    SalesAgentName, setSalesAgentName,
+    NatureConcern, setNatureConcern,
+
     editPost
 }) => {
 
     const [companies, setCompanies] = useState<any[]>([]);
-    
-        useEffect(() => {
-            const fetchCompanies = async () => {
-                try {
-                    const response = await fetch('/api/ModuleCSR/companies');
-                    const data = await response.json();
-                    setCompanies(data);
-                } catch (error) {
-                    console.error('Error fetching companies:', error);
-                }
-            };
-            fetchCompanies();
-        }, []);
-    
-        const CompanyOptions = companies.map((company) => ({
-            value: company.CompanyName,
-            label: company.CompanyName,
-        }));
-    
-        const handleCompanyChange = async (selectedOption: any) => {
-            const selectedCompany = selectedOption ? selectedOption.value : '';
-            setCompanyName(selectedCompany);
-    
-            if (selectedCompany) {
-                try {
-                    const response = await fetch(`/api/ModuleCSR/companies?CompanyName=${encodeURIComponent(selectedCompany)}`);
-                    if (response.ok) {
-                        const companyDetails = await response.json();
-                        setCustomerName(companyDetails.CustomerName || '');
-                        setContactNumber(companyDetails.ContactNumber || '');
-                    } else {
-                        console.error(`Company not found: ${selectedCompany}`);
-                        resetFields();
-                    }
-                } catch (error) {
-                    console.error('Error fetching company details:', error);
-                    resetFields();
-                }
-            } else {
-                resetFields();
+
+    useEffect(() => {
+        const fetchCompanies = async () => {
+            try {
+                const response = await fetch('/api/ModuleCSR/companies');
+                const data = await response.json();
+                setCompanies(data);
+            } catch (error) {
+                console.error('Error fetching companies:', error);
             }
         };
-    
-        const resetFields = () => {
-            setCustomerName('');
-            setContactNumber('');
+        fetchCompanies();
+    }, []);
+
+    const CompanyOptions = companies.map((company) => ({
+        value: company.CompanyName,
+        label: company.CompanyName,
+    }));
+
+    const handleCompanyChange = async (selectedOption: any) => {
+        const selectedCompany = selectedOption ? selectedOption.value : '';
+        setCompanyName(selectedCompany);
+
+        if (selectedCompany) {
+            try {
+                const response = await fetch(`/api/ModuleCSR/companies?CompanyName=${encodeURIComponent(selectedCompany)}`);
+                if (response.ok) {
+                    const companyDetails = await response.json();
+                    setCustomerName(companyDetails.CustomerName || '');
+                    setContactNumber(companyDetails.ContactNumber || '');
+                } else {
+                    console.error(`Company not found: ${selectedCompany}`);
+                    resetFields();
+                }
+            } catch (error) {
+                console.error('Error fetching company details:', error);
+                resetFields();
+            }
+        } else {
+            resetFields();
+        }
+    };
+
+    const resetFields = () => {
+        setCustomerName('');
+        setContactNumber('');
+    };
+
+    const [salesManagers, setSalesManagers] = useState<OptionType[]>([]);
+    const [salesAgents, setSalesAgents] = useState<OptionType[]>([]);
+
+    useEffect(() => {
+        const fetchTSM = async () => {
+            try {
+                const response = await fetch("/api/tsm?Role=Territory Sales Manager");
+                if (!response.ok) throw new Error("Failed to fetch managers");
+
+                const data = await response.json();
+                const options: OptionType[] = data.map((user: any) => ({
+                    value: `${user.Firstname} ${user.Lastname}`, // Store only ReferenceID
+                    label: `${user.Firstname} ${user.Lastname}`, // Display Firstname Lastname
+                }));
+                setSalesManagers(options);
+            } catch (error) {
+                console.error("Error fetching managers:", error);
+            }
         };
+
+        const fetchTSA = async () => {
+            try {
+                const response = await fetch("/api/tsa?Role=Territory Sales Associate");
+                if (!response.ok) throw new Error("Failed to fetch agents");
+
+                const data = await response.json();
+                const options: OptionType[] = data.map((user: any) => ({
+                    value: `${user.Firstname} ${user.Lastname}`, // Store Firstname Lastname as value
+                    label: `${user.Firstname} ${user.Lastname}`, // Display Firstname Lastname
+                }));
+                setSalesAgents(options);
+            } catch (error) {
+                console.error("Error fetching agents:", error);
+            }
+        };
+
+        fetchTSM();
+        fetchTSA();
+
+    }, []);
 
     return (
         <>
             <input type="hidden" id="Username" value={userName} onChange={(e) => setuserName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
-            <input type="hidden" id="UserID" value={UserID} onChange={(e) => setUserID(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
+            <input type="hidden" id="ReferenceID" value={ReferenceID} onChange={(e) => setReferenceID(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
 
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
@@ -170,7 +233,7 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
                     </select>
                 </div>
 
-                <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="DateClosed">Department</label>
                     <select id="Department" value={Department} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border rounded text-xs">
                         <option value="">Select Department</option>
@@ -194,7 +257,7 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
                     <input type="datetime-local" id="ClosedDate" value={ClosedDate} onChange={(e) => setClosedDate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                 </div>
 
-                <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="TrackingStatus">Status</label>
                     <select id="TrackingStatus" value={TrackingStatus} onChange={(e) => setTrackingStatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50">
                         <option value="">Select Status</option>
@@ -203,9 +266,43 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
                     </select>
                 </div>
 
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2" htmlFor="EndorsedDate">Sales Agent</label>
+                    <Select
+                        options={salesAgents}
+                        value={salesAgents.find((option) => option.value === SalesAgent) || null}
+                        onChange={(selected: OptionType | null) => {
+                            setSalesAgent(selected?.value || ""); // Set the selected agent's ReferenceID
+                            // Find the full name of the selected agent and update the SalesAgentName field
+                            const selectedAgent = salesAgents.find((agent) => agent.value === selected?.value);
+                            setSalesAgentName(selectedAgent ? `${selectedAgent.label}` : ""); // Update SalesAgentName
+                        }}
+                        placeholder="Select Agent"
+                        isSearchable
+                        className="text-xs capitalize"
+                    />
+                </div>
+
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2" htmlFor="ClosedDate">Sales Manager</label>
+                    <Select
+                        options={salesManagers}
+                        value={salesManagers.find((option) => option.value === SalesManager) || null}
+                        onChange={(selected: OptionType | null) => setSalesManager(selected?.value || "")}
+                        placeholder="Select Manager"
+                        isSearchable
+                        className="text-xs capitalize"
+                    />
+                </div>
+
                 <div className="w-full sm:w-1/1 md:w-1/2 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="TrackingRemarks">Remarks</label>
                     <textarea id="TrackingRemarks" value={TrackingRemarks} onChange={(e) => setTrackingRemarks(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={3}></textarea>
+                </div>
+
+                <div className="w-full sm:w-1/1 md:w-1/2 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2" htmlFor="NatureConcern">Nature of Concern</label>
+                    <textarea id="NatureConcern" value={NatureConcern} onChange={(e) => setNatureConcern(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={3}></textarea>
                 </div>
 
             </div>

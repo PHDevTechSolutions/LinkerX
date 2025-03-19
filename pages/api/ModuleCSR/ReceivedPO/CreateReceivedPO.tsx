@@ -2,8 +2,12 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectToDatabase
 
 // Function to add an account directly in this file
-async function AddReceivedPO({ UserID, userName, DateTime, CompanyName, ContactNumber, PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, PaymentDate, DeliveryPickupDate, POStatus, POSource }: {
-  UserID: string;
+async function AddReceivedPO({ 
+  ReferenceID, userName, DateTime, CompanyName, ContactNumber, 
+  PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, 
+  PaymentDate, DeliveryPickupDate, POStatus, POSource, Remarks }: {
+
+  ReferenceID: string;
   userName: string;
   DateTime: string;
   CompanyName: string;
@@ -18,10 +22,11 @@ async function AddReceivedPO({ UserID, userName, DateTime, CompanyName, ContactN
   DeliveryPickupDate: string;
   POStatus: string;
   POSource: string;
+  Remarks: string;
 }) {
   const db = await connectToDatabase();
   const accountsCollection = db.collection("monitoring");
-  const newAccount = { UserID, userName, DateTime, CompanyName, ContactNumber, PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, PaymentDate, DeliveryPickupDate, POStatus, POSource, createdAt: new Date(), };
+  const newAccount = { ReferenceID, userName, DateTime, CompanyName, ContactNumber, PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, PaymentDate, DeliveryPickupDate, POStatus, POSource, Remarks, createdAt: new Date(), };
   await accountsCollection.insertOne(newAccount);
 
   // Broadcast logic if needed
@@ -34,7 +39,7 @@ async function AddReceivedPO({ UserID, userName, DateTime, CompanyName, ContactN
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
-    const { UserID, userName, DateTime, CompanyName, ContactNumber, PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, PaymentDate, DeliveryPickupDate, POStatus, POSource } = req.body;
+    const { ReferenceID, userName, DateTime, CompanyName, ContactNumber, PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, PaymentDate, DeliveryPickupDate, POStatus, POSource, Remarks } = req.body;
 
     // Validate required fields
     if (!CompanyName) {
@@ -44,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-      const result = await AddReceivedPO({ UserID, userName, DateTime, CompanyName, ContactNumber, PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, PaymentDate, DeliveryPickupDate, POStatus, POSource });
+      const result = await AddReceivedPO({ ReferenceID, userName, DateTime, CompanyName, ContactNumber, PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, PaymentDate, DeliveryPickupDate, POStatus, POSource, Remarks });
       res.status(200).json(result);
     } catch (error) {
       console.error("Error adding account:", error);

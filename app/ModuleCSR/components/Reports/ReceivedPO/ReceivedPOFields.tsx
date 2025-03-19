@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 
+type OptionType = {
+    value: string;
+    label: string;
+};
+
+
 interface ReceivedFieldsProps {
     userName: string;
     setuserName: (value: string) => void;
-    UserID: string;
-    setUserID: (value: string) => void;
+    ReferenceID: string;
+    setReferenceID: (value: string) => void;
     DateTime: string;
     setDateTime: (value: string) => void;
     CompanyName: string;
@@ -32,12 +38,17 @@ interface ReceivedFieldsProps {
     setPOStatus: (value: string) => void;
     POSource: string;
     setPOSource: (value: string) => void;
+    Remarks: string;
+    setRemarks: (value: string) => void;
+
+    SalesAgentName: any;
+    setSalesAgentName: (value: any) => void;
     editPost?: any;
 }
 
 const ReceivedPOFields: React.FC<ReceivedFieldsProps> = ({
     userName, setuserName,
-    UserID, setUserID,
+    ReferenceID, setReferenceID,
     DateTime, setDateTime,
     CompanyName, setCompanyName,
     ContactNumber, setContactNumber,
@@ -46,15 +57,19 @@ const ReceivedPOFields: React.FC<ReceivedFieldsProps> = ({
     SONumber, setSONumber,
     SODate, setSODate,
     SalesAgent, setSalesAgent,
+    SalesAgentName, setSalesAgentName,
     PaymentTerms, setPaymentTerms,
     PaymentDate, setPaymentDate,
     DeliveryPickupDate, setDeliveryPickupDate,
     POStatus, setPOStatus,
     POSource, setPOSource,
+    Remarks, setRemarks,
     editPost
 }) => {
 
     const [companies, setCompanies] = useState<any[]>([]);
+    const [salesAgents, setSalesAgents] = useState<OptionType[]>([]);
+    
 
     const formatAmount = (value: string) => {
         const formattedValue = value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
@@ -66,20 +81,90 @@ const ReceivedPOFields: React.FC<ReceivedFieldsProps> = ({
         }
     };
 
+    useEffect(() => {
+            const fetchTSA = async () => {
+                try {
+                    const response = await fetch("/api/tsa?Role=Territory Sales Associate");
+                    if (!response.ok) throw new Error("Failed to fetch agents");
+    
+                    const data = await response.json();
+                    const options: OptionType[] = data.map((user: any) => ({
+                        value: `${user.Firstname} ${user.Lastname}`, // Store Firstname Lastname as value
+                        label: `${user.Firstname} ${user.Lastname}`, // Display Firstname Lastname
+                    }));
+                    setSalesAgents(options);
+                } catch (error) {
+                    console.error("Error fetching agents:", error);
+                }
+            };
+    
+            fetchTSA();
+    
+        }, []);
+    
+    useEffect(() => {
+            const fetchCompanies = async () => {
+                try {
+                    const response = await fetch('/api/ModuleCSR/companies');
+                    const data = await response.json();
+                    setCompanies(data);
+                } catch (error) {
+                    console.error('Error fetching companies:', error);
+                }
+            };
+            fetchCompanies();
+        }, []);
+    
+        const CompanyOptions = companies.map((company) => ({
+            value: company.CompanyName,
+            label: company.CompanyName,
+        }));
+    
+        const handleCompanyChange = async (selectedOption: any) => {
+            const selectedCompany = selectedOption ? selectedOption.value : '';
+            setCompanyName(selectedCompany);
+    
+            if (selectedCompany) {
+                try {
+                    const response = await fetch(`/api/ModuleCSR/companies?CompanyName=${encodeURIComponent(selectedCompany)}`);
+                    if (response.ok) {
+                        const companyDetails = await response.json();
+                        setContactNumber(companyDetails.ContactNumber || '');
+                    } else {
+                        console.error(`Company not found: ${selectedCompany}`);
+                        resetFields();
+                    }
+                } catch (error) {
+                    console.error('Error fetching company details:', error);
+                    resetFields();
+                }
+            } else {
+                resetFields();
+            }
+        };
+    
+        const resetFields = () => {
+            setContactNumber('');
+        };
+
     return (
         <>
             <input type="hidden" id="Username" value={userName} onChange={(e) => setuserName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
-            <input type="hidden" id="UserID" value={UserID} onChange={(e) => setUserID(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
+            <input type="hidden" id="ReferenceID" value={ReferenceID} onChange={(e) => setReferenceID(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
 
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="CompanyName">Company Name</label>
-                    <input type="text" id="CompanyName" value={CompanyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" disabled/>
+                    {editPost ? (
+                        <input type="text" id="CompanyName" value={CompanyName} readOnly className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" />
+                    ) : (
+                        <Select id="CompanyName" options={CompanyOptions} onChange={handleCompanyChange} className="w-full text-xs capitalize" placeholder="Select Company" isClearable />
+                    )}
                 </div>
 
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="ContactNumber">Contact Number</label>
-                    <input type="text" id="ContactNumber" value={ContactNumber} onChange={(e) => setContactNumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                    <input type="text" id="ContactNumber" value={ContactNumber} onChange={(e) => setContactNumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-100" readOnly />
                 </div>
 
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
@@ -104,60 +189,20 @@ const ReceivedPOFields: React.FC<ReceivedFieldsProps> = ({
 
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="SalesAgent">Sales Agent</label>
-                    <select id="SalesAgent" value={SalesAgent} onChange={(e) => setSalesAgent(e.target.value)} className="w-full px-3 py-2 border rounded text-xs">
-                        <option value="">Select Agent</option>
-                        <option value="Airish Echanes">Airish Echanes</option>
-                        <option value="Andrew Banaglorosio">Andrew Banaglorosio</option>
-                        <option value="Annie Mabilanga">Annie Mabilanga</option>
-                        <option value="Ansley Patelo">Ansley Patelo</option>
-                        <option value="Banjo Lising">Banjo Lising</option>
-                        <option value="Cesar Paredes">Cesar Paredes</option>
-                        <option value="Cris Acierto">Cris Acierto</option>
-                        <option value="Cristy Bobis">Cristy Bobis</option>
-                        <option value="Dionisio Doyugan">Dionisio Doyugan</option>
-                        <option value="Duke Menil">Duke Menil</option>
-                        <option value="Erish Tomas Cajipe">Erish Tomas Cajipe</option>
-                        <option value="Erwin Laude">Erwin Laude</option>
-                        <option value="Eryll Joyce Encina">Eryll Joyce Encina</option>
-                        <option value="Florencio Jacinto Jr">Florencio Jacinto Jr</option>
-                        <option value="Gene Mark Roxas">Gene Mark Roxas</option>
-                        <option value="Gretchell Aquino">Gretchell Aquino</option>
-                        <option value="Jean Dela Cerna">Jean Dela Cerna</option>
-                        <option value="Jeff Puying">Jeff Puying</option>
-                        <option value="Jeffrey Lacson">Jeffrey Lacson</option>
-                        <option value="Jessie De Guzman">Jessie De Guzman</option>
-                        <option value="Jessie Deguzman">Jessie Deguzman</option>
-                        <option value="Jonna Clarin">Jonna Clarin</option>
-                        <option value="Jujeno Marie Del Rio">Jujeno Marie Del Rio</option>
-                        <option value="Julius Abuel">Julius Abuel</option>
-                        <option value="Joseph Candazo">Joseph Candazo</option>
-                        <option value="Khay Yango">Khay Yango</option>
-                        <option value="Krista Ilaya">Krista Ilaya</option>
-                        <option value="Krizelle Payno">Krizelle Payno</option>
-                        <option value="Kurt Guanco">Kurt Guanco</option>
-                        <option value="Lotty Deguzman">Lotty Deguzman</option>
-                        <option value="Mark Villagonzalo">Mark Villagonzalo</option>
-                        <option value="Michael Quijano">Michael Quijano</option>
-                        <option value="Merie Tumbado">Merie Tumbado</option>
-                        <option value="Patrick Managuelod">Patrick Managuelod</option>
-                        <option value="Paula Cauguiran">Paula Cauguiran</option>
-                        <option value="Princess Joy Ambre">Princess Joy Ambre</option>
-                        <option value="Raegan Bautista">Raegan Bautista</option>
-                        <option value="Reynaldo Piedad">Reynaldo Piedad</option>
-                        <option value="Randy Bacor">Randy Bacor</option>
-                        <option value="Rodelio Ico">Rodelio Ico</option>
-                        <option value="Rodolfo Delizo">Rodolfo Delizo</option>
-                        <option value="Rosemarie Nollora">Rosemarie Nollora</option>
-                        <option value="Roselyn Barnes">Roselyn Barnes</option>
-                        <option value="Sherilyn Rapote">Sherilyn Rapote</option>
-                        <option value="Vincent Bote">Vincent Bote</option>
-                        <option value="Vincent Ortiz">Vincent Ortiz</option>
-                        <option value="Wilnie Ardelozo">Wilnie Ardelozo</option>
-                    </select>
+                    <Select
+                        options={salesAgents}
+                        value={salesAgents.find((option) => option.value === SalesAgent) || null}
+                        onChange={(selected: OptionType | null) => {
+                            setSalesAgent(selected?.value || ""); // Set the selected agent's ReferenceID
+                            // Find the full name of the selected agent and update the SalesAgentName field
+                            const selectedAgent = salesAgents.find((agent) => agent.value === selected?.value);
+                            setSalesAgentName(selectedAgent ? `${selectedAgent.label}` : ""); // Update SalesAgentName
+                        }}
+                        placeholder="Select Agent"
+                        isSearchable
+                        className="text-xs capitalize"
+                    />
                 </div>
-            </div>
-
-            <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="PaymentTerms">Payment Terms</label>
                     <select id="PaymentTerms" value={PaymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} className="w-full px-3 py-2 border rounded text-xs">
@@ -183,13 +228,20 @@ const ReceivedPOFields: React.FC<ReceivedFieldsProps> = ({
                     <label className="block text-xs font-bold mb-2" htmlFor="POStatus">PO Status</label>
                     <textarea id="POStatus" value={POStatus} onChange={(e) => setPOStatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={3}></textarea>
                 </div>
-                <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="Source">Source</label>
                     <select id="Source" value={POSource} onChange={(e) => setPOSource(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
                         <option value="">Select Source</option>
                         <option value="CS Email">CS Email</option>
                         <option value="Sales Email">Sales Email</option>
                         <option value="Sales Agent">Sales Agent</option>
+                    </select>
+                </div>
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2" htmlFor="Source">Status</label>
+                    <select id="Source" value={Remarks} onChange={(e) => setRemarks(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
+                        <option value="">Select Type</option>
+                        <option value="PO Received">PO Received</option>
                     </select>
                 </div>
             </div>

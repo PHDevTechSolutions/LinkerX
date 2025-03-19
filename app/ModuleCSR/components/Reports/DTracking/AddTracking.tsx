@@ -10,12 +10,17 @@ interface AddTrackingProps {
     onCancel: () => void;
     refreshPosts: () => void;  // Add a refreshPosts callback
     userName: string;
+    userDetails: {
+        id: string;
+        Role: string;
+        ReferenceID: string;
+      };
     editPost?: any; // Optional prop for the post being edited
 }
 
-const AddTracking: React.FC<AddTrackingProps> = ({ onCancel, refreshPosts, editPost }) => {
-    const [UserID, setUserID] = useState("")
+const AddTracking: React.FC<AddTrackingProps> = ({ userDetails, onCancel, refreshPosts, editPost }) => {
     const [userName, setuserName] = useState("");
+    const [ReferenceID, setReferenceID] = useState(editPost ? editPost.ReferenceID : userDetails.ReferenceID);
     const [DateRecord, setDateRecord] = useState(editPost ? editPost.DateRecord : "");
     const [CompanyName, setCompanyName] = useState(editPost ? editPost.CompanyName : "");
     const [CustomerName, setCustomerName] = useState(editPost ? editPost.CustomerName : "");
@@ -28,6 +33,11 @@ const AddTracking: React.FC<AddTrackingProps> = ({ onCancel, refreshPosts, editP
     const [Department, setDepartment] = useState(editPost ? editPost.Department : "");
     const [EndorsedDate, setEndorsedDate] = useState(editPost ? editPost.EndorsedDate : "");
     const [ClosedDate, setClosedDate] = useState(editPost ? editPost.ClosedDate : "");
+
+    const [SalesAgent, setSalesAgent] = useState(editPost ? editPost.SalesAgent : "");
+    const [SalesManager, setSalesManager] = useState(editPost ? editPost.SalesManager : "");
+    const [SalesAgentName, setSalesAgentName] = useState(editPost ? editPost.SalesAgentName : "");
+    const [NatureConcern, setNatureConcern] = useState(editPost ? editPost.NatureConcern : "");
     
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -50,6 +60,7 @@ const AddTracking: React.FC<AddTrackingProps> = ({ onCancel, refreshPosts, editP
             },
             body: JSON.stringify({
                 userName,
+                ReferenceID,
                 DateRecord,
                 CompanyName,
                 CustomerName,
@@ -61,6 +72,9 @@ const AddTracking: React.FC<AddTrackingProps> = ({ onCancel, refreshPosts, editP
                 Department,
                 EndorsedDate,
                 ClosedDate,
+                SalesAgent,
+                SalesManager,
+                NatureConcern,
                 id: editPost ? editPost._id : undefined, // Send post ID if editing
             }),
         });
@@ -87,8 +101,8 @@ const AddTracking: React.FC<AddTrackingProps> = ({ onCancel, refreshPosts, editP
                 <AddTrackingFields
                     userName={userName}
                     setuserName={setuserName}
-                    UserID={UserID}
-                    setUserID={setUserID}
+                    ReferenceID={ReferenceID}
+                    setReferenceID={setReferenceID}
                     DateRecord={DateRecord}
                     setDateRecord={setDateRecord}
                     CompanyName={CompanyName}
@@ -112,6 +126,17 @@ const AddTracking: React.FC<AddTrackingProps> = ({ onCancel, refreshPosts, editP
                     setEndorsedDate={setEndorsedDate}
                     ClosedDate={ClosedDate}
                     setClosedDate={setClosedDate}
+
+                    SalesAgent={SalesAgent}
+                    setSalesAgent={setSalesAgent}
+                    SalesManager={SalesManager}
+                    setSalesManager={setSalesManager}
+                    SalesAgentName={SalesAgentName}
+                    setSalesAgentName={setSalesAgentName}
+
+                    NatureConcern={NatureConcern}
+                    setNatureConcern={setNatureConcern}
+
                     editPost={editPost}
                 />
                 <div className="flex justify-between">

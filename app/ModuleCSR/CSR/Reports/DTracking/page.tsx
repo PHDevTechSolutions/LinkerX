@@ -12,7 +12,7 @@ import DTrackingTable from "../../../components/Reports/DTracking/DTrackingTable
 import Pagination from "../../../components/Reports/DTracking/Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { CiCirclePlus, CiExport  } from "react-icons/ci";
+import { CiCirclePlus, CiExport } from "react-icons/ci";
 
 const ReceivedPO: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -23,6 +23,15 @@ const ReceivedPO: React.FC = () => {
     const [postsPerPage, setPostsPerPage] = useState(10);
     const [startDate, setStartDate] = useState("");  // Start date for filtering
     const [endDate, setEndDate] = useState("");  // End date for filtering
+
+    const [usersList, setUsersList] = useState<any[]>([]);
+
+    const [userDetails, setUserDetails] = useState({
+            UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "",
+        });
+
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     // Fetch accounts from the API
     const fetchAccounts = async () => {
@@ -40,14 +49,83 @@ const ReceivedPO: React.FC = () => {
         fetchAccounts();
     }, []);
 
-    const filteredAccounts = posts.filter((post) => {
-        const isSearchMatch = post.CompanyName.toLowerCase().includes(searchTerm.toLowerCase());
-        const isDateInRange =
-            (!startDate || new Date(post.createdAt) >= new Date(startDate)) &&
-            (!endDate || new Date(post.createdAt) <= new Date(endDate));
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const params = new URLSearchParams(window.location.search);
+            const userId = params.get("id");
 
-        return isSearchMatch && isDateInRange;
-    });
+            if (userId) {
+                try {
+                    const response = await fetch(`/api/user?id=${encodeURIComponent(userId)}`);
+                    if (!response.ok) throw new Error("Failed to fetch user data");
+                    const data = await response.json();
+                    setUserDetails({
+                        UserId: data._id, // Set the user's id here
+                        ReferenceID: data.ReferenceID || "",  // <-- Siguraduhin na ito ay may value
+                        Firstname: data.Firstname || "",
+                        Lastname: data.Lastname || "",
+                        Email: data.Email || "",
+                        Role: data.Role || "",
+                    });
+                } catch (err: unknown) {
+                    console.error("Error fetching user data:", err);
+                    setError("Failed to load user data. Please try again later.");
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setError("User ID is missing.");
+                setLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch("/api/getUsers"); // API endpoint mo
+                const data = await response.json();
+                setUsersList(data);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
+    const filteredAccounts = posts
+        .filter((post) => {
+            const isSearchMatch = post.CompanyName.toLowerCase().includes(searchTerm.toLowerCase());
+            const isDateInRange =
+                (!startDate || new Date(post.createdAt) >= new Date(startDate)) &&
+                (!endDate || new Date(post.createdAt) <= new Date(endDate));
+
+            // Apply role-based filtering
+            if (userDetails.Role === "Super Admin" || userDetails.Role === "Admin") {
+                // Super Admin & Admin can see all posts
+                return isSearchMatch && isDateInRange;
+            } else if (userDetails.Role === "Staff") {
+                // Staff can only see posts with matching ReferenceID
+                return post.ReferenceID === userDetails.ReferenceID && isSearchMatch && isDateInRange;
+            }
+
+            return false; // Return false if no matching role
+        })
+        .map((post) => {
+            // Find matching agent by ReferenceID
+            const agent = usersList.find((user) => user.ReferenceID === post.ReferenceID);
+
+            return {
+                ...post,
+                AgentFirstname: agent?.Firstname || "Unknown",
+                AgentLastname: agent?.Lastname || "Unknown",
+            };
+        })
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Sorted by createdAt
+
 
     // Pagination logic
     const indexOfLastPost = currentPage * postsPerPage;
@@ -123,6 +201,11 @@ const ReceivedPO: React.FC = () => {
                                         }}
                                         refreshPosts={fetchAccounts}  // Pass the refreshPosts callback
                                         userName={user ? user.userName : ""}
+                                        userDetails={{
+                                            id: editPost ? editPost.UserId : userDetails.UserId,
+                                            Role: user ? user.Role : "",
+                                            ReferenceID: user ? user.ReferenceID : "", // <-- Ito ang dapat mong suriin
+                                        }}
                                         editPost={editPost}
                                     />
                                 ) : (

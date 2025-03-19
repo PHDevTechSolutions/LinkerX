@@ -9,7 +9,8 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
         return;
     }
 
-    const { id, UserID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, TicketType, TicketConcern, TrackingStatus, TrackingRemarks, Department, EndorsedDate, ClosedDate  } = req.body;
+    const { id, UserID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, TicketType, TicketConcern, TrackingStatus, TrackingRemarks, 
+        Department, EndorsedDate, ClosedDate, SalesAgent, SalesManager, NatureConcern  } = req.body;
 
     try {
         const db = await connectToDatabase();
@@ -29,6 +30,9 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
             Department,
             EndorsedDate,
             ClosedDate,
+            SalesAgent,
+            SalesManager,
+            NatureConcern,
             updatedAt: new Date(),
         };
 

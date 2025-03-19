@@ -10,12 +10,18 @@ interface AddSkuListingProps {
     onCancel: () => void;
     refreshPosts: () => void;  // Add a refreshPosts callback
     userName: string;
+    userDetails: {
+        id: string;
+        Role: string;
+        ReferenceID: string;
+      };
     editPost?: any; // Optional prop for the post being edited
 }
 
-const AddReceivedPO: React.FC<AddSkuListingProps> = ({ onCancel, refreshPosts, editPost }) => {
+const AddReceivedPO: React.FC<AddSkuListingProps> = ({ userDetails, onCancel, refreshPosts, editPost }) => {
     const [UserID, setUserID] = useState("")
     const [userName, setuserName] = useState("");
+    const [ReferenceID, setReferenceID] = useState(editPost ? editPost.ReferenceID : userDetails.ReferenceID);
     const [DateTime, setDateTime] = useState(editPost ? editPost.DateTime : "");
     const [CompanyName, setCompanyName] = useState(editPost ? editPost.CompanyName : "");
     const [ContactNumber, setContactNumber] = useState(editPost ? editPost.ContactNumber : "");
@@ -29,6 +35,9 @@ const AddReceivedPO: React.FC<AddSkuListingProps> = ({ onCancel, refreshPosts, e
     const [DeliveryPickupDate, setDeliveryPickupDate] = useState(editPost ? editPost.DeliveryPickupDate : "");
     const [POStatus, setPOStatus] = useState(editPost ? editPost.POStatus : "");
     const [POSource, setPOSource] = useState(editPost ? editPost.POSource : "");
+    const [Remarks, setRemarks] = useState(editPost ? editPost.Remarks : "");
+
+    const [SalesAgentName, setSalesAgentName] = useState(editPost ? editPost.SalesAgentName : "");
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -51,6 +60,7 @@ const AddReceivedPO: React.FC<AddSkuListingProps> = ({ onCancel, refreshPosts, e
             },
             body: JSON.stringify({
                 userName,
+                ReferenceID,
                 DateTime,
                 CompanyName,
                 ContactNumber,
@@ -64,6 +74,7 @@ const AddReceivedPO: React.FC<AddSkuListingProps> = ({ onCancel, refreshPosts, e
                 DeliveryPickupDate,
                 POStatus,
                 POSource,
+                Remarks,
                 id: editPost ? editPost._id : undefined, // Send post ID if editing
             }),
         });
@@ -90,8 +101,10 @@ const AddReceivedPO: React.FC<AddSkuListingProps> = ({ onCancel, refreshPosts, e
                 <ReceivedPOFields
                     userName={userName}
                     setuserName={setuserName}
-                    UserID={UserID}
-                    setUserID={setUserID}
+
+                    ReferenceID={ReferenceID}
+                    setReferenceID={setReferenceID}
+
                     DateTime={DateTime}
                     setDateTime={setDateTime}
                     CompanyName={CompanyName}
@@ -118,6 +131,12 @@ const AddReceivedPO: React.FC<AddSkuListingProps> = ({ onCancel, refreshPosts, e
                     setPOStatus={setPOStatus}
                     POSource={POSource}
                     setPOSource={setPOSource}
+
+                    Remarks={Remarks}
+                    setRemarks={setRemarks}
+                    SalesAgentName={SalesAgentName}
+                    setSalesAgentName={setSalesAgentName}
+                    
                     editPost={editPost}
                 />
                 <div className="flex justify-between">
