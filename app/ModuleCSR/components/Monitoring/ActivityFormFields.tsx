@@ -461,6 +461,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     <select id="SalesManager" value={SalesManager || ""} onChange={(e) => setSalesManager(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
                         <option value="">Select Manager</option>
                         <option value="AB-NCR-000">AB-NCR-000 - Angie Baldugo</option>
+                        <option value="JA-NCR-000">JA-NCR-000 - Jerry Abaluyan</option>
                         <option value="RT-NCR-000">RT-NCR-000 - Roy Tayuman</option>
                         <option value="RR-SLN-000">RR-SLN-000 - Rudolf Rosales</option>
                         <option value="NTL-DVO-000">NTL-DVO-000 - Nathan Legazpi</option>
