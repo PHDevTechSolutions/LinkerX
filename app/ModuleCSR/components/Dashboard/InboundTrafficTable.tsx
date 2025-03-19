@@ -12,8 +12,12 @@ interface MetricTableProps {
 
 const getWeekNumber = (dateString: string) => {
   const date = new Date(dateString);
-  const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-  return Math.ceil((date.getDate() + firstDayOfMonth.getDay()) / 7);
+  const dayOfMonth = date.getDate();
+
+  if (dayOfMonth <= 7) return 1;
+  if (dayOfMonth <= 14) return 2;
+  if (dayOfMonth <= 21) return 3;
+  return 4; // Days 22-31 will go to Week 4
 };
 
 const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, Role }) => {
@@ -45,7 +49,6 @@ useEffect(() => {
     fetchMetricsData(selectedMonth, selectedYear);
 }, [ReferenceID, Role, selectedMonth, selectedYear]);
 
-
   const calculateWeeklyCounts = () => {
     const weeklyCounts: Record<string, Record<string, number>> = {
       "Week 1": {},
@@ -74,12 +77,12 @@ useEffect(() => {
     <div className="bg-white shadow-md rounded-lg p-4">
       <div className="mb-4 flex gap-4">
         <div>
-          <label htmlFor="month" className="block text-sm font-semibold">Month</label>
+          <label htmlFor="month" className="block text-xs font-semibold">Month</label>
           <select
             id="month"
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            className="border p-2 rounded"
+            className="w-full px-3 py-2 border bg-gray-50 rounded text-xs"
           >
             {Array.from({ length: 12 }, (_, i) => (
               <option key={i} value={i + 1}>
@@ -89,12 +92,12 @@ useEffect(() => {
           </select>
         </div>
         <div>
-          <label htmlFor="year" className="block text-sm font-semibold">Year</label>
+          <label htmlFor="year" className="block text-xs font-semibold">Year</label>
           <select
             id="year"
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="border p-2 rounded"
+            className="w-full px-3 py-2 border bg-gray-50 rounded text-xs"
           >
             {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map((year) => (
               <option key={year} value={year}>
