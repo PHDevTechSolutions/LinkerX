@@ -7,8 +7,6 @@ interface SearchFiltersProps {
     setSearchTerm: (term: string) => void;
     selectedStatus: string;
     setselectedStatus: (Status: string) => void;
-    postsPerPage: number;
-    setPostsPerPage: (num: number) => void;
     salesAgent: string;
     setSalesAgent: (agent: string) => void;
     TicketReceived: string;
@@ -22,8 +20,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     setSearchTerm,
     selectedStatus,
     setselectedStatus,
-    postsPerPage,
-    setPostsPerPage,
     salesAgent,
     setSalesAgent,
     TicketReceived,

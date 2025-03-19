@@ -158,7 +158,7 @@ const SKUListing: React.FC = () => {
                                     <>
                                         <h2 className="text-lg font-bold mb-2">SKU Listing's</h2>
                                         <p className="text-xs mb-2">This section displays a list of SKUs (Stock Keeping Units) and includes filtering options to refine the data. Users can search by keyword, adjust the number of displayed entries, and filter results within a specific date range. Additionally, an "Export to Excel" button allows users to download the SKU data for further analysis.</p>
-                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg text-gray-900">
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}

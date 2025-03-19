@@ -168,7 +168,7 @@ const ReceivedPO: React.FC = () => {
                                     <>
                                         <h2 className="text-lg font-bold mb-2">Received PO Monitoring</h2>
                                         <p className="text-xs mb-2">This section tracks and monitors received purchase orders (POs). It helps users review and manage incoming orders, ensuring accurate record-keeping and efficient processing.</p>
-                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg text-gray-900">
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}

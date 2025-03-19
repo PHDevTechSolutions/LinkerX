@@ -12,7 +12,7 @@ import Pagination from "../../../components/Outbound/Pagination";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import ExcelJS from 'exceljs';
-import { CiExport  } from "react-icons/ci";
+import { CiExport } from "react-icons/ci";
 
 // Main Page Component
 const OutboundCallPage: React.FC = () => {
@@ -138,11 +138,11 @@ const OutboundCallPage: React.FC = () => {
               <p className="text-xs mb-2">The Daily CSR Transaction section displays essential details of customer service interactions, including the Ticket Number, Account Name, Contact, Email, Wrap Up, Inquiry/Concern, Remarks, Agent, TSM, and Time Consumed. This helps track and manage customer inquiries efficiently while monitoring agent performance and resolution times.</p>
 
               {/* Display total entries */}
-              <div className="mb-4 text-sm text-gray-700 font-semibold">
+              <div className="mb-4 text-sm font-semibold">
                 Total Entries: {filteredPosts.length}
               </div>
 
-              <div className="mb-4 p-4 bg-white shadow-md rounded-md">
+              <div className="mb-4 p-4 bg-white shadow-md rounded-md text-gray-900">
                 <SearchFilters
                   searchTerm={searchTerm}
                   setSearchTerm={setSearchTerm}
@@ -156,13 +156,15 @@ const OutboundCallPage: React.FC = () => {
                   setEndDate={setEndDate}
                 />
                 <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"><CiExport size={20} /> Export to Excel</button>
+
+                <DailyTransactionTable posts={currentPosts} />
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  setCurrentPage={setCurrentPage}
+                />
+
               </div>
-              <DailyTransactionTable posts={currentPosts} />
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                setCurrentPage={setCurrentPage}
-              />
               <ToastContainer />
             </div>
           )}

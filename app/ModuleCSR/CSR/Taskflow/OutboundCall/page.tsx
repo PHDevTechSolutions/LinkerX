@@ -97,7 +97,6 @@ const OutboundCallPage: React.FC = () => {
         fetchUsers();
     }, []);
 
-
     // Filter posts based on search and selected client type
     const filteredPosts = posts
         .map((post) => {
@@ -215,12 +214,7 @@ const OutboundCallPage: React.FC = () => {
                                 This section displays details about outbound calls made to clients. It includes a search and filter functionality to refine call records based on client type, date range, and other criteria. The total number of entries is shown to provide an overview of recorded outbound calls.
                             </p>
 
-                            {/* Display total entries */}
-                            <div className="mb-4 text-xs text-gray-700">
-                                Total Entries: {filteredPosts.length}
-                            </div>
-
-                            <div className="mb-4 p-4 bg-white shadow-md rounded-md">
+                            <div className="mb-4 p-4 bg-white shadow-md rounded-md text-gray-900">
                                 <SearchFilters
                                     searchTerm={searchTerm}
                                     setSearchTerm={setSearchTerm}
@@ -234,14 +228,14 @@ const OutboundCallPage: React.FC = () => {
                                     setEndDate={setEndDate}
                                 />
                                 <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"><CiExport size={20} /> Export to Excel</button>
+                                
+                                <OutboundTable posts={filteredPosts} />
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    setCurrentPage={setCurrentPage}
+                                />
                             </div>
-
-                            <OutboundTable posts={currentPosts} />
-                            <Pagination
-                                currentPage={currentPage}
-                                totalPages={totalPages}
-                                setCurrentPage={setCurrentPage}
-                            />
 
                             {showAccessModal && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 rounded-md">

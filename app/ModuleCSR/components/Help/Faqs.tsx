@@ -80,7 +80,7 @@ const CSRFaqs: React.FC = () => {
     };
 
     return (
-        <div className="mb-4 p-4 bg-white shadow-md rounded-lg space-y-2">
+        <div className="mb-4 p-4 bg-white shadow-md rounded-lg space-y-2 text-gray-900">
             {faqData.map((faq, index) => (
                 <div key={index} className="border rounded-lg p-2">
                     <button

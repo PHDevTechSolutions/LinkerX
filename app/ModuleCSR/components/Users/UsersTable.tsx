@@ -42,7 +42,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ posts, handleEdit, handleDelete
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full bg-white border border-gray-300 shadow-md">
+      <table className="min-w-full bg-white border border-gray-300 shadow-md text-left">
         <thead className="bg-gray-100 text-xs uppercase text-gray-700">
           <tr>
             <th className="px-4 py-2 border">Full Name</th>
@@ -58,8 +58,8 @@ const UsersTable: React.FC<UsersTableProps> = ({ posts, handleEdit, handleDelete
                 <td className="px-4 py-2 border capitalize">{post.Lastname}, {post.Firstname}</td>
                 <td className="px-4 py-2 border">{post.Email}</td>
                 <td className="px-4 py-2 border capitalize">{post.Role}</td>
-                <td className="px-4 py-2 border text-center relative">
-                  <Menu as="div" className="relative inline-block text-left">
+                <td className="px-4 py-2 text-left absolute">
+                  <Menu as="div" className="relative inline-block">
                     <Menu.Button className="text-gray-500 hover:text-gray-800">
                       <BsThreeDotsVertical size={14} />
                     </Menu.Button>

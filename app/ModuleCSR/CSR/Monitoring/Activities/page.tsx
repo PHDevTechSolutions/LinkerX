@@ -20,8 +20,6 @@ const ActivityPage: React.FC = () => {
     const [salesAgent, setSalesAgent] = useState("");
     const [TicketReceived, setTicketReceived] = useState("");
     const [TicketEndorsed, setTicketEndorsed] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(5000);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
@@ -65,7 +63,6 @@ const ActivityPage: React.FC = () => {
 
         fetchUserData();
     }, []);
-
 
     // Fetch accounts from the API
     const fetchActivity = async () => {
@@ -159,12 +156,6 @@ const ActivityPage: React.FC = () => {
         return false; // Default case: if none of the roles match, return false
     });
 
-    // Pagination logic
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
-    const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
-
     // Edit post function
     const handleEdit = (post: any) => {
         setEditPost(post);
@@ -235,19 +226,17 @@ const ActivityPage: React.FC = () => {
                                             </button>
                                         </div>
                                         <h2 className="text-lg font-bold mb-2">Tickets Summary</h2>
-                                        <p className="text-xs text-gray-600 mb-4">
+                                        <p className="text-xs mb-4">
                                             This section provides an overview of ticket management, including the creation of new tickets and
                                             a list of endorsed, closed, and open tickets. It allows filtering based on various criteria to help
                                             track and manage ticket statuses efficiently.
                                         </p>
-                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg text-gray-900">
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
                                                 selectedStatus={selectedStatus}
                                                 setselectedStatus={setselectedStatus}
-                                                postsPerPage={postsPerPage}
-                                                setPostsPerPage={setPostsPerPage}
                                                 salesAgent={salesAgent}
                                                 setSalesAgent={setSalesAgent}
                                                 TicketReceived={TicketReceived}
@@ -256,7 +245,7 @@ const ActivityPage: React.FC = () => {
                                                 setTicketEndorsed={setTicketEndorsed}
                                             />
                                             <AccountsTable
-                                                posts={currentPosts}
+                                                posts={filteredAccounts}
                                                 handleEdit={handleEdit}
                                                 handleDelete={confirmDelete}
                                                 handleStatusUpdate={handleStatusUpdate}

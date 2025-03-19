@@ -85,7 +85,7 @@ const AddReceivedPO: React.FC<AddSkuListingProps> = ({ onCancel, refreshPosts, e
 
     return (
         <>
-            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
+            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs text-gray-900">
                 <h2 className="text-xs font-bold mb-4">{editPost ? "Edit Received PO" : "Add Received PO"}</h2>
                 <ReceivedPOFields
                     userName={userName}

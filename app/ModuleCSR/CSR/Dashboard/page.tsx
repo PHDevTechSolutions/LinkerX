@@ -76,7 +76,7 @@ const DashboardPage: React.FC = () => {
   return (
     <SessionChecker>
       <ParentLayout>
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 text-gray-900">
           {/* Date Range Picker */}
           <div className="flex gap-4 mb-4">
             <div className="bg-white shadow-md rounded-lg p-4 w-full">

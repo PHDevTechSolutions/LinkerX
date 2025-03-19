@@ -111,7 +111,7 @@ const ListofUser: React.FC = () => {
                         const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
 
                         return (
-                            <div className="container mx-auto p-4">
+                            <div className="container mx-auto p-4 text-gray-900">
                                 {showForm ? (
                                     <AddPostForm
                                         onCancel={() => {

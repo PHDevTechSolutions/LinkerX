@@ -21,7 +21,7 @@ const Developer: React.FC<FormProps> = () => {
     };
 
     return (
-        <form className="space-y-4 p-4 bg-white shadow-md rounded-lg">
+        <form className="space-y-4 p-4 bg-white shadow-md rounded-lg text-gray-900">
             <div className="grid grid-cols-2 gap-4">
             {fields.map((field, index) => (
                 <div key={index} className="p-4">

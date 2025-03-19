@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { IoIosMenu } from "react-icons/io";
-import { CiClock2 } from "react-icons/ci";
 import { IoMdNotificationsOutline } from "react-icons/io";
-import { CiUser, CiSettings } from "react-icons/ci";
+import { CiClock2, CiMenuBurger, CiUser, CiSettings, CiBellOn, CiCircleRemove, CiDark, CiSun, CiSearch } from "react-icons/ci";
 
 interface Notification {
   id: number;
@@ -16,7 +15,13 @@ interface Notification {
   salesagentname: string;  // Assuming this is included in the notification object
 }
 
-const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) => {
+interface NavbarProps {
+  onToggleSidebar: () => void;
+  onToggleTheme: () => void;
+  isDarkMode: boolean;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkMode }) => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userReferenceId, setUserReferenceId] = useState("");
@@ -164,18 +169,44 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
     new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true })
   );
 
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDarkMode]);
+
   return (
-    <div className="flex justify-between items-center p-4 bg-gray-100 text-dark shadow-md">
+    <div className={`sticky top-0 z-[9999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center">
         <button onClick={onToggleSidebar} className="p-2">
           <IoIosMenu size={24} />
         </button>
-        <span className="flex items-center border text-sm shadow-md text-xs font-medium bg-gray-50 px-3 py-1 rounded-full">
+        <span className="flex items-center text-gray-900 border text-sm shadow-md text-xs font-medium bg-gray-50 px-3 py-1 rounded-full">
           <CiClock2 className="mr-1" /> {currentTime}
         </span>
       </div>
 
       <div className="relative flex items-center text-center text-xs space-x-4" ref={dropdownRef}>
+        <button
+          onClick={onToggleTheme}
+          className="relative flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-16 h-8 p-1 transition-all duration-300"
+        >
+          {/* Toggle Knob with Icon Centered */}
+          <div
+            className={`w-6 h-6 bg-white dark:bg-yellow-400 rounded-full shadow-md flex justify-center items-center transform transition-transform duration-300 ${isDarkMode ? "translate-x-8" : "translate-x-0"
+              }`}
+          >
+            {isDarkMode ? (
+              <CiDark size={16} className="text-gray-900 dark:text-gray-300" />
+            ) : (
+              <CiSun size={16} className="text-yellow-500" />
+            )}
+          </div>
+        </button>
         {/* Notification Icon */}
         <button onClick={() => setShowNotifications(!showNotifications)} className="p-2 relative">
           <IoMdNotificationsOutline size={20} />

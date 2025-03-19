@@ -122,10 +122,10 @@ const AccountListPage: React.FC = () => {
                                             </button>
                                         </div>
                                         <h2 className="text-lg font-bold mb-2">Client Account Management</h2>
-                                        <p className="text-xs text-gray-600 mb-4">
+                                        <p className="text-xs mb-4">
                                             This section provides an overview of client accounts, allowing users to search, filter, and manage records efficiently. Users can refine the results by entering a search term, selecting a city address, or adjusting the number of records displayed per page.
                                         </p>
-                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                        <div className="mb-4 p-4 bg-white text-gray-900 shadow-md rounded-lg">
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}

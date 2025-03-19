@@ -95,49 +95,49 @@ const OutboundCallPage: React.FC = () => {
 
     // Filter posts based on search and selected client type
     const filteredPosts = posts
-    .filter((post) => {
-        const accountName = post.companyname ? post.companyname.toLowerCase() : "";
-        const ticketnumber = post.ticketreferencenumber
-            ? post.ticketreferencenumber.toLowerCase()
-            : "";
-        const AgentFirstname = post.AgentFirstname
-            ? post.AgentFirstname.toLowerCase()
-            : "";
+        .filter((post) => {
+            const accountName = post.companyname ? post.companyname.toLowerCase() : "";
+            const ticketnumber = post.ticketreferencenumber
+                ? post.ticketreferencenumber.toLowerCase()
+                : "";
+            const AgentFirstname = post.AgentFirstname
+                ? post.AgentFirstname.toLowerCase()
+                : "";
 
-        const matchesSearch =
-            accountName.includes(searchTerm.toLowerCase()) ||
-            ticketnumber.includes(searchTerm.toLowerCase()) || // ✅ Added ticket number filter
-            AgentFirstname.includes(searchTerm.toLowerCase());
+            const matchesSearch =
+                accountName.includes(searchTerm.toLowerCase()) ||
+                ticketnumber.includes(searchTerm.toLowerCase()) || // ✅ Added ticket number filter
+                AgentFirstname.includes(searchTerm.toLowerCase());
 
-        // Filter by CSR Inquiries only
-        const isCSRInquiry = post.typeclient === "CSR Inquiries";
+            // Filter by CSR Inquiries only
+            const isCSRInquiry = post.typeclient === "CSR Inquiries";
 
-        // Date range filtering
-        const postStartDate = post.startdate ? new Date(post.startdate) : null;
-        const postEndDate = post.enddate ? new Date(post.enddate) : null;
-        const isWithinDateRange =
-            (!startDate || (postStartDate && postStartDate >= new Date(startDate))) &&
-            (!endDate || (postEndDate && postEndDate <= new Date(endDate)));
+            // Date range filtering
+            const postStartDate = post.startdate ? new Date(post.startdate) : null;
+            const postEndDate = post.enddate ? new Date(post.enddate) : null;
+            const isWithinDateRange =
+                (!startDate || (postStartDate && postStartDate >= new Date(startDate))) &&
+                (!endDate || (postEndDate && postEndDate <= new Date(endDate)));
 
-        return (
-            matchesSearch && isWithinDateRange && isCSRInquiry
-        );
-    })
-    .map((post) => {
-        // Find the agent with the same ReferenceID in usersList
-        const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+            return (
+                matchesSearch && isWithinDateRange && isCSRInquiry
+            );
+        })
+        .map((post) => {
+            // Find the agent with the same ReferenceID in usersList
+            const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
 
-        // Find the manager with the same ReferenceID in usersList
-        const salesmanager = usersList.find((user) => user.ReferenceID === post.tsm);
+            // Find the manager with the same ReferenceID in usersList
+            const salesmanager = usersList.find((user) => user.ReferenceID === post.tsm);
 
-        return {
-            ...post,
-            AgentFirstname: agent ? agent.Firstname : "Unknown",
-            AgentLastname: agent ? agent.Lastname : "Unknown",
-            ManagerFirstname: salesmanager ? salesmanager.Firstname : "Unknown",
-            ManagerLastname: salesmanager ? salesmanager.Lastname : "Unknown",
-        };
-    });
+            return {
+                ...post,
+                AgentFirstname: agent ? agent.Firstname : "Unknown",
+                AgentLastname: agent ? agent.Lastname : "Unknown",
+                ManagerFirstname: salesmanager ? salesmanager.Firstname : "Unknown",
+                ManagerLastname: salesmanager ? salesmanager.Lastname : "Unknown",
+            };
+        });
 
     // Pagination logic
     const indexOfLastPost = currentPage * postsPerPage;
@@ -194,16 +194,16 @@ const OutboundCallPage: React.FC = () => {
     };
 
     const isRestrictedUser =
-            userDetails?.Role !== "Super Admin" && userDetails?.ReferenceID !== "LR-CSR-849432";
-    
-        // Automatically show modal if the user is restricted
-        useEffect(() => {
-            if (isRestrictedUser) {
-                setShowAccessModal(true);
-            } else {
-                setShowAccessModal(false);
-            }
-        }, [isRestrictedUser]);
+        userDetails?.Role !== "Super Admin" && userDetails?.ReferenceID !== "LR-CSR-849432";
+
+    // Automatically show modal if the user is restricted
+    useEffect(() => {
+        if (isRestrictedUser) {
+            setShowAccessModal(true);
+        } else {
+            setShowAccessModal(false);
+        }
+    }, [isRestrictedUser]);
 
     return (
         <SessionChecker>
@@ -216,7 +216,7 @@ const OutboundCallPage: React.FC = () => {
 
                             {/* Display total entries */}
 
-                            <div className="mb-4 p-4 bg-white shadow-md rounded-md">
+                            <div className="mb-4 p-4 bg-white shadow-md rounded-md text-gray-900">
                                 <SearchFilters
                                     searchTerm={searchTerm}
                                     setSearchTerm={setSearchTerm}
@@ -230,13 +230,13 @@ const OutboundCallPage: React.FC = () => {
                                     setEndDate={setEndDate}
                                 />
                                 <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"><CiExport size={20} /> Export to Excel</button>
+                                <DailyTransactionTable posts={currentPosts} />
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    setCurrentPage={setCurrentPage}
+                                />
                             </div>
-                            <DailyTransactionTable posts={currentPosts} />
-                            <Pagination
-                                currentPage={currentPage}
-                                totalPages={totalPages}
-                                setCurrentPage={setCurrentPage}
-                            />
                             {showAccessModal && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 rounded-md">
                                     <div className="bg-white p-6 rounded shadow-lg w-96">
@@ -248,7 +248,7 @@ const OutboundCallPage: React.FC = () => {
                                     </div>
                                 </div>
                             )}
-                            
+
                             <ToastContainer />
                         </div>
                     )}

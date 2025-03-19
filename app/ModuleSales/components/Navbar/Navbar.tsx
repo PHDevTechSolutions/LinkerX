@@ -410,7 +410,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           </div>
         )}
 
-
         {/* User Dropdown */}
         <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-1 focus:outline-none">
           <CiUser size={20} />

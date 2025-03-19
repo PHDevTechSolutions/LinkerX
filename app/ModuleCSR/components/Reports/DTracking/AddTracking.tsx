@@ -82,7 +82,7 @@ const AddTracking: React.FC<AddTrackingProps> = ({ onCancel, refreshPosts, editP
 
     return (
         <>
-            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
+            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs text-gray-900">
                 <h2 className="text-xs font-bold mb-4">{editPost ? "Edit Record" : "Add Record"}</h2>
                 <AddTrackingFields
                     userName={userName}

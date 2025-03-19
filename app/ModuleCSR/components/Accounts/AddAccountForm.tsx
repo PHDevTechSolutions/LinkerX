@@ -64,7 +64,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ onCancel, refreshPosts,
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
+      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs text-gray-900">
         <h2 className="text-xs font-bold mb-4">{editPost ? "Modify Account Details" : "Register New"}</h2>
         <p className="mb-2">This section allows users to either add a new client account or edit an existing one. The form captures essential details such as the company name, customer name, gender, contact number, email, city address, customer segment, and customer type. When editing an account, the fields are pre-filled with existing data for easy modification.</p>
         <FormFields

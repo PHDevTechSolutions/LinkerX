@@ -9,7 +9,7 @@ import { CiGrid42, CiInboxIn, CiWavePulse1, CiUser, CiCircleQuestion, CiSettings
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
-const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, onClose }) => {
+const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: boolean }> = ({ isOpen, onClose, isDarkMode }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
@@ -135,7 +135,12 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
   });
 
   return (
-    <div className={`fixed inset-y-0 left-0 z-50 h-screen bg-[#172E0B] text-white transition-all duration-300 flex flex-col ${collapsed ? "w-16" : "w-64"} ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
+    <div
+      className={`fixed inset-y-0 left-0 z-50 h-screen transition-all duration-300 flex flex-col shadow-lg 
+      ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"} 
+      ${collapsed ? "w-16" : "w-64"} 
+      ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
+    >
       {/* Logo Section */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center">
@@ -163,7 +168,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, o
       <div className="flex flex-col items-center rounded-md flex-grow overflow-y-auto text-xs p-2">
         <div className="w-full">
           <Link href={`/ModuleCSR/CSR/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex items-center w-full p-4 bg-gray-50 rounded text-gray-900 transition-all">
-          <CiGrid42 size={20} className="mr-1" />Dashboard</Link>
+            <CiGrid42 size={20} className="mr-1" />Dashboard</Link>
         </div>
         {filteredMenuItems.map((item, index) => (
           <div key={index} className="w-full">

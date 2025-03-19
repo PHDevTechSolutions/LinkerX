@@ -9,6 +9,7 @@ import SearchFilters from "../../../components/AutomatedTickets/SearchFilters";
 import AccountsTable from "../../../components/AutomatedTickets/ActivityTable";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { CiCirclePlus } from "react-icons/ci";
 
 const ActivityPage: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -19,8 +20,6 @@ const ActivityPage: React.FC = () => {
     const [salesAgent, setSalesAgent] = useState("");
     const [TicketReceived, setTicketReceived] = useState("");
     const [TicketEndorsed, setTicketEndorsed] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(500);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
@@ -66,7 +65,6 @@ const ActivityPage: React.FC = () => {
 
         fetchUserData();
     }, []);
-
 
     // Fetch accounts from the API
     const fetchActivity = async () => {
@@ -160,12 +158,6 @@ const ActivityPage: React.FC = () => {
         return false; // Default case: if none of the roles match, return false
     });
 
-    // Pagination logic
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
-    const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
-
     // Edit post function
     const handleEdit = (post: any) => {
         setEditPost(post);
@@ -243,17 +235,22 @@ const ActivityPage: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
-                                            <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded" onClick={() => setShowForm(true)}>Add Ticket</button>
+                                            <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded flex items-center gap-1" onClick={() => setShowForm(true)}>
+                                                <CiCirclePlus size={20} />Add Ticket
+                                            </button>
                                         </div>
                                         <h2 className="text-lg font-bold mb-2">Automated Tickets</h2>
-                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                        <p className="text-xs mb-4">
+                                            This section provides an overview of ticket management, including the creation of new tickets and
+                                            a list of endorsed, closed, and open tickets. It allows filtering based on various criteria to help
+                                            track and manage ticket statuses efficiently.
+                                        </p>
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg text-gray-900">
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
                                                 selectedStatus={selectedStatus}
                                                 setselectedStatus={setselectedStatus}
-                                                postsPerPage={postsPerPage}
-                                                setPostsPerPage={setPostsPerPage}
                                                 salesAgent={salesAgent}
                                                 setSalesAgent={setSalesAgent}
                                                 TicketReceived={TicketReceived}
@@ -262,7 +259,7 @@ const ActivityPage: React.FC = () => {
                                                 setTicketEndorsed={setTicketEndorsed}
                                             />
                                             <AccountsTable
-                                                posts={currentPosts}
+                                                posts={filteredAccounts}
                                                 handleEdit={handleEdit}
                                                 handleDelete={confirmDelete}
                                                 handleStatusUpdate={handleStatusUpdate}
