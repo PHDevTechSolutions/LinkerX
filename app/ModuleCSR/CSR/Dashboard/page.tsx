@@ -9,6 +9,7 @@ import CustomerSource from "../../components/Dashboard/CustomerSource";
 
 //Tables
 import MetricTable from "../../components/Dashboard/MetricTable";
+import InboundTrafficTable from "../../components/Dashboard/InboundTrafficTable";
 import BarChart from "../../components/Dashboard/BarChart";
 import Wrapup from "../../components/Dashboard/Wrapup";
 
@@ -94,6 +95,7 @@ const DashboardPage: React.FC = () => {
               <div className="flex border-b mb-4 text-xs font-bold">
                 <button className={`p-2 flex-1 ${activeTable === "barchart" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("barchart")}>Bar Chart</button>
                 <button className={`p-2 flex-1 ${activeTable === "metrictable" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("metrictable")}>Metrics</button>
+                <button className={`p-2 flex-1 ${activeTable === "inboundtraffic" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("inboundtraffic")}>Weekly Inbound Traffic Per Channel</button>
               </div>
               <div className="p-4">
                 <p className="text-xs text-gray-600 mb-4">
@@ -106,6 +108,10 @@ const DashboardPage: React.FC = () => {
                   Role={userDetails.Role}
                 />}
                 {activeTable === "metrictable" && <MetricTable
+                  ReferenceID={userDetails.ReferenceID}
+                  Role={userDetails.Role}
+                />}
+                {activeTable === "inboundtraffic" && <InboundTrafficTable
                   ReferenceID={userDetails.ReferenceID}
                   Role={userDetails.Role}
                 />}
