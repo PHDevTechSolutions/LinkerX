@@ -19,7 +19,7 @@ export async function GET(req: Request) {
 
         // Fetch only callback from the notification table
         const progressData = await sql`
-        SELECT callback
+        SELECT callback, message, type, date_created
         FROM notification 
         WHERE referenceid = ${referenceId};
         `;

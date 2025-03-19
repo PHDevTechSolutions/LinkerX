@@ -12,6 +12,8 @@ interface Notification {
   typeclient: string;
   date_created: string;
   typecall: string;
+  message: string;
+  type: string;
 }
 
 interface SidebarSubLink {
@@ -57,6 +59,87 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+
+  // Load dismissed notifications from localStorage
+  useEffect(() => {
+    if (!userReferenceId) return;
+  
+    const fetchNotifications = async () => {
+      try {
+        const res = await fetch(
+          `/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`
+        );
+        const data = await res.json();
+  
+        if (!data.success) return;
+  
+        // Get current date (without time) for checking notifications
+        const today = new Date().setHours(0, 0, 0, 0);
+  
+        // Filter valid notifications based on type
+        const validNotifications = data.data
+          .filter((notif: any) => {
+            switch (notif.type) {
+              case "Callback Notification":
+                if (notif.callback) {
+                  const callbackDate = new Date(notif.callback).setHours(0, 0, 0, 0);
+                  return callbackDate <= today;
+                }
+                return false;
+  
+              case "Inquiry Notification":
+                if (notif.date_created) {
+                  const inquiryDate = new Date(notif.date_created).setHours(0, 0, 0, 0);
+                  return inquiryDate <= today;
+                }
+                return false;
+  
+              default:
+                return false;
+            }
+          })
+          // ✅ Sort notifications by date_created or callback in DESCENDING order
+          .sort((a: any, b: any) => {
+            const dateA = new Date(a.callback || a.date_created).getTime();
+            const dateB = new Date(b.callback || b.date_created).getTime();
+            return dateB - dateA; // Descending order
+          });
+  
+        // Set valid notifications
+        setNotifications(validNotifications);
+        setNotificationCount(validNotifications.length);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+  
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 10000);
+    return () => clearInterval(interval);
+  }, [userReferenceId]);
+  
+  // ✅ Handle notification click
+  const handleNotificationClick = (notifId: number) => {
+    const updatedNotifications = notifications.filter((notif) => notif.id !== notifId);
+    setNotifications(updatedNotifications);
+    setNotificationCount(updatedNotifications.length);
+  
+    const dismissedIds = JSON.parse(localStorage.getItem("dismissedNotifications") || "[]");
+    localStorage.setItem("dismissedNotifications", JSON.stringify([...dismissedIds, notifId]));
+  };
+  
+  // ✅ Handle click outside to close notifications
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
+      }
+    }
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  
 
   // Check if TargetQuota is null or empty
   useEffect(() => {
@@ -132,52 +215,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     fetchUserData();
   }, []);
 
-  // Load dismissed notifications from localStorage
-  useEffect(() => {
-    if (!userReferenceId) return;
-
-    const fetchNotificationsAndInquiries = async () => {
-      try {
-        // Fetch the callback data
-        const callbackRes = await fetch(`/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`);
-        const callbackData = await callbackRes.json();
-
-        if (!callbackData.success) return;
-
-        const dismissedIds = new Set(JSON.parse(localStorage.getItem("dismissedNotifications") || "[]"));
-
-        // Process callback notifications
-        const validCallbacks = callbackData.data
-          .filter((notif: any) =>
-            notif.typeactivity === "Outbound Call" && notif.callback && !dismissedIds.has(notif.id)
-          )
-          .sort((a: any, b: any) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime());
-
-        // Update notifications state
-        setNotifications(validCallbacks);
-        setNotificationCount(validCallbacks.length);
-      } catch (error) {
-        console.error("Error fetching notifications and inquiries:", error);
-      }
-    };
-
-    fetchNotificationsAndInquiries();
-    const interval = setInterval(fetchNotificationsAndInquiries, 10000);
-    return () => clearInterval(interval);
-  }, [userReferenceId]);
-
-
-
-  // Handle notification click (removes from list and stores in localStorage)
-  const handleNotificationClick = (notifId: number) => {
-    const updatedNotifications = notifications.filter((notif) => notif.id !== notifId);
-    setNotifications(updatedNotifications);
-    setNotificationCount(updatedNotifications.length);
-
-    const dismissedIds = JSON.parse(localStorage.getItem("dismissedNotifications") || "[]");
-    localStorage.setItem("dismissedNotifications", JSON.stringify([...dismissedIds, notifId]));
-  };
-
   const handleLogout = async () => {
     setIsLoggingOut(true);
     await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -216,7 +253,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   }, []);
 
   return (
-    <div className={`sticky top-0 z-100 flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
+    <div className={`sticky top-0 z-[9999] flex justify-between items-center p-4 border transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center space-x-4">
         <button onClick={onToggleSidebar} className="p-2">
           <CiMenuBurger />
@@ -258,10 +295,8 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
         {/* Notifications */}
         <button
-          onClick={() => {
-            setShowNotifications((prevState) => !prevState); // Toggle notification visibility
-          }}
-          disabled={modalOpen} // Disable button if modal is open
+          onClick={() => setShowNotifications((prevState) => !prevState)}
+          disabled={modalOpen}
           className="p-2 relative flex items-center"
         >
           <CiBellOn size={20} />
@@ -274,7 +309,10 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
         {/* Notification Dropdown */}
         {showNotifications && notifications.length > 0 && (
-          <div ref={notificationRef} className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-300 rounded shadow-lg z-50 p-2">
+          <div
+            ref={notificationRef}
+            className="fixed top-14 right-4 w-80 bg-white border border-gray-300 rounded shadow-lg p-2 z-50"
+          >
             <h3 className="text-xs font-semibold px-2 py-1 border-b flex justify-between items-center">
               <span className="text-gray-900">Notifications</span>
               <button className="flex items-center gap-2 text-xs text-gray-900" onClick={openModal}>
@@ -284,23 +322,25 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
             {notifications.length > 0 ? (
               <ul className="overflow-auto max-h-60">
-                {notifications
-                  .filter((notif) => !!notif.callback) // Only show notifications with a callback
-                  .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created
-                  .map((notif) => (
-                    <li
-                      key={notif.id}
-                      onClick={() => handleNotificationClick(notif.id)}
-                      className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100 text-gray-900 capitalize"
-                    >
-                      {notif.typeactivity === "Outbound Call" && (
-                        <>
-                          <strong>You have a callback in {notif.companyname}.</strong> Please make a call or activity.
-                          <span className="text-[8px] mt-1 block">{new Date(notif.callback).toLocaleString()}</span>
-                        </>
-                      )}
-                    </li>
-                  ))}
+                {notifications.map((notif, index) => (
+                  <li
+                    key={notif.id || index} // Fallback to index if id is missing
+                    onClick={() => handleNotificationClick(notif.id)}
+                    className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100 text-gray-900 capitalize"
+                  >
+                    <p className="text-[10px]">{notif.message}</p>
+                    {notif.callback && notif.type === "Callback Notification" && (
+                      <span className="text-[8px] mt-1 block">
+                        {new Date(notif.callback).toLocaleString()}
+                      </span>
+                    )}
+                    {notif.date_created && notif.type === "Inquiry Notification" && (
+                      <span className="text-[8px] mt-1 block">
+                        {new Date(notif.date_created).toLocaleString()}
+                      </span>
+                    )}
+                  </li>
+                ))}
               </ul>
             ) : (
               <p className="text-xs p-2 text-gray-500 text-center">No new notifications</p>

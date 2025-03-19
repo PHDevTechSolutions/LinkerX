@@ -22,7 +22,7 @@ async function updateUser(userDetails: any) {
             sonumber, soamount, callstatus, actualsales, targetquota, ticketreferencenumber, wrapup, inquiries,
         } = userDetails;
 
-        // Update the activity table
+        // ✅ Update the activity table
         const updateResult = await sql`
             UPDATE activity
             SET contactperson = ${contactperson}, contactnumber = ${contactnumber}, emailaddress = ${emailaddress}, 
@@ -55,16 +55,31 @@ async function updateUser(userDetails: any) {
             );
         `;
 
-        // Construct the message for the notification
-        const message = `You have a callback in "${companyname}". Please make a call or activity.`;
+        // ✅ CASE 1: Insert Callback Notification if applicable
+        if ((typeactivity === "Outbound Call" || typeactivity === "Inbound Call") && callback) {
+            const callbackMessage = `You have a callback in "${companyname}". Please make a call or activity.`;
 
-        // Insert into notification table with referenceid, manager, tsm, and the message
-        await sql`
-            INSERT INTO notification (referenceid, manager, tsm, message, callback, date_created)
-            VALUES (
-                ${referenceid}, ${manager}, ${tsm}, ${message}, ${callback}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
-            );
-        `;
+            await sql`
+                INSERT INTO notification (referenceid, manager, tsm, message, callback, date_created, type)
+                VALUES (
+                    ${referenceid}, ${manager}, ${tsm}, ${callbackMessage}, ${callback}, 
+                    CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', 'Callback Notification'
+                );
+            `;
+        }
+
+        // ✅ CASE 2: Insert Follow-Up Notification if applicable
+        if (typecall === "Ringing Only" || typecall === "No Requirement") {
+            const followUpMessage = `You have a new Follow-Up from "${companyname}". Please make an update.`;
+
+            await sql`
+                INSERT INTO notification (referenceid, manager, tsm, message, date_created, type)
+                VALUES (
+                    ${referenceid}, ${manager}, ${tsm}, ${followUpMessage}, 
+                    CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', 'Follow-Up Notification'
+                );
+            `;
+        }
 
         return { success: true, data: updateResult };
     } catch (error: any) {
@@ -83,7 +98,7 @@ export async function PUT(req: Request) {
         const body = await req.json();
         const { id } = body;
 
-        // Ensure the ID is provided for the update operation
+        // ✅ Ensure the ID is provided for the update operation
         if (!id) {
             return NextResponse.json(
                 { success: false, error: "User ID is required for update." },

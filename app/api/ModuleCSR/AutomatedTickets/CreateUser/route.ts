@@ -42,10 +42,23 @@ async function addUser(
             timeZone: "Asia/Manila",
         }).format(new Date());
 
+        // ✅ Insert inquiry data
         const result = await sql`
             INSERT INTO inquiries (csragent, referenceid, salesagentname, tsm, ticketreferencenumber, companyname, contactperson, contactnumber, emailaddress, address, status, wrapup, inquiries, typeclient, date_created) 
             VALUES (${csragent}, ${referenceid}, ${salesagentname}, ${tsm}, ${ticketreferencenumber}, ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${address}, ${status}, ${wrapup}, ${inquiries}, ${typeclient}, ${dateCreated}) 
             RETURNING *;
+        `;
+
+        // ✅ Construct notification message
+        const notificationMessage = `You have a new inquiry from "${companyname}" from CSR Department.`;
+
+        // ✅ Insert notification for inquiry
+        await sql`
+            INSERT INTO notification (referenceid, tsm, date_created, message, type)
+            VALUES (
+                ${referenceid}, ${tsm}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila',
+                ${notificationMessage}, 'Inquiry Notification'
+            );
         `;
 
         return { success: true, data: result };
