@@ -17,11 +17,11 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: false, error: "ReferenceID is required" }, { status: 400 });
         }
 
-        // Fetch only callback from the notification table
+        // ✅ Updated Query: Check both referenceId and tsm
         const progressData = await sql`
-        SELECT callback, message, type, date_created
+        SELECT callback, message, type, date_created, tsm, referenceid
         FROM notification 
-        WHERE referenceid = ${referenceId};
+        WHERE referenceid = ${referenceId} OR tsm = ${referenceId};
         `;
 
         return NextResponse.json({ success: true, data: progressData }, { status: 200 });

@@ -69,14 +69,14 @@ async function updateUser(userDetails: any) {
         }
 
         // ✅ CASE 2: Insert Follow-Up Notification if applicable
-        if (typecall === "Ringing Only" || typecall === "No Requirement") {
-            const followUpMessage = `You have a new Follow-Up from "${companyname}". Please make an update.`;
+        if (typecall === "Ringing Only" || typecall === "No Requirements") {
+            const followUpMessage = `You have a new follow-up from "${companyname}". and the Status is "${typecall}" Please make an update.`;
 
             await sql`
                 INSERT INTO notification (referenceid, manager, tsm, message, date_created, type)
                 VALUES (
-                    ${referenceid}, ${manager}, ${tsm}, ${followUpMessage}, 
-                    CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', 'Follow-Up Notification'
+                   ${referenceid}, ${manager}, ${tsm}, ${followUpMessage}, 
+                   CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', 'Follow-Up Notification'
                 );
             `;
         }

@@ -63,39 +63,58 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   // Load dismissed notifications from localStorage
   useEffect(() => {
     if (!userReferenceId) return;
-  
+
     const fetchNotifications = async () => {
       try {
         const res = await fetch(
           `/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`
         );
         const data = await res.json();
-  
+
         if (!data.success) return;
-  
+
         // Get current date (without time) for checking notifications
         const today = new Date().setHours(0, 0, 0, 0);
-  
+
         // Filter valid notifications based on type
         const validNotifications = data.data
           .filter((notif: any) => {
             switch (notif.type) {
+              // ✅ CASE 1: Callback Notification (Only for TSA ReferenceID)
               case "Callback Notification":
-                if (notif.callback) {
+                if (notif.callback && notif.referenceid === userReferenceId) {
                   const callbackDate = new Date(notif.callback).setHours(0, 0, 0, 0);
                   return callbackDate <= today;
                 }
                 return false;
-  
+
+              // ✅ CASE 2 & 3: Inquiry Notification (For TSA and TSM)
               case "Inquiry Notification":
                 if (notif.date_created) {
                   const inquiryDate = new Date(notif.date_created).setHours(0, 0, 0, 0);
-                  return inquiryDate <= today;
+
+                  // Check for TSA
+                  if (notif.referenceid === userReferenceId && inquiryDate <= today) {
+                    return true;
+                  }
+
+                  // Check for TSM
+                  if (notif.tsm === userReferenceId && inquiryDate <= today) {
+                    return true;
+                  }
                 }
                 return false;
-  
-              default:
+
+              // ✅ CASE 4: Follow-Up Notification (Only for TSM)
+              case "Follow-Up Notification":
+                if (notif.date_created && notif.tsm === userReferenceId) {
+                  const followUpDate = new Date(notif.date_created).setHours(0, 0, 0, 0);
+                  return followUpDate <= today;
+                }
                 return false;
+
+              default:
+                return false; // Ignore other notification types
             }
           })
           // ✅ Sort notifications by date_created or callback in DESCENDING order
@@ -104,7 +123,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
             const dateB = new Date(b.callback || b.date_created).getTime();
             return dateB - dateA; // Descending order
           });
-  
+
         // Set valid notifications
         setNotifications(validNotifications);
         setNotificationCount(validNotifications.length);
@@ -112,22 +131,22 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         console.error("Error fetching notifications:", error);
       }
     };
-  
+
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
   }, [userReferenceId]);
-  
+
   // ✅ Handle notification click
   const handleNotificationClick = (notifId: number) => {
     const updatedNotifications = notifications.filter((notif) => notif.id !== notifId);
     setNotifications(updatedNotifications);
     setNotificationCount(updatedNotifications.length);
-  
+
     const dismissedIds = JSON.parse(localStorage.getItem("dismissedNotifications") || "[]");
     localStorage.setItem("dismissedNotifications", JSON.stringify([...dismissedIds, notifId]));
   };
-  
+
   // ✅ Handle click outside to close notifications
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -135,11 +154,10 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         setShowNotifications(false);
       }
     }
-  
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-  
 
   // Check if TargetQuota is null or empty
   useEffect(() => {
@@ -329,12 +347,23 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                     className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100 text-gray-900 capitalize"
                   >
                     <p className="text-[10px]">{notif.message}</p>
+
+                    {/* ✅ Callback Notification */}
                     {notif.callback && notif.type === "Callback Notification" && (
                       <span className="text-[8px] mt-1 block">
                         {new Date(notif.callback).toLocaleString()}
                       </span>
                     )}
+
+                    {/* ✅ Inquiry Notification */}
                     {notif.date_created && notif.type === "Inquiry Notification" && (
+                      <span className="text-[8px] mt-1 block">
+                        {new Date(notif.date_created).toLocaleString()}
+                      </span>
+                    )}
+
+                    {/* ✅ Follow-Up Notification */}
+                    {notif.date_created && notif.type === "Follow-Up Notification" && (
                       <span className="text-[8px] mt-1 block">
                         {new Date(notif.date_created).toLocaleString()}
                       </span>
@@ -347,6 +376,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
             )}
           </div>
         )}
+
 
         {/* User Dropdown */}
         <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-1 focus:outline-none">
