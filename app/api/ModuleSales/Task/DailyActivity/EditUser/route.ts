@@ -73,7 +73,6 @@ async function updateUser(userDetails: any) {
             typecall === "No Requirements" || 
             typecall === "Sent Quotation - Standard" ||
             typecall === "Sent Quotation - With Special Price" ||
-            typecall === "Follow Up Pending" ||
             typecall === "Sent Quotation - With SPF" ||
             typecall === "Not Connected With The Company" ||
             typecall === "Waiting for Projects" ||

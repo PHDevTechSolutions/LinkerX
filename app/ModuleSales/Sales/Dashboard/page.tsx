@@ -131,6 +131,17 @@ const DashboardPage: React.FC = () => {
   const [startdate, setStartDate] = useState(""); // For the start date
   const [enddate, setEndDate] = useState(""); // For the end date
 
+  const [activeTab, setActiveTab] = useState("recent");
+  const [month, setMonth] = useState("March");
+  const [week, setWeek] = useState("Week 1");
+
+  // New states for weekly and monthly computed totals
+  const [totalSalesOrderWeek, setTotalSalesOrderWeek] = useState(0);
+  const [totalSalesOrderMonth, setTotalSalesOrderMonth] = useState(0);
+  const [totalActualSalesWeek, setTotalActualSalesWeek] = useState(0);
+  const [totalActualSalesMonth, setTotalActualSalesMonth] = useState(0);
+
+
   useEffect(() => {
     (async () => {
       const leaflet = await import("leaflet");
@@ -154,7 +165,7 @@ const DashboardPage: React.FC = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           setLocation({ lat: latitude, lng: longitude });
-  
+
           // Fetch address from Nominatim API
           fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
             .then((res) => res.json())
@@ -188,7 +199,7 @@ const DashboardPage: React.FC = () => {
     } else {
       setAddress("Geolocation is not supported by this browser.");
     }
-  }, []);  
+  }, []);
 
   const formatDateTime = (date: Date) => {
     const year = date.getFullYear();
@@ -370,7 +381,6 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-
   const [chartData, setChartData] = useState<ChartData>({
     labels: [], // Initial empty array for labels
     datasets: [
@@ -551,6 +561,29 @@ const DashboardPage: React.FC = () => {
 
         const encodeID = encodeURIComponent(userDetails.ReferenceID);
 
+        // ✅ Fetch Sales Order and Actual Sales with date_created for filtering
+        const [salesOrderMainRes, actualSalesMainRes] = await Promise.all([
+          fetch(baseURL + `FetchSalesOrder?referenceID=${encodeID}`),
+          fetch(baseURL + `FetchActualSales?referenceID=${encodeID}`),
+        ]);
+
+        if (!salesOrderMainRes.ok || !actualSalesMainRes.ok) {
+          throw new Error("Failed to fetch sales data.");
+        }
+
+        const salesOrderMainData = await salesOrderMainRes.json();
+        const actualSalesMainData = await actualSalesMainRes.json();
+
+        if (salesOrderMainData.success) {
+          setTotalSalesOrder(salesOrderMainData.totalSalesOrder);
+          computeWeeklyAndMonthlyTotals(salesOrderMainData.data, "SalesOrder");
+        }
+
+        if (actualSalesMainData.success) {
+          setTotalActualSales(actualSalesMainData.totalActualSales);
+          computeWeeklyAndMonthlyTotals(actualSalesMainData.data, "ActualSales");
+        }
+
         // Common API calls
         const commonEndpoints = [
           `FetchWorkingHours?referenceID=${encodeID}`,
@@ -671,7 +704,57 @@ const DashboardPage: React.FC = () => {
     };
 
     fetchDashboardData();
-  }, [userDetails.ReferenceID]);
+  }, [userDetails.ReferenceID, month, week]);
+
+  const computeWeeklyAndMonthlyTotals = (
+    data: any[] | undefined,
+    type: "SalesOrder" | "ActualSales"
+  ) => {
+    // ✅ Check if data is valid
+    if (!data || !Array.isArray(data)) {
+      console.warn(`No data available for ${type}`);
+      return;
+    }
+
+    const filteredData = data.filter((item) => {
+      const createdDate = new Date(item.date_created);
+      return (
+        createdDate.toLocaleString("default", { month: "long" }) === month
+      );
+    });
+
+    let weeklyTotal = 0;
+    let monthlyTotal = 0;
+
+    filteredData.forEach((item) => {
+      const createdDate = new Date(item.date_created);
+      const weekNumber = getWeekNumber(createdDate);
+
+      // ✅ Compute weekly sales
+      if (week === `Week ${weekNumber}`) {
+        weeklyTotal += item.amount || 0;
+      }
+
+      // ✅ Compute monthly sales
+      monthlyTotal += item.amount || 0;
+    });
+
+    if (type === "SalesOrder") {
+      setTotalSalesOrderWeek(weeklyTotal);
+      setTotalSalesOrderMonth(monthlyTotal);
+    } else if (type === "ActualSales") {
+      setTotalActualSalesWeek(weeklyTotal);
+      setTotalActualSalesMonth(monthlyTotal);
+    }
+  };
+
+
+  // ✅ Function to calculate week number from date
+  const getWeekNumber = (date: Date) => {
+    const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    const diff = date.getDate() + startOfMonth.getDay() - 1;
+    return Math.floor(diff / 7) + 1;
+  };
 
   const convertToHMS = (hours: number) => {
     const totalSeconds = Math.floor(hours * 3600);
@@ -761,74 +844,172 @@ const DashboardPage: React.FC = () => {
               {/* Large Cards Below */}
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
                 <div className="bg-gray-100 text-gray-900 shadow-md rounded-lg p-2 flex flex-col lg:col-span-3">
-                  {/* Card Header */}
-                  <div className="bg-gray-200 rounded-t-lg p-4">
-                    <h3 className="text-xs font-semibold">Recent Activity</h3>
-                    <p className="text-xs text-gray-600">
-                      recent activities tied to the account, showing details like the date, company name, activity type, status, and remarks. The status is color-coded (Cold, Warm, Hot, Done) for quick progress assessment.
-                    </p>
-
-                  </div>
-
                   {/* Card Body */}
                   <div className="flex-grow p-0">
+                    <div className="flex mb-4 border-b">
+                      <button
+                        className={`py-2 px-4 text-xs ${activeTab === "recent" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-500"
+                          }`}
+                        onClick={() => setActiveTab("recent")}
+                      >
+                        Recently
+                      </button>
+                      <button
+                        className={`py-2 px-4 text-xs ${activeTab === "progress" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-500"
+                          }`}
+                        onClick={() => setActiveTab("progress")}
+                      >
+                        Activity Progress
+                      </button>
+                    </div>
                     {/* Table inside the card body */}
-                    <div className="overflow-x-auto"> {/* Added for horizontal scroll if table is too wide */}
-                      <table className="min-w-full bg-white table-auto text-xs">
-                        <thead>
-                          <tr>
-                            <th className="py-3 px-4 text-left">Date</th>
-                            <th className="py-3 px-4 text-left">Company Name</th>
-                            <th className="py-3 px-4 text-left">Type of Activity</th>
-                            <th className="py-3 px-4 text-left">Status</th>
-                            <th className="py-3 px-4 text-left">Remarks</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {activityList && activityList.length > 0 ? (
-                            activityList.map((activity, index) => {
-                              // Define the badge color based on activity status
-                              let statusBadgeColor = '';
-                              switch (activity.activitystatus) {
-                                case 'Cold':
-                                  statusBadgeColor = 'bg-blue-500 text-white'; // Blue for Cold
-                                  break;
-                                case 'Warm':
-                                  statusBadgeColor = 'bg-yellow-500 text-black'; // Yellow for Warm
-                                  break;
-                                case 'Hot':
-                                  statusBadgeColor = 'bg-red-500 text-white'; // Red for Hot
-                                  break;
-                                case 'Done':
-                                  statusBadgeColor = 'bg-green-500 text-white'; // Green for Done
-                                  break;
-                                default:
-                                  statusBadgeColor = 'bg-gray-300 text-black'; // Default (for unknown status)
-                              }
+                    <div className="">
+                      {activeTab === "recent" && (
+                        <>
+                          <div className="bg-gray-200 rounded-t-lg p-4">
+                            <h3 className="text-xs font-semibold">Recent Activity</h3>
+                            <p className="text-xs text-gray-600">
+                              recent activities tied to the account, showing details like the date, company name, activity type, status, and remarks. The status is color-coded (Cold, Warm, Hot, Done) for quick progress assessment.
+                            </p>
+                          </div>
+                          <table className="min-w-full bg-white table-auto text-xs">
+                            <thead>
+                              <tr>
+                                <th className="py-3 px-4 text-left">Date</th>
+                                <th className="py-3 px-4 text-left">Company Name</th>
+                                <th className="py-3 px-4 text-left">Type of Activity</th>
+                                <th className="py-3 px-4 text-left">Status</th>
+                                <th className="py-3 px-4 text-left">Remarks</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {activityList && activityList.length > 0 ? (
+                                activityList.map((activity, index) => {
+                                  // Define the badge color based on activity status
+                                  let statusBadgeColor = "";
+                                  switch (activity.activitystatus) {
+                                    case "Cold":
+                                      statusBadgeColor = "bg-blue-500 text-white";
+                                      break;
+                                    case "Warm":
+                                      statusBadgeColor = "bg-yellow-500 text-black";
+                                      break;
+                                    case "Hot":
+                                      statusBadgeColor = "bg-red-500 text-white";
+                                      break;
+                                    case "Done":
+                                      statusBadgeColor = "bg-green-500 text-white";
+                                      break;
+                                    default:
+                                      statusBadgeColor = "bg-gray-300 text-black";
+                                  }
 
-                              return (
-                                <tr key={index} className="border-t border-gray-100 capitalize">
-                                  <td className="py-4 px-6">{new Date(activity.date_created).toLocaleDateString()}</td>
-                                  <td className="py-4 px-6">{activity.companyname}</td>
-                                  <td className="py-4 px-6">{activity.typeactivity}</td>
-                                  <td className="py-4 px-6">
-                                    <span className={`inline-block px-2 py-1 rounded-full text-[8px] ${statusBadgeColor}`}>
-                                      {activity.activitystatus}
-                                    </span>
-                                  </td>
-                                  <td className="py-4 px-6">
-                                    {activity.remarks ? activity.remarks : activity.activityremarks}
+                                  return (
+                                    <tr key={index} className="border-t border-gray-100 capitalize">
+                                      <td className="py-4 px-6">
+                                        {new Date(activity.date_created).toLocaleDateString()}
+                                      </td>
+                                      <td className="py-4 px-6">{activity.companyname}</td>
+                                      <td className="py-4 px-6">{activity.typeactivity}</td>
+                                      <td className="py-4 px-6">
+                                        <span
+                                          className={`inline-block px-2 py-1 rounded-full text-[8px] ${statusBadgeColor}`}
+                                        >
+                                          {activity.activitystatus}
+                                        </span>
+                                      </td>
+                                      <td className="py-4 px-6">
+                                        {activity.remarks ? activity.remarks : activity.activityremarks}
+                                      </td>
+                                    </tr>
+                                  );
+                                })
+                              ) : (
+                                <tr>
+                                  <td colSpan={5} className="text-center py-4 px-6">
+                                    No data available
                                   </td>
                                 </tr>
-                              );
-                            })
-                          ) : (
-                            <tr>
-                              <td colSpan={4} className="text-center py-4 px-6">No data available</td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
+                              )}
+                            </tbody>
+                          </table>
+                        </>
+                      )}
+
+                      {/* Activity Progress Table */}
+                      {activeTab === "progress" && (
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          {/* Date Range Inputs */}
+                          <div className="flex items-center space-x-2 md:col-span-2">
+                            <select
+                              value={month}
+                              onChange={(e) => setMonth(e.target.value)}
+                              className="border border-gray-300 rounded-lg p-2 text-xs w-full md:w-1/2"
+                            >
+                              <option value="January">January</option>
+                              <option value="February">February</option>
+                              <option value="March">March</option>
+                              <option value="April">April</option>
+                              <option value="May">May</option>
+                              <option value="June">June</option>
+                              <option value="July">July</option>
+                              <option value="August">August</option>
+                              <option value="September">September</option>
+                              <option value="October">October</option>
+                              <option value="November">November</option>
+                              <option value="December">December</option>
+                            </select>
+                            <select
+                              value={week}
+                              onChange={(e) => setWeek(e.target.value)}
+                              className="border border-gray-300 rounded-lg p-2 text-xs w-full md:w-1/2"
+                            >
+                              <option value="Week 1">Week 1</option>
+                              <option value="Week 2">Week 2</option>
+                              <option value="Week 3">Week 3</option>
+                              <option value="Week 4">Week 4</option>
+                            </select>
+                          </div>
+
+                          {/* Sales Order Card */}
+                          <div className="bg-gradient-to-r from-blue-50 to-blue-100 shadow-lg rounded-xl p-5 flex flex-col justify-between hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                            <h3 className="text-sm font-bold text-blue-700 mb-2">📈 Sales Order Today</h3>
+                            <p className="text-md font-extrabold text-blue-900">
+                              ₱{Number(totalSalesOrder).toLocaleString("en-PH")}
+                            </p>
+
+                            <h3 className="text-sm font-bold text-blue-700 mb-1 mt-2">📅 Sales Order Week</h3>
+                            <p className="text-md font-semibold text-blue-800">
+                              ₱{Number(totalSalesOrderWeek).toLocaleString("en-PH")}
+                            </p>
+
+                            <h3 className="text-sm font-bold text-blue-700 mb-1 mt-2">🗓️ Sales Order Month</h3>
+                            <p className="text-md font-extrabold text-blue-800">
+                              ₱{Number(totalSalesOrderMonth).toLocaleString("en-PH")}
+                            </p>
+                          </div>
+
+                          {/* Actual Sales Card */}
+                          <div className="bg-gradient-to-r from-green-50 to-green-100 shadow-lg rounded-xl p-5 flex flex-col justify-between hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                            <h3 className="text-sm font-bold text-green-700 mb-2">💰 Actual Sales Today</h3>
+                            <p className="text-lg font-extrabold text-green-900">
+                              ₱{Number(totalActualSales).toLocaleString("en-PH")}
+                            </p>
+
+                            <h3 className="text-sm font-bold text-green-700 mb-1 mt-2">📅 Actual Sales Week</h3>
+                            <p className="text-md font-semibold text-green-800">
+                              ₱{Number(totalActualSalesWeek).toLocaleString("en-PH")}
+                            </p>
+
+                            <h3 className="text-sm font-bold text-green-700 mb-1 mt-2">🗓️ Actual Sales Month</h3>
+                            <p className="text-md font-extrabold text-green-800">
+                              ₱{Number(totalActualSalesMonth).toLocaleString("en-PH")}
+                            </p>
+                          </div>
+
+                        </div>
+                      )}
+
 
                     </div>
                   </div>

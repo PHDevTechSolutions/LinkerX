@@ -107,25 +107,46 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
               // ✅ CASE 4: Follow-Up Notification (Only for TSM)
               case "Follow-Up Notification":
-                if (notif.date_created && notif.tsm === userReferenceId) {
-                  const followUpDate = new Date(notif.date_created).setHours(0, 0, 0, 0);
+                if (
+                  notif.date_created &&
+                  (notif.referenceid === userReferenceId || notif.tsm === userReferenceId)
+                ) {
+                  const notificationTime = new Date(notif.date_created);
 
-                  // ✅ Check if message contains "Ringing Only"
+                  // ✅ Apply delays based on message content
                   if (notif.message?.includes("Ringing Only")) {
-                    const oneMinuteLater = new Date(notif.date_created);
-                    oneMinuteLater.setMinutes(oneMinuteLater.getMinutes() + 1);
-
-                    // ✅ Show notification after 1 minute
-                    return new Date() >= oneMinuteLater;
+                    notificationTime.setDate(notificationTime.getDate() + 10); // After 10 days
+                  } else if (notif.message?.includes("No Requirements")) {
+                    notificationTime.setDate(notificationTime.getDate() + 15); // After 15 days
+                  } else if (notif.message?.includes("Cannot Be Reached")) {
+                    notificationTime.setDate(notificationTime.getDate() + 3); // After 3 days
+                  } else if (notif.message?.includes("Not Connected With The Company")) {
+                    notificationTime.setMinutes(notificationTime.getMinutes() + 15); // After 15 minutes
+                  } else if (notif.message?.includes("With SPFS")) {
+                    notificationTime.setDate(notificationTime.getDate() + 7); // Weekly
+                    const validUntil = new Date(notif.date_created);
+                    validUntil.setMonth(validUntil.getMonth() + 2); // Valid for 2 months
+                    if (new Date() > validUntil) {
+                      return false; // Expired after 2 months
+                    }
+                  } else if (
+                    notif.message?.includes("Sent Quotation - Standard") ||
+                    notif.message?.includes("Sent Quotation - With Special Price")
+                  ) {
+                    notificationTime.setDate(notificationTime.getDate() + 1); // After 1 day
+                  } else if (notif.message?.includes("Sent Quotation - With SPF")) {
+                    notificationTime.setDate(notificationTime.getDate() + 5); // After 5 days
+                  } else if (notif.message?.includes("Waiting for Projects")) {
+                    notificationTime.setDate(notificationTime.getDate() + 30); // After 30 days
                   }
 
-                  // ✅ No delay for other follow-up notifications
-                  return followUpDate <= today;
+                  // ✅ Show notification after the specified time
+                  return new Date() >= notificationTime;
                 }
                 return false;
 
               default:
-                return false; // Ignore other notification types
+                return false;
 
             }
           })
@@ -283,7 +304,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   }, []);
 
   return (
-    <div className={`sticky top-0 z-[9999] flex justify-between items-center p-4 border transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
+    <div className={`sticky top-0 z-[9999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center space-x-4">
         <button onClick={onToggleSidebar} className="p-2">
           <CiMenuBurger />
