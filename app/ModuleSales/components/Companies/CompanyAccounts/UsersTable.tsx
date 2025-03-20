@@ -395,7 +395,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 text-xs">
           <thead>
-            <tr className="bg-gray-100">
+            <tr className="bg-gray-100 text-left">
               <th className="p-2 border"></th>
               <th className="p-2 border">Company Name</th>
               <th className="p-2 border">Contact Person</th>
@@ -424,7 +424,18 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                   <td className="p-2 border">{post.address}</td>
                   <td className="p-2 border">{post.area}</td>
                   <td className="p-2 border">{post.typeclient}</td>
-                  <td className="p-2 border">{post.status}</td>
+                  <td className="p-2 border">
+                    <span
+                      className={`px-2 py-1 text-[8px] font-semibold rounded-full ${post.status === "Active"
+                        ? "bg-green-900 text-gray-100"
+                        : post.status === "Used"
+                          ? "bg-blue-900 text-gray-100"
+                          : "bg-green-100 text-green-700"
+                        }`}
+                    >
+                      {post.status}
+                    </span>
+                  </td>
                   <td className="p-2 border">
                     <button className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left flex items-center gap-1" onClick={() => handleEdit(post)}><CiEdit /></button>
                   </td>

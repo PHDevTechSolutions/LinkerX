@@ -1137,22 +1137,6 @@ const DashboardPage: React.FC = () => {
                     Timer: {timerDisplay || "--:--:--"}
                   </div>
                 </div>
-
-                <div className="bg-white text-white shadow-md rounded-lg p-2 flex items-center w-full" style={{ height: "80vh" }}>
-                  {location ? (
-                    <MapContainer center={[location.lat, location.lng]} zoom={13} className="w-full h-full rounded-lg">
-                      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                      <Marker position={[location.lat, location.lng]} icon={customIcon}>
-                        <Popup>You are here</Popup>
-                      </Marker>
-                    </MapContainer>
-                  ) : (
-                    <p>Loading map...</p>
-                  )}
-                </div>
-
-                {/* Display Address Here */}
-                <p className="text-xs font-semibold">📍 {address}</p>
               </div>
             </>
           )}
@@ -1318,6 +1302,23 @@ const DashboardPage: React.FC = () => {
               </div>
             </>
           )}
+
+          <div className="bg-white text-white shadow-md rounded-lg p-2 flex items-center w-full" style={{ height: "80vh" }}>
+            {location ? (
+              <MapContainer center={[location.lat, location.lng]} zoom={13} className="w-full h-full rounded-lg">
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <Marker position={[location.lat, location.lng]} icon={customIcon}>
+                  <Popup>You are here</Popup>
+                </Marker>
+              </MapContainer>
+            ) : (
+              <p>Loading map...</p>
+            )}
+          </div>
+
+          {/* Display Address Here */}
+          <p className="text-xs mt-2 font-semibold">📍 {address}</p>
+
           <ToastContainer className="text-xs" />
         </div>
       </ParentLayout>

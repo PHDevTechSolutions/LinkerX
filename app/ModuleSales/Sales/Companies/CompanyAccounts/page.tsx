@@ -207,7 +207,7 @@ const ListofUser: React.FC = () => {
                     : false; // Default false if no match
 
             // Check if the post's status is Active
-            const isActive = post?.status === 'Active';
+            const isActive = post?.status === 'Active' || post?.status === 'Used';
 
             // Return the filtered result, including the Active status check
             return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole && isActive;
