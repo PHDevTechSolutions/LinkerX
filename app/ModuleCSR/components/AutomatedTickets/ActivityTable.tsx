@@ -279,8 +279,8 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
 
                                                     {remarksMenuVisible[post._id] &&
                                                         ReactDOM.createPortal(
-                                                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[500]">
-                                                                <div className="bg-white w-80 rounded-lg shadow-lg p-4 z-[500]">
+                                                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[999]">
+                                                                <div className="bg-white w-80 rounded-lg shadow-lg p-4 z-[1000]">
                                                                     <h3 className="text-sm font-semibold mb-4">📝 Change Remarks</h3>
                                                                     <select
                                                                         onChange={(e) => setSelectedRemark(e.target.value)}
