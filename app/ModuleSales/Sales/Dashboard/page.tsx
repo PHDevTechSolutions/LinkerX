@@ -128,8 +128,8 @@ const DashboardPage: React.FC = () => {
   const [Manager, setManager] = useState<string>('');
   const [TSM, setTsm] = useState<string>('');
   // For the activity status
-  const [startdate, setStartDate] = useState(""); // For the start date
-  const [enddate, setEndDate] = useState(""); // For the end date
+  const [startdate, setstartdate] = useState(""); // For the start date
+  const [enddate, setenddate] = useState(""); // For the end date
 
   const [activeTab, setActiveTab] = useState("recent");
   const [month, setMonth] = useState("March");
@@ -219,9 +219,8 @@ const DashboardPage: React.FC = () => {
       timeZone: "Asia/Manila",
     });
   };
-
+  
   // Effect to update currentDateTime continuously unless the timer is running
-
   useEffect(() => {
     const now = new Date();
     const manilaTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
@@ -748,7 +747,6 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-
   // ✅ Function to calculate week number from date
   const getWeekNumber = (date: Date) => {
     const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -1085,7 +1083,7 @@ const DashboardPage: React.FC = () => {
                   <div className="flex flex-col items-center">
                     <input
                       type="datetime-local"
-                      value={currentDateTime} onChange={(e) => setStartDate(e.target.value)}
+                      value={currentDateTime} onChange={(e) => setstartdate(e.target.value)}
                       readOnly
                       className="text-xs text-gray-900 px-3 py-2 border rounded w-full"
                     />
@@ -1094,7 +1092,7 @@ const DashboardPage: React.FC = () => {
                   <div className="flex flex-col items-center">
                     <input
                       type="datetime-local"
-                      value={currentDateTimeTimer} onChange={(e) => setEndDate(e.target.value)}
+                      value={currentDateTimeTimer} onChange={(e) => setenddate(e.target.value)}
                       readOnly
                       className="text-xs text-gray-900 px-3 py-2 border rounded w-full"
                     />

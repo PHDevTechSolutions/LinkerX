@@ -59,7 +59,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                             {post.status}
                                         </span>
                                     </td>
-                                    <td className="p-2 border">{post.remarks}</td>
+                                    <td className="p-2 border capitalize">{post.remarks}</td>
                                     <td className="p-2 border">
                                         {post.status !== "Approve For Deletion" && (
                                             <Menu as="div" className="inline-block align-item-center text-center">
