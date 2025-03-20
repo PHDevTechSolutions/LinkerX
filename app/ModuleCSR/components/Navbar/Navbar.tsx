@@ -10,8 +10,15 @@ interface Notification {
   status: string;  // Replaced typeactivity with status
   typeclient: string;
   date_updated: string;
+  date_created: string;
   ticketreferencenumber: string;  // Assuming ticket reference number is important
   salesagentname: string;  // Assuming this is included in the notification object
+  message: string;
+  type: string;
+  csragent: string;
+  typeactivity: string;
+  typecall: string;
+  agentfullname: string;
 }
 
 interface NavbarProps {
@@ -35,6 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const notificationRef = useRef<HTMLDivElement>(null);
   const [notificationCount, setNotificationCount] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [usersList, setUsersList] = useState<any[]>([]);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
@@ -43,7 +51,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   useEffect(() => {
     const fetchUserData = async () => {
       const params = new URLSearchParams(window.location.search);
-      const userId = params.get("id");  // Assume this is csragent for PostgreSQL
+      const userId = params.get("id");
 
       if (userId) {
         try {
@@ -53,7 +61,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           const data = await response.json();
           setUserName(data.Firstname);
           setUserEmail(data.Email);
-          setUserReferenceId(data.ReferenceID || "");  // Assuming MongoDB uses ReferenceID
+          setUserReferenceId(data.ReferenceID || "");
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -63,76 +71,87 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     fetchUserData();
   }, []);
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("/api/getUsers"); // API endpoint mo
+        const data = await response.json();
+        setUsersList(data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   // Load dismissed notifications from localStorage
   useEffect(() => {
     if (!userReferenceId) return;
 
-    const fetchNotificationsAndInquiries = async () => {
+    const fetchNotifications = async () => {
       try {
-        // Fetching inquiries only (remove callback fetching)
-        const inquiryResponse = await fetch(
-          `/api/ModuleCSR/Task/CSRInquiries/FetchInquiryNotif?referenceId=${userReferenceId}` // Pass csragent as referenceId here
+        const res = await fetch(
+          `/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`
         );
-        const inquiryData = await inquiryResponse.json();
+        const data = await res.json();
 
-        if (inquiryData.success) {
-          const currentTime = new Date();
-          const dismissedIds = JSON.parse(localStorage.getItem("dismissedNotifications") || "[]");
+        if (!data.success) return;
 
-          // Process inquiries only (dismissed and non-dismissed)
-          const allNotifications = inquiryData.data
-            .filter(
-              (inquiry: any) =>
-                new Date(inquiry.date_updated) <= currentTime &&
-                inquiry.status === "Used" // Ensure only inquiries with status "used" are included
-            )
-            .sort((a: any, b: any) => new Date(b.date_updated).getTime() - new Date(a.date_updated).getTime())
-            .map((inquiry: any) => ({
-              id: inquiry.id,
-              companyname: inquiry.companyname,
-              status: "Used", // Replaced typeactivity with status
-              date_updated: inquiry.date_updated,
-              typeclient: inquiry.typeclient,
-              ticketreferencenumber: inquiry.ticketreferencenumber, // Assuming ticket number is important
-              salesagentname: inquiry.salesagentname // Assuming this is included in the inquiry object
-            }));
+        // Get current date (without time) for checking notifications
+        const today = new Date().setHours(0, 0, 0, 0);
 
-          setAllNotifications(allNotifications); // Update all notifications with inquiries only
+        // ✅ Filter valid notifications based on type (including CSR Notification)
+        const validNotifications = data.data
+          .map((notif: any) => {
+            // Hanapin ang Agent na may parehong ReferenceID sa usersList
+            const agent = usersList.find((user) => user.ReferenceID === notif.referenceid);
 
-          // Process unread inquiries notifications
-          const inquiries = inquiryData.data
-            .filter(
-              (inquiry: any) =>
-                new Date(inquiry.date_updated) <= currentTime &&
-                !dismissedIds.includes(inquiry.id) &&
-                inquiry.status === "Used" // Ensure only "used" status inquiries are marked as unread
-            )
-            .sort((a: any, b: any) => new Date(b.date_updated).getTime() - new Date(a.date_updated).getTime());
+            return {
+              ...notif,
+              agentfullname: agent
+                ? `${agent.Firstname} ${agent.Lastname}`
+                : "Unknown Agent",
+            };
+          })
+          .filter((notif: any) => {
+            switch (notif.type) {
+              case "CSR Notification":
+                if (notif.date_created) {
+                  const inquiryDate = new Date(notif.date_created).setHours(0, 0, 0, 0);
 
-          setNotifications(inquiries.map((inquiry: any) => ({
-            id: inquiry.id,
-            companyname: inquiry.companyname,
-            status: "Used", // Replaced typeactivity with status
-            date_updated: inquiry.date_updated, // Use date_created as the callback date
-            typeclient: inquiry.typeclient,
-            ticketreferencenumber: inquiry.ticketreferencenumber, // Assuming ticket number is important
-            salesagentname: inquiry.salesagentname // Assuming this is included in the notification object
-          })));
+                  // ✅ Check if CSR agent matches userReferenceId and date is valid
+                  if (notif.csragent === userReferenceId && inquiryDate <= today) {
+                    return true;
+                  }
+                }
+                return false;
 
-          setNotificationCount(inquiries.length); // Count unread inquiries
-        }
+              default:
+                return false;
+            }
+          })
+          // ✅ Sort notifications by date_created or callback in DESCENDING order
+          .sort((a: any, b: any) => {
+            const dateA = new Date(a.callback || a.date_created).getTime();
+            const dateB = new Date(b.callback || b.date_created).getTime();
+            return dateB - dateA; // Descending order
+          });
+
+        // ✅ Set valid notifications
+        setNotifications(validNotifications);
+        setNotificationCount(validNotifications.length);
       } catch (error) {
-        console.error("Error fetching inquiries:", error);
+        console.error("Error fetching notifications:", error);
       }
     };
 
-    fetchNotificationsAndInquiries();
-    
-    const interval = setInterval(fetchNotificationsAndInquiries, 10000);
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
-  }, [userReferenceId]); // Make sure userReferenceId is correct
+  }, [userReferenceId, usersList]);
 
-  // Handle notification click (removes from list and stores in localStorage)
+  // ✅ Handle notification click and dismiss
   const handleNotificationClick = (notifId: number) => {
     const updatedNotifications = notifications.filter((notif) => notif.id !== notifId);
     setNotifications(updatedNotifications);
@@ -142,19 +161,16 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     localStorage.setItem("dismissedNotifications", JSON.stringify([...dismissedIds, notifId]));
   };
 
+  // ✅ Handle click outside to close notifications
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
       if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
         setShowNotifications(false);
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleLogout = async () => {
@@ -190,7 +206,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         </span>
       </div>
 
-      <div className="relative flex items-center text-center text-xs space-x-4" ref={dropdownRef}>
+      <div className="relative flex items-center text-center text-xs space-x-2" ref={dropdownRef}>
         <button
           onClick={onToggleTheme}
           className="relative flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-16 h-8 p-1 transition-all duration-300"
@@ -209,40 +225,48 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         </button>
 
         {/* Notification Icon */}
-        <button onClick={() => setShowNotifications(!showNotifications)} className="p-2 hover:bg-gray-200 hover:rounded-full relative">
+        <button
+          onClick={() => setShowNotifications((prevState) => !prevState)}
+
+          className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full"
+        >
           <CiBellOn size={20} />
-          {notificationCount > 0 && (
+          {notifications.length > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {notificationCount}
+              {notifications.length}
             </span>
           )}
         </button>
 
-        {showNotifications && (
-          <div ref={notificationRef} className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-300 rounded shadow-lg z-50 p-2">
+        {showNotifications && notifications.length > 0 && (
+          <div
+            ref={notificationRef}
+            className="fixed top-14 right-4 w-80 bg-white border border-gray-300 rounded shadow-lg p-2 z-[9999]"
+          >
             <h3 className="text-xs font-semibold px-2 py-1 border-b flex justify-between items-center">
-              <span>Notifications</span>
-              <button className="flex items-center gap-2 text-xs" onClick={openModal}>
+              <span className="text-gray-900">Notifications</span>
+              <button className="flex items-center gap-2 text-xs text-gray-900" onClick={openModal}>
                 <CiSettings className="text-xs" /> All
               </button>
             </h3>
 
             {notifications.length > 0 ? (
-              <ul>
-                {notifications.map((notif) => (
+              <ul className="overflow-auto max-h-60 z-[9999]">
+                {notifications.map((notif, index) => (
                   <li
-                    key={notif.id}
+                    key={notif.id || index} // Fallback to index if id is missing
                     onClick={() => handleNotificationClick(notif.id)}
-                    className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-200"
+                    className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100 text-gray-900 capitalize"
                   >
-                    {/* Show only inquiries */}
-                    {notif.status === "Used" && (
-                      <>
-                        <strong>The Ticket Number - {notif.ticketreferencenumber} / {notif.companyname}</strong> has been processed by: {notif.salesagentname}.
-                        <span className="text-gray-500 text-xs mt-1 block">
-                          {new Date(notif.date_updated).toLocaleString()}
-                        </span>
-                      </>
+                    <p className="text-[10px]">
+                      {notif.message} Processed By {notif.agentfullname}
+                    </p>
+
+                    {/* ✅ CSR Notification */}
+                    {notif.date_created && notif.type === "CSR Notification" && (
+                      <span className="text-[8px] mt-1 block">
+                        {new Date(notif.date_created).toLocaleString()}
+                      </span>
                     )}
                   </li>
                 ))}

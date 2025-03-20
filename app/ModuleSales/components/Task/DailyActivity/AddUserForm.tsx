@@ -67,6 +67,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [ticketreferencenumber, setticketreferencenumber] = useState(editUser ? editUser.ticketreferencenumber : "");
   const [wrapup, setwrapup] = useState(editUser ? editUser.wrapup : "");
   const [inquiries, setinquiries] = useState(editUser ? editUser.inquiries : "");
+  const [csragent, setcsragent] = useState(editUser ? editUser.csragent : "");
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -128,7 +129,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       body: JSON.stringify({
         id: editUser?.id, referenceid, manager, tsm, targetquota, companyname, contactperson, contactnumber, emailaddress, typeclient,
         address, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, remarks,
-        callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus, ticketreferencenumber, wrapup, inquiries,
+        callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus, ticketreferencenumber, wrapup, inquiries, csragent,
       }),
     });
 
@@ -240,6 +241,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           ticketreferencenumber={ticketreferencenumber} setticketreferencenumber={setticketreferencenumber}
           wrapup={wrapup} setwrapup={setwrapup}
           inquiries={inquiries} setinquiries={setinquiries}
+          csragent={csragent} setcsragent={setcsragent}
 
           //PassedRecords
           currentRecords={currentRecords}

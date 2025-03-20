@@ -43,6 +43,7 @@ async function addUser(data: any) {
             inquiries,
             remarks,
             targetquota, // ✅ Added targetquota
+            csragent,
         } = data;
 
         // Validate required fields
@@ -69,6 +70,7 @@ async function addUser(data: any) {
             "typeclient",
             "activitynumber",
             "targetquota", // ✅ Added targetquota
+            "csragent",
         ];
 
         const activityValues = [
@@ -86,6 +88,7 @@ async function addUser(data: any) {
             "CSR Inquiries",
             activitynumber,
             targetquota || "0", // ✅ Default to "0" if targetquota is not provided
+            csragent || null,
         ];
 
         const activityPlaceholders = activityValues.map((_, index) => `$${index + 1}`).join(", ");
@@ -118,6 +121,7 @@ async function addUser(data: any) {
             "remarks",
             "typeactivity",
             "targetquota", // ✅ Added targetquota
+            "csragent",
         ];
 
         const progressValues = [
@@ -137,6 +141,7 @@ async function addUser(data: any) {
             remarks || "N/A",
             "CSR Inquiries",
             targetquota || "0", // ✅ Default to "0" if targetquota is not provided
+            csragent,
         ];
 
         const progressPlaceholders = progressValues.map((_, index) => `$${index + 1}`).join(", ");

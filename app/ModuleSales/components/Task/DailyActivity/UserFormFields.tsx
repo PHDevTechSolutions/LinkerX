@@ -54,6 +54,7 @@ interface FormFieldsProps {
     ticketreferencenumber: string; setticketreferencenumber: (value: string) => void;
     wrapup: string; setwrapup: (value: string) => void;
     inquiries: string; setinquiries: (value: string) => void;
+    csragent: string; setcsragent: (value: string) => void;
 
     currentRecords: Activity[];
     editPost?: any;
@@ -95,6 +96,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     ticketreferencenumber, setticketreferencenumber,
     wrapup, setwrapup,
     inquiries, setinquiries,
+    csragent, setcsragent,
 
     currentRecords, // Destructure the `currentRecords` prop
     editPost,
@@ -513,6 +515,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     <input type="hidden" value={ticketreferencenumber ?? ""} onChange={(e) => setticketreferencenumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
                     <input type="hidden" value={wrapup ?? ""} onChange={(e) => setwrapup(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
                     <input type="hidden" value={inquiries ?? ""} onChange={(e) => setinquiries(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
+                    <input type="hidden" value={csragent ?? ""} onChange={(e) => setcsragent(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
                 </div>
             </div>
 
