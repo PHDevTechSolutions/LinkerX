@@ -411,7 +411,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         )}
 
         {/* User Dropdown */}
-        <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-1 focus:outline-none">
+        <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-1 p-2 focus:outline-none hover:bg-gray-200 hover:rounded-full">
           <CiUser size={20} />
           <span className="capitalize">Hello, {userName}</span>
         </button>
