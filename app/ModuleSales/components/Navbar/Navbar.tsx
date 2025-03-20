@@ -348,7 +348,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         <button
           onClick={() => setShowNotifications((prevState) => !prevState)}
           disabled={modalOpen}
-          className="p-2 relative flex items-center"
+          className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full"
         >
           <CiBellOn size={20} />
           {notifications.length > 0 && (

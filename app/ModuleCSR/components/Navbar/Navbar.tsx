@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { IoIosMenu } from "react-icons/io";
-import { IoMdNotificationsOutline } from "react-icons/io";
 import { CiClock2, CiMenuBurger, CiUser, CiSettings, CiBellOn, CiCircleRemove, CiDark, CiSun, CiSearch } from "react-icons/ci";
 
 interface Notification {
@@ -207,9 +206,10 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
             )}
           </div>
         </button>
+        
         {/* Notification Icon */}
-        <button onClick={() => setShowNotifications(!showNotifications)} className="p-2 relative">
-          <IoMdNotificationsOutline size={20} />
+        <button onClick={() => setShowNotifications(!showNotifications)} className="p-2 hover:bg-gray-200 hover:rounded-full relative">
+          <CiBellOn size={20} />
           {notificationCount > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
               {notificationCount}
@@ -232,12 +232,12 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                   <li
                     key={notif.id}
                     onClick={() => handleNotificationClick(notif.id)}
-                    className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100"
+                    className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-200"
                   >
                     {/* Show only inquiries */}
                     {notif.status === "Used" && (
                       <>
-                        <strong>The Ticket Number - {notif.ticketreferencenumber}{notif.companyname}/</strong> has been processed by: {notif.salesagentname}.
+                        <strong>The Ticket Number - {notif.ticketreferencenumber} / {notif.companyname}</strong> has been processed by: {notif.salesagentname}.
                         <span className="text-gray-500 text-xs mt-1 block">
                           {new Date(notif.date_updated).toLocaleString()}
                         </span>
