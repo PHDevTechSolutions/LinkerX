@@ -127,6 +127,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     };
 
     fetchNotificationsAndInquiries();
+    
     const interval = setInterval(fetchNotificationsAndInquiries, 10000);
     return () => clearInterval(interval);
   }, [userReferenceId]); // Make sure userReferenceId is correct
@@ -206,7 +207,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
             )}
           </div>
         </button>
-        
+
         {/* Notification Icon */}
         <button onClick={() => setShowNotifications(!showNotifications)} className="p-2 hover:bg-gray-200 hover:rounded-full relative">
           <CiBellOn size={20} />
@@ -289,7 +290,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         )}
 
         {/* User Dropdown */}
-        <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-2 focus:outline-none">
+        <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-2 focus:outline-none hover:bg-gray-200 p-2 hover:rounded-full">
           <CiUser size={20} />
           <span className="capitalize">Hello, {userName}</span>
         </button>
