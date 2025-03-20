@@ -156,7 +156,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
             <div className="overflow-x-auto">
                 <table className="bg-white border border-gray-200 text-xs">
                     <thead>
-                        <tr className="bg-gray-200 text-left whitespace-nowrap">
+                        <tr className="text-left whitespace-nowrap">
                             <th className="border p-2">Ticket No</th>
                             <th className="border p-2">Ticket Received</th>
                             <th className="border p-2">Ticket Endorsed</th>
