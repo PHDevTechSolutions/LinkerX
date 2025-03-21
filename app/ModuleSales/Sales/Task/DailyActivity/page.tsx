@@ -73,6 +73,9 @@ const ListofUser: React.FC = () => {
     const [typeActivity, setTypeActivity] = useState("");
     const [generatedMessage, setGeneratedMessage] = useState("");
 
+    const [startDuration, setStartDuration] = useState<string>("");
+    const [endDuration, setEndDuration] = useState<string>("");
+
     const [duration, setDuration] = useState<string>("");
     const [timeValue, setTimeValue] = useState<string>("");
 
@@ -515,8 +518,8 @@ const ListofUser: React.FC = () => {
     
         // Format date to 'yyyy-mm-ddThh:mm' in Manila timezone
         const dateTimeString = formatDateToLocal(newDate);
-        setStartDate(dateTimeString);
-        setEndDate(addTimeToDate(newDate, selectedTime));
+        setStartDuration(dateTimeString);
+        setEndDuration(addTimeToDate(newDate, selectedTime));
     }
     
     // Function to add time (minutes/hours) to the selected date
@@ -893,10 +896,9 @@ const ListofUser: React.FC = () => {
                                                             </select>
 
                                                             {/* Start Date */}
-                                                            <input type="hidden" value={startDate} disabled/>
+                                                            <input type="hidden" value={startDuration} disabled/>
                                                             {/* End Date */}
-                                                            <input type="hidden" value={endDate} disabled />
-
+                                                            <input type="hidden" value={endDuration} disabled />
                                                         </div>
 
                                                         {/* Textarea with Generated Message */}
