@@ -236,7 +236,7 @@ const ListofUser: React.FC = () => {
         });
         setShowForm(true); // Show the AddPostForm with populated data
     };
-    
+
     const handleStatusUpdate = async (id: string, newStatus: string) => {
         try {
             const response = await fetch("/api/ModuleSales/Task/DailyActivity/UpdateStatus", {
@@ -602,7 +602,6 @@ const ListofUser: React.FC = () => {
         });
         setShowForm(true);
     };
-    
 
     useEffect(() => {
         fetchCompanies();
@@ -687,15 +686,15 @@ const ListofUser: React.FC = () => {
                                         targetquota: editUser ? editUser.targetquota : userDetails.TargetQuota,
                                     }}
                                     editUser={editUser} // ✅ Properly pass editUser for editing
-        companyData={{
-            companyname: selectedCompany?.companyname || "",
-            typeclient: selectedCompany?.typeclient || "",
-            contactperson: selectedCompany?.contactperson || "",
-            contactnumber: selectedCompany?.contactnumber || "",
-            emailaddress: selectedCompany?.emailaddress || "",
-            address: selectedCompany?.address || "",
-            area: selectedCompany?.area || "",
-        }}
+                                    companyData={{
+                                        companyname: selectedCompany?.companyname || "",
+                                        typeclient: selectedCompany?.typeclient || "",
+                                        contactperson: selectedCompany?.contactperson || "",
+                                        contactnumber: selectedCompany?.contactnumber || "",
+                                        emailaddress: selectedCompany?.emailaddress || "",
+                                        address: selectedCompany?.address || "",
+                                        area: selectedCompany?.area || "",
+                                    }}
                                 />
                             ) : (
                                 <>
@@ -914,7 +913,7 @@ const ListofUser: React.FC = () => {
                                                                     <span>
                                                                         {company.companyname}
                                                                         <br />
-                                                                        <span className="text-gray-500">{company.typeclient}</span>
+                                                                        <span className="text-gray-500">{company.typeclient} / {company.status}</span>
                                                                     </span>
                                                                     <button
                                                                         onClick={() => handleAccept(company)}

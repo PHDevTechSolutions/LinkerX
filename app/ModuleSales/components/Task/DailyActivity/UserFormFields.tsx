@@ -107,8 +107,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const [emailAddresses, setEmailAddresses] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
 
-    const [companyStatus, setCompanyStatus] = useState<string>('Active'); // State for company status
-
     const [showFields, setShowFields] = useState(false);
     const [showOutboundFields, setShowOutboundFields] = useState(false);
     const [showInboundFields, setShowInboundFields] = useState(false);

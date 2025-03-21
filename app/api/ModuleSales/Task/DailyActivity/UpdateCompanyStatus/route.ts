@@ -10,16 +10,21 @@ const sql = neon(databaseUrl);
 
 export async function POST(req: Request) {
     try {
-        // Parse request body to extract the company details and new status
-        const { companyname, status } = await req.json();
+        // Parse request body to extract companyId and new status
+        const { companyId, status } = await req.json();
+        console.log("Received request to update company status:", { companyId, status });
 
-        // Update the company status in the database
+        // Update the company status in the database using `id` (companyId)
         const result = await sql`
             UPDATE accounts
             SET status = ${status}
-            WHERE companyname = ${companyname}
+            WHERE id = ${companyId}
             RETURNING *;
         `;
+
+        if (result.length === 0) {
+            throw new Error("No rows were updated. Please check the companyId.");
+        }
 
         return NextResponse.json({ success: true, message: "Company status updated successfully", data: result[0] }, { status: 200 });
     } catch (error: any) {

@@ -420,7 +420,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1000]">
           <div className="bg-white p-4 rounded shadow-lg">
             <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
             <p className="text-xs">Are you sure you want to delete this post?</p>
