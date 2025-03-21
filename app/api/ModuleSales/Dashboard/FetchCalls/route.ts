@@ -17,10 +17,23 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: false, error: "ReferenceID is required." }, { status: 400 });
         }
 
-        // Fetch Inbound & Outbound Calls separately using DATE_TRUNC for timestamp compatibility
+        // Fetch only Outbound Calls with typecall = 'Touchbase' and typeactivity = 'Outbound Call'
         const [outboundResult, inboundResult] = await Promise.all([
-            sql`SELECT COUNT(*)::int AS total FROM progress WHERE referenceid = ${referenceID} AND typeactivity = 'Outbound Call' AND DATE_TRUNC('day', date_created) = CURRENT_DATE`,
-            sql`SELECT COUNT(*)::int AS total FROM progress WHERE referenceid = ${referenceID} AND typeactivity = 'Inbound Call' AND DATE_TRUNC('day', date_created) = CURRENT_DATE`
+            sql`
+                SELECT COUNT(*)::int AS total
+                FROM progress
+                WHERE referenceid = ${referenceID}
+                AND typeactivity = 'Outbound Call'
+                AND typecall = 'Touch Base'
+                AND DATE_TRUNC('day', date_created) = CURRENT_DATE
+            `,
+            sql`
+                SELECT COUNT(*)::int AS total
+                FROM progress
+                WHERE referenceid = ${referenceID}
+                AND typeactivity = 'Inbound Call'
+                AND DATE_TRUNC('day', date_created) = CURRENT_DATE
+            `
         ]);
 
         // Debugging logs (optional)

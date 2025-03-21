@@ -304,7 +304,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   }, []);
 
   return (
-    <div className={`sticky top-0 flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
+    <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center space-x-4">
         <button onClick={onToggleSidebar} className="p-2">
           <CiMenuBurger />
@@ -326,7 +326,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         </form>
       </div>
 
-      <div className="relative flex items-center text-center text-xs gap-2 z-[9999]" ref={dropdownRef}>
+      <div className="relative flex items-center text-center text-xs gap-2 z-[1000]" ref={dropdownRef}>
         <button
           onClick={onToggleTheme}
           className="relative flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-16 h-8 p-1 transition-all duration-300"
@@ -362,7 +362,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         {showNotifications && notifications.length > 0 && (
           <div
             ref={notificationRef}
-            className="fixed top-14 right-4 w-80 bg-white border border-gray-300 rounded shadow-lg p-2 z-[9999]"
+            className="fixed top-14 right-4 w-80 bg-white border border-gray-300 rounded shadow-lg p-2 z-[1000]"
           >
             <h3 className="text-xs font-semibold px-2 py-1 border-b flex justify-between items-center">
               <span className="text-gray-900">Notifications</span>

@@ -25,10 +25,6 @@ async function addUser(
     status: string
 ) {
     try {
-        if (!companyname || !typeclient) {
-            throw new Error("Company Name and Type of Client are required.");
-        }
-
         const result = await sql`
             INSERT INTO accounts (referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area, status, date_created) 
             VALUES (${referenceid}, ${manager}, ${tsm}, ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${address}, ${area}, ${status}, NOW()) 

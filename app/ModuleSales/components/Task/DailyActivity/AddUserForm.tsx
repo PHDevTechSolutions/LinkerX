@@ -14,6 +14,15 @@ interface AddUserFormProps {
     tsm: string;
     targetquota: string;
   };
+  companyData?: {
+    companyname: string;
+    typeclient: string;
+    contactperson: string;
+    contactnumber: string;
+    emailaddress: string;
+    address: string;
+    area: string;
+  };
   editUser?: any;
 }
 
@@ -30,19 +39,34 @@ interface Activity {
 
 const PAGE_SIZE = 5;
 
-const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userDetails, editUser, }) => {
+const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userDetails, editUser, companyData, }) => {
   const [referenceid, setReferenceid] = useState(userDetails.referenceid || "");
   const [manager, setManager] = useState(userDetails.manager || "");
   const [tsm, setTsm] = useState(userDetails.tsm || "");
   const [targetquota, setTargetQuota] = useState(userDetails.targetquota || "");
 
-  const [companyname, setcompanyname] = useState(editUser ? editUser.companyname : "");
-  const [contactperson, setcontactperson] = useState(editUser ? editUser.contactperson : "");
-  const [contactnumber, setcontactnumber] = useState(editUser ? editUser.contactnumber : "");
-  const [emailaddress, setemailaddress] = useState(editUser ? editUser.emailaddress : "");
-  const [typeclient, settypeclient] = useState(editUser ? editUser.typeclient : "");
-  const [address, setaddress] = useState(editUser ? editUser.address : "");
-  const [area, setarea] = useState(editUser ? editUser.area : "");
+  const [companyname, setcompanyname] = useState(
+    editUser ? editUser.companyname : companyData?.companyname || ""
+  );
+  const [typeclient, settypeclient] = useState(
+    editUser ? editUser.typeclient : companyData?.typeclient || ""
+  );
+  const [contactperson, setcontactperson] = useState(
+    editUser ? editUser.contactperson : companyData?.contactperson || ""
+  );
+  const [contactnumber, setcontactnumber] = useState(
+    editUser ? editUser.contactnumber : companyData?.contactnumber || ""
+  );
+  const [emailaddress, setemailaddress] = useState(
+    editUser ? editUser.emailaddress : companyData?.emailaddress || ""
+  );
+  const [address, setaddress] = useState(
+    editUser ? editUser.address : companyData?.address || ""
+  );
+  const [area, setarea] = useState(
+    editUser ? editUser.area : companyData?.area || ""
+  );
+
   const [projectname, setprojectname] = useState(editUser ? editUser.projectname : "");
   const [projectcategory, setprojectcategory] = useState(editUser ? editUser.projectcategory : "");
   const [projecttype, setprojecttype] = useState(editUser ? editUser.projecttype : "");

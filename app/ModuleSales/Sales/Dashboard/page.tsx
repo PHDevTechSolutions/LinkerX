@@ -1060,7 +1060,7 @@ const DashboardPage: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-1 flex items-center gap-4 mb-4">
-                <h3 className="text-xs font-semibold">Current Location</h3>
+                <h3 className="text-xs font-semibold">Time Log</h3>
 
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
                   <div className="flex flex-col items-center">

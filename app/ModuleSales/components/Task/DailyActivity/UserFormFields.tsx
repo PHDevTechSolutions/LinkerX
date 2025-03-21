@@ -50,7 +50,7 @@ interface FormFieldsProps {
     enddate: string; setenddate: (value: string) => void;
     activitynumber: string; setactivitynumber: (value: string) => void;
     activitystatus: string; setactivitystatus: (value: string) => void;
-    
+
     ticketreferencenumber: string; setticketreferencenumber: (value: string) => void;
     wrapup: string; setwrapup: (value: string) => void;
     inquiries: string; setinquiries: (value: string) => void;
@@ -214,10 +214,10 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 .then((data) => {
                     if (data.success) {
                         // Filter companies with status 'Active' or 'Used'
-                        const filteredCompanies = data.data.filter((company: any) => 
+                        const filteredCompanies = data.data.filter((company: any) =>
                             company.status === 'Active' || company.status === 'Used'
                         );
-    
+
                         setCompanies(filteredCompanies.map((company: any) => ({
                             value: company.companyname,
                             label: company.companyname,
@@ -235,7 +235,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 .catch((error) => console.error("Error fetching companies:", error));
         }
     }, [referenceid]);
-    
+
     useEffect(() => {
         setContactPersons(contactperson ? contactperson.split(", ") : [""]);
         setContactNumbers(contactnumber ? contactnumber.split(", ") : [""]);
@@ -244,7 +244,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
     const handleCompanySelect = (selectedOption: any) => {
         const newStatus = selectedOption ? 'Used' : 'Active';
-    
+
         // If a company was previously selected, set its status back to Active
         if (previousCompany && previousCompany.value !== selectedOption?.value) {
             // Update previous company status to Active
@@ -258,19 +258,19 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     status: 'Active', // Set the status to Active for the previous company
                 }),
             })
-            .then(response => response.json())
-            .then((data) => {
-                if (data.success) {
-                    console.log("Previous company status updated to Active.");
-                } else {
-                    console.error("Error updating previous company status:", data.error);
-                }
-            })
-            .catch((error) => {
-                console.error("Error updating previous company status:", error);
-            });
+                .then(response => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        console.log("Previous company status updated to Active.");
+                    } else {
+                        console.error("Error updating previous company status:", data.error);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error updating previous company status:", error);
+                });
         }
-    
+
         // Update the current selected company's status to Used and the form fields
         if (selectedOption) {
             setPreviousCompany(selectedOption); // Track the current selection for future reference
@@ -292,7 +292,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             setaddress("");
             setarea("");
         }
-    
+
         // Ensure both companyname and status are passed in the request body
         fetch(`/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus`, {
             method: 'POST',
@@ -304,18 +304,18 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 status: newStatus, // Ensure status is passed
             }),
         })
-        .then(response => response.json())
-        .then((data) => {
-            if (data.success) {
-                console.log("Company status updated successfully.");
-            } else {
-                
-            }
-        })
-        .catch((error) => {
-        });
+            .then(response => response.json())
+            .then((data) => {
+                if (data.success) {
+                    console.log("Company status updated successfully.");
+                } else {
+
+                }
+            })
+            .catch((error) => {
+            });
     };
-    
+
     const handleContactPersonChange = (index: number, value: string) => {
         const newContactPersons = [...contactPersons];
         newContactPersons[index] = value;
@@ -534,14 +534,9 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         />
                     ) : (
                         // If not in edit mode, show the Select dropdown
-                        <Select
-                            id="companyname"
-                            options={companies}
-                            onChange={handleCompanySelect}
-                            isClearable
-                            className="text-xs capitalize"
-                        />
+                        <input type="text" id="typeclient" value={companyname ?? ""} onChange={(e) => setcompanyname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                     )}
+
                 </div>
 
                 {/* Contact Person */}
@@ -592,7 +587,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 {/* Type Client */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Type Client</label>
-                    <input type="text" id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled/>
+                    <input type="text" id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                 </div>
 
                 {/* Address */}

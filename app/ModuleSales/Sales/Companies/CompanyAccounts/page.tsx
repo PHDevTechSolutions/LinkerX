@@ -180,7 +180,9 @@ const ListofUser: React.FC = () => {
     const filteredAccounts = Array.isArray(posts)
         ? posts.filter((post) => {
             // Check if the company name matches the search term
-            const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesSearchTerm =
+                post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                post?.typeclient?.toLowerCase().includes(searchTerm.toLowerCase());
 
             // Parse the date_created field
             const postDate = post.date_created ? new Date(post.date_created) : null;
@@ -193,8 +195,11 @@ const ListofUser: React.FC = () => {
 
             // Check if the post matches the selected client type
             const matchesClientType = selectedClientType
-                ? post?.typeclient === selectedClientType
+                ? selectedClientType === "null"
+                    ? !post?.typeclient || post?.typeclient === null || post?.typeclient === "" // Check for null or empty
+                    : post?.typeclient === selectedClientType
                 : true;
+
 
             // Get the reference ID from userDetails
             const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
@@ -296,7 +301,7 @@ const ListofUser: React.FC = () => {
                                         <div className="mt-4">
                                             <h3 className="text-sm font-bold mb-2">Preview Data ({jsonData.length} records)</h3>
                                             <div className="overflow-auto max-h-64 border rounded-md">
-                                                <table className="w-full border-collapse">
+                                                <table className="w-full border-collapse text-left">
                                                     <thead>
                                                         <tr className="bg-gray-200 text-xs">
                                                             <th className="border px-2 py-1">Company Name</th>
@@ -310,7 +315,7 @@ const ListofUser: React.FC = () => {
                                                     </thead>
                                                     <tbody>
                                                         {jsonData.map((item, index) => (
-                                                            <tr key={index} className="text-xs text-center border">
+                                                            <tr key={index} className="text-xs border">
                                                                 <td className="border px-2 py-1">{item.companyname}</td>
                                                                 <td className="border px-2 py-1">{item.contactperson}</td>
                                                                 <td className="border px-2 py-1">{item.contactnumber}</td>

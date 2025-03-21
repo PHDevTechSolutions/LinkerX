@@ -54,6 +54,7 @@ interface Company {
     typeactivity: string;
     startdate: string;
     enddate: string;
+    status: string;
 }
 
 interface UserDetails {
@@ -72,6 +73,7 @@ const ListofUser: React.FC = () => {
     const [selectedCompany, setSelectedCompany] = useState<Company | null>(null); // Selected company data
     const [typeActivity, setTypeActivity] = useState("");
     const [generatedMessage, setGeneratedMessage] = useState("");
+    const [activeTab, setActiveTab] = useState("Automated Task");
 
     const [startDuration, setStartDuration] = useState<string>("");
     const [endDuration, setEndDuration] = useState<string>("");
@@ -214,10 +216,27 @@ const ListofUser: React.FC = () => {
 
     // Handle editing a post
     const handleEdit = (post: any) => {
-        setEditUser(post);
-        setShowForm(true);
+        setEditUser(post); // Set editUser to populate form fields
+        setSelectedCompany({
+            companyname: post.companyname || "",
+            typeclient: post.typeclient || "",
+            contactperson: post.contactperson || "",
+            contactnumber: post.contactnumber || "",
+            emailaddress: post.emailaddress || "",
+            address: post.address || "",
+            area: post.area || "",
+            referenceid: post.referenceid || "",
+            tsm: post.tsm || "",
+            manager: post.manager || "",
+            remarks: post.remarks || "",
+            status: post.status || "",
+            typeactivity: post.typeactivity || "", // ✅ Added missing field
+            startdate: post.startdate || "",       // ✅ Added missing field
+            enddate: post.enddate || "",           // ✅ Added missing field
+        });
+        setShowForm(true); // Show the AddPostForm with populated data
     };
-
+    
     const handleStatusUpdate = async (id: string, newStatus: string) => {
         try {
             const response = await fetch("/api/ModuleSales/Task/DailyActivity/UpdateStatus", {
@@ -464,7 +483,7 @@ const ListofUser: React.FC = () => {
     // Shuffle array and get random 5 companies
     const getRandomCompanies = (companies: Company[]) => {
         const shuffled = [...companies].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, 5);
+        return shuffled.slice(0, 2);
     };
 
     // Fetch companies from API with ReferenceID as query param
@@ -497,7 +516,7 @@ const ListofUser: React.FC = () => {
             new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
         );
         let newDate = new Date(now);
-    
+
         // Set date based on selected duration
         switch (selectedDuration) {
             case "Today":
@@ -515,28 +534,28 @@ const ListofUser: React.FC = () => {
             default:
                 newDate = now;
         }
-    
+
         // Format date to 'yyyy-mm-ddThh:mm' in Manila timezone
         const dateTimeString = formatDateToLocal(newDate);
         setStartDuration(dateTimeString);
         setEndDuration(addTimeToDate(newDate, selectedTime));
     }
-    
+
     // Function to add time (minutes/hours) to the selected date
     function addTimeToDate(date: Date, selectedTime: string) {
         const newDate = new Date(date);
         const [value, unit] = selectedTime.split(" ");
         const timeValue = parseInt(value);
-    
+
         if (unit === "Minutes") {
             newDate.setMinutes(date.getMinutes() + timeValue);
         } else if (unit === "Hour" || unit === "Hours") {
             newDate.setHours(date.getHours() + timeValue);
         }
-    
+
         return formatDateToLocal(newDate);
     }
-    
+
     // Format date to 'yyyy-mm-ddThh:mm' in Manila timezone
     function formatDateToLocal(date: Date): string {
         const year = date.getFullYear();
@@ -544,10 +563,10 @@ const ListofUser: React.FC = () => {
         const day = String(date.getDate()).padStart(2, "0");
         const hours = String(date.getHours()).padStart(2, "0");
         const minutes = String(date.getMinutes()).padStart(2, "0");
-    
+
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
-    
+
     // Handle duration change
     function handleDurationChange(e: any) {
         const selectedDuration = e.target.value;
@@ -562,20 +581,28 @@ const ListofUser: React.FC = () => {
         calculateDate(duration, selectedTime);
     }
 
-    const handleGenerate = () => {
-        const filtered = typeClient
-            ? post.filter((company) => company.typeclient === typeClient)
-            : post;
-
-        // Randomize and set new company list based on filtered results
-        setRandomCompanies(getRandomCompanies(filtered));
-    };
-
     // Handle Accept button to show modal
-    const handleAccept = (company: Company) => {
-        setSelectedCompany(company);
-        setShowModal(true);
+    const handleAccept = (company: any) => {
+        setSelectedCompany({
+            companyname: company.companyname || "",
+            typeclient: company.typeclient || "",
+            contactperson: company.contactperson || "",
+            contactnumber: company.contactnumber || "",
+            emailaddress: company.emailaddress || "",
+            address: company.address || "",
+            area: company.area || "",
+            referenceid: company.referenceid || "",
+            tsm: company.tsm || "",
+            manager: company.manager || "",
+            remarks: company.remarks || "",
+            status: company.status || "",
+            typeactivity: company.typeactivity || "", // ✅ Added missing field
+            startdate: company.startdate || "",       // ✅ Added missing field
+            enddate: company.enddate || "",           // ✅ Added missing field
+        });
+        setShowForm(true);
     };
+    
 
     useEffect(() => {
         fetchCompanies();
@@ -634,38 +661,46 @@ const ListofUser: React.FC = () => {
         }
     };
 
+    const handleTabChange = (tab: string) => {
+        setActiveTab(tab);
+    };
+
     return (
         <SessionChecker>
             <ParentLayout>
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            {showForm ? (
+                            {showForm && selectedCompany ? (
                                 <AddPostForm
                                     onCancel={() => {
                                         setShowForm(false);
                                         setEditUser(null);
+                                        setSelectedCompany(null);
                                     }}
-                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
+                                    refreshPosts={fetchAccount} // Pass the refreshPosts callback
                                     userDetails={{
                                         id: editUser ? editUser.id : userDetails.UserId,
                                         referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
                                         manager: editUser ? editUser.manager : userDetails.Manager,
                                         tsm: editUser ? editUser.tsm : userDetails.TSM,
                                         targetquota: editUser ? editUser.targetquota : userDetails.TargetQuota,
-                                    }}   // Ensure id is passed correctly
-                                    editUser={editUser}
+                                    }}
+                                    editUser={editUser} // ✅ Properly pass editUser for editing
+        companyData={{
+            companyname: selectedCompany?.companyname || "",
+            typeclient: selectedCompany?.typeclient || "",
+            contactperson: selectedCompany?.contactperson || "",
+            contactnumber: selectedCompany?.contactnumber || "",
+            emailaddress: selectedCompany?.emailaddress || "",
+            address: selectedCompany?.address || "",
+            area: selectedCompany?.area || "",
+        }}
                                 />
                             ) : (
                                 <>
                                     <div className="flex justify-between items-center mb-4">
                                         <div className="flex items-center gap-3">
-                                            <button
-                                                className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
-                                                onClick={() => setShowForm(true)}
-                                            >
-                                                <CiSquarePlus size={20} /> Create Task
-                                            </button>
                                             <button
                                                 className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
                                                 onClick={handleButtonClick}
@@ -675,7 +710,7 @@ const ListofUser: React.FC = () => {
                                         </div>
 
                                         {showPersonalForm && (
-                                            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1000]">
                                                 <div className="bg-white p-8 rounded shadow-lg w-96 max-w-lg">
                                                     <h2 className="text-sm font-bold mb-4">Personal Activity</h2>
                                                     <p className="text-xs text-gray-600 mb-4">
@@ -776,7 +811,7 @@ const ListofUser: React.FC = () => {
                                             {/* Users Table */}
                                             <UsersTable
                                                 posts={currentPosts}
-                                                handleEdit={handleEdit}
+                                                handleEdit={(user) => handleEdit(user)}
                                                 handleStatusUpdate={handleStatusUpdate}
                                                 handleDelete={confirmDelete}
                                             />
@@ -784,161 +819,221 @@ const ListofUser: React.FC = () => {
 
                                         {/* Automated Task */}
                                         <div className="col-span-1 p-4 bg-white shadow-md rounded-lg">
-                                            <h3 className="text-sm font-semibold mb-2">Automated Task</h3>
-                                            <p className="text-xs text-gray-600 mb-4">
-                                                Below are some company names fetched from the system. You can customize
-                                                this section as needed.
-                                            </p>
-
-                                            {/* TypeClient Filter Dropdown */}
-                                            <div className="mb-4 flex gap-2">
-                                                <select
-                                                    value={typeClient}
-                                                    onChange={(e) => setTypeClient(e.target.value)}
-                                                    className="w-full p-2 border rounded text-[10px] bg-gray-100"
-                                                >
-                                                    <option value="">Select</option>
-                                                    <option value="Top 50">Top 50</option>
-                                                    <option value="Next 30">Next 30</option>
-                                                    <option value="Below 20">Below 20</option>
-                                                </select>
+                                            <div className="flex mb-4 border-b">
                                                 <button
-                                                    onClick={handleGenerate}
-                                                    className="px-3 py-2 text-[10px] bg-gray-100 text-dark rounded hover:bg-blue-600"
+                                                    onClick={() => handleTabChange("Automated Task")}
+                                                    className={`text-xs px-4 py-2 border-b-2 w-full ${activeTab === "Automated Task" ? "border-blue-500 font-semibold" : "text-gray-600"
+                                                        }`}
                                                 >
-                                                    <CiRepeat size={16} />
+                                                    Automated Task
+                                                </button>
+                                                <button
+                                                    onClick={() => handleTabChange("List Accounts")}
+                                                    className={`text-xs px-4 py-2 border-b-2 w-full ${activeTab === "List Accounts" ? "border-blue-500 font-semibold" : "text-gray-600"
+                                                        }`}
+                                                >
+                                                    List Accounts
                                                 </button>
                                             </div>
 
-                                            {/* Display 5 random company names */}
-                                            <div className="space-y-2">
-                                                {randomCompanies.map((company, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="p-2 bg-gray-100 rounded flex justify-between items-center text-[10px] capitalize font-medium text-gray-800"
-                                                    >
-                                                        <span>{company.companyname}
-                                                            <br /><span className="text-gray-500">{company.typeclient}</span>
-                                                        </span>
-                                                        <button
-                                                            onClick={() => handleAccept(company)}
-                                                            className="px-3 py-1 text-[10px] bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                                                        >
-                                                            Accept
-                                                        </button>
+                                            {activeTab === "Automated Task" ? (
+                                                <>
+                                                    <h3 className="text-sm font-semibold mb-2">Automated Task</h3>
+                                                    <p className="text-xs text-gray-600 mb-4">
+                                                        Below are some company names fetched from the system.
+                                                    </p>
+
+                                                    {/* Display 5 random company names */}
+                                                    <div className="space-y-2">
+                                                        {[
+                                                            // Get 2 companies from Top 50
+                                                            ...post
+                                                                .filter(
+                                                                    (company) =>
+                                                                        company.status === "Active" && company.typeclient === "Top 50"
+                                                                )
+                                                                .slice(0, 2),
+
+                                                            // If no Top 50 left, get from Next 30
+                                                            ...post
+                                                                .filter(
+                                                                    (company) =>
+                                                                        company.status === "Active" && company.typeclient === "Next 30"
+                                                                )
+                                                                .slice(
+                                                                    0,
+                                                                    post.filter((company) => company.status === "Active" && company.typeclient === "Top 50")
+                                                                        .length === 0
+                                                                        ? 2
+                                                                        : 0
+                                                                ),
+
+                                                            // If no Next 30 left, get from Balance 20
+                                                            ...post
+                                                                .filter(
+                                                                    (company) =>
+                                                                        company.status === "Active" && company.typeclient === "Balance 20"
+                                                                )
+                                                                .slice(
+                                                                    0,
+                                                                    post.filter(
+                                                                        (company) =>
+                                                                            company.status === "Active" &&
+                                                                            (company.typeclient === "Top 50" || company.typeclient === "Next 30")
+                                                                    ).length === 0
+                                                                        ? 2
+                                                                        : 0
+                                                                ),
+
+                                                            // If no Balance 20 left, get from New Account - Client Development
+                                                            ...post
+                                                                .filter(
+                                                                    (company) =>
+                                                                        company.status === "Active" &&
+                                                                        company.typeclient === "New Account - Client Development"
+                                                                )
+                                                                .slice(
+                                                                    0,
+                                                                    post.filter(
+                                                                        (company) =>
+                                                                            company.status === "Active" &&
+                                                                            (company.typeclient === "Top 50" ||
+                                                                                company.typeclient === "Next 30" ||
+                                                                                company.typeclient === "Balance 20")
+                                                                    ).length === 0
+                                                                        ? 2
+                                                                        : 0
+                                                                ),
+                                                        ]
+                                                            .slice(0, 2) // Only display 2 companies per day
+                                                            .map((company, index) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="p-2 bg-gray-100 rounded flex justify-between items-center text-[10px] uppercase font-medium text-gray-800"
+                                                                >
+                                                                    <span>
+                                                                        {company.companyname}
+                                                                        <br />
+                                                                        <span className="text-gray-500">{company.typeclient}</span>
+                                                                    </span>
+                                                                    <button
+                                                                        onClick={() => handleAccept(company)}
+                                                                        className="px-3 py-1 text-[10px] bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                                                    >
+                                                                        Accept
+                                                                    </button>
+                                                                </div>
+                                                            ))}
+
+                                                        {/* Show message if no Top 50 or others available */}
+                                                        {post.filter(
+                                                            (company) =>
+                                                                company.typeclient === "Top 50" ||
+                                                                company.typeclient === "Next 30" ||
+                                                                company.typeclient === "Balance 20" ||
+                                                                company.typeclient === "New Account - Client Development"
+                                                        ).length === 0 && (
+                                                                <div className="text-xs text-gray-500 text-center p-2">
+                                                                    No available companies today.
+                                                                </div>
+                                                            )}
                                                     </div>
-                                                ))}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {/* List Accounts Tab Content */}
+                                                    <h3 className="text-sm font-semibold mb-2">List Accounts</h3>
+                                                    <p className="text-xs text-gray-600 mb-4">
+                                                        View and manage your list of company accounts.
+                                                    </p>
+                                                    <div className="p-0 rounded text-[10px] text-gray-700 uppercase">
+                                                        <ul className="space-y-2 h-90 overflow-y-auto max-h-[500px] w-full pr-2">
+                                                            {[
+                                                                // Order Top 50 first
+                                                                ...post
+                                                                    .filter((company) => company.status === "Active" && company.typeclient === "Top 50")
+                                                                    .map((company, index) => ({
+                                                                        ...company,
+                                                                        order: index + 1,
+                                                                    })),
+                                                                // Next 30
+                                                                ...post
+                                                                    .filter((company) => company.status === "Active" && company.typeclient === "Next 30")
+                                                                    .map((company, index, array) => ({
+                                                                        ...company,
+                                                                        order: post.filter((c) => c.status === "Active" && c.typeclient === "Top 50").length + index + 1,
+                                                                    })),
+                                                                // Below 20
+                                                                ...post
+                                                                    .filter((company) => company.status === "Active" && company.typeclient === "Balance 20")
+                                                                    .map((company, index, array) => ({
+                                                                        ...company,
+                                                                        order:
+                                                                            post.filter((c) => c.status === "Active" && (c.typeclient === "Top 50" || c.typeclient === "Next 30")).length +
+                                                                            index +
+                                                                            1,
+                                                                    })),
+                                                                // New Account - Client Development
+                                                                ...post
+                                                                    .filter((company) => company.status === "Active" && company.typeclient === "New Account - Client Development")
+                                                                    .map((company, index, array) => ({
+                                                                        ...company,
+                                                                        order:
+                                                                            post.filter(
+                                                                                (c) =>
+                                                                                    c.status === "Active" &&
+                                                                                    (c.typeclient === "Top 50" || c.typeclient === "Next 30" || c.typeclient === "Balance 20")
+                                                                            ).length +
+                                                                            index +
+                                                                            1,
+                                                                    })),
+                                                                // Append Used status at the end
+                                                                ...post
+                                                                    .filter((company) => company.status === "Used")
+                                                                    .map((company, index, usedArray) => ({
+                                                                        ...company,
+                                                                        order:
+                                                                            post.filter((c) => c.status === "Active").length +
+                                                                            index +
+                                                                            1,
+                                                                    })),
+                                                            ]
+                                                                .sort((a, b) => a.order - b.order)
+                                                                .map((company) => (
+                                                                    <li
+                                                                        key={company.order}
+                                                                        className={`p-2 bg-gray-100 rounded-sm shadow flex justify-between items-center border-l-4
+                                                                            ${company.status === "Active" ? "border-green-700" : company.status === "Used" ? "border-blue-500" : "border-gray-300"}
+                                                                        `}>
 
-                                                {/* Show message if no company matches the filter */}
-                                                {randomCompanies.length === 0 && (
-                                                    <div className="text-xs text-gray-500 text-center p-2">
-                                                        No matching companies found.
+                                                                        {/* Numbering with Company Info */}
+                                                                        <span>
+                                                                            {company.order}. {company.companyname}
+                                                                            <br />
+                                                                            <span
+                                                                                className={`${company.status === "Active"
+                                                                                    ? "text-green-700"
+                                                                                    : "text-red-600"
+                                                                                    }`}
+                                                                            >
+                                                                                {company.typeclient}
+                                                                            </span>
+                                                                        </span>
+                                                                    </li>
+
+                                                                ))}
+
+                                                            {/* Show message if no company matches the filter */}
+                                                            {post.filter(
+                                                                (company) => company.status === "Active" || company.status === "Used"
+                                                            ).length === 0 && (
+                                                                    <li className="p-2 bg-white rounded shadow text-center text-gray-500">
+                                                                        No matching companies found.
+                                                                    </li>
+                                                                )}
+                                                        </ul>
                                                     </div>
-                                                )}
-                                            </div>
-
-                                            {/* Modal Section */}
-                                            {showModal && selectedCompany && (
-                                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                                                    <div className="bg-white p-6 rounded-lg shadow-lg w-96 capitalize">
-                                                        <h3 className="text-sm font-semibold mb-4">Automated Task's</h3>
-                                                        <p className="text-xs text-gray-600 mb-4">
-                                                            This section displays randomized company names daily to streamline task management.
-                                                        </p>
-
-                                                        {/* Company Name */}
-                                                        <div className="mb-4">
-                                                            <label className="text-xs font-medium text-gray-600">Company Name</label>
-                                                            <input type="text" value={selectedCompany.companyname} className="w-full p-2 text-xs border rounded capitalize" disabled />
-                                                            {/* Hidden Fields */}
-                                                            <input type="hidden" value={selectedCompany.contactnumber} className="w-full p-2 text-xs border rounded" />
-                                                            <input type="hidden" value={selectedCompany.contactperson} className="w-full p-2 text-xs border capitalize rounded" />
-                                                            <input type="hidden" value={selectedCompany.typeclient} className="w-full p-2 text-xs border rounded" />
-                                                            <input type="hidden" value={selectedCompany.emailaddress} className="w-full p-2 text-xs border rounded" />
-                                                            <input type="hidden" value={selectedCompany.address} className="w-full p-2 text-xs border rounded" />
-                                                            <input type="hidden" value={selectedCompany.area} className="w-full p-2 text-xs border rounded" />
-                                                            <input type="hidden" value={selectedCompany.referenceid} className="w-full p-2 text-xs border rounded" />
-                                                            <input type="hidden" value={selectedCompany.tsm} className="w-full p-2 text-xs border rounded" />
-                                                            <input type="hidden" value={selectedCompany.manager} className="w-full p-2 text-xs border rounded" />
-                                                        </div>
-
-                                                        {/* Select Type of Activity */}
-                                                        <div className="mb-4">
-                                                            <label className="text-xs font-medium text-gray-600">Type of Activity</label>
-                                                            <select value={selectedCompany.typeactivity} onChange={handleActivityChange} className="w-full p-2 text-xs border rounded">
-                                                                <option value="">Select activity type</option>
-                                                                <option value="Follow Up">Follow Up</option>
-                                                                <option value="Email and Viber Checking">Email and Viber Checking</option>
-                                                                <option value="Walk in Client">Walk in Client</option>
-                                                            </select>
-                                                        </div>
-
-                                                        {/* Select Duration */}
-                                                        <div className="mb-4">
-                                                            <label className="text-xs font-medium text-gray-600">Duration</label>
-                                                            {/* Duration Select */}
-                                                            <select value={duration} onChange={handleDurationChange} className="w-full p-2 text-xs border rounded mb-2">
-                                                                <option value="">Select duration</option>
-                                                                <option value="Today">Today</option>
-                                                                <option value="Tomorrow">Tomorrow</option>
-                                                                <option value="After a Week">After a Week</option>
-                                                                <option value="After a Month">After a Month</option>
-                                                            </select>
-                                                            {/* Time Select */}
-                                                            <select value={timeValue} onChange={handleTimeDateChange} className="w-full p-2 text-xs border rounded mb-2">
-                                                                <option value="">Select Time</option>
-                                                                <option value="2 Minutes">2 Minutes</option>
-                                                                <option value="5 Minutes">5 Minutes</option>
-                                                                <option value="10 Minutes">10 Minutes</option>
-                                                                <option value="30 Minutes">30 Minutes</option>
-                                                                <option value="1 Hour">1 Hour</option>
-                                                                <option value="2 Hours">2 Hours</option>
-                                                            </select>
-
-                                                            {/* Start Date */}
-                                                            <input type="hidden" value={startDuration} disabled/>
-                                                            {/* End Date */}
-                                                            <input type="hidden" value={endDuration} disabled />
-                                                        </div>
-
-                                                        {/* Textarea with Generated Message */}
-                                                        <div className="mb-0">
-                                                            <label className="text-xs font-medium text-gray-600">Generated Message</label>
-                                                            <textarea
-                                                                className="w-full p-2 text-xs border rounded bg-gray-100"
-                                                                rows={4}
-                                                                value={generatedMessage}
-                                                                readOnly
-                                                            />
-                                                        </div>
-
-                                                        {/* Generate Other Button */}
-                                                        <button
-                                                            onClick={handleGenerateOther}
-                                                            disabled={!typeActivity}
-                                                            className={`px-3 py-1 mb-2 text-xs bg-gray-100 text-gray-900 rounded hover:bg-gray-200 transition flex flex-1 gap-1 ${!typeActivity && "opacity-50 cursor-not-allowed"
-                                                                }`}
-                                                        >
-                                                            <CiRepeat size={16} /> Generate
-                                                        </button>
-
-                                                        {/* Modal Buttons */}
-                                                        <div className="flex justify-end gap-2">
-                                                            <button
-                                                                onClick={() => setShowModal(false)}
-                                                                className="px-4 py-1 text-xs bg-gray-300 text-black rounded hover:bg-gray-400"
-                                                            >
-                                                                Close
-                                                            </button>
-                                                            <button
-                                                                onClick={() => setShowModal(false)}
-                                                                className="px-4 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                                                            >
-                                                                Confirm
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                </>
                                             )}
 
                                         </div>

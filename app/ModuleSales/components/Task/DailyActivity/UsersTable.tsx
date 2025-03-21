@@ -127,12 +127,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
         }));
     };
 
-
     const updateStatus = (postId: string, newStatus: string) => {
         handleStatusUpdate(postId, newStatus);
         setStatusMenuVisible({});
     };
-
 
     return (
         <div className="mb-4">
@@ -170,26 +168,25 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                             </h4>
                             <div>
                                 {[...pinned, ...unpinned].map(user => (
-                                    <div key={user.id} className={` rounded-lg shadow-md p-4 mb-2
-                                        ${user.typeclient === "CSR Inquiries" ? "border-2 border-red-700" : ""} 
-                                        
-                                        ${user.activitystatus === "Cold" ? "border-l-2 border-t-2 border-blue-700" :
-                                            user.activitystatus === "Warm" ? "border-l-2 border-t-2 border-yellow-700" :
-                                                user.activitystatus === "Hot" ? "border-l-2 border-t-2 border-red-700" :
-                                                    user.activitystatus === "Delivered" ? "border-l-2 border-t-2 border-green-700" :
-                                                        user.activitystatus === "Loss" ? "border-l-2 border-t-2 border-gray-500" :
-                                                            user.activitystatus === "Cancelled" ? "border-l-2 border-t-2 border-red-800" : ""}
-                                            ${pinnedUsers.has(user.id) ? "bg-yellow-100" : "bg-gray-50"}
-                                            `}>
-
-
-
+                                    <div
+                                    key={user.id}
+                                    className={`rounded-lg shadow-md p-4 mb-2
+                                      ${pinnedUsers.has(user.id) ? "bg-yellow-100" : user.typeclient === "CSR Inquiries" ? "" : ""}
+                                      ${user.activitystatus === "Cold" ? "bg-blue-200" :
+                                        user.activitystatus === "Warm" ? "bg-yellow-200" :
+                                          user.activitystatus === "Hot" ? "bg-red-200" :
+                                            user.activitystatus === "Done" ? "bg-green-200" :
+                                              user.activitystatus === "Loss" ? "bg-gray-200" :
+                                                user.activitystatus === "Cancelled" ? "bg-red-800" : "bg-gray-50"}
+                                    `}
+                                  >
+                                  
                                         {/* Card Header - Company Name */}
                                         {!["Client Visit", "On Site", "On Field", "Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
                                             <div className="card-header mb-2 pb-2 flex justify-between items-center relative">
                                                 {/* CSR Inquiries Label - Centered at the Top */}
                                                 {user.typeclient === "CSR Inquiries" && (
-                                                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-white px-2 text-red-700 font-bold text-[8px] border border-red-700">
+                                                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-white px-2 text-red-700 font-bold text-[8px] rounded-full border border-red-700">
                                                         CSR Inquiries
                                                     </span>
                                                 )}
@@ -249,7 +246,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                 )}
                                             </div>
                                         )}
-
 
                                         {/* Only show certain fields based on activitystatus */}
                                         {["Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking"].includes(user.activitystatus) && (
