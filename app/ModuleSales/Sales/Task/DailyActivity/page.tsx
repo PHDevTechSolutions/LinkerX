@@ -14,10 +14,8 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 // Icons
-import { CiSquarePlus, CiCircleRemove, CiSaveUp1, CiTrash, CiCamera } from "react-icons/ci";
+import { CiSquarePlus, CiCircleRemove, CiSaveUp1, CiTrash, CiRepeat } from "react-icons/ci";
 import { PiHandTapThin } from "react-icons/pi";
-
-import html2canvas from "html2canvas";
 
 // Function to get formatted Manila timestamp
 const getFormattedTimestamp = () => {
@@ -41,10 +39,43 @@ const getFormattedTimestamp = () => {
     return `${year}-${month}-${day}T${hour}:${minute}:${second}`;
 };
 
+interface Company {
+    companyname: string;
+    referenceid: string;
+    tsm: string;
+    manager: string;
+    typeclient: string;
+    contactnumber: string;
+    contactperson: string;
+    emailaddress: string;
+    address: string;
+    area: string;
+    remarks: string;
+    typeactivity: string;
+    startdate: string;
+    enddate: string;
+}
+
+interface UserDetails {
+    ReferenceID: string;
+}
+
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
     const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
+
+    const [post, setPost] = useState<Company[]>([]);
+    const [randomCompanies, setRandomCompanies] = useState<Company[]>([]);
+    const [typeClient, setTypeClient] = useState<string>(""); // Selected typeclient
+    const [showModal, setShowModal] = useState<boolean>(false); // Modal visibility
+    const [selectedCompany, setSelectedCompany] = useState<Company | null>(null); // Selected company data
+    const [typeActivity, setTypeActivity] = useState("");
+    const [generatedMessage, setGeneratedMessage] = useState("");
+
+    const [duration, setDuration] = useState<string>("");
+    const [timeValue, setTimeValue] = useState<string>("");
+
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState("");
     const [selectedClientType, setSelectedClientType] = useState("");
@@ -74,23 +105,6 @@ const ListofUser: React.FC = () => {
     const [timerRunning, setTimerRunning] = useState(false);
 
     const taskRef = useRef<HTMLDivElement | null>(null); // Reference for My Task div
-
-    const handleScreenshot = async () => {
-        if (!taskRef.current) {
-            console.error("Target element not found!");
-            return;
-        }
-
-        const element = taskRef.current as HTMLElement; // Ensure type safety
-        const canvas = await html2canvas(element);
-        const imgData = canvas.toDataURL("image/png");
-
-        // Create a download link for the screenshot
-        const link = document.createElement("a");
-        link.href = imgData;
-        link.download = "screenshot.png";
-        link.click();
-    };
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -444,6 +458,179 @@ const ListofUser: React.FC = () => {
         };
     }, []);
 
+    // Shuffle array and get random 5 companies
+    const getRandomCompanies = (companies: Company[]) => {
+        const shuffled = [...companies].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, 5);
+    };
+
+    // Fetch companies from API with ReferenceID as query param
+    const fetchCompanies = async () => {
+        try {
+            const response = await fetch(
+                `/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount?referenceid=${userDetails.ReferenceID}`
+            );
+            const data = await response.json();
+            console.log("Fetched data:", data); // Debugging line
+
+            if (data.success && Array.isArray(data.data)) {
+                setPost(data.data);
+                // Initial random 5 companies
+                setRandomCompanies(getRandomCompanies(data.data));
+            } else {
+                toast.error("No companies found.");
+                setPost([]);
+                setRandomCompanies([]);
+            }
+        } catch (error) {
+            toast.error("Error fetching companies.");
+            console.error("Error fetching", error);
+        }
+    };
+
+    function calculateDate(selectedDuration: string, selectedTime: string) {
+        // Get current date in Manila timezone
+        const now = new Date(
+            new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+        );
+        let newDate = new Date(now);
+    
+        // Set date based on selected duration
+        switch (selectedDuration) {
+            case "Today":
+                newDate = now;
+                break;
+            case "Tomorrow":
+                newDate.setDate(now.getDate() + 1);
+                break;
+            case "After a Week":
+                newDate.setDate(now.getDate() + 7);
+                break;
+            case "After a Month":
+                newDate.setMonth(now.getMonth() + 1);
+                break;
+            default:
+                newDate = now;
+        }
+    
+        // Format date to 'yyyy-mm-ddThh:mm' in Manila timezone
+        const dateTimeString = formatDateToLocal(newDate);
+        setStartDate(dateTimeString);
+        setEndDate(addTimeToDate(newDate, selectedTime));
+    }
+    
+    // Function to add time (minutes/hours) to the selected date
+    function addTimeToDate(date: Date, selectedTime: string) {
+        const newDate = new Date(date);
+        const [value, unit] = selectedTime.split(" ");
+        const timeValue = parseInt(value);
+    
+        if (unit === "Minutes") {
+            newDate.setMinutes(date.getMinutes() + timeValue);
+        } else if (unit === "Hour" || unit === "Hours") {
+            newDate.setHours(date.getHours() + timeValue);
+        }
+    
+        return formatDateToLocal(newDate);
+    }
+    
+    // Format date to 'yyyy-mm-ddThh:mm' in Manila timezone
+    function formatDateToLocal(date: Date): string {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+    
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+    
+    // Handle duration change
+    function handleDurationChange(e: any) {
+        const selectedDuration = e.target.value;
+        setDuration(selectedDuration);
+        calculateDate(selectedDuration, timeValue);
+    }
+
+    // Handle time change
+    function handleTimeDateChange(e: any) {
+        const selectedTime = e.target.value;
+        setTimeValue(selectedTime);
+        calculateDate(duration, selectedTime);
+    }
+
+    const handleGenerate = () => {
+        const filtered = typeClient
+            ? post.filter((company) => company.typeclient === typeClient)
+            : post;
+
+        // Randomize and set new company list based on filtered results
+        setRandomCompanies(getRandomCompanies(filtered));
+    };
+
+    // Handle Accept button to show modal
+    const handleAccept = (company: Company) => {
+        setSelectedCompany(company);
+        setShowModal(true);
+    };
+
+    useEffect(() => {
+        fetchCompanies();
+    }, [userDetails.ReferenceID]);
+
+    // Message generator function
+    const generateMessage = (activity: string): string[] => {
+        switch (activity) {
+            case "Follow Up":
+                return [
+                    "Following up on the previous inquiry. Kindly provide an update.",
+                    "Just checking in regarding the progress of the previous discussions.",
+                    "A quick follow-up to discuss the pending tasks. Please advise.",
+                    "Reaching out again to ensure all concerns are addressed.",
+                    "Seeking confirmation on the next steps for the ongoing project.",
+                    "Touching base to see if there's anything else we can assist with.",
+                ];
+            case "Email and Viber Checking":
+                return [
+                    "Checking for any updates in emails and Viber messages.",
+                    "Ensuring that all Viber and email communications are acknowledged.",
+                    "Reviewing recent messages and emails for important information.",
+                    "Scanning for any missed messages in email or Viber.",
+                    "Following up on unread or unaddressed communications.",
+                    "Verifying if all important responses have been sent.",
+                ];
+            case "Walk in Client":
+                return [
+                    "Attending to a walk-in client and providing necessary assistance.",
+                    "Gathering client requirements from walk-in customers.",
+                    "Assisting a walk-in client with the service inquiry.",
+                    "Ensuring that all concerns of the walk-in client are noted.",
+                    "Providing information and guidance to the walk-in client.",
+                    "Addressing inquiries of walk-in clients effectively.",
+                ];
+            default:
+                return [""];
+        }
+    };
+
+    // Generate initial message based on selection
+    const handleActivityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedActivity: string = e.target.value;
+        setTypeActivity(selectedActivity);
+
+        // Generate and set a random message
+        const messages: string[] = generateMessage(selectedActivity);
+        setGeneratedMessage(messages[Math.floor(Math.random() * messages.length)]);
+    };
+
+    // Generate new message when clicking "Generate Other"
+    const handleGenerateOther = () => {
+        if (typeActivity) {
+            const messages: string[] = generateMessage(typeActivity);
+            setGeneratedMessage(messages[Math.floor(Math.random() * messages.length)]);
+        }
+    };
+
     return (
         <SessionChecker>
             <ParentLayout>
@@ -481,9 +668,6 @@ const ListofUser: React.FC = () => {
                                                 onClick={handleButtonClick}
                                             >
                                                 <PiHandTapThin size={20} /> Tap
-                                            </button>
-                                            <button onClick={handleScreenshot} title="Take a Screenshot" className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition">
-                                                <CiCamera size={20} /> Take a Screenshot
                                             </button>
                                         </div>
 
@@ -567,7 +751,7 @@ const ListofUser: React.FC = () => {
                                     </div>
 
                                     <div className="grid grid-cols-4 gap-4 mb-4">
-                                        {/* First Card - 3 Columns */}
+                                        {/* Task */}
                                         <div className="col-span-3 p-4 bg-white shadow-md rounded-lg">
                                             <h2 className="text-lg font-bold mb-2">My Task</h2>
                                             <p className="text-xs text-gray-600 mb-4">
@@ -595,12 +779,166 @@ const ListofUser: React.FC = () => {
                                             />
                                         </div>
 
-                                        {/* Second Card - 1 Column */}
+                                        {/* Automated Task */}
                                         <div className="col-span-1 p-4 bg-white shadow-md rounded-lg">
                                             <h3 className="text-sm font-semibold mb-2">Automated Task</h3>
-                                            <p className="text-xs text-gray-600">
-                                                This section can display additional details, statistics, or summary data related to the tasks. You can customize the content here as needed.
+                                            <p className="text-xs text-gray-600 mb-4">
+                                                Below are some company names fetched from the system. You can customize
+                                                this section as needed.
                                             </p>
+
+                                            {/* TypeClient Filter Dropdown */}
+                                            <div className="mb-4 flex gap-2">
+                                                <select
+                                                    value={typeClient}
+                                                    onChange={(e) => setTypeClient(e.target.value)}
+                                                    className="w-full p-2 border rounded text-[10px] bg-gray-100"
+                                                >
+                                                    <option value="">Select</option>
+                                                    <option value="Top 50">Top 50</option>
+                                                    <option value="Next 30">Next 30</option>
+                                                    <option value="Below 20">Below 20</option>
+                                                </select>
+                                                <button
+                                                    onClick={handleGenerate}
+                                                    className="px-3 py-2 text-[10px] bg-gray-100 text-dark rounded hover:bg-blue-600"
+                                                >
+                                                    <CiRepeat size={16} />
+                                                </button>
+                                            </div>
+
+                                            {/* Display 5 random company names */}
+                                            <div className="space-y-2">
+                                                {randomCompanies.map((company, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="p-2 bg-gray-100 rounded flex justify-between items-center text-[10px] capitalize font-medium text-gray-800"
+                                                    >
+                                                        <span>{company.companyname}
+                                                            <br /><span className="text-gray-500">{company.typeclient}</span>
+                                                        </span>
+                                                        <button
+                                                            onClick={() => handleAccept(company)}
+                                                            className="px-3 py-1 text-[10px] bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                                        >
+                                                            Accept
+                                                        </button>
+                                                    </div>
+                                                ))}
+
+                                                {/* Show message if no company matches the filter */}
+                                                {randomCompanies.length === 0 && (
+                                                    <div className="text-xs text-gray-500 text-center p-2">
+                                                        No matching companies found.
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Modal Section */}
+                                            {showModal && selectedCompany && (
+                                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                                    <div className="bg-white p-6 rounded-lg shadow-lg w-96 capitalize">
+                                                        <h3 className="text-sm font-semibold mb-4">Automated Task's</h3>
+                                                        <p className="text-xs text-gray-600 mb-4">
+                                                            This section displays randomized company names daily to streamline task management.
+                                                        </p>
+
+                                                        {/* Company Name */}
+                                                        <div className="mb-4">
+                                                            <label className="text-xs font-medium text-gray-600">Company Name</label>
+                                                            <input type="text" value={selectedCompany.companyname} className="w-full p-2 text-xs border rounded capitalize" disabled />
+                                                            {/* Hidden Fields */}
+                                                            <input type="hidden" value={selectedCompany.contactnumber} className="w-full p-2 text-xs border rounded" />
+                                                            <input type="hidden" value={selectedCompany.contactperson} className="w-full p-2 text-xs border capitalize rounded" />
+                                                            <input type="hidden" value={selectedCompany.typeclient} className="w-full p-2 text-xs border rounded" />
+                                                            <input type="hidden" value={selectedCompany.emailaddress} className="w-full p-2 text-xs border rounded" />
+                                                            <input type="hidden" value={selectedCompany.address} className="w-full p-2 text-xs border rounded" />
+                                                            <input type="hidden" value={selectedCompany.area} className="w-full p-2 text-xs border rounded" />
+                                                            <input type="hidden" value={selectedCompany.referenceid} className="w-full p-2 text-xs border rounded" />
+                                                            <input type="hidden" value={selectedCompany.tsm} className="w-full p-2 text-xs border rounded" />
+                                                            <input type="hidden" value={selectedCompany.manager} className="w-full p-2 text-xs border rounded" />
+                                                        </div>
+
+                                                        {/* Select Type of Activity */}
+                                                        <div className="mb-4">
+                                                            <label className="text-xs font-medium text-gray-600">Type of Activity</label>
+                                                            <select value={selectedCompany.typeactivity} onChange={handleActivityChange} className="w-full p-2 text-xs border rounded">
+                                                                <option value="">Select activity type</option>
+                                                                <option value="Follow Up">Follow Up</option>
+                                                                <option value="Email and Viber Checking">Email and Viber Checking</option>
+                                                                <option value="Walk in Client">Walk in Client</option>
+                                                            </select>
+                                                        </div>
+
+                                                        {/* Select Duration */}
+                                                        <div className="mb-4">
+                                                            <label className="text-xs font-medium text-gray-600">Duration</label>
+                                                            {/* Duration Select */}
+                                                            <select value={duration} onChange={handleDurationChange} className="w-full p-2 text-xs border rounded mb-2">
+                                                                <option value="">Select duration</option>
+                                                                <option value="Today">Today</option>
+                                                                <option value="Tomorrow">Tomorrow</option>
+                                                                <option value="After a Week">After a Week</option>
+                                                                <option value="After a Month">After a Month</option>
+                                                            </select>
+                                                            {/* Time Select */}
+                                                            <select value={timeValue} onChange={handleTimeDateChange} className="w-full p-2 text-xs border rounded mb-2">
+                                                                <option value="">Select Time</option>
+                                                                <option value="2 Minutes">2 Minutes</option>
+                                                                <option value="5 Minutes">5 Minutes</option>
+                                                                <option value="10 Minutes">10 Minutes</option>
+                                                                <option value="30 Minutes">30 Minutes</option>
+                                                                <option value="1 Hour">1 Hour</option>
+                                                                <option value="2 Hours">2 Hours</option>
+                                                            </select>
+
+                                                            {/* Start Date */}
+                                                            <input type="hidden" value={startDate} disabled/>
+                                                            {/* End Date */}
+                                                            <input type="hidden" value={endDate} disabled />
+
+                                                        </div>
+
+                                                        {/* Textarea with Generated Message */}
+                                                        <div className="mb-0">
+                                                            <label className="text-xs font-medium text-gray-600">Generated Message</label>
+                                                            <textarea
+                                                                className="w-full p-2 text-xs border rounded bg-gray-100"
+                                                                rows={4}
+                                                                value={generatedMessage}
+                                                                readOnly
+                                                            />
+                                                        </div>
+
+                                                        {/* Generate Other Button */}
+                                                        <button
+                                                            onClick={handleGenerateOther}
+                                                            disabled={!typeActivity}
+                                                            className={`px-3 py-1 mb-2 text-xs bg-gray-100 text-gray-900 rounded hover:bg-gray-200 transition flex flex-1 gap-1 ${!typeActivity && "opacity-50 cursor-not-allowed"
+                                                                }`}
+                                                        >
+                                                            <CiRepeat size={16} /> Generate
+                                                        </button>
+
+                                                        {/* Modal Buttons */}
+                                                        <div className="flex justify-end gap-2">
+                                                            <button
+                                                                onClick={() => setShowModal(false)}
+                                                                className="px-4 py-1 text-xs bg-gray-300 text-black rounded hover:bg-gray-400"
+                                                            >
+                                                                Close
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setShowModal(false)}
+                                                                className="px-4 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                                                            >
+                                                                Confirm
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
                                         </div>
                                     </div>
 
