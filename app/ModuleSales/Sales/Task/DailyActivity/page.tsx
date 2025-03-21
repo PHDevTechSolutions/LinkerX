@@ -74,7 +74,7 @@ const ListofUser: React.FC = () => {
     const [timerRunning, setTimerRunning] = useState(false);
 
     const taskRef = useRef<HTMLDivElement | null>(null); // Reference for My Task div
-    
+
     const handleScreenshot = async () => {
         if (!taskRef.current) {
             console.error("Target element not found!");
@@ -566,28 +566,44 @@ const ListofUser: React.FC = () => {
                                         )}
                                     </div>
 
-                                    <div ref={taskRef} className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">My Task</h2>
-                                        <p className="text-xs text-gray-600 mb-4">
-                                            This section displays your <strong>tasks</strong> in a <strong>card layout</strong>. Each task is represented as a card, offering a visually appealing and more flexible design compared to traditional tables. You can filter tasks based on various criteria like <strong>client type</strong>, <strong>date range</strong>, and other parameters using the search filters.
-                                        </p>
-                                        <SearchFilters
-                                            searchTerm={searchTerm}
-                                            setSearchTerm={setSearchTerm}
-                                            selectedClientType={selectedClientType}
-                                            setSelectedClientType={setSelectedClientType}
-                                            startDate={startDate}
-                                            setStartDate={setStartDate}
-                                            endDate={endDate}
-                                            setEndDate={setEndDate}
-                                        />
-                                        <UsersTable
-                                            posts={currentPosts}
-                                            handleEdit={handleEdit}
-                                            handleStatusUpdate={handleStatusUpdate}
-                                            handleDelete={confirmDelete}
-                                        />
+                                    <div className="grid grid-cols-4 gap-4 mb-4">
+                                        {/* First Card - 3 Columns */}
+                                        <div className="col-span-3 p-4 bg-white shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">My Task</h2>
+                                            <p className="text-xs text-gray-600 mb-4">
+                                                This section displays your <strong>tasks</strong> in a <strong>card layout</strong>. Each task is represented as a card, offering a visually appealing and more flexible design compared to traditional tables. You can filter tasks based on various criteria like <strong>client type</strong>, <strong>date range</strong>, and other parameters using the search filters.
+                                            </p>
+
+                                            {/* Search Filters */}
+                                            <SearchFilters
+                                                searchTerm={searchTerm}
+                                                setSearchTerm={setSearchTerm}
+                                                selectedClientType={selectedClientType}
+                                                setSelectedClientType={setSelectedClientType}
+                                                startDate={startDate}
+                                                setStartDate={setStartDate}
+                                                endDate={endDate}
+                                                setEndDate={setEndDate}
+                                            />
+
+                                            {/* Users Table */}
+                                            <UsersTable
+                                                posts={currentPosts}
+                                                handleEdit={handleEdit}
+                                                handleStatusUpdate={handleStatusUpdate}
+                                                handleDelete={confirmDelete}
+                                            />
+                                        </div>
+
+                                        {/* Second Card - 1 Column */}
+                                        <div className="col-span-1 p-4 bg-white shadow-md rounded-lg">
+                                            <h3 className="text-sm font-semibold mb-2">Automated Task</h3>
+                                            <p className="text-xs text-gray-600">
+                                                This section can display additional details, statistics, or summary data related to the tasks. You can customize the content here as needed.
+                                            </p>
+                                        </div>
                                     </div>
+
                                 </>
                             )}
 

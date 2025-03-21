@@ -16,14 +16,11 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
-    const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedClientType, setSelectedClientType] = useState("");
     const [startDate, setStartDate] = useState(""); // Default to null
     const [endDate, setEndDate] = useState(""); // Default to null
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(38);
 
     const [userDetails, setUserDetails] = useState({
         UserId: "", ReferenceID: "", Manager: "", TSM: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
@@ -133,11 +130,6 @@ const ListofUser: React.FC = () => {
             .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
         : [];
 
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
-    const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
-
     return (
         <SessionChecker>
             <ParentLayout>
@@ -158,19 +150,8 @@ const ListofUser: React.FC = () => {
                                             setSearchTerm={setSearchTerm}
                                         />
                                         <UsersTable
-                                            posts={currentPosts}
+                                            posts={filteredAccounts}
                                         />
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                        />
-
-                                        <div className="text-xs mt-2">
-                                            Showing {indexOfFirstPost + 1} to{" "}
-                                            {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                            {filteredAccounts.length} entries
-                                        </div>
                                     </div>
                                 </>
                             )}

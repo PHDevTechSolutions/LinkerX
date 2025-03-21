@@ -193,7 +193,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                         CSR Inquiries
                                                     </span>
                                                 )}
-                                                <h3 className="text-xs font-semibold text-gray-800 uppercase mt-3">{user.companyname}</h3>
+                                                <h3 className="text-[10px] font-semibold text-gray-800 uppercase mt-3">{user.companyname}</h3>
                                                 <div className="relative mt-3">
                                                     <button onClick={() => toggleCollapse(user.id)} className="text-gray-500 hover:text-gray-700">
                                                         {collapsedCards[user.id] ? <CiBookmarkMinus size={20} /> : <CiBookmarkPlus size={20} />}
@@ -232,7 +232,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
 
                                         {/* Card Body */}
                                         {collapsedCards[user.id] && (
-                                            <div className="text-xs">
+                                            <div className="text-[10px] capitalize">
                                                 <p><strong>Type:</strong> {user.typeclient}</p>
                                                 {user.typeclient === "CSR Inquiries" ? (
                                                     <>
@@ -343,10 +343,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                         {/* Status Badge */}
                                         {!["Client Visit", "On Site", "On Field", "Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
                                             <div className="card-footer text-xs flex justify-between items-center mt-2 border-t-2 pt-2">
-                                                <p><strong>Date Created:</strong> {format(parseISO(user.date_created), "MMM dd, yyyy - h:mm:ss a")}</p>
+                                                <p className="text-[10px]"><strong>Date Created:</strong> {format(parseISO(user.date_created), "MMM dd, yyyy - h:mm:ss a")}</p>
 
                                                 {/* Status Badge */}
-                                                <span className={`px-2 py-1 rounded-full text-white text-xs 
+                                                <span className={`px-2 py-1 rounded-full text-white text-[8px] 
                                                     ${user.activitystatus === "Cold" ? "bg-blue-700" :
                                                         user.activitystatus === "Warm" ? "bg-yellow-700" :
                                                             user.activitystatus === "Hot" ? "bg-red-700" :
