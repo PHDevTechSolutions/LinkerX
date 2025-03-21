@@ -771,7 +771,7 @@ const ListofUser: React.FC = () => {
                                         )}
 
                                         {showTimerModal && (
-                                            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end justify-end pointer-events-auto">
+                                            <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-end justify-end pointer-events-auto">
                                                 {/* Invisible overlay to block clicks */}
                                                 <div className="absolute inset-0"></div>
 
@@ -1042,7 +1042,7 @@ const ListofUser: React.FC = () => {
                             )}
 
                             {showDeleteModal && (
-                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1000]">
                                     <div className="bg-white p-4 rounded shadow-lg">
                                         <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
                                         <p className="text-xs">Are you sure you want to delete this post?</p>
