@@ -27,6 +27,7 @@ const ListofUser: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(12);
     const [selectedClientType, setSelectedClientType] = useState("");
+    const [selectedStatus, setSelectedStatus] = useState("");
     const [startDate, setStartDate] = useState(""); // Default to null
     const [endDate, setEndDate] = useState(""); // Default to null
 
@@ -178,47 +179,57 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-        ? posts.filter((post) => {
-            // Check if the company name matches the search term
-            const matchesSearchTerm =
-                post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                post?.typeclient?.toLowerCase().includes(searchTerm.toLowerCase());
+    ? posts.filter((post) => {
+          // Check if the company name or typeclient matches the search term (case-insensitive)
+          const matchesSearchTerm =
+              post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              post?.typeclient?.toLowerCase().includes(searchTerm.toLowerCase());
 
-            // Parse the date_created field
-            const postDate = post.date_created ? new Date(post.date_created) : null;
+          // Parse the date_created field with safe handling
+          const postDate = post?.date_created ? new Date(post.date_created) : null;
 
-            // Check if the post's date is within the selected date range
-            const isWithinDateRange = (
-                (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                (!endDate || (postDate && postDate <= new Date(endDate)))
-            );
+          // Check if the post's date is within the selected date range
+          const isWithinDateRange =
+              (!startDate || (postDate && postDate >= new Date(startDate))) &&
+              (!endDate || (postDate && postDate <= new Date(endDate + "T23:59:59"))); // Ensures end of day
 
-            // Check if the post matches the selected client type
-            const matchesClientType = selectedClientType
-                ? selectedClientType === "null"
-                    ? !post?.typeclient || post?.typeclient === null || post?.typeclient === "" // Check for null or empty
-                    : post?.typeclient === selectedClientType
-                : true;
+          // Check if the post matches the selected client type (with null/empty checks)
+          const matchesClientType = selectedClientType
+              ? selectedClientType === "null"
+                  ? !post?.typeclient || post?.typeclient === null || post?.typeclient === "" // Handle null or empty typeclient
+                  : post?.typeclient === selectedClientType
+              : true;
 
+          // Check if the post matches the selected status (case-insensitive)
+          const matchesStatus = selectedStatus
+              ? post?.status?.toLowerCase() === selectedStatus.toLowerCase()
+              : true;
 
-            // Get the reference ID from userDetails
-            const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
+          // Get the reference ID from userDetails
+          const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
 
-            // Check if the role matches based on the user's role
-            const matchesRole = userDetails.Role === "Super Admin"
-                ? true // Super Admin sees all
-                : userDetails.Role === "Territory Sales Associate"
-                    ? post?.referenceid === referenceID // Manager sees only assigned companies
-                    : false; // Default false if no match
+          // Check if the role matches based on the user's role
+          const matchesRole =
+              userDetails.Role === "Super Admin" // Super Admin sees all data
+                  ? true
+                  : userDetails.Role === "Territory Sales Associate"
+                  ? post?.referenceid === referenceID // Managers see only their assigned companies
+                  : false; // Default to false if no role matches
 
-            // Check if the post's status is Active
-            const isActive = post?.status === 'Active' || post?.status === 'Used';
+          // Check if the post's status is either 'Active' or 'Used'
+          const isActiveOrUsed = post?.status === "Active" || post?.status === "Used";
 
-            // Return the filtered result, including the Active status check
-            return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole && isActive;
-        })
-        : [];
-
+          // Return the final filtered result with all conditions applied
+          return (
+              matchesSearchTerm &&
+              isWithinDateRange &&
+              matchesClientType &&
+              matchesStatus && // ✅ Added correct status matching
+              matchesRole &&
+              isActiveOrUsed // ✅ Ensures 'Active' or 'Used' status
+          );
+      })
+    : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -356,6 +367,8 @@ const ListofUser: React.FC = () => {
                                             setPostsPerPage={setPostsPerPage}
                                             selectedClientType={selectedClientType}
                                             setSelectedClientType={setSelectedClientType}
+                                            selectedStatus={selectedStatus}
+                                            setSelectedStatus={setSelectedStatus}
                                             startDate={startDate}
                                             setStartDate={setStartDate}
                                             endDate={endDate}

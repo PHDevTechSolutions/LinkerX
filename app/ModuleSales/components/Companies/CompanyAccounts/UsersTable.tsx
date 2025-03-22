@@ -16,6 +16,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
   // Bulk
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
   const [bulkEditMode, setBulkEditMode] = useState(false);
+  const [bulkEditStatusMode, setBulkEditStatusMode] = useState(false);
+  const [newStatusUpdate, setnewStatusUpdate] = useState("");
   const [bulkRemoveMode, setBulkRemoveMode] = useState(false);
   const [bulkTransferMode, setBulkTransferMode] = useState(false);
   const [bulkTransferTSAMode, setBulkTransferTSAMode] = useState(false);
@@ -156,6 +158,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
     setSelectedTsa("");
   }, []);
 
+  const toggleBulkEditStatusMode = useCallback(() => {
+    setBulkEditStatusMode((prev) => !prev);
+    setSelectedUsers(new Set());
+    setnewStatusUpdate("");
+  }, []);
+
   const handleSelectUser = useCallback((userId: string) => {
     setSelectedUsers((prev) => {
       const newSelection = new Set(prev);
@@ -207,6 +215,28 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
       console.error("Error updating users:", error);
     }
   }, [selectedUsers, newTypeClient]);
+
+  const handleBulkEditStatus = useCallback(async () => {
+    if (selectedUsers.size === 0 || !newStatus) return;
+    try {
+      const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/Bulk-Edit`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userIds: Array.from(selectedUsers), status: newStatus }),
+      });
+      if (response.ok) {
+        setUpdatedUser((prev) => prev.map((user) =>
+          selectedUsers.has(user.id) ? { ...user, status: newStatus } : user
+        ));
+        setSelectedUsers(new Set());
+        setBulkEditMode(false);
+      } else {
+        console.error("Failed to update users");
+      }
+    } catch (error) {
+      console.error("Error updating users:", error);
+    }
+  }, [selectedUsers, newStatus]);
 
   const handleBulkRemove = useCallback(async () => {
     if (selectedUsers.size === 0 || !newStatus || !newRemarks) return;
@@ -301,9 +331,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
           {bulkEditMode ? "Cancel Bulk Edit" : "Bulk Edit"}
         </button>
 
-        <button onClick={toggleBulkTransferTSAMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
-          <CiSliderHorizontal size={16} />
-          {bulkTransferTSAMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Another Agent"}
+        <button onClick={toggleBulkEditStatusMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-900 hover:text-white">
+          <CiEdit size={16} />
+          {bulkEditStatusMode ? "Cancel Bulk Status" : "Bulk Change Status"}
         </button>
 
         <button onClick={toggleBulkRemoveMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-900 hover:text-white">
@@ -317,7 +347,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
         </button>
       </div>
       {/* Bulk Action Panel */}
-      {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
+      {(bulkDeleteMode || bulkEditMode || bulkEditStatusMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
         <div className="mb-4 p-3 bg-gray-100 rounded-md text-xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -359,6 +389,17 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                   <option value="Transfer Account">Transfer Account</option>
                 </select>
                 <button onClick={handleBulkEdit} className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs" disabled={!newTypeClient}>Apply Changes</button>
+              </div>
+            )}
+
+            {bulkEditStatusMode && (
+              <div className="flex items-center gap-2">
+                <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="px-2 py-1 border rounded-md">
+                  <option value="">Select Status</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Active">Active</option>
+                </select>
+                <button onClick={handleBulkEditStatus} className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs" disabled={!newStatus}>Apply Changes</button>
               </div>
             )}
 
@@ -413,7 +454,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
               updatedUser.map((post) => (
                 <tr key={post.id} className="hover:bg-gray-50 capitalize">
                   <td className="p-2 border text-center">
-                    {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
+                    {(bulkDeleteMode || bulkEditMode || bulkEditStatusMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
                       <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4" />
                     )}
                   </td>

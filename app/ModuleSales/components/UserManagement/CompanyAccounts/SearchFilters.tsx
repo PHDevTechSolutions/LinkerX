@@ -10,6 +10,8 @@ interface SearchFiltersProps {
     setPostsPerPage: (num: number) => void;
     selectedClientType: string;
     setSelectedClientType: (clientType: string) => void;
+    selectedStatus: string;
+    setSelectedStatus: (status: string) => void;
     startDate: string;
     setStartDate: (date: string) => void;
     endDate: string;
@@ -23,6 +25,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     setPostsPerPage,
     selectedClientType,
     setSelectedClientType,
+    selectedStatus,
+    setSelectedStatus,
     startDate,
     setStartDate,
     endDate,
@@ -48,6 +52,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                 <option value="Next 30">Next 30</option>
                 <option value="Balance 20">Balance 20</option>
                 <option value="New Account - Client Development">New Account - Client Development</option>
+            </select>
+            <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="shadow-sm border px-3 py-2 rounded text-xs w-full md:w-auto"
+            >
+                <option value="">All Status</option>
+                <option value="Active">Active</option> {/* Updated for null */}
+                <option value="Used">Used</option>
             </select>
 
             <div className="flex gap-2">

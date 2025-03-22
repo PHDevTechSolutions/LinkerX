@@ -55,6 +55,7 @@ interface Company {
     startdate: string;
     enddate: string;
     status: string;
+    id?: number;
 }
 
 interface UserDetails {
@@ -74,6 +75,8 @@ const ListofUser: React.FC = () => {
     const [typeActivity, setTypeActivity] = useState("");
     const [generatedMessage, setGeneratedMessage] = useState("");
     const [activeTab, setActiveTab] = useState("Automated Task");
+    const [remainingBalance, setRemainingBalance] = useState<number>(0);
+    const [todayCompanies, setTodayCompanies] = useState<any[]>([]);
 
     const [startDuration, setStartDuration] = useState<string>("");
     const [endDuration, setEndDuration] = useState<string>("");
@@ -581,28 +584,6 @@ const ListofUser: React.FC = () => {
         calculateDate(duration, selectedTime);
     }
 
-    // Handle Accept button to show modal
-    const handleAccept = (company: any) => {
-        setSelectedCompany({
-            companyname: company.companyname || "",
-            typeclient: company.typeclient || "",
-            contactperson: company.contactperson || "",
-            contactnumber: company.contactnumber || "",
-            emailaddress: company.emailaddress || "",
-            address: company.address || "",
-            area: company.area || "",
-            referenceid: company.referenceid || "",
-            tsm: company.tsm || "",
-            manager: company.manager || "",
-            remarks: company.remarks || "",
-            status: company.status || "",
-            typeactivity: company.typeactivity || "", // ✅ Added missing field
-            startdate: company.startdate || "",       // ✅ Added missing field
-            enddate: company.enddate || "",           // ✅ Added missing field
-        });
-        setShowForm(true);
-    };
-
     useEffect(() => {
         fetchCompanies();
     }, [userDetails.ReferenceID]);
@@ -663,6 +644,166 @@ const ListofUser: React.FC = () => {
     const handleTabChange = (tab: string) => {
         setActiveTab(tab);
     };
+
+    // Save data to local storage after assigning companies
+    const saveToLocalStorage = (companies: any[], balance: number) => {
+        localStorage.setItem("todayCompanies", JSON.stringify(companies));
+        localStorage.setItem("remainingBalance", balance.toString());
+    };
+
+    useEffect(() => {
+        const savedCompanies = localStorage.getItem("todayCompanies");
+        const savedBalance = localStorage.getItem("remainingBalance");
+
+        if (savedCompanies && savedBalance) {
+            const parsedCompanies = JSON.parse(savedCompanies);
+            const parsedBalance = parseInt(savedBalance);
+
+            // Check if companies are for today's date
+            const isSameDay = parsedCompanies.every(
+                (company: any) => company.date_assigned === new Date().toISOString().slice(0, 10)
+            );
+
+            if (isSameDay) {
+                // Load from storage if valid for today
+                setTodayCompanies(parsedCompanies);
+                setRemainingBalance(parsedBalance);
+            } else {
+                // Reset if it's a new day
+                getFilteredCompanies(post);
+            }
+        } else {
+            getFilteredCompanies(post);
+        }
+    }, [post]);
+
+    const getFilteredCompanies = (post: any[]) => {
+        let remaining = remainingBalance || 35;
+    
+        // Step 1: Get 35 companies with status "Active" first
+        const activeCompanies = [
+            ...post.filter((company) => company.status === "Active" && company.typeclient === "Top 50").slice(0, remaining),
+            ...post.filter((company) => company.status === "Active" && company.typeclient === "Next 30").slice(0, remaining),
+            ...post.filter((company) => company.status === "Active" && company.typeclient === "Balance 20").slice(0, remaining),
+            ...post
+                .filter((company) => company.status === "Active" && company.typeclient === "New Account - Client Development")
+                .slice(0, remaining),
+        ]
+            .slice(0, 35) // Limit to 35 companies per day
+            .map((company) => ({
+                ...company,
+                date_assigned: new Date().toISOString().slice(0, 10), // Add today's date
+            }));
+    
+        // If Active companies are not enough, fill the remaining from Used companies
+        remaining -= activeCompanies.length;
+    
+        if (remaining > 0) {
+            const usedCompanies = [
+                ...post.filter((company) => company.status === "Used" && company.typeclient === "Top 50").slice(0, remaining),
+                ...post.filter((company) => company.status === "Used" && company.typeclient === "Next 30").slice(0, remaining),
+                ...post.filter((company) => company.status === "Used" && company.typeclient === "Balance 20").slice(0, remaining),
+                ...post
+                    .filter((company) => company.status === "Used" && company.typeclient === "New Account - Client Development")
+                    .slice(0, remaining),
+            ]
+                .slice(0, remaining)
+                .map((company) => ({
+                    ...company,
+                    date_assigned: new Date().toISOString().slice(0, 10), // Add today's date
+                }));
+    
+            // Combine Active and Used companies
+            const finalCompanies = [...activeCompanies, ...usedCompanies].slice(0, 35);
+    
+            // Update remaining balance
+            const newBalance = Math.max(0, 35 - finalCompanies.length);
+            setRemainingBalance(newBalance);
+            setTodayCompanies(finalCompanies);
+    
+            // Save to local storage after assigning companies
+            saveToLocalStorage(finalCompanies, newBalance);
+        } else {
+            // If all 35 are filled by Active companies, set them directly
+            setRemainingBalance(0);
+            setTodayCompanies(activeCompanies);
+            saveToLocalStorage(activeCompanies, 0);
+        }
+    };    
+    
+    // Handle Accept button to show modal
+    const handleAccept = (company: any) => {
+        setSelectedCompany(company);
+        setShowModal(true);
+    };
+
+    const handleProceed = async () => {
+        if (selectedCompany) {
+            try {
+                // Call API to update company status
+                const response = await fetch(
+                    "/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            id: selectedCompany.id,
+                            status: "Used",
+                        }),
+                    }
+                );
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log("✅ Company status updated successfully:", result.data);
+
+                    // Remove used company from list
+                    const updatedCompanies = todayCompanies.filter(
+                        (company) => company.id !== selectedCompany.id
+                    );
+
+                    // Reduce remaining balance after one company is used
+                    const newBalance = Math.max(0, remainingBalance - 1);
+                    setTodayCompanies(updatedCompanies);
+                    setRemainingBalance(newBalance);
+
+                    // Save updated data to local storage
+                    saveToLocalStorage(updatedCompanies, newBalance);
+
+                    // Set form with updated company data
+                    setSelectedCompany({
+                        ...selectedCompany,
+                        status: "Used",
+                    });
+
+                    // Show form after update
+                    setShowForm(true);
+                } else {
+                    console.error("❌ Failed to update status.");
+                }
+            } catch (error) {
+                console.error("❌ Error updating company status:", error);
+            } finally {
+                // Close modal after API call
+                setShowModal(false);
+            }
+        }
+    };
+
+    // Handle Cancel to Close Modal
+    const handleCancel = () => {
+        setShowModal(false);
+        setSelectedCompany(null);
+    };
+
+    useEffect(() => {
+        // Fetch new companies if no companies left or remaining balance is greater than 0
+        if (todayCompanies.length === 0 && remainingBalance > 0) {
+            getFilteredCompanies(post);
+        }
+    }, [post]);
 
     return (
         <SessionChecker>
@@ -844,68 +985,8 @@ const ListofUser: React.FC = () => {
 
                                                     {/* Display 5 random company names */}
                                                     <div className="space-y-2">
-                                                        {[
-                                                            // Get 2 companies from Top 50
-                                                            ...post
-                                                                .filter(
-                                                                    (company) =>
-                                                                        company.status === "Active" && company.typeclient === "Top 50"
-                                                                )
-                                                                .slice(0, 2),
-
-                                                            // If no Top 50 left, get from Next 30
-                                                            ...post
-                                                                .filter(
-                                                                    (company) =>
-                                                                        company.status === "Active" && company.typeclient === "Next 30"
-                                                                )
-                                                                .slice(
-                                                                    0,
-                                                                    post.filter((company) => company.status === "Active" && company.typeclient === "Top 50")
-                                                                        .length === 0
-                                                                        ? 2
-                                                                        : 0
-                                                                ),
-
-                                                            // If no Next 30 left, get from Balance 20
-                                                            ...post
-                                                                .filter(
-                                                                    (company) =>
-                                                                        company.status === "Active" && company.typeclient === "Balance 20"
-                                                                )
-                                                                .slice(
-                                                                    0,
-                                                                    post.filter(
-                                                                        (company) =>
-                                                                            company.status === "Active" &&
-                                                                            (company.typeclient === "Top 50" || company.typeclient === "Next 30")
-                                                                    ).length === 0
-                                                                        ? 2
-                                                                        : 0
-                                                                ),
-
-                                                            // If no Balance 20 left, get from New Account - Client Development
-                                                            ...post
-                                                                .filter(
-                                                                    (company) =>
-                                                                        company.status === "Active" &&
-                                                                        company.typeclient === "New Account - Client Development"
-                                                                )
-                                                                .slice(
-                                                                    0,
-                                                                    post.filter(
-                                                                        (company) =>
-                                                                            company.status === "Active" &&
-                                                                            (company.typeclient === "Top 50" ||
-                                                                                company.typeclient === "Next 30" ||
-                                                                                company.typeclient === "Balance 20")
-                                                                    ).length === 0
-                                                                        ? 2
-                                                                        : 0
-                                                                ),
-                                                        ]
-                                                            .slice(0, 2) // Only display 2 companies per day
-                                                            .map((company, index) => (
+                                                        {todayCompanies.length > 0 ? (
+                                                            todayCompanies.map((company, index) => (
                                                                 <div
                                                                     key={index}
                                                                     className="p-2 bg-gray-100 rounded flex justify-between items-center text-[10px] uppercase font-medium text-gray-800"
@@ -913,7 +994,9 @@ const ListofUser: React.FC = () => {
                                                                     <span>
                                                                         {company.companyname}
                                                                         <br />
-                                                                        <span className="text-gray-500">{company.typeclient} / {company.status}</span>
+                                                                        <span className="text-gray-500">
+                                                                            {company.typeclient}
+                                                                        </span>
                                                                     </span>
                                                                     <button
                                                                         onClick={() => handleAccept(company)}
@@ -922,21 +1005,41 @@ const ListofUser: React.FC = () => {
                                                                         Accept
                                                                     </button>
                                                                 </div>
-                                                            ))}
+                                                            ))
+                                                        ) : (
+                                                            <div className="text-xs text-gray-500 text-center p-2">
+                                                                {remainingBalance === 0
+                                                                    ? "✅ All 35 companies have been used today. Come back tomorrow!"
+                                                                    : "No available companies today."}
+                                                            </div>
+                                                        )}
 
-                                                        {/* Show message if no Top 50 or others available */}
-                                                        {post.filter(
-                                                            (company) =>
-                                                                company.typeclient === "Top 50" ||
-                                                                company.typeclient === "Next 30" ||
-                                                                company.typeclient === "Balance 20" ||
-                                                                company.typeclient === "New Account - Client Development"
-                                                        ).length === 0 && (
-                                                                <div className="text-xs text-gray-500 text-center p-2">
-                                                                    No available companies today.
+                                                        {/* Modal for Proceed/Cancel */}
+                                                        {showModal && (
+                                                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[1000]">
+                                                                <div className="bg-white rounded-lg p-5 w-72 text-center shadow-lg">
+                                                                    <p className="text-xs font-semibold mb-4">
+                                                                        Are you sure you want to proceed?
+                                                                    </p>
+                                                                    <div className="flex justify-between text-xs">
+                                                                        <button
+                                                                            onClick={handleCancel}
+                                                                            className="px-3 py-1 bg-gray-300 text-black rounded hover:bg-gray-400 transition"
+                                                                        >
+                                                                            Cancel
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={handleProceed}
+                                                                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                                                        >
+                                                                            Proceed
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
-                                                            )}
+                                                            </div>
+                                                        )}
                                                     </div>
+
                                                 </>
                                             ) : (
                                                 <>
@@ -1037,7 +1140,6 @@ const ListofUser: React.FC = () => {
 
                                         </div>
                                     </div>
-
                                 </>
                             )}
 
