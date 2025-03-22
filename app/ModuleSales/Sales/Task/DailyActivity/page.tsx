@@ -88,6 +88,7 @@ const ListofUser: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState("");
     const [selectedClientType, setSelectedClientType] = useState("");
+    const [selectedStatus, setSelectedStatus] = useState("");
     const [startDate, setStartDate] = useState(""); // Default to null
     const [endDate, setEndDate] = useState(""); // Default to null
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -192,6 +193,10 @@ const ListofUser: React.FC = () => {
                 const matchesClientType = selectedClientType
                     ? post?.typeclient === selectedClientType
                     : true;
+                
+                const matchesStatus = selectedStatus
+                    ? post?.activitystatus === selectedStatus
+                    : true;
 
                 // Check if the post matches the current user's ReferenceID (PostgreSQL or MongoDB)
                 const matchesReferenceID =
@@ -208,6 +213,7 @@ const ListofUser: React.FC = () => {
                     matchesSearchTerm &&
                     isWithinDateRange &&
                     matchesClientType &&
+                    matchesStatus &&
                     matchesReferenceID && // Ensures the user sees only their data
                     matchesRole
                 );
@@ -494,14 +500,14 @@ const ListofUser: React.FC = () => {
     const fetchCompanies = async () => {
         try {
             const response = await fetch(
-                `/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount?referenceid=${userDetails.ReferenceID}`
+                `/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${userDetails.ReferenceID}`
             );
             const data = await response.json();
             console.log("Fetched data:", data); // Debugging line
 
             if (data.success && Array.isArray(data.data)) {
                 // Apply type to company parameter
-                const activeCompanies = data.data.filter((company: Company) => company.status === "Active");
+                const activeCompanies = data.data.filter((company: Company) => company.status === "Active" || company.status === "Used");
                 setPost(activeCompanies);
             } else {
                 toast.error("No active companies found.");
@@ -512,8 +518,6 @@ const ListofUser: React.FC = () => {
             console.error("Error fetching", error);
         }
     };
-
-
 
     function calculateDate(selectedDuration: string, selectedTime: string) {
         // Get current date in Manila timezone
@@ -645,12 +649,6 @@ const ListofUser: React.FC = () => {
 
     const handleTabChange = (tab: string) => {
         setActiveTab(tab);
-    };
-
-    // Save data to local storage after assigning companies
-    const saveToLocalStorage = (companies: any[], balance: number) => {
-        localStorage.setItem("todayCompanies", JSON.stringify(companies));
-        localStorage.setItem("remainingBalance", balance.toString());
     };
 
     useEffect(() => {
@@ -789,30 +787,30 @@ const ListofUser: React.FC = () => {
                         }),
                     }
                 );
-
+    
                 if (response.ok) {
                     const result = await response.json();
                     console.log("✅ Company status updated successfully:", result.data);
-
-                    // Remove used company from list
+    
+                    // Remove the used company from the list
                     const updatedCompanies = todayCompanies.filter(
                         (company) => company.id !== selectedCompany.id
                     );
-
-                    // Reduce remaining balance after one company is used
+    
+                    // Reduce remaining balance after using one company
                     const newBalance = Math.max(0, remainingBalance - 1);
                     setTodayCompanies(updatedCompanies);
                     setRemainingBalance(newBalance);
-
-                    // Save updated data to local storage
-                    saveToLocalStorage(updatedCompanies, newBalance);
-
-                    // Set form with updated company data
+    
+                    // Save updated data to the database after status update
+                    await saveToDatabase(updatedCompanies, newBalance);
+    
+                    // Set updated status of the company
                     setSelectedCompany({
                         ...selectedCompany,
                         status: "Used",
                     });
-
+    
                     // Show form after update
                     setShowForm(true);
                 } else {
@@ -826,7 +824,7 @@ const ListofUser: React.FC = () => {
             }
         }
     };
-
+    
     // Handle Cancel to Close Modal
     const handleCancel = () => {
         setShowModal(false);
@@ -977,6 +975,8 @@ const ListofUser: React.FC = () => {
                                                 setSearchTerm={setSearchTerm}
                                                 selectedClientType={selectedClientType}
                                                 setSelectedClientType={setSelectedClientType}
+                                                selectedStatus={selectedStatus}
+                                                setSelectedStatus={setSelectedStatus}
                                                 startDate={startDate}
                                                 setStartDate={setStartDate}
                                                 endDate={endDate}

@@ -418,7 +418,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
         {showDropdown && (
           <div className="absolute top-full left-0 mt-2 w-40 bg-white border border-gray-300 rounded shadow-lg z-50">
-            <p className="px-4 py-2 text-gray-700 text-xs border-b break-words whitespace-normal w-full">{userEmail}</p>
+            <p className="px-4 py-2 text-gray-700 text-xs border-b break-words whitespace-normal w-full">{userReferenceId}</p>
             <button
               className="w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-gray-100 flex justify-center items-center"
               onClick={handleLogout}
