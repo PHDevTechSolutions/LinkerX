@@ -9,6 +9,8 @@ interface User {
   Lastname: string;
   Email: string;
   Role: string;
+  Status: string;
+  ReferenceID: string;
 }
 
 interface UsersTableProps {
@@ -37,44 +39,92 @@ const UsersTable: React.FC<UsersTableProps> = ({
     };
   }, []);
 
+  const statusColors: { [key: string]: string } = {
+    Active: "bg-green-800",
+    Inactive: "bg-red-500",
+    Resigned: "bg-red-700",
+    Terminated: "bg-yellow-600",
+    Locked: "bg-gray-500",
+  };
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
       {updatedUser.length > 0 ? (
         updatedUser.map((post) => (
           <div
             key={post._id}
-            className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:shadow-lg transition duration-300"
+            className={`relative rounded-lg shadow-md p-4 border ${
+              post.ReferenceID === "LR-CSR-849432"
+                ? "bg-black pointer-events-none"
+                : "bg-white hover:shadow-lg transition duration-300"
+            }`}
           >
+            {post.ReferenceID === "LR-CSR-849432" && (
+              <span className="absolute top-2 right-2 bg-yellow-500 text-black text-[8px] font-bold px-2 py-1 rounded">
+                Master VIP
+              </span>
+            )}
+
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-sm font-semibold text-gray-800 capitalize">
-                  {post.Lastname}, {post.Firstname}
+                <h3
+                  className={`text-xs font-semibold capitalize ${
+                    post.ReferenceID === "LR-CSR-849432"
+                      ? "text-white"
+                      : "text-gray-800"
+                  }`}
+                >
+                  {post.ReferenceID} | {post.Lastname}, {post.Firstname}
                 </h3>
-                <p className="text-xs text-gray-500">{post.Email}</p>
-                <p className="text-xs text-gray-700 mt-1 capitalize">
-                  Role: {post.Role}
+                <div
+                  className={`mt-4 mb-4 text-xs ${
+                    post.ReferenceID === "LR-CSR-849432"
+                      ? "text-gray-300"
+                      : "text-gray-700"
+                  }`}
+                >
+                  <p>
+                    <strong>Email:</strong> {post.Email}
+                  </p>
+                  <p className="capitalize">
+                    <strong>Role:</strong> {post.Role}
+                  </p>
+                </div>
+                <p className="mt-2">
+                  <span
+                    className={`badge text-white text-[8px] px-2 py-1 mr-2 rounded-xl ${
+                      post.ReferenceID === "LR-CSR-849432"
+                        ? "bg-yellow-500"
+                        : statusColors[post.Status] || "bg-gray-400"
+                    }`}
+                  >
+                    {post.ReferenceID === "LR-CSR-849432" ? "Master VIP" : post.Status}
+                  </span>
                 </p>
               </div>
 
-              <Menu as="div" className="relative inline-block">
-                <Menu.Button className="text-gray-500 hover:text-gray-800">
-                  <BsThreeDotsVertical size={16} />
-                </Menu.Button>
-                <Menu.Items className="absolute right-0 mt-2 w-28 bg-white shadow-md rounded-md z-10 text-xs">
-                  <button
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
-                    onClick={() => handleEdit(post)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="block px-4 py-2 text-red-700 hover:bg-gray-100 w-full text-left"
-                    onClick={() => handleDelete(post._id)}
-                  >
-                    Delete
-                  </button>
-                </Menu.Items>
-              </Menu>
+              {/* Disable buttons if ReferenceID is VIP */}
+              {post.ReferenceID !== "LR-CSR-849432" && (
+                <Menu as="div" className="relative inline-block">
+                  <Menu.Button className="text-gray-500 hover:text-gray-800">
+                    <BsThreeDotsVertical size={16} />
+                  </Menu.Button>
+                  <Menu.Items className="absolute right-0 mt-2 w-28 bg-white shadow-md rounded-md z-10 text-xs">
+                    <button
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
+                      onClick={() => handleEdit(post)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="block px-4 py-2 text-red-700 hover:bg-gray-100 w-full text-left"
+                      onClick={() => handleDelete(post._id)}
+                    >
+                      Delete
+                    </button>
+                  </Menu.Items>
+                </Menu>
+              )}
             </div>
           </div>
         ))
