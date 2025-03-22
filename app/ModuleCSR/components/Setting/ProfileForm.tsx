@@ -183,7 +183,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
                         >
                             <option value="">Select Department</option>
-                            <option value="Sales">Sales</option>
+                            <option value="CSR">CSR</option>
                         </select>
                     </div>
                     <div>
