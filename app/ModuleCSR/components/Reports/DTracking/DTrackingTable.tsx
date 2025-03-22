@@ -74,7 +74,7 @@ const DTrackingTable: React.FC<AccountsTableProps> = ({ posts, handleEdit }) => 
           {posts.length > 0 ? (
             posts.map((post) => (
               <React.Fragment key={post._id}>
-                <tr className="text-xs text-gray-700 border">
+                <tr className="text-xs text-gray-700 border hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02]">
                   <td className="px-4 py-2 border capitalize whitespace-nowrap">{post.AgentLastname}, {post.AgentFirstname}</td>
                   <td className="px-4 py-2 border whitespace-nowrap">{post.CompanyName}</td>
                   <td className="px-4 py-2 border whitespace-nowrap">{post.CustomerName}</td>

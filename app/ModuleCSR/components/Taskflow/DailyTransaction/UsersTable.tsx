@@ -50,7 +50,7 @@ const DailyTransactionTable: React.FC<DailyTransactionTableProps> = ({ posts }) 
             {sortedPosts.map((post, index) => (
               <tr
                 key={post._id || `post-${index}`} // Fallback key if _id is missing
-                className="border-b hover:bg-gray-50"
+                className="border-b hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02]"
               >
                 <td className="p-3 border">{post.ticketreferencenumber || "N/A"}</td>
                 <td className="p-3 border">{post.companyname || "N/A"}</td>

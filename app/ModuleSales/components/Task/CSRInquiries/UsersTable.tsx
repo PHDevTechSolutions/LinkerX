@@ -124,7 +124,7 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit, fetchAccount,
         <tbody>
           {filteredPosts.length > 0 ? (
             filteredPosts.map((post) => (
-              <tr key={post.id} className="border-b hover:bg-gray-50">
+              <tr key={post.id} className="hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02]">
                 <td className="px-4 py-2 capitalize">{post.ticketreferencenumber}</td>
                 <td className="px-4 py-2 capitalize">{post.companyname}</td>
                 <td className="px-4 py-2">{post.contactperson}</td>

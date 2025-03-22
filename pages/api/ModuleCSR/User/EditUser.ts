@@ -10,14 +10,14 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
     return;
   }
 
-  const { id, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, } = req.body;
+  const { id, UserId, Firstname, Lastname, Email, userName, Password, Role, Department, Status, Company, Location} = req.body;
 
   try {
     const db = await connectToDatabase();
     const userCollection = db.collection("users");
 
     // Prepare updated fields
-    const updatedUser: any = {UserId, Firstname, Lastname, Email, userName, Role, Department, updatedAt: new Date(),
+    const updatedUser: any = {UserId, Firstname, Lastname, Email, userName, Role, Department, Status, Company, Location, updatedAt: new Date(),
     };
 
     // Hash the password only if it is provided

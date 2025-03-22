@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { format, parseISO, addDays, startOfWeek, startOfMonth, endOfMonth} from "date-fns";
+import { format, parseISO, addDays, startOfWeek, startOfMonth, endOfMonth } from "date-fns";
 import { CiSquareChevLeft, CiSquareChevRight, CiViewBoard, CiViewColumn, CiViewTable, CiEdit, CiMapPin, CiTrash, CiMenuKebab, CiBookmarkPlus, CiBookmarkMinus, CiRepeat } from "react-icons/ci";
 import { FcAssistant, FcCollaboration, FcBullish, FcPaid, FcAddressBook, FcFullTrash, FcAlarmClock, FcPodiumWithAudience, FcConferenceCall, FcReading } from "react-icons/fc";
 import { FaMapLocationDot } from "react-icons/fa6";
@@ -169,18 +169,18 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                             <div>
                                 {[...pinned, ...unpinned].map(user => (
                                     <div
-                                    key={user.id}
-                                    className={`rounded-lg shadow-md p-4 mb-2
+                                        key={user.id}
+                                        className={`rounded-lg shadow-md p-4 mb-2 transition-all duration-200 transform hover:scale-105 hover:shadow-lg
                                       ${pinnedUsers.has(user.id) ? "bg-yellow-100" : user.typeclient === "CSR Inquiries" ? "" : ""}
                                       ${user.activitystatus === "Cold" ? "bg-blue-200" :
-                                        user.activitystatus === "Warm" ? "bg-yellow-200" :
-                                          user.activitystatus === "Hot" ? "bg-red-200" :
-                                            user.activitystatus === "Done" ? "bg-green-200" :
-                                              user.activitystatus === "Loss" ? "bg-gray-200" :
-                                                user.activitystatus === "Cancelled" ? "bg-red-300" : "bg-gray-50"}
+                                                user.activitystatus === "Warm" ? "bg-yellow-200" :
+                                                    user.activitystatus === "Hot" ? "bg-red-200" :
+                                                        user.activitystatus === "Done" ? "bg-green-200" :
+                                                            user.activitystatus === "Loss" ? "bg-gray-200" :
+                                                                user.activitystatus === "Cancelled" ? "bg-red-300" : "bg-gray-50"}
                                     `}
-                                  >
-                                  
+                                    >
+
                                         {/* Card Header - Company Name */}
                                         {!["Client Visit", "On Site", "On Field", "Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
                                             <div className="card-header mb-2 pb-2 flex justify-between items-center relative">
@@ -190,8 +190,16 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                         CSR Inquiries
                                                     </span>
                                                 )}
-                                                <h3 className="text-[10px] font-semibold text-gray-800 uppercase mt-3">{user.companyname}</h3>
-                                                <div className="relative mt-3">
+                                                <h3
+                                                    className="text-[10px] font-semibold text-gray-800 uppercase break-words flex-1"
+                                                    style={{
+                                                        wordBreak: "break-word", // Breaks long words properly
+                                                        overflowWrap: "break-word", // Ensures text wraps when necessary
+                                                    }}
+                                                >
+                                                    {user.companyname}
+                                                </h3>
+                                                <div className="relative flex items-center mt-3">
                                                     <button onClick={() => toggleCollapse(user.id)} className="text-gray-500 hover:text-gray-700">
                                                         {collapsedCards[user.id] ? <CiBookmarkMinus size={20} /> : <CiBookmarkPlus size={20} />}
                                                     </button>
@@ -320,7 +328,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                 ${user.activitystatus === "Client Visit" ? "bg-gray-700" :
                                                         user.activitystatus === "On Site" ? "bg-violet-700" :
                                                             user.activitystatus === "On Field" ? "bg-yellow-700" :
-                                                                                ""}`}>
+                                                                ""}`}>
 
                                                     {user.activitystatus === "Client Visit" && (<FaMapLocationDot size={20} />)}
                                                     {user.activitystatus === "On Site" && (<MdLocationCity size={20} />)}
@@ -338,7 +346,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
 
                                         {/* Status Badge */}
                                         {!["Client Visit", "On Site", "On Field", "Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
-                                            <div className="card-footer text-xs flex justify-between items-center mt-2 border-t-2 pt-2">
+                                            <div className="card-footer text-xs flex justify-between items-center mt-2 pt-2">
                                                 <p className="text-[10px]"><strong>Date Created:</strong> {format(parseISO(user.date_created), "MMM dd, yyyy - h:mm:ss a")}</p>
 
                                                 {/* Status Badge */}
@@ -357,7 +365,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                         )}
 
                                         {pinnedUsers.has(user.id) && (
-                                            <div className="card-footer text-xs text-left mt-2 border-t pt-2 font-semibold text-green-600 flex items-center gap-1">
+                                            <div className="card-footer text-[10px] text-left mt-2 pt-2 font-semibold text-green-600 flex items-center gap-1">
                                                 <span>&#10003;</span> Pinned
                                             </div>
                                         )}

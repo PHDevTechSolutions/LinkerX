@@ -44,13 +44,18 @@ const SKUListing: React.FC = () => {
 
     // Filter accounts based on search term and city address
     const filteredAccounts = posts.filter((post) => {
-        const isSearchMatch = post.Remarks.toLowerCase().includes(searchTerm.toLowerCase());
+        const isSearchMatch =
+            post.Remarks && typeof post.Remarks === "string"
+                ? post.Remarks.toLowerCase().includes(searchTerm.toLowerCase())
+                : false;
+    
         const isDateInRange =
             (!startDate || new Date(post.createdAt) >= new Date(startDate)) &&
             (!endDate || new Date(post.createdAt) <= new Date(endDate));
-
+    
         return isSearchMatch && isDateInRange;
     });
+    
 
     // Pagination logic
     const indexOfLastPost = currentPage * postsPerPage;

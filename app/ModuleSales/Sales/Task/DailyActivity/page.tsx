@@ -1021,7 +1021,7 @@ const ListofUser: React.FC = () => {
                                                             todayCompanies.map((company, index) => (
                                                                 <div
                                                                     key={index}
-                                                                    className={`p-2 bg-gray-100 rounded flex justify-between items-center text-[10px] uppercase font-medium text-gray-800 ${company.typeclient === "New Account - Client Development" ? "bg-yellow-200" : ""
+                                                                    className={`p-2 bg-gray-100 rounded flex justify-between items-center text-[10px] transition-all duration-200 ease-in-out transform hover:scale-[1.02] uppercase font-medium text-gray-800 ${company.typeclient === "New Account - Client Development" ? "bg-yellow-200" : ""
                                                                         }`}
                                                                 >
                                                                     <span>
@@ -1135,7 +1135,7 @@ const ListofUser: React.FC = () => {
                                                                 .map((company) => (
                                                                     <li
                                                                         key={company.order}
-                                                                        className={`p-2 bg-gray-100 rounded-sm shadow flex justify-between items-center border-l-4
+                                                                        className={`p-2 bg-gray-100 rounded-sm shadow flex justify-between items-center border-l-4 transition-all duration-200 ease-in-out transform hover:scale-[1.02]
                                                                             ${company.status === "Active" ? "border-green-700" : company.status === "Used" ? "border-blue-500" : "border-gray-300"}
                                                                         `}>
 

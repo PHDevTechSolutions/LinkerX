@@ -56,7 +56,7 @@ const AccountsTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, handle
             </thead>
             <tbody>
               {paginatedPosts.map((post) => (
-                <tr key={post._id} className="border-b capitalize hover:bg-gray-50">
+                <tr key={post._id} className="border-b capitalize hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02]">
                   <td className="p-3 border">{post.CompanyName}</td>
                   <td className="p-3 border">{post.ItemCode}</td>
                   <td className="p-3 border">{post.ItemDescription}</td>

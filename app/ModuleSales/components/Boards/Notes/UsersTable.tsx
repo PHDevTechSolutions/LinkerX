@@ -144,7 +144,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, updatePostStatus }) => {
                             {sortedPosts(status).map((user) => (
                                 <div
                                     key={user.id}
-                                    className={`rounded-lg shadow p-4 mb-2 border ${getStatusColor(user.status)}`}
+                                    className={`rounded-lg shadow p-4 mb-2 border hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02] ${getStatusColor(user.status)}`}
                                 >
                                     <div className="flex items-center justify-between space-x-2">
                                         {isBulkEditVisible && (

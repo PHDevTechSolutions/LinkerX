@@ -452,7 +452,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
           <tbody>
             {updatedUser.length > 0 ? (
               updatedUser.map((post) => (
-                <tr key={post.id} className="hover:bg-gray-50 capitalize">
+                <tr key={post.id} className="hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02]">
                   <td className="p-2 border text-center">
                     {(bulkDeleteMode || bulkEditMode || bulkEditStatusMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
                       <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4" />

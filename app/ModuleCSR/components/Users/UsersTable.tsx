@@ -3,8 +3,6 @@ import io from "socket.io-client";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Menu } from "@headlessui/react";
 
-const socket = io("http://localhost:3001");
-
 interface User {
   _id: string;
   Firstname: string;
@@ -33,11 +31,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ posts, handleEdit, handleDelete
         return [newPost, ...prevPosts];
       });
     };
-
-    socket.on("newPost", newPostListener);
-    return () => {
-      socket.off("newPost", newPostListener);
-    };
+    
   }, []);
 
   return (

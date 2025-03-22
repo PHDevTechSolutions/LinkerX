@@ -100,7 +100,7 @@ const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, han
         <tbody>
           {posts.length > 0 ? (
             posts.map((post) => (
-              <tr key={post._id} className="text-xs text-gray-700 capitalize border">
+              <tr key={post._id} className="text-xs text-gray-700 capitalize border hover:bg-gray-50 transition-all duration-200 ease-in-out transform hover:scale-[1.02]">
                 <td className="px-4 py-2 border whitespace-nowrap">
                   {post.AgentLastname}, {post.AgentFirstname}
                 </td>

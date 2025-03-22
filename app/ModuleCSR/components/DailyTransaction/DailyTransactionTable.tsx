@@ -47,7 +47,7 @@ const DailyTransactionTable: React.FC<DailyTransactionTableProps> = ({ posts }) 
           </thead>
           <tbody>
             {sortedPosts.map((post) => (
-              <tr key={post._id} className="border-b hover:bg-gray-50">
+              <tr key={post._id} className="border-b hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02]">
                 <td className="p-3 border">{post.ticket_reference_number}</td>
                 <td className="p-3 border">{post.account_name}</td>
                 <td className="p-3 border">

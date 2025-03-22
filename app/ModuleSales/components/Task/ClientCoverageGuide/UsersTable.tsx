@@ -161,7 +161,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                         {weekPosts.map((post, postIndex) => {
                           const postDate = parseISO(post.date_created);
                           return (
-                            <tr key={postIndex} className="hover:bg-gray-50 capitalize">
+                            <tr key={postIndex} className="hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02]">
                               <td className="p-2 border">-</td>
                               <td className="p-2 border">{post.contactperson}</td>
                               <td className="p-2 border">{post.contactnumber}</td>
