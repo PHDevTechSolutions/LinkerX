@@ -620,13 +620,13 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 {/* Project Name */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Project Name ( Optional )</label>
-                                    <input type="text" id="projectname" value={projectname ?? ""} onChange={(e) => setprojectname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                                    <input type="text" id="projectname" value={projectname ?? ""} onChange={(e) => setprojectname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required/>
                                 </div>
 
                                 {/* Project Category */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Project Category</label>
-                                    <select value={projectcategory ?? ""} onChange={(e) => setprojectcategory(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                    <select value={projectcategory ?? ""} onChange={(e) => setprojectcategory(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                         <option value="">Select Category</option>
                                         <option value="Bollard Light">Bollard Light</option>
                                         <option value="Bulb Light">Bulb Light</option>
@@ -668,7 +668,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 {/* Type */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Type</label>
-                                    <select value={projecttype ?? ""} onChange={(e) => setprojecttype(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                    <select value={projecttype ?? ""} onChange={(e) => setprojecttype(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                         <option value="">Select Category</option>
                                         <option value="B2B">B2B</option>
                                         <option value="B2C">B2C</option>
@@ -682,7 +682,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 {/* Source */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Source</label>
-                                    <select value={source ?? ""} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                    <select value={source ?? ""} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                         <option value="">Select Category</option>
                                         <option value="Existing">Existing</option>
                                         <option value="CSR Inquiries">CSR Inquiries</option>
@@ -705,7 +705,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <label className="block text-xs font-bold mb-2">Type of Activity</label>
                         <select value={typeactivity ?? ""}
                             onChange={(e) => handleActivitySelection(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm">
+                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm" required>
                             <option value="" disabled>Select an activity</option>
                             {[
                                 "Account Development",
@@ -806,12 +806,12 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Quotation Number</label>
-                                <input type="text" value={quotationnumber ?? ""} onChange={(e) => setquotationnumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" />
+                                <input type="text" value={quotationnumber ?? ""} onChange={(e) => setquotationnumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required/>
                             </div>
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Quotation Amount</label>
-                                <input type="number" value={quotationamount ?? ""} onChange={(e) => setquotationamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                                <input type="number" value={quotationamount ?? ""} onChange={(e) => setquotationamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required/>
                             </div>
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -840,11 +840,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Number</label>
-                                <input type="text" value={sonumber ?? ""} onChange={(e) => setsonumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" />
+                                <input type="text" value={sonumber ?? ""} onChange={(e) => setsonumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required/>
                             </div>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Amount</label>
-                                <input type="number" value={soamount ?? ""} onChange={(e) => setsoamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                                <input type="number" value={soamount ?? ""} onChange={(e) => setsoamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required/>
                             </div>
                         </>
                     )}
@@ -857,7 +857,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     type="number"
                                     value={actualsales ?? ""}
                                     onChange={(e) => setactualsales(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded text-xs uppercase"
+                                    className="w-full px-3 py-2 border rounded text-xs uppercase" required
                                 />
                             </div>
 
@@ -867,7 +867,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     <select
                                         value={emailaddress} // Bind to selected email
                                         onChange={(e) => setemailaddress(e.target.value)} // Update the selected email
-                                        className="w-full px-3 py-2 border rounded text-xs"
+                                        className="w-full px-3 py-2 border rounded text-xs" required
                                     >
                                         <option value="">Select Email</option>
                                         {emailAddresses.map((email, index) => (
@@ -916,7 +916,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Call Status</label>
-                                <select value={callstatus ?? ""} onChange={(e) => setcallstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                <select value={callstatus ?? ""} onChange={(e) => setcallstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                     <option value="">Select Status</option>
                                     <option value="Successful">Successful</option>
                                     <option value="Unsuccessful">Unsuccessful</option>
@@ -947,7 +947,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                 </div>
                 <div className="flex flex-wrap -mx-4">
-
                     {/* Remarks */}
                     <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Remarks</label>
@@ -955,8 +954,12 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             value={remarks ?? ""}
                             onChange={(e) => setremarks(e.target.value)}
                             className="w-full px-3 py-2 border rounded text-xs capitalize"
-                            rows={5} required
+                            rows={5}
+                            required
                         ></textarea>
+                        <p className="text-[10px] text-gray-500 mt-1">
+                            Character Count: {remarks ? remarks.length : 0}
+                        </p>
                     </div>
 
                     {/* Status */}

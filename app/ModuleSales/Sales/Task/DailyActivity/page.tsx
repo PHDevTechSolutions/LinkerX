@@ -56,6 +56,7 @@ interface Company {
     enddate: string;
     status: string;
     id?: number;
+    [key: string]: any;
 }
 
 interface UserDetails {
@@ -499,19 +500,20 @@ const ListofUser: React.FC = () => {
             console.log("Fetched data:", data); // Debugging line
 
             if (data.success && Array.isArray(data.data)) {
-                setPost(data.data);
-                // Initial random 5 companies
-                setRandomCompanies(getRandomCompanies(data.data));
+                // Apply type to company parameter
+                const activeCompanies = data.data.filter((company: Company) => company.status === "Active");
+                setPost(activeCompanies);
             } else {
-                toast.error("No companies found.");
+                toast.error("No active companies found.");
                 setPost([]);
-                setRandomCompanies([]);
             }
         } catch (error) {
             toast.error("Error fetching companies.");
             console.error("Error fetching", error);
         }
     };
+
+
 
     function calculateDate(selectedDuration: string, selectedTime: string) {
         // Get current date in Manila timezone
@@ -677,60 +679,93 @@ const ListofUser: React.FC = () => {
         }
     }, [post]);
 
-    const getFilteredCompanies = (post: any[]) => {
+    const getFilteredCompanies = async (post: any[]) => {
         let remaining = remainingBalance || 35;
-    
-        // Step 1: Get 35 companies with status "Active" first
+
+        // Get current week number in the month
+        const today = new Date();
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const currentWeek = Math.ceil((today.getDate() + firstDayOfMonth.getDay()) / 7); // Get current week
+
+        // Get one New Account - Client Development per week
+        const newAccountCompanies = post
+            .filter(
+                (company) =>
+                    company.status === "Active" &&
+                    company.typeclient === "New Account - Client Development"
+            )
+            .slice(0, 1); // Only 1 company per week
+
+        remaining -= newAccountCompanies.length;
+
+        // Get remaining companies to fill 35 slots
         const activeCompanies = [
             ...post.filter((company) => company.status === "Active" && company.typeclient === "Top 50").slice(0, remaining),
             ...post.filter((company) => company.status === "Active" && company.typeclient === "Next 30").slice(0, remaining),
             ...post.filter((company) => company.status === "Active" && company.typeclient === "Balance 20").slice(0, remaining),
-            ...post
-                .filter((company) => company.status === "Active" && company.typeclient === "New Account - Client Development")
-                .slice(0, remaining),
         ]
-            .slice(0, 35) // Limit to 35 companies per day
+            .slice(0, remaining) // Fill remaining slots
             .map((company) => ({
                 ...company,
                 date_assigned: new Date().toISOString().slice(0, 10), // Add today's date
             }));
-    
-        // If Active companies are not enough, fill the remaining from Used companies
+
         remaining -= activeCompanies.length;
-    
+
+        // If remaining slots, get from Used companies
+        let usedCompanies: any[] = [];
         if (remaining > 0) {
-            const usedCompanies = [
+            usedCompanies = [
                 ...post.filter((company) => company.status === "Used" && company.typeclient === "Top 50").slice(0, remaining),
                 ...post.filter((company) => company.status === "Used" && company.typeclient === "Next 30").slice(0, remaining),
                 ...post.filter((company) => company.status === "Used" && company.typeclient === "Balance 20").slice(0, remaining),
-                ...post
-                    .filter((company) => company.status === "Used" && company.typeclient === "New Account - Client Development")
-                    .slice(0, remaining),
             ]
                 .slice(0, remaining)
                 .map((company) => ({
                     ...company,
                     date_assigned: new Date().toISOString().slice(0, 10), // Add today's date
                 }));
-    
-            // Combine Active and Used companies
-            const finalCompanies = [...activeCompanies, ...usedCompanies].slice(0, 35);
-    
-            // Update remaining balance
-            const newBalance = Math.max(0, 35 - finalCompanies.length);
-            setRemainingBalance(newBalance);
-            setTodayCompanies(finalCompanies);
-    
-            // Save to local storage after assigning companies
-            saveToLocalStorage(finalCompanies, newBalance);
-        } else {
-            // If all 35 are filled by Active companies, set them directly
-            setRemainingBalance(0);
-            setTodayCompanies(activeCompanies);
-            saveToLocalStorage(activeCompanies, 0);
         }
-    };    
-    
+
+        // Combine Active, New Account, and Used companies
+        const finalCompanies = [
+            ...newAccountCompanies, // Include New Account - Client Development (once per week)
+            ...activeCompanies,
+            ...usedCompanies,
+        ].slice(0, 35);
+
+        // Update remaining balance
+        const newBalance = Math.max(0, 35 - finalCompanies.length);
+        setRemainingBalance(newBalance);
+        setTodayCompanies(finalCompanies);
+
+        // ✅ Save assigned companies to the backend
+        await saveToDatabase(finalCompanies, newBalance);
+    };
+
+    const saveToDatabase = async (companies: any[], balance: number) => {
+        try {
+            const response = await fetch("/api/ModuleSales/Task/DailyActivity/SaveAssignedCompanies", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    companies,
+                    remainingBalance: balance,
+                }),
+            });
+
+            if (!response.ok) {
+                console.error("❌ Failed to save assigned companies.");
+            } else {
+                console.log("✅ Assigned companies saved successfully.");
+            }
+        } catch (error) {
+            console.error("❌ Error saving assigned companies:", error);
+        }
+    };
+
     // Handle Accept button to show modal
     const handleAccept = (company: any) => {
         setSelectedCompany(company);
@@ -989,14 +1024,13 @@ const ListofUser: React.FC = () => {
                                                             todayCompanies.map((company, index) => (
                                                                 <div
                                                                     key={index}
-                                                                    className="p-2 bg-gray-100 rounded flex justify-between items-center text-[10px] uppercase font-medium text-gray-800"
+                                                                    className={`p-2 bg-gray-100 rounded flex justify-between items-center text-[10px] uppercase font-medium text-gray-800 ${company.typeclient === "New Account - Client Development" ? "bg-yellow-200" : ""
+                                                                        }`}
                                                                 >
                                                                     <span>
                                                                         {company.companyname}
                                                                         <br />
-                                                                        <span className="text-gray-500">
-                                                                            {company.typeclient}
-                                                                        </span>
+                                                                        <span className="text-gray-500">{company.typeclient}</span>
                                                                     </span>
                                                                     <button
                                                                         onClick={() => handleAccept(company)}
