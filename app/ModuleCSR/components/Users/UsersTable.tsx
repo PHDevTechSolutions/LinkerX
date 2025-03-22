@@ -17,7 +17,11 @@ interface UsersTableProps {
   handleDelete: (postId: string) => void;
 }
 
-const UsersTable: React.FC<UsersTableProps> = ({ posts, handleEdit, handleDelete }) => {
+const UsersTable: React.FC<UsersTableProps> = ({
+  posts,
+  handleEdit,
+  handleDelete,
+}) => {
   const [updatedUser, setUpdatedUser] = useState<User[]>(posts);
 
   useEffect(() => {
@@ -31,57 +35,54 @@ const UsersTable: React.FC<UsersTableProps> = ({ posts, handleEdit, handleDelete
         return [newPost, ...prevPosts];
       });
     };
-    
   }, []);
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white border border-gray-300 shadow-md text-left">
-        <thead className="bg-gray-100 text-xs uppercase text-gray-700">
-          <tr>
-            <th className="px-4 py-2 border">Full Name</th>
-            <th className="px-4 py-2 border">Email</th>
-            <th className="px-4 py-2 border">Role</th>
-            <th className="px-4 py-2 border">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {updatedUser.length > 0 ? (
-            updatedUser.map((post) => (
-              <tr key={post._id} className="text-xs text-gray-700 border">
-                <td className="px-4 py-2 border capitalize">{post.Lastname}, {post.Firstname}</td>
-                <td className="px-4 py-2 border">{post.Email}</td>
-                <td className="px-4 py-2 border capitalize">{post.Role}</td>
-                <td className="px-4 py-2 text-left absolute">
-                  <Menu as="div" className="relative inline-block">
-                    <Menu.Button className="text-gray-500 hover:text-gray-800">
-                      <BsThreeDotsVertical size={14} />
-                    </Menu.Button>
-                    <Menu.Items className="absolute right-0 mt-2 w-28 bg-white shadow-md rounded-md z-10 text-xs">
-                      <button
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
-                        onClick={() => handleEdit(post)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="block px-4 py-2 text-red-700 hover:bg-gray-100 w-full text-left"
-                        onClick={() => handleDelete(post._id)}
-                      >
-                        Delete
-                      </button>
-                    </Menu.Items>
-                  </Menu>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={4} className="text-center text-gray-500 text-xs py-3">No accounts available</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+      {updatedUser.length > 0 ? (
+        updatedUser.map((post) => (
+          <div
+            key={post._id}
+            className="bg-white rounded-lg shadow-md p-4 border border-gray-200 hover:shadow-lg transition duration-300"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-800 capitalize">
+                  {post.Lastname}, {post.Firstname}
+                </h3>
+                <p className="text-xs text-gray-500">{post.Email}</p>
+                <p className="text-xs text-gray-700 mt-1 capitalize">
+                  Role: {post.Role}
+                </p>
+              </div>
+
+              <Menu as="div" className="relative inline-block">
+                <Menu.Button className="text-gray-500 hover:text-gray-800">
+                  <BsThreeDotsVertical size={16} />
+                </Menu.Button>
+                <Menu.Items className="absolute right-0 mt-2 w-28 bg-white shadow-md rounded-md z-10 text-xs">
+                  <button
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
+                    onClick={() => handleEdit(post)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="block px-4 py-2 text-red-700 hover:bg-gray-100 w-full text-left"
+                    onClick={() => handleDelete(post._id)}
+                  >
+                    Delete
+                  </button>
+                </Menu.Items>
+              </Menu>
+            </div>
+          </div>
+        ))
+      ) : (
+        <div className="col-span-1 sm:col-span-2 lg:col-span-3 text-center text-gray-500 text-xs py-3">
+          No accounts available
+        </div>
+      )}
     </div>
   );
 };

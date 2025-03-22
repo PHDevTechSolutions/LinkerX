@@ -41,7 +41,7 @@ export function setSocketServer(server: Server) {
 }
 
 // Register a new user
-export async function registerUser({ userName, Email, Password, Department, Status, Company, Location }: { userName: string; Email: string; Password: string; Department: string; Status: string; Company: string; Location: string;}) {
+export async function registerUser({ userName, Email, Password, Department, }: { userName: string; Email: string; Password: string; Department: string;}) {
   const db = await connectToDatabase();
   const usersCollection = db.collection("users");
 
@@ -60,9 +60,6 @@ export async function registerUser({ userName, Email, Password, Department, Stat
     Email,
     Password: hashedPassword,
     Department,
-    Status,
-    Company,
-    Location,
     createdAt: new Date(),
   });
 
@@ -70,7 +67,7 @@ export async function registerUser({ userName, Email, Password, Department, Stat
 }
 
 // Validate user credentials
-export async function validateUser({ Email, Password, Department, Status, Company, Location }: { Email: string; Password: string; Department: string; Status: string; Company: string; Location: string;}) {
+export async function validateUser({ Email, Password, Department,}: { Email: string; Password: string; Department: string;}) {
   const db = await connectToDatabase();
   const usersCollection = db.collection("users");
 
