@@ -22,6 +22,8 @@ const ActivityPage: React.FC = () => {
     const [TicketEndorsed, setTicketEndorsed] = useState("");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
+    const [startDate, setStartDate] = useState(""); // Default to null
+    const [endDate, setEndDate] = useState(""); // Default to null
 
     const [userDetails, setUserDetails] = useState({
         UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "",
@@ -135,29 +137,55 @@ const ActivityPage: React.FC = () => {
     // Filter accounts based on search term, channel, sales agent, and date range
     const filteredAccounts = posts.filter((post) => {
         const matchesSearchTerm =
-            post.CompanyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            post.CustomerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            post.CompanyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            post.CustomerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (post.TicketReferenceNumber && post.TicketReferenceNumber.includes(searchTerm)) ||
-            post.ContactNumber.includes(searchTerm);
-
-        const matchesStatus = selectedStatus ? post.Status.includes(selectedStatus) : true;
-        const matchesSalesAgent = salesAgent ? post.SalesAgent.toLowerCase().includes(salesAgent.toLowerCase()) : true;
-
-        const matchesDateRange =
-            (!TicketReceived || new Date(post.TicketReceived) >= new Date(TicketReceived)) &&
-            (!TicketEndorsed || new Date(post.TicketEndorsed) <= new Date(TicketEndorsed));
-
-        if (userDetails.Role === "Super Admin") {
-            return matchesSearchTerm && matchesStatus && matchesSalesAgent && matchesDateRange;
-        } else if (userDetails.Role === "Admin") {
-            return post.Role === "Staff" && matchesSearchTerm && matchesStatus && matchesSalesAgent && matchesDateRange;
-        } else if (userDetails.Role === "Staff") {
-            return post.ReferenceID === userDetails.ReferenceID && matchesSearchTerm && matchesStatus && matchesSalesAgent && matchesDateRange;
+            post.ContactNumber?.includes(searchTerm);
+    
+        const matchesStatus = selectedStatus ? post.Status?.includes(selectedStatus) : true;
+        const matchesSalesAgent = salesAgent ? post.SalesAgent?.toLowerCase().includes(salesAgent.toLowerCase()) : true;
+    
+        const postDate = post?.createdAt ? new Date(post.createdAt) : null;
+    
+        // Check if the post's date is within the selected date range
+        let isWithinDateRange = true;
+    
+        if (startDate && postDate) {
+            const start = new Date(startDate);
+            start.setHours(0, 0, 0, 0); // Start of the day
+            isWithinDateRange = postDate >= start;
         }
-
+    
+        if (endDate && postDate) {
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999); // End of the day
+            isWithinDateRange = isWithinDateRange && postDate <= end;
+        }
+    
+        if (userDetails.Role === "Super Admin") {
+            return matchesSearchTerm && matchesStatus && matchesSalesAgent && isWithinDateRange;
+        } else if (userDetails.Role === "Admin") {
+            return (
+                post.Role === "Staff" &&
+                matchesSearchTerm &&
+                matchesStatus &&
+                matchesSalesAgent &&
+                isWithinDateRange
+            );
+        } else if (userDetails.Role === "Staff") {
+            return (
+                post.ReferenceID === userDetails.ReferenceID &&
+                matchesSearchTerm &&
+                matchesStatus &&
+                matchesSalesAgent &&
+                isWithinDateRange
+            );
+        }
+    
         return false; // Default case: if none of the roles match, return false
     });
-
+    
+    
     // Edit post function
     const handleEdit = (post: any) => {
         setEditPost(post);
@@ -198,7 +226,7 @@ const ActivityPage: React.FC = () => {
     };
 
     const isRestrictedUser =
-        userDetails?.Role !== "Super Admin" && userDetails?.ReferenceID !== "LR-CSR-849432";
+        userDetails?.Role !== "Super Admin" && userDetails?.Role !== "Admin" && userDetails?.ReferenceID !== "LR-CSR-849432";
 
     // Automatically show modal if the user is restricted
     useEffect(() => {
@@ -257,6 +285,10 @@ const ActivityPage: React.FC = () => {
                                                 setTicketReceived={setTicketReceived}
                                                 TicketEndorsed={TicketEndorsed}
                                                 setTicketEndorsed={setTicketEndorsed}
+                                                startDate={startDate}
+                                                setStartDate={setStartDate}
+                                                endDate={endDate}
+                                                setEndDate={setEndDate}
                                             />
                                             <AccountsTable
                                                 posts={filteredAccounts}

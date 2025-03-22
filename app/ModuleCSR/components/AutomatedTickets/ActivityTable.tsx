@@ -78,15 +78,35 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
     const [remarksMenuVisible, setRemarksMenuVisible] = useState<{ [key: string]: boolean }>({});
     const [selectedStatus, setSelectedStatus] = useState("");
     const [selectedRemark, setSelectedRemark] = useState("");
+    const [activeTab, setActiveTab] = useState<"calendar" | "table">("calendar");
+    const [itemsPerPage, setItemsPerPage] = useState(20); // Default 20 per page
+    const [currentPage, setCurrentPage] = useState(1);
 
     const [todayDate, setTodayDate] = useState<string>("");
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
+    const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
 
     const getFormattedDate = (date: Date) => {
         const dayOfWeek = daysOfWeek[date.getDay()];
         const month = date.toLocaleString("default", { month: "short" });
         return `${month} ${date.getDate()}-${dayOfWeek.slice(0, 3)}`;
     };
+
+    const sortedPosts = Object.keys(groupedPosts)
+        .flatMap((day) =>
+            Object.entries(groupedPosts[day]).flatMap(([userName, userPosts]) =>
+                userPosts
+            )
+        )
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    // Pagination Logic
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedPosts = sortedPosts.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(sortedPosts.length / itemsPerPage);
 
     useEffect(() => {
         const grouped = posts.reduce((acc: { [key: string]: { [key: string]: Post[] } }, post) => {
@@ -142,188 +162,371 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
         }
     };
 
+    const handleExport = () => {
+        const headers = [
+            "Ticket No",
+            "Company",
+            "Customer",
+            "Contact Number",
+            "Status",
+            "Date Created",
+        ];
+
+        // Export only the current visible table data (paginatedPosts)
+        const dataToExport = paginatedPosts.map((post) => [
+            post.TicketReferenceNumber,
+            post.CompanyName,
+            post.CustomerName,
+            post.ContactNumber,
+            post.Status,
+            new Date(post.createdAt).toLocaleString(),
+        ]);
+
+        // Prepare CSV content
+        const csvContent =
+            "data:text/csv;charset=utf-8," +
+            [headers.join(","), ...dataToExport.map((row) => row.join(","))].join("\n");
+
+        // Create downloadable link for CSV
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `export_${startDate}_${endDate}.csv`);
+        document.body.appendChild(link);
+        link.click();
+    };
+
+
     return (
         <div className="p-4 bg-white rounded-lg shadow">
-            <div className="flex items-center justify-between mb-4">
-                <button onClick={handlePrevDate} className="p-2 border rounded">
-                    <AiOutlineLeft size={15} />
+            <div className="flex mb-4 border-b">
+                <button
+                    onClick={() => setActiveTab("calendar")}
+                    className={`px-4 py-2 text-xs font-semibold ${activeTab === "calendar" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-500"
+                        }`}
+                >
+                    📅 Calendar View
                 </button>
-                <h3 className="text-md font-bold">{currentFormattedDate}</h3>
-                <button onClick={handleNextDate} className="p-2 border rounded">
-                    <AiOutlineRight size={15} />
+                <button
+                    onClick={() => setActiveTab("table")}
+                    className={`px-4 py-2 text-xs font-semibold ${activeTab === "table" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-500"
+                        }`}
+                >
+                    📄 Table View
                 </button>
             </div>
-            <div className="overflow-x-auto">
-                <table className="bg-white border border-gray-200 text-xs">
-                    <thead>
-                        <tr className="text-left whitespace-nowrap">
-                            <th className="border p-2">Ticket No</th>
-                            <th className="border p-2">Ticket Received</th>
-                            <th className="border p-2">Ticket Endorsed</th>
-                            <th className="border p-2">Company</th>
-                            <th className="border p-2">Customer</th>
-                            <th className="border p-2">Contact Number</th>
-                            <th className="border p-2">Email</th>
-                            <th className="border p-2">Gender</th>
-                            <th className="border p-2">Client Segment</th>
-                            <th className="border p-2">City Address</th>
-                            <th className="border p-2">Traffic</th>
-                            <th className="border p-2">Channel</th>
-                            <th className="border p-2">Wrap-Up</th>
-                            <th className="border p-2">Source</th>
-                            <th className="border p-2">Customer Type</th>
-                            <th className="border p-2">Customer Status</th>
-                            <th className="border p-2">Status</th>
-                            <th className="border p-2">Department</th>
-                            <th className="border p-2">Sales Manager</th>
-                            <th className="border p-2">Sales Agent</th>
-                            <th className="border p-2">Remarks</th>
-                            <th className="border p-2">Inquiry / Concern</th>
-                            <th className="border p-2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Object.keys(groupedPosts).map((day) =>
-                            day === currentFormattedDate ? (
-                                <React.Fragment key={day}>
-                                    {Object.entries(groupedPosts[day]).map(([userName, userPosts]) => (
-                                        <React.Fragment key={userName}>
-                                            <tr className="bg-gray-200">
-                                                <td colSpan={23} className="text-left p-2 font-bold uppercase">
-                                                    {userName}
-                                                </td>
-                                            </tr>
-                                            {userPosts.map((post) => (
-                                                <React.Fragment key={post._id}>
-                                                    <tr className="border text-left whitespace-nowrap">
-                                                        <td className="border p-2">{post.TicketReferenceNumber}</td>
-                                                        <td className="border p-2">{new Date(post.TicketReceived).toLocaleString()}</td>
-                                                        <td className="border p-2">{new Date(post.TicketEndorsed).toLocaleString()}</td>
-                                                        <td className="border p-2">{post.CompanyName}</td>
-                                                        <td className="border p-2">{post.CustomerName}</td>
-                                                        <td className="border p-2">{post.ContactNumber}</td>
-                                                        <td className="border p-2">{post.Email}</td>
-                                                        <td className="border p-2">{post.Gender}</td>
-                                                        <td className="border p-2">{post.CustomerSegment}</td>
-                                                        <td className="border p-2">{post.CityAddress}</td>
-                                                        <td className="border p-2">{post.Traffic}</td>
-                                                        <td className="border p-2">{post.Channel}</td>
-                                                        <td className="border p-2">{post.WrapUp}</td>
-                                                        <td className="border p-2">{post.Source}</td>
-                                                        <td className="border p-2">{post.CustomerType}</td>
-                                                        <td className="border p-2">{post.CustomerStatus}</td>
-                                                        <td className={`border p-2 ${STATUS_COLORS[post.Status]}`}>{post.Status}</td>
-                                                        <td className="border p-2">{post.Department}</td>
-                                                        <td className="border p-2">{post.SalesManager}</td>
-                                                        <td className="border p-2">{post.SalesAgent}</td>
-                                                        <td className={`border p-2 ${REMARKS_COLORS[post.Remarks]}`}>{post.Remarks}</td>
-                                                        <td className="border p-2">
-                                                            {post.Inquiries?.length > 20
-                                                                ? `${post.Inquiries.substring(0, 20)}...`
-                                                                : post.Inquiries}
-                                                        </td>
-                                                        <td className="border p-2">
-                                                            <select
-                                                                onChange={(e) => handleDropdownAction(e.target.value, post)}
-                                                                className="text-xs px-2 py-1 border rounded text-gray-700 bg-white hover:bg-gray-100"
-                                                                defaultValue=""
-                                                            >
-                                                                <option value="" disabled>
-                                                                    Select Action
-                                                                </option>
-                                                                <option value="edit">✏️ Edit</option>
-                                                                <option value="status">📊 Change Status</option>
-                                                                <option value="remarks">📝 Change Remarks</option>
-                                                                <option value="delete">❌ Delete</option>
-                                                            </select>
+
+            {activeTab === "calendar" ? (
+                <>
+                    <div className="flex items-center justify-between mb-4">
+                        <button onClick={handlePrevDate} className="p-2 border rounded">
+                            <AiOutlineLeft size={15} />
+                        </button>
+                        <h3 className="text-md font-bold">{currentFormattedDate}</h3>
+                        <button onClick={handleNextDate} className="p-2 border rounded">
+                            <AiOutlineRight size={15} />
+                        </button>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="bg-white border border-gray-200 text-xs">
+                            <thead>
+                                <tr className="text-left whitespace-nowrap">
+                                    <th className="border p-2">Ticket No</th>
+                                    <th className="border p-2">Ticket Received</th>
+                                    <th className="border p-2">Ticket Endorsed</th>
+                                    <th className="border p-2">Company</th>
+                                    <th className="border p-2">Customer</th>
+                                    <th className="border p-2">Contact Number</th>
+                                    <th className="border p-2">Email</th>
+                                    <th className="border p-2">Gender</th>
+                                    <th className="border p-2">Client Segment</th>
+                                    <th className="border p-2">City Address</th>
+                                    <th className="border p-2">Traffic</th>
+                                    <th className="border p-2">Channel</th>
+                                    <th className="border p-2">Wrap-Up</th>
+                                    <th className="border p-2">Source</th>
+                                    <th className="border p-2">Customer Type</th>
+                                    <th className="border p-2">Customer Status</th>
+                                    <th className="border p-2">Status</th>
+                                    <th className="border p-2">Department</th>
+                                    <th className="border p-2">Sales Manager</th>
+                                    <th className="border p-2">Sales Agent</th>
+                                    <th className="border p-2">Remarks</th>
+                                    <th className="border p-2">Inquiry / Concern</th>
+                                    <th className="border p-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {Object.keys(groupedPosts).map((day) =>
+                                    day === currentFormattedDate ? (
+                                        <React.Fragment key={day}>
+                                            {Object.entries(groupedPosts[day]).map(([userName, userPosts]) => (
+                                                <React.Fragment key={userName}>
+                                                    <tr className="bg-gray-200">
+                                                        <td colSpan={23} className="text-left p-2 font-bold uppercase">
+                                                            {userName}
                                                         </td>
                                                     </tr>
-
-                                                    {/* Modal for Status */}
-                                                    {statusMenuVisible[post._id] &&
-                                                        ReactDOM.createPortal(
-                                                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[999]">
-                                                                <div className="bg-white w-80 rounded-lg shadow-lg p-4 z-[1000]">
-                                                                    <h3 className="text-sm font-semibold mb-4">📊 Change Status</h3>
+                                                    {userPosts.map((post) => (
+                                                        <React.Fragment key={post._id}>
+                                                            <tr className="border text-left whitespace-nowrap">
+                                                                <td className="border p-2">{post.TicketReferenceNumber}</td>
+                                                                <td className="border p-2">{new Date(post.TicketReceived).toLocaleString()}</td>
+                                                                <td className="border p-2">{new Date(post.TicketEndorsed).toLocaleString()}</td>
+                                                                <td className="border p-2">{post.CompanyName}</td>
+                                                                <td className="border p-2">{post.CustomerName}</td>
+                                                                <td className="border p-2">{post.ContactNumber}</td>
+                                                                <td className="border p-2">{post.Email}</td>
+                                                                <td className="border p-2">{post.Gender}</td>
+                                                                <td className="border p-2">{post.CustomerSegment}</td>
+                                                                <td className="border p-2">{post.CityAddress}</td>
+                                                                <td className="border p-2">{post.Traffic}</td>
+                                                                <td className="border p-2">{post.Channel}</td>
+                                                                <td className="border p-2">{post.WrapUp}</td>
+                                                                <td className="border p-2">{post.Source}</td>
+                                                                <td className="border p-2">{post.CustomerType}</td>
+                                                                <td className="border p-2">{post.CustomerStatus}</td>
+                                                                <td className={`border p-2 ${STATUS_COLORS[post.Status]}`}>{post.Status}</td>
+                                                                <td className="border p-2">{post.Department}</td>
+                                                                <td className="border p-2">{post.SalesManager}</td>
+                                                                <td className="border p-2">{post.SalesAgent}</td>
+                                                                <td className={`border p-2 ${REMARKS_COLORS[post.Remarks]}`}>{post.Remarks}</td>
+                                                                <td className="border p-2">
+                                                                    {post.Inquiries?.length > 20
+                                                                        ? `${post.Inquiries.substring(0, 20)}...`
+                                                                        : post.Inquiries}
+                                                                </td>
+                                                                <td className="border p-2">
                                                                     <select
-                                                                        onChange={(e) => setSelectedStatus(e.target.value)}
-                                                                        className="w-full text-xs px-3 py-2 border rounded text-gray-700 bg-white hover:bg-gray-100"
+                                                                        onChange={(e) => handleDropdownAction(e.target.value, post)}
+                                                                        className="text-xs px-2 py-1 border rounded text-gray-700 bg-white hover:bg-gray-100"
+                                                                        defaultValue=""
                                                                     >
                                                                         <option value="" disabled>
-                                                                            Select Status
+                                                                            Select Action
                                                                         </option>
-                                                                        {Object.keys(STATUS_COLORS).map((status) => (
-                                                                            <option key={status} value={status}>
-                                                                                {status}
-                                                                            </option>
-                                                                        ))}
+                                                                        <option value="edit">✏️ Edit</option>
+                                                                        <option value="status">📊 Change Status</option>
+                                                                        <option value="remarks">📝 Change Remarks</option>
+                                                                        <option value="delete">❌ Delete</option>
                                                                     </select>
-                                                                    <div className="flex justify-end mt-4">
-                                                                        <button
-                                                                            onClick={() => setStatusMenuVisible((prev) => ({ ...prev, [post._id]: false }))}
-                                                                            className="text-xs px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded mr-2"
-                                                                        >
-                                                                            Cancel
-                                                                        </button>
-                                                                        <button
-                                                                            onClick={() => handleStatusUpdate(post._id, selectedStatus)}
-                                                                            className="text-xs px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
-                                                                        >
-                                                                            Save
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>,
-                                                            document.body
-                                                        )}
+                                                                </td>
+                                                            </tr>
 
-                                                    {remarksMenuVisible[post._id] &&
-                                                        ReactDOM.createPortal(
-                                                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[999]">
-                                                                <div className="bg-white w-80 rounded-lg shadow-lg p-4 z-[1000]">
-                                                                    <h3 className="text-sm font-semibold mb-4">📝 Change Remarks</h3>
-                                                                    <select
-                                                                        onChange={(e) => setSelectedRemark(e.target.value)}
-                                                                        className="w-full text-xs px-3 py-2 border rounded text-gray-700 bg-white hover:bg-gray-100"
-                                                                    >
-                                                                        <option value="" disabled>
-                                                                            Select Remark
-                                                                        </option>
-                                                                        {Object.keys(REMARKS_COLORS).map((remark) => (
-                                                                            <option key={remark} value={remark}>
-                                                                                {remark}
-                                                                            </option>
-                                                                        ))}
-                                                                    </select>
-                                                                    <div className="flex justify-end mt-4">
-                                                                        <button
-                                                                            onClick={() => setRemarksMenuVisible((prev) => ({ ...prev, [post._id]: false }))}
-                                                                            className="text-xs px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded mr-2"
-                                                                        >
-                                                                            Cancel
-                                                                        </button>
-                                                                        <button
-                                                                            onClick={() => handleRemarksUpdate(post._id, selectedRemark)}
-                                                                            className="text-xs px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
-                                                                        >
-                                                                            Save
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>,
-                                                            document.body
-                                                        )}
+                                                            {/* Modal for Status */}
+                                                            {statusMenuVisible[post._id] &&
+                                                                ReactDOM.createPortal(
+                                                                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[999]">
+                                                                        <div className="bg-white w-80 rounded-lg shadow-lg p-4 z-[1000]">
+                                                                            <h3 className="text-sm font-semibold mb-4">📊 Change Status</h3>
+                                                                            <select
+                                                                                onChange={(e) => setSelectedStatus(e.target.value)}
+                                                                                className="w-full text-xs px-3 py-2 border rounded text-gray-700 bg-white hover:bg-gray-100"
+                                                                            >
+                                                                                <option value="" disabled>
+                                                                                    Select Status
+                                                                                </option>
+                                                                                {Object.keys(STATUS_COLORS).map((status) => (
+                                                                                    <option key={status} value={status}>
+                                                                                        {status}
+                                                                                    </option>
+                                                                                ))}
+                                                                            </select>
+                                                                            <div className="flex justify-end mt-4">
+                                                                                <button
+                                                                                    onClick={() => setStatusMenuVisible((prev) => ({ ...prev, [post._id]: false }))}
+                                                                                    className="text-xs px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded mr-2"
+                                                                                >
+                                                                                    Cancel
+                                                                                </button>
+                                                                                <button
+                                                                                    onClick={() => handleStatusUpdate(post._id, selectedStatus)}
+                                                                                    className="text-xs px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+                                                                                >
+                                                                                    Save
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>,
+                                                                    document.body
+                                                                )}
 
+                                                            {remarksMenuVisible[post._id] &&
+                                                                ReactDOM.createPortal(
+                                                                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[999]">
+                                                                        <div className="bg-white w-80 rounded-lg shadow-lg p-4 z-[1000]">
+                                                                            <h3 className="text-sm font-semibold mb-4">📝 Change Remarks</h3>
+                                                                            <select
+                                                                                onChange={(e) => setSelectedRemark(e.target.value)}
+                                                                                className="w-full text-xs px-3 py-2 border rounded text-gray-700 bg-white hover:bg-gray-100"
+                                                                            >
+                                                                                <option value="" disabled>
+                                                                                    Select Remark
+                                                                                </option>
+                                                                                {Object.keys(REMARKS_COLORS).map((remark) => (
+                                                                                    <option key={remark} value={remark}>
+                                                                                        {remark}
+                                                                                    </option>
+                                                                                ))}
+                                                                            </select>
+                                                                            <div className="flex justify-end mt-4">
+                                                                                <button
+                                                                                    onClick={() => setRemarksMenuVisible((prev) => ({ ...prev, [post._id]: false }))}
+                                                                                    className="text-xs px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded mr-2"
+                                                                                >
+                                                                                    Cancel
+                                                                                </button>
+                                                                                <button
+                                                                                    onClick={() => handleRemarksUpdate(post._id, selectedRemark)}
+                                                                                    className="text-xs px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+                                                                                >
+                                                                                    Save
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>,
+                                                                    document.body
+                                                                )}
+
+                                                        </React.Fragment>
+                                                    ))}
                                                 </React.Fragment>
                                             ))}
                                         </React.Fragment>
+                                    ) : null
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </>
+            ) : (
+                <>
+                    {/* Table View with Pagination */}
+                    <div className="p-4 bg-white rounded-lg shadow">
+                        <h3 className="text-xs font-bold mb-4">📄 Table View</h3>
+
+                        {/* Length Menu */}
+                        <div className="flex justify-between items-center mb-4">
+                            <div className="flex gap-2 items-center">
+                                <button
+                                    onClick={handleExport}
+                                    className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                                >
+                                    📤 Export
+                                </button>
+                            </div>
+                            <label className="text-xs text-gray-700">
+                                Show
+                                <select
+                                    value={itemsPerPage}
+                                    onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                                    className="ml-2 px-2 py-1 border rounded text-xs"
+                                >
+                                    {[10, 20, 50, 100, 500, 1000].map((size) => (
+                                        <option key={size} value={size}>
+                                            {size}
+                                        </option>
                                     ))}
-                                </React.Fragment>
-                            ) : null
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                                </select>
+                                entries
+                            </label>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full bg-white border border-gray-200 text-xs">
+                                <thead>
+                                    <tr className="text-left whitespace-nowrap bg-gray-100">
+                                        <th className="border p-2">Ticket No</th>
+                                        <th className="border p-2">Ticket Received</th>
+                                        <th className="border p-2">Ticket Endorsed</th>
+                                        <th className="border p-2">Company</th>
+                                        <th className="border p-2">Customer</th>
+                                        <th className="border p-2">Contact Number</th>
+                                        <th className="border p-2">Email</th>
+                                        <th className="border p-2">Gender</th>
+                                        <th className="border p-2">Client Segment</th>
+                                        <th className="border p-2">City Address</th>
+                                        <th className="border p-2">Traffic</th>
+                                        <th className="border p-2">Channel</th>
+                                        <th className="border p-2">Wrap-Up</th>
+                                        <th className="border p-2">Source</th>
+                                        <th className="border p-2">Customer Type</th>
+                                        <th className="border p-2">Customer Status</th>
+                                        <th className="border p-2">Status</th>
+                                        <th className="border p-2">Department</th>
+                                        <th className="border p-2">Sales Manager</th>
+                                        <th className="border p-2">Sales Agent</th>
+                                        <th className="border p-2">Remarks</th>
+                                        <th className="border p-2">Inquiry / Concern</th>
+                                        <th className="border p-2">Date Created</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {paginatedPosts.map((post) => (
+                                        <tr key={post._id} className="border text-left whitespace-nowrap">
+                                            <td className="border p-2 uppercase">{post.TicketReferenceNumber}</td>
+                                            <td className="border p-2">{new Date(post.TicketReceived).toLocaleString()}</td>
+                                            <td className="border p-2">{new Date(post.TicketEndorsed).toLocaleString()}</td>
+                                            <td className="border p-2">{post.CompanyName}</td>
+                                            <td className="border p-2">{post.CustomerName}</td>
+                                            <td className="border p-2">{post.ContactNumber}</td>
+                                            <td className="border p-2">{post.Email}</td>
+                                            <td className="border p-2">{post.Gender}</td>
+                                            <td className="border p-2">{post.CustomerSegment}</td>
+                                            <td className="border p-2">{post.CityAddress}</td>
+                                            <td className="border p-2">{post.Traffic}</td>
+                                            <td className="border p-2">{post.Channel}</td>
+                                            <td className="border p-2">{post.WrapUp}</td>
+                                            <td className="border p-2">{post.Source}</td>
+                                            <td className="border p-2">{post.CustomerType}</td>
+                                            <td className="border p-2">{post.CustomerStatus}</td>
+                                            <td className={`border p-2 ${STATUS_COLORS[post.Status]}`}>{post.Status}</td>
+                                            <td className="border p-2">{post.Department}</td>
+                                            <td className="border p-2">{post.SalesManager}</td>
+                                            <td className="border p-2">{post.SalesAgent}</td>
+                                            <td className={`border p-2 ${REMARKS_COLORS[post.Remarks]}`}>{post.Remarks}</td>
+                                            <td className="border p-2">
+                                                {post.Inquiries?.length > 20
+                                                    ? `${post.Inquiries.substring(0, 20)}...`
+                                                    : post.Inquiries}
+                                            </td>
+                                            <td className="border p-2">{new Date(post.createdAt).toLocaleString()}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Pagination Controls */}
+                        <div className="flex justify-between items-center mt-4 text-xs text-gray-700">
+                            <p>
+                                Showing {startIndex + 1} to{" "}
+                                {Math.min(startIndex + itemsPerPage, sortedPosts.length)} of{" "}
+                                {sortedPosts.length} entries
+                            </p>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setCurrentPage(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className={`px-2 py-1 border rounded ${currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "text-gray-700"
+                                        }`}
+                                >
+                                    Previous
+                                </button>
+                                <button
+                                    onClick={() => setCurrentPage(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                    className={`px-2 py-1 border rounded ${currentPage === totalPages ? "text-gray-400 cursor-not-allowed" : "text-gray-700"
+                                        }`}
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </>
+
+            )}
         </div>
     );
 };
