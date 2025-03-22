@@ -6,7 +6,7 @@ import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
 import AddPostForm from "../../../components/Companies/DeletionCompanies/AddUserForm";
-import SearchFilters from "../../../components/UserManagement/CompanyAccounts/SearchFilters";
+import SearchFilters from "../../../components/Companies/DeletionCompanies/SearchFilters";
 import UsersTable from "../../../components/Agents/DeletionCompanies/UsersTable";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
 
