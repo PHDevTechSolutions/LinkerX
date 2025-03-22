@@ -177,7 +177,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                             <td colSpan={7} className="text-left p-2 font-bold uppercase">{userName}</td>
                                         </tr>
                                         {userPosts.map((post) => (
-                                            <tr key={post._id} className="hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02]">
+                                            <tr key={post._id} className="hover:bg-gray-50 capitalize">
                                                 <td className="border p-2">{post.TicketReferenceNumber}</td>
                                                 <td className="border p-2">{post.CompanyName}</td>
                                                 <td className="border p-2">{post.CustomerName}</td>
