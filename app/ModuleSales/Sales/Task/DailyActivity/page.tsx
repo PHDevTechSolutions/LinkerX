@@ -503,19 +503,16 @@ const ListofUser: React.FC = () => {
                 `/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${userDetails.ReferenceID}`
             );
             const data = await response.json();
-            console.log("Fetched data:", data); // Debugging line
 
             if (data.success && Array.isArray(data.data)) {
                 // Apply type to company parameter
                 const activeCompanies = data.data.filter((company: Company) => company.status === "Active" || company.status === "Used");
                 setPost(activeCompanies);
             } else {
-                toast.error("No active companies found.");
+                
                 setPost([]);
             }
         } catch (error) {
-            toast.error("Error fetching companies.");
-            console.error("Error fetching", error);
         }
     };
 
