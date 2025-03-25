@@ -125,6 +125,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       subItems: [
         { title: 'Update Profile', href: `/ModuleCSR/CSR/Setting/Profile${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Developers', href: `/ModuleCSR/CSR/Setting/Developers${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Data Logs', href: `/ModuleCSR/CSR/Setting/DataLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
   ];

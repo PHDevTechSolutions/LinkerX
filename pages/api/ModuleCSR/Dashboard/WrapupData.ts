@@ -43,7 +43,7 @@ export default async function fetchMetrics(
     // Fetch documents from the monitoring collection
     const allMetrics = await monitoringCollection
       .find(matchConditions)
-      .project({ createdAt: 1, Channel: 1 })
+      .project({ createdAt: 1, WrapUp: 1 })
       .toArray();
 
     // Return the fetched data

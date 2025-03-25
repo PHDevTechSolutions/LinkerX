@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
@@ -24,9 +23,8 @@ ChartJS.register(
 );
 
 interface Metric {
-  createdAt: string;
-  Total: string;
-  Count: number;
+  _id: string; // Channel name
+  count: number; // Total count for the channel
 }
 
 interface BarChartProps {
@@ -42,15 +40,13 @@ const BarChart: React.FC<BarChartProps> = ({ ReferenceID, month, year }) => {
   const [chartData, setChartData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-
-  // ✅ Fetch and process data based on month and year
+  // Fetch data for the selected month and year
   const fetchData = async (month: number, year: number) => {
     try {
       setLoading(true);
 
-      // ✅ Correct API URL with month and year passed correctly
-      const apiUrl = `/api/ModuleCSR/Dashboard/Metrics?ReferenceID=${ReferenceID}&month=${month}&year=${year}`;
-      console.log("Fetching URL:", apiUrl);
+      // API URL with month and year passed correctly
+      const apiUrl = `/api/ModuleCSR/Dashboard/Channel?ReferenceID=${ReferenceID}&month=${month}&year=${year}`;
 
       const response = await fetch(apiUrl);
       if (!response.ok) {
@@ -60,28 +56,30 @@ const BarChart: React.FC<BarChartProps> = ({ ReferenceID, month, year }) => {
 
       const data: Metric[] = await response.json();
 
-      // ✅ Map data properly for chart
-      const labels = data.map((item) => item.Total);
-      const trafficData = data.map((item) => item.Count);
-
-      const colors = [
-        "#3A7D44",
-        "#27667B",
-        "#497D74",
-        "#27445D",
-        "#3674B5",
-        "#FBA518",
-        "#F9CB43",
-        "#493D9E",
-        "#77B254",
-        "#8E1616",
+      // Define the channels you want to display on the bar chart
+      const channels = [
+        "Google Maps", "Website", "FB Main", "FB EShome", "Viber",
+        "Text Message", "Instagram", "Voice Call", "Email", "WhatsApp", "Shopify"
       ];
 
+      // Prepare the data for the chart
+      const trafficData = channels.map((channel) => {
+        const item = data.find((entry) => entry._id === channel);
+        return item ? item.count : 0; // If no data for the channel, use 0
+      });
+
+      // Define colors for the bars
+      const colors = [
+        "#3A7D44", "#27667B", "#497D74", "#27445D", "#3674B5", "#FBA518",
+        "#F9CB43", "#493D9E", "#77B254", "#8E1616", "#8E1316"
+      ];
+
+      // Update the chart data state
       setChartData({
-        labels,
+        labels: channels, // Channel names
         datasets: [
           {
-            label: "Traffic Count",
+            label: "Inbound Traffic Per Channel",
             data: trafficData,
             backgroundColor: colors.slice(0, trafficData.length),
             borderColor: "#1E40AF",
@@ -96,26 +94,25 @@ const BarChart: React.FC<BarChartProps> = ({ ReferenceID, month, year }) => {
         ],
       });
     } catch (error) {
-      console.error("Error fetching data:", error);
       setChartData(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Fetch data when month, year, or ReferenceID changes
+  // Fetch data when month, year, or ReferenceID changes
   useEffect(() => {
     fetchData(selectedMonth, selectedYear);
   }, [selectedMonth, selectedYear, ReferenceID]);
 
-  // ✅ Chart options
+  // Chart options
   const options = {
     responsive: true,
     plugins: {
       legend: { display: false },
       title: {
         display: true,
-        text: "Traffic Count by Channel",
+        text: "Total Channel Count for Selected Month",
         font: { size: 15 },
       },
       datalabels: {
@@ -138,7 +135,7 @@ const BarChart: React.FC<BarChartProps> = ({ ReferenceID, month, year }) => {
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4 w-full">
-      {/* ✅ Chart or Loading State */}
+      {/* Show loading or the chart */}
       <div className="w-full flex justify-center items-center">
         {loading ? (
           <p>Loading...</p>
