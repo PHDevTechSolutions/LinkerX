@@ -13,12 +13,12 @@ const CSRFaqs: React.FC = () => {
     };
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 p-4 bg-gray-50 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 p-4 bg-gray-50 rounded-lg text-xs text-gray-900">
             {/* Accreditation Requirements */}
             <div className="border rounded-lg shadow-md transition-all duration-300">
                 <button
                     onClick={() => toggleCard(0)}
-                    className="w-full text-left p-4 font-semibold bg-gray-200 hover:bg-gray-300 flex justify-between items-center"
+                    className="w-full text-left p-4 font-semibold hover:bg-gray-300 flex justify-between items-center"
                 >
                     Accreditation Requirements
                     {isOpen[0] ? <FaMinus size={14} /> : <FaPlus size={14} />}
@@ -46,7 +46,7 @@ const CSRFaqs: React.FC = () => {
             <div className="border rounded-lg shadow-md transition-all duration-300">
                 <button
                     onClick={() => toggleCard(1)}
-                    className="w-full text-left p-4 font-semibold bg-gray-200 hover:bg-gray-300 flex justify-between items-center"
+                    className="w-full text-left p-4 font-semibold hover:bg-gray-300 flex justify-between items-center"
                 >
                     Accreditation Request (Admin Sheets)
                     {isOpen[1] ? <FaMinus size={14} /> : <FaPlus size={14} />}
@@ -75,7 +75,7 @@ const CSRFaqs: React.FC = () => {
             <div className="border rounded-lg shadow-md transition-all duration-300">
                 <button
                     onClick={() => toggleCard(2)}
-                    className="w-full text-left p-4 font-semibold bg-gray-200 hover:bg-gray-300 flex justify-between items-center"
+                    className="w-full text-left p-4 font-semibold hover:bg-gray-300 flex justify-between items-center"
                 >
                     Refund Request (Accounting Sheets)
                     {isOpen[2] ? <FaMinus size={14} /> : <FaPlus size={14} />}
@@ -270,7 +270,7 @@ const CSRFaqs: React.FC = () => {
             <div className="border rounded-lg shadow-md transition-all duration-300">
                 <button
                     onClick={() => toggleCard(3)}
-                    className="w-full text-left p-4 font-semibold bg-gray-200 hover:bg-gray-300 flex justify-between items-center"
+                    className="w-full text-left p-4 font-semibold hover:bg-gray-300 flex justify-between items-center"
                 >
                     Branches
                     {isOpen[3] ? <FaMinus size={14} /> : <FaPlus size={14} />}
@@ -292,7 +292,7 @@ const CSRFaqs: React.FC = () => {
             <div className="border rounded-lg shadow-md transition-all duration-300">
                 <button
                     onClick={() => toggleCard(4)}
-                    className="w-full text-left p-4 font-semibold bg-gray-200 hover:bg-gray-300 flex justify-between items-center"
+                    className="w-full text-left p-4 font-semibold hover:bg-gray-300 flex justify-between items-center"
                 >
                     Delivery Options
                     {isOpen[4] ? <FaMinus size={14} /> : <FaPlus size={14} />}
@@ -318,7 +318,7 @@ const CSRFaqs: React.FC = () => {
             <div className="border rounded-lg shadow-md transition-all duration-300">
                 <button
                     onClick={() => toggleCard(5)}
-                    className="w-full text-left p-4 font-semibold bg-gray-200 hover:bg-gray-300 flex justify-between items-center"
+                    className="w-full text-left p-4 font-semibold hover:bg-gray-300 flex justify-between items-center"
                 >
                     Payment Options
                     {isOpen[5] ? <FaMinus size={14} /> : <FaPlus size={14} />}
@@ -338,7 +338,7 @@ const CSRFaqs: React.FC = () => {
             <div className="border rounded-lg shadow-md transition-all duration-300">
                 <button
                     onClick={() => toggleCard(6)}
-                    className="w-full text-left p-4 font-semibold bg-gray-200 hover:bg-gray-300 flex justify-between items-center"
+                    className="w-full text-left p-4 font-semibold hover:bg-gray-300 flex justify-between items-center"
                 >
                     Warranty
                     {isOpen[6] ? <FaMinus size={14} /> : <FaPlus size={14} />}
@@ -354,7 +354,7 @@ const CSRFaqs: React.FC = () => {
             <div className="border rounded-lg shadow-md transition-all duration-300">
                 <button
                     onClick={() => toggleCard(7)}
-                    className="w-full text-left p-4 font-semibold bg-gray-200 hover:bg-gray-300 flex justify-between items-center"
+                    className="w-full text-left p-4 font-semibold hover:bg-gray-300 flex justify-between items-center"
                 >
                     Production Promotion
                     {isOpen[7] ? <FaMinus size={14} /> : <FaPlus size={14} />}
@@ -369,7 +369,7 @@ const CSRFaqs: React.FC = () => {
             <div className="border rounded-lg shadow-md transition-all duration-300">
                 <button
                     onClick={() => toggleCard(7)}
-                    className="w-full text-left p-4 font-semibold bg-gray-200 hover:bg-gray-300 flex justify-between items-center"
+                    className="w-full text-left p-4 font-semibold hover:bg-gray-300 flex justify-between items-center"
                 >
                     Procurement
                     {isOpen[7] ? <FaMinus size={14} /> : <FaPlus size={14} />}
