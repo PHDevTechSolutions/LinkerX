@@ -17,21 +17,18 @@ ChartJS.register(Title, Tooltip, Legend, CategoryScale, LinearScale, BarElement)
 interface CustomerSourceProps {
   ReferenceID: string;
   Role: string;
+  month: number;
+  year: number;
 }
 
-const CustomerSource: React.FC<CustomerSourceProps> = ({ ReferenceID, Role }) => {
+const CustomerSource: React.FC<CustomerSourceProps> = ({ ReferenceID, Role, month, year }) => {
   const [genderData, setGenderData] = useState<{ _id: string; count: number }[]>([]);
-  const [selectedMonth, setSelectedMonth] = useState<string>("All");
-  const [selectedYear, setSelectedYear] = useState<string>("All");
 
   // ✅ Fetch Customer Source Data Based on Month/Year
   const fetchGenderData = async () => {
     try {
-      const monthParam = selectedMonth !== "All" ? selectedMonth : "";
-      const yearParam = selectedYear !== "All" ? selectedYear : "";
-
       const res = await fetch(
-        `/api/ModuleCSR/Dashboard/CustomerSource?ReferenceID=${ReferenceID}&Role=${Role}&month=${monthParam}&year=${yearParam}`
+        `/api/ModuleCSR/Dashboard/CustomerSource?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
       );
 
       if (!res.ok) throw new Error("Failed to fetch data");
@@ -45,7 +42,7 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({ ReferenceID, Role }) =>
   // ✅ Fetch Data When Month/Year Changes
   useEffect(() => {
     fetchGenderData();
-  }, [selectedMonth, selectedYear, ReferenceID, Role]);
+  }, [month, year, ReferenceID, Role]);
 
   const colors = [
     "#A64D79",
@@ -169,56 +166,6 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({ ReferenceID, Role }) =>
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4">
-      {/* ✅ Filters Section */}
-      <div className="flex space-x-4 mb-4">
-        {/* Month Filter */}
-        <div>
-          <label className="text-xs font-semibold mr-2">Filter by Month:</label>
-          <select
-            className="border p-1 rounded text-xs"
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-          >
-            <option value="All">All Months</option>
-            {[
-              "January",
-              "February",
-              "March",
-              "April",
-              "May",
-              "June",
-              "July",
-              "August",
-              "September",
-              "October",
-              "November",
-              "December",
-            ].map((month, index) => (
-              <option key={month} value={index + 1}>
-                {month}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Year Filter */}
-        <div>
-          <label className="text-xs font-semibold mr-2">Filter by Year:</label>
-          <select
-            className="border p-1 rounded text-xs"
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-          >
-            <option value="All">All Years</option>
-            {["2023", "2024", "2025"].map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
       {/* ✅ Render Chart or No Data Message */}
       <div className="flex justify-center items-center w-full h-full">
         <div className="w-full h-full">

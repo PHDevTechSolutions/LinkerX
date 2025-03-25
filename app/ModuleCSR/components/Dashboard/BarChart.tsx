@@ -29,30 +29,26 @@ interface Metric {
   Count: number;
 }
 
-interface ChannelBarChartProps {
+interface BarChartProps {
   ReferenceID: string;
   month?: number;
   year?: number;
 }
 
-const ChannelBarChart: React.FC<ChannelBarChartProps> = ({
-  ReferenceID,
-  month,
-  year,
-}) => {
+const BarChart: React.FC<BarChartProps> = ({ ReferenceID, month, year }) => {
+  const selectedMonth = month || new Date().getMonth() + 1;
+  const selectedYear = year || new Date().getFullYear();
+
   const [chartData, setChartData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Set default values for month and year
-  const selectedMonth = month || new Date().getMonth() + 1;
-  const selectedYear = year || new Date().getFullYear();
 
   // ✅ Fetch and process data based on month and year
   const fetchData = async (month: number, year: number) => {
     try {
       setLoading(true);
 
-      // ✅ Correct API URL without Role
+      // ✅ Correct API URL with month and year passed correctly
       const apiUrl = `/api/ModuleCSR/Dashboard/Metrics?ReferenceID=${ReferenceID}&month=${month}&year=${year}`;
       console.log("Fetching URL:", apiUrl);
 
@@ -100,13 +96,14 @@ const ChannelBarChart: React.FC<ChannelBarChartProps> = ({
         ],
       });
     } catch (error) {
+      console.error("Error fetching data:", error);
       setChartData(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Fetch data when month/year or ReferenceID changes
+  // ✅ Fetch data when month, year, or ReferenceID changes
   useEffect(() => {
     fetchData(selectedMonth, selectedYear);
   }, [selectedMonth, selectedYear, ReferenceID]);
@@ -155,4 +152,4 @@ const ChannelBarChart: React.FC<ChannelBarChartProps> = ({
   );
 };
 
-export default ChannelBarChart;
+export default BarChart;

@@ -1,7 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
-import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale } from "chart.js";
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+} from "chart.js";
 
 // Register Chart.js components
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
@@ -9,12 +17,17 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale)
 interface CustomerTypeChartProps {
   ReferenceID: string;
   Role: string;
+  month: number;
+  year: number;
 }
 
-const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ ReferenceID, Role }) => {
+const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({
+  ReferenceID,
+  Role,
+  month,
+  year,
+}) => {
   const [customerTypeData, setCustomerTypeData] = useState<any>(null);
-  const [selectedMonth, setSelectedMonth] = useState<string>(`${new Date().getMonth() + 1}`);
-  const [selectedYear, setSelectedYear] = useState<string>(`${new Date().getFullYear()}`);
   const [loading, setLoading] = useState(true);
 
   // ✅ Fetch data with month and year filters
@@ -23,7 +36,7 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ ReferenceID, Role
       setLoading(true);
       try {
         const res = await fetch(
-          `/api/ModuleCSR/Dashboard/CustomerType?ReferenceID=${ReferenceID}&Role=${Role}&month=${selectedMonth}&year=${selectedYear}`
+          `/api/ModuleCSR/Dashboard/CustomerType?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
         );
         const data = await res.json();
         if (res.ok) {
@@ -40,7 +53,7 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ ReferenceID, Role
     };
 
     fetchCustomerTypeData();
-  }, [selectedMonth, selectedYear, ReferenceID, Role]);
+  }, [month, year, ReferenceID, Role]);
 
   // ✅ Prepare chart data
   const doughnutChartData = {
@@ -90,45 +103,6 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ ReferenceID, Role
 
   return (
     <div className="flex flex-col justify-center items-center w-full h-full space-y-4">
-      {/* ✅ Month and Year Filters */}
-      <div className="flex space-x-4 mb-2">
-        {/* Month Filter */}
-        <select
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
-          className="border p-2 rounded text-xs bg-white"
-        >
-          <option value="1">January</option>
-          <option value="2">February</option>
-          <option value="3">March</option>
-          <option value="4">April</option>
-          <option value="5">May</option>
-          <option value="6">June</option>
-          <option value="7">July</option>
-          <option value="8">August</option>
-          <option value="9">September</option>
-          <option value="10">October</option>
-          <option value="11">November</option>
-          <option value="12">December</option>
-        </select>
-
-        {/* Year Filter */}
-        <select
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(e.target.value)}
-          className="border p-2 rounded text-xs bg-white"
-        >
-          {Array.from({ length: 5 }, (_, i) => {
-            const year = new Date().getFullYear() - i;
-            return (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            );
-          })}
-        </select>
-      </div>
-
       {/* ✅ Doughnut Chart */}
       <div className="w-full h-full">
         {loading ? (

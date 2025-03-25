@@ -14,30 +14,28 @@ interface Metric {
 
 interface MetricTableProps {
   ReferenceID: string;
+  month?: number;
+  year?: number;
 }
 
-const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID }) => {
+const MetricTable: React.FC<MetricTableProps> = ({
+  ReferenceID,
+  month,
+  year,
+}) => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
-  const [filteredMetrics, setFilteredMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [selectedMonth, setSelectedMonth] = useState<string>("All");
-  const [selectedYear, setSelectedYear] = useState<string>("All");
-
-  // ✅ Fetch Metrics from API (Single URL)
+  // ✅ Fetch Metrics from API (with month and year passed via props)
   const fetchMetrics = async () => {
     try {
       setLoading(true);
 
-      // ✅ Build API URL with selected month and year
-      const month = selectedMonth !== "All" ? selectedMonth : "";
-      const year = selectedYear !== "All" ? selectedYear : "";
-
+      // ✅ Correct API URL with month and year passed as query params
       const apiUrl = `/api/ModuleCSR/Dashboard/Metrics?ReferenceID=${ReferenceID}&month=${month}&year=${year}`;
-      
+      console.log("Fetching URL:", apiUrl);
 
       const response = await fetch(apiUrl);
-
       if (!response.ok) {
         throw new Error(`Failed to fetch data. Status: ${response.status}`);
       }
@@ -61,18 +59,17 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID }) => {
       });
 
       setMetrics(updatedMetrics);
-      setFilteredMetrics(updatedMetrics);
     } catch (error) {
-      
+      console.error("Error fetching metrics:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Fetch Data on Initial Render and When Filters Change
+  // ✅ Fetch data on initial render and when props change
   useEffect(() => {
     fetchMetrics();
-  }, [ReferenceID, selectedMonth, selectedYear]);
+  }, [ReferenceID, month, year]);
 
   // ✅ Calculate Totals
   const calculateTotals = () => {
@@ -85,7 +82,7 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID }) => {
       avgTransactionValue: 0,
     };
 
-    filteredMetrics.forEach((metric) => {
+    metrics.forEach((metric) => {
       totals.count += metric.Count;
       totals.amount += parseFloat(metric.Amount.replace(/[₱,]/g, "")) || 0;
       totals.convertedSales += metric.ConvertedSales;
@@ -106,56 +103,6 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID }) => {
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4">
-      {/* ✅ Filters Section */}
-      <div className="flex space-x-4 mb-4">
-        {/* Month Filter */}
-        <div>
-          <label className="text-xs font-semibold mr-2">Filter by Month:</label>
-          <select
-            className="border p-1 rounded text-xs"
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-          >
-            <option value="All">All Months</option>
-            {[
-              "January",
-              "February",
-              "March",
-              "April",
-              "May",
-              "June",
-              "July",
-              "August",
-              "September",
-              "October",
-              "November",
-              "December",
-            ].map((month, index) => (
-              <option key={month} value={index + 1}>
-                {month}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Year Filter */}
-        <div>
-          <label className="text-xs font-semibold mr-2">Filter by Year:</label>
-          <select
-            className="border p-1 rounded text-xs"
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-          >
-            <option value="All">All Years</option>
-            {["2023", "2024", "2025"].map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
       {/* ✅ Loading or Table Content */}
       {loading ? (
         <p className="text-center">Loading...</p>
@@ -179,7 +126,7 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredMetrics.map((metric, index) => (
+            {metrics.map((metric, index) => (
               <tr key={index} className="text-center border-t">
                 <td className="border p-2">{metric.Total}</td>
                 <td className="border p-2">{metric.Count}</td>

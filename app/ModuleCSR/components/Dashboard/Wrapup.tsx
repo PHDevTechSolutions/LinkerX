@@ -17,20 +17,20 @@ ChartJS.register(Title, Tooltip, Legend, CategoryScale, LinearScale, BarElement)
 interface WrapupProps {
   ReferenceID: string;
   Role: string;
+  month: number;
+  year: number;
 }
 
-const Wrapup: React.FC<WrapupProps> = ({ ReferenceID, Role }) => {
-  const [wrapupData, setWrapupData] = useState<{ _id: string; count: number }[]>(
-    []
-  );
-  const [selectedMonth, setSelectedMonth] = useState<string>("All");
-  const [selectedYear, setSelectedYear] = useState<string>("All");
+const Wrapup: React.FC<WrapupProps> = ({ ReferenceID, Role, month, year }) => {
+  const [wrapupData, setWrapupData] = useState<{ _id: string; count: number }[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch Wrapup Data
+  // ✅ Fetch Wrapup Data with Month and Year
   const fetchWrapupData = async () => {
     try {
-      const monthParam = selectedMonth !== "All" ? selectedMonth : "";
-      const yearParam = selectedYear !== "All" ? selectedYear : "";
+      setLoading(true);
+      const monthParam = month !== 0 ? month.toString() : "";
+      const yearParam = year !== 0 ? year.toString() : "";
 
       const res = await fetch(
         `/api/ModuleCSR/Dashboard/Wrapup?ReferenceID=${ReferenceID}&Role=${Role}&month=${monthParam}&year=${yearParam}`
@@ -40,13 +40,16 @@ const Wrapup: React.FC<WrapupProps> = ({ ReferenceID, Role }) => {
       setWrapupData(data || []);
     } catch (error) {
       console.error("Error fetching wrapup data:", error);
+      setWrapupData([]);
+    } finally {
+      setLoading(false);
     }
   };
 
   // ✅ Fetch Data on Initial Render and When Filters Change
   useEffect(() => {
     fetchWrapupData();
-  }, [ReferenceID, Role, selectedMonth, selectedYear]);
+  }, [ReferenceID, Role, month, year]);
 
   const colors = [
     "#3A7D44",
@@ -109,25 +112,25 @@ const Wrapup: React.FC<WrapupProps> = ({ ReferenceID, Role }) => {
     responsive: true,
     plugins: {
       legend: {
-              display: true,
-              position: "bottom",
-              labels: {
-                generateLabels: function (chart: ChartJS) {
-                  const labels = chart.data.labels as string[];
-                  const datasets = chart.data.datasets as any[];
-                  return labels.map((label, index) => {
-                    const dataset = datasets[0];
-                    const dataValue = dataset.data[index];
-                    return {
-                      text: `${label}: ${dataValue}`,
-                      fillStyle: dataset.backgroundColor[index],
-                      strokeStyle: dataset.borderColor[index],
-                      lineWidth: dataset.borderWidth,
-                    };
-                  });
-                },
-              },
-            },
+        display: true,
+        position: "bottom",
+        labels: {
+          generateLabels: function (chart: ChartJS) {
+            const labels = chart.data.labels as string[];
+            const datasets = chart.data.datasets as any[];
+            return labels.map((label, index) => {
+              const dataset = datasets[0];
+              const dataValue = dataset.data[index];
+              return {
+                text: `${label}: ${dataValue}`,
+                fillStyle: dataset.backgroundColor[index],
+                strokeStyle: dataset.borderColor[index],
+                lineWidth: dataset.borderWidth,
+              };
+            });
+          },
+        },
+      },
       title: {
         display: true,
         text: "Wrap Up",
@@ -164,62 +167,14 @@ const Wrapup: React.FC<WrapupProps> = ({ ReferenceID, Role }) => {
 
   return (
     <div className="flex flex-col items-center w-full h-full p-4">
-      {/* ✅ Month & Year Filters */}
-      <div className="flex space-x-4 mb-4">
-        <div>
-          <label className="text-xs font-semibold mr-2">Filter by Month:</label>
-          <select
-            className="border p-1 rounded text-xs"
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-          >
-            <option value="All">All Months</option>
-            {[
-              "January",
-              "February",
-              "March",
-              "April",
-              "May",
-              "June",
-              "July",
-              "August",
-              "September",
-              "October",
-              "November",
-              "December",
-            ].map((month, index) => (
-              <option key={month} value={index + 1}>
-                {month}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="text-xs font-semibold mr-2">Filter by Year:</label>
-          <select
-            className="border p-1 rounded text-xs"
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-          >
-            <option value="All">All Years</option>
-            {["2023", "2024", "2025"].map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
       {/* ✅ Chart Section */}
       <div className="w-full h-full">
-        {wrapupData.length > 0 ? (
+        {loading ? (
+          <p className="text-center text-gray-600 text-xs">Loading data...</p>
+        ) : wrapupData.length > 0 ? (
           <Bar data={barChartData} options={barChartOptions} />
         ) : (
-          <p className="text-center text-gray-600 text-xs">
-            No data available
-          </p>
+          <p className="text-center text-gray-600 text-xs">No data available</p>
         )}
       </div>
     </div>

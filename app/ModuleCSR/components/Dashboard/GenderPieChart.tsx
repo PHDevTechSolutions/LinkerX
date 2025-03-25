@@ -1,7 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale } from "chart.js";
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+} from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
 // Register Chart.js components
@@ -10,20 +18,25 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale)
 interface GenderPieChartProps {
   ReferenceID: string;
   Role: string;
+  month: number;
+  year: number;
 }
 
-const GenderPieChart: React.FC<GenderPieChartProps> = ({ ReferenceID, Role }) => {
+const GenderPieChart: React.FC<GenderPieChartProps> = ({
+  ReferenceID,
+  Role,
+  month,
+  year,
+}) => {
   const [genderData, setGenderData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedMonth, setSelectedMonth] = useState<string>((new Date().getMonth() + 1).toString()); // Default to current month
-  const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString()); // Default to current year
 
-  // Fetch gender data based on selected month and year
+  // Fetch gender data based on passed month and year
   useEffect(() => {
     const fetchGenderData = async () => {
       try {
         const res = await fetch(
-          `/api/ModuleCSR/Dashboard/Monitoring?ReferenceID=${ReferenceID}&Role=${Role}&month=${selectedMonth}&year=${selectedYear}`
+          `/api/ModuleCSR/Dashboard/Monitoring?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
         );
         const data = await res.json();
         if (res.ok) {
@@ -37,7 +50,7 @@ const GenderPieChart: React.FC<GenderPieChartProps> = ({ ReferenceID, Role }) =>
     };
 
     fetchGenderData();
-  }, [selectedMonth, selectedYear, ReferenceID, Role]);
+  }, [month, year, ReferenceID, Role]);
 
   // Pie chart data
   const pieChartData = {
@@ -97,51 +110,16 @@ const GenderPieChart: React.FC<GenderPieChartProps> = ({ ReferenceID, Role }) =>
 
   return (
     <div className="flex flex-col justify-center items-center w-full h-full p-4">
-      {/* Month and Year Filters */}
-      <div className="flex space-x-2 mb-4 w-full max-w-sm">
-        {/* Month Select */}
-        <select
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
-          className="border px-2 py-1 rounded text-xs"
-        >
-          <option value="1">January</option>
-          <option value="2">February</option>
-          <option value="3">March</option>
-          <option value="4">April</option>
-          <option value="5">May</option>
-          <option value="6">June</option>
-          <option value="7">July</option>
-          <option value="8">August</option>
-          <option value="9">September</option>
-          <option value="10">October</option>
-          <option value="11">November</option>
-          <option value="12">December</option>
-        </select>
-
-        {/* Year Select */}
-        <select
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(e.target.value)}
-          className="border px-2 py-1 rounded text-xs"
-        >
-          {Array.from({ length: 5 }).map((_, i) => {
-            const year = new Date().getFullYear() - i;
-            return (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            );
-          })}
-        </select>
-      </div>
-
       {/* Chart Display */}
       <div className="w-full h-full">
         {loading ? (
           <p className="text-center text-gray-600 text-xs">Loading data...</p>
         ) : genderData && genderData.length > 0 ? (
-          <Pie data={pieChartData} options={pieChartOptions} plugins={[ChartDataLabels]} />
+          <Pie
+            data={pieChartData}
+            options={pieChartOptions}
+            plugins={[ChartDataLabels]}
+          />
         ) : (
           <p className="text-center text-gray-600 text-xs">No data available</p>
         )}

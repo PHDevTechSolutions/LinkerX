@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 
 interface Metric {
@@ -8,9 +9,11 @@ interface Metric {
 interface MetricTableProps {
   ReferenceID: string;
   Role: string;
+  month: number;
+  year: number;
 }
 
-// Get week number logic
+// ✅ Get week number logic
 const getWeekNumber = (dateString: string) => {
   const date = new Date(dateString);
   const dayOfMonth = date.getDate();
@@ -21,7 +24,12 @@ const getWeekNumber = (dateString: string) => {
   return 4; // Days 22-31 go to Week 4
 };
 
-const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, Role }) => {
+const MetricTable: React.FC<MetricTableProps> = ({
+  ReferenceID,
+  Role,
+  month,
+  year,
+}) => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,8 +54,11 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, Role }) => {
     "Shopify",
   ];
 
-  // Fetch data with month and year filtering
-  const fetchMetricsData = async (month: number, year: number) => {
+  // ✅ Fetch data with month and year filtering
+  const fetchMetricsData = async (
+    selectedMonth: number,
+    selectedYear: number
+  ) => {
     try {
       setLoading(true);
       const response = await fetch(
@@ -56,12 +67,12 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, Role }) => {
       if (!response.ok) throw new Error("Failed to fetch data");
       const data = await response.json();
 
-      // Filter the data based on selected month and year
+      // ✅ Filter the data based on selected month and year
       const filteredData = data.filter((metric: Metric) => {
         const metricDate = new Date(metric.createdAt);
         return (
-          metricDate.getMonth() + 1 === month &&
-          metricDate.getFullYear() === year
+          metricDate.getMonth() + 1 === selectedMonth &&
+          metricDate.getFullYear() === selectedYear
         );
       });
 
@@ -74,10 +85,10 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, Role }) => {
   };
 
   useEffect(() => {
-    fetchMetricsData(selectedMonth, selectedYear);
-  }, [ReferenceID, Role, selectedMonth, selectedYear]);
+    fetchMetricsData(month, year);
+  }, [ReferenceID, Role, month, year]);
 
-  // Calculate weekly counts per channel
+  // ✅ Calculate weekly counts per channel
   const calculateWeeklyCounts = () => {
     const weeklyCounts: Record<string, Record<string, number>> = {
       "Week 1": {},
@@ -104,47 +115,7 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, Role }) => {
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4">
-      {/* Month & Year Filters */}
-      <div className="mb-4 flex gap-4">
-        <div>
-          <label htmlFor="month" className="block text-xs font-semibold">
-            Month
-          </label>
-          <select
-            id="month"
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            className="w-full px-3 py-2 border bg-gray-50 rounded text-xs"
-          >
-            {Array.from({ length: 12 }, (_, i) => (
-              <option key={i} value={i + 1}>
-                {new Date(0, i).toLocaleString("default", { month: "long" })}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="year" className="block text-xs font-semibold">
-            Year
-          </label>
-          <select
-            id="year"
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="w-full px-3 py-2 border bg-gray-50 rounded text-xs"
-          >
-            {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(
-              (year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              )
-            )}
-          </select>
-        </div>
-      </div>
-
-      {/* Loading or Data Table */}
+      {/* ✅ Loading or Data Table */}
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : (
