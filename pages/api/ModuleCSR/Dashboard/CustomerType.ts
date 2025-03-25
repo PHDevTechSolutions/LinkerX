@@ -7,48 +7,67 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Extract query parameters
-    const { startDate, endDate, ReferenceID, Role } = req.query;
+    // ✅ Extract query parameters
+    const { month, year, ReferenceID, Role } = req.query;
 
-    // Define date range with fallback to current month
-    const currentDate = new Date();
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    // ✅ Define date range based on selected month and year
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
 
-    const finalStartDate = startDate ? new Date(startDate as string) : startOfMonth;
-    const finalEndDate = endDate ? new Date(endDate as string) : endOfMonth;
+    const selectedYear = parseInt((year as string) || `${currentYear}`);
+    const selectedMonth = parseInt((month as string) || `${currentMonth}`);
 
-    console.log("Filtering by Date Range:", finalStartDate, finalEndDate);
+    const startOfMonth = new Date(selectedYear, selectedMonth - 1, 1);
+    const endOfMonth = new Date(selectedYear, selectedMonth, 0, 23, 59, 59);
 
+    console.log("✅ Filtering by Date Range:", {
+      startDate: startOfMonth.toISOString(),
+      endDate: endOfMonth.toISOString(),
+    });
+
+    // ✅ Connect to MongoDB
     const db = await connectToDatabase();
     const monitoringCollection = db.collection("monitoring");
 
-    // Define match filter
+    // ✅ Define base match filter
     const matchFilter: any = {
-      CustomerType: { $in: ["B2B", "B2C", "B2G", "Gentrade", "Modern Trade"] },
-      createdAt: { $gte: finalStartDate, $lte: finalEndDate },
+      CustomerType: {
+        $in: ["B2B", "B2C", "B2G", "Gentrade", "Modern Trade"],
+      },
+      createdAt: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      },
     };
 
-    // Apply ReferenceID filter only if Role is "Staff"
+    // ✅ Apply ReferenceID filter only if Role is "Staff"
     if (Role === "Staff" && ReferenceID) {
       matchFilter.ReferenceID = ReferenceID;
     }
 
-    // Aggregate customer data
-    const result = await monitoringCollection.aggregate([
-      { $match: matchFilter },
-      {
-        $group: {
-          _id: "$CustomerType",
-          count: { $sum: 1 },
+    // ✅ Aggregate customer type data
+    const result = await monitoringCollection
+      .aggregate([
+        { $match: matchFilter },
+        {
+          $group: {
+            _id: "$CustomerType",
+            count: { $sum: 1 },
+          },
         },
-      },
-    ]).toArray();
+      ])
+      .toArray();
 
-    console.log("Aggregated CustomerType Data:", result);
+    console.log("🎯 Aggregated CustomerType Data:", result);
+
+    // ✅ Send success response
     res.status(200).json(result);
   } catch (error) {
-    console.error("Error fetching monitoring data:", error);
-    res.status(500).json({ success: false, message: "Error fetching monitoring data", error });
+    console.error("❌ Error fetching customer type data:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching customer type data",
+      error,
+    });
   }
 }

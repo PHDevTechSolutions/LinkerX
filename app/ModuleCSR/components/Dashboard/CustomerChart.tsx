@@ -1,53 +1,71 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale } from "chart.js";
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+} from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 // Register Chart.js components
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 interface CustomerChartProps {
-  startDate?: string;
-  endDate?: string;
   ReferenceID: string;
   Role: string;
 }
 
-const CustomerChart: React.FC<CustomerChartProps> = ({ startDate, endDate, ReferenceID, Role }) => {
-  const [genderData, setGenderData] = useState<any>(null);
+const CustomerChart: React.FC<CustomerChartProps> = ({ ReferenceID, Role }) => {
+  const [customerData, setCustomerData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedMonth, setSelectedMonth] = useState<string>(`${new Date().getMonth() + 1}`);
+  const [selectedYear, setSelectedYear] = useState<string>(`${new Date().getFullYear()}`);
 
-  const getCurrentMonthRange = () => {
-    const currentDate = new Date();
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    return { startOfMonth, endOfMonth };
-  };
-
+  // ✅ Fetch data on component load and when filters change
   useEffect(() => {
-    const fetchGenderData = async () => {
-      const { startOfMonth, endOfMonth } = getCurrentMonthRange();
-      const finalStartDate = startDate || startOfMonth.toISOString();
-      const finalEndDate = endDate || endOfMonth.toISOString();
+    const fetchCustomerData = async () => {
+      setLoading(true);
+      try {
+        // Build start and end date based on month and year
+        const startDate = `${selectedYear}-${selectedMonth.padStart(2, "0")}-01`;
+        const endDate = new Date(parseInt(selectedYear), parseInt(selectedMonth), 0)
+          .toISOString()
+          .split("T")[0];
 
-      const res = await fetch(
-        `/api/ModuleCSR/Dashboard/Customer?startDate=${finalStartDate}&endDate=${finalEndDate}&ReferenceID=${ReferenceID}&Role=${Role}`
-      );
-      const data = await res.json();
-      if (res.ok) {
-        setGenderData(data);
+        // ✅ Corrected API call with new endpoint and parameters
+        const res = await fetch(
+          `/api/ModuleCSR/Dashboard/Customer?ReferenceID=${ReferenceID}&Role=${Role}&startDate=${startDate}&endDate=${endDate}`
+        );
+        const data = await res.json();
+
+        if (res.ok) {
+          setCustomerData(data);
+        } else {
+          setCustomerData(null);
+        }
+      } catch (error) {
+        console.error("❌ Error fetching customer data:", error);
+        setCustomerData(null);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchGenderData();
-  }, [startDate, endDate, ReferenceID, Role]); // Added dependencies
+    fetchCustomerData();
+  }, [selectedMonth, selectedYear, ReferenceID, Role]);
 
+  // ✅ Prepare chart data
   const pieChartData = {
-    labels: genderData ? genderData.map((item: any) => item._id) : [],
+    labels: customerData ? customerData.map((item: any) => item._id) : [],
     datasets: [
       {
-        data: genderData ? genderData.map((item: any) => item.count) : [],
-        backgroundColor: ["#0B293F", "#332753", "#4C0000", "#1B360D"],
+        data: customerData ? customerData.map((item: any) => item.count) : [],
+        backgroundColor: ["#0B293F", "#332753", "#4C0000", "#1B360D", "#6D214F"],
         borderColor: "#fff",
         borderWidth: 1,
       },
@@ -63,7 +81,7 @@ const CustomerChart: React.FC<CustomerChartProps> = ({ startDate, endDate, Refer
     plugins: {
       title: {
         display: true,
-        text: "Inbound Traffic Per Gender",
+        text: "Customer Status Distribution",
         font: {
           size: 15,
         },
@@ -71,44 +89,80 @@ const CustomerChart: React.FC<CustomerChartProps> = ({ startDate, endDate, Refer
       tooltip: {
         callbacks: {
           label: function (tooltipItem: any) {
-            return `${tooltipItem.label}: ${tooltipItem.raw}`; // Tooltip format
+            return `${tooltipItem.label}: ${tooltipItem.raw}`;
           },
         },
       },
       datalabels: {
-        color: '#fff', // White color for the text
+        color: "#fff",
         font: {
-          weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
-          size: 14, // Font size for data labels
+          weight: "bold" as const,
+          size: 14,
         },
         formatter: function (value: any) {
-          return value; // Display the value directly inside the chart
+          return value;
         },
       },
     },
     layout: {
-      padding: 2, // Added padding for better view
+      padding: 2,
     },
     elements: {
       arc: {
-        borderWidth: 6, // Add border width for distinct arcs
+        borderWidth: 6,
       },
     },
   };
 
   return (
-    <div className="flex justify-center items-center w-full h-full">
-      <div className="w-full h-full">
-        <p className="text-xs">
-          <strong>Pie chart</strong> showing the count of <strong>customer statuses</strong> in the dataset. It updates
-          dynamically based on <strong>start</strong> and <strong>end dates</strong>. "Loading data..." is shown during fetch,
-          and "No data available" appears if there's no data.
-        </p>
+    <div className="flex flex-col justify-center items-center w-full h-full space-y-4">
+      {/* Month and Year Filters */}
+      <div className="flex space-x-4 mb-2">
+        {/* Month Filter */}
+        <select
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          className="border p-2 rounded text-xs bg-white"
+        >
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4">April</option>
+          <option value="5">May</option>
+          <option value="6">June</option>
+          <option value="7">July</option>
+          <option value="8">August</option>
+          <option value="9">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
 
-        {genderData ? (
+        {/* Year Filter */}
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(e.target.value)}
+          className="border p-2 rounded text-xs bg-white"
+        >
+          {Array.from({ length: 5 }, (_, i) => {
+            const year = new Date().getFullYear() - i;
+            return (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            );
+          })}
+        </select>
+      </div>
+
+      {/* Pie Chart */}
+      <div className="w-full h-full">
+        {loading ? (
+          <p className="text-center text-gray-600 text-xs">Loading data...</p>
+        ) : customerData && customerData.length > 0 ? (
           <Pie data={pieChartData} options={pieChartOptions} plugins={[ChartDataLabels]} />
         ) : (
-          <p className="text-center text-white text-xs">Loading data...</p>
+          <p className="text-center text-gray-600 text-xs">No data available</p>
         )}
       </div>
     </div>

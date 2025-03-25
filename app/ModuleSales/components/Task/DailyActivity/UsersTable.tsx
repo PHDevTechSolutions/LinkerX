@@ -349,18 +349,29 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                             <div className="card-footer text-xs flex justify-between items-center mt-2 pt-2">
                                                 <p className="text-[10px]"><strong>Date Created:</strong> {format(parseISO(user.date_created), "MMM dd, yyyy - h:mm:ss a")}</p>
 
-                                                {/* Status Badge */}
-                                                <span className={`px-2 py-1 rounded-full text-white text-[8px] 
-                                                    ${user.activitystatus === "Cold" ? "bg-blue-700" :
-                                                        user.activitystatus === "Warm" ? "bg-yellow-700" :
-                                                            user.activitystatus === "Hot" ? "bg-red-700" :
-                                                                user.activitystatus === "Done" ? "bg-green-700" :
-                                                                    user.activitystatus === "Loss" ? "bg-gray-500" :
-                                                                        user.activitystatus === "Cancelled" ? "bg-red-800" :
-                                                                            "bg-gray-500"
-                                                    }`}>
-                                                    {user.activitystatus}
+                                                {/* Status Badge with Glow Effect */}
+                                                <span
+                                                    className={`relative px-2 py-1 rounded-full text-white text-[8px] 
+                                                        ${user.activitystatus === "Cold" ? "bg-blue-700" :
+                                                            user.activitystatus === "Warm" ? "bg-yellow-700" :
+                                                                user.activitystatus === "Hot" ? "bg-red-700" :
+                                                                    user.activitystatus === "Done" ? "bg-green-700" :
+                                                                        user.activitystatus === "Loss" ? "bg-gray-500" :
+                                                                            user.activitystatus === "Cancelled" ? "bg-red-800" :
+                                                                                "bg-gray-500"
+                                                        }`}
+                                                >
+                                                    {/* Glow Effect */}
+                                                    {!["Client Visit", "On Site", "On Field", "Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
+                                                        <div
+                                                            className="absolute inset-0 rounded-full border-2 border-yellow-500 animate-[pulse_2s_infinite] shadow-lg shadow-blue-500/50"
+                                                        ></div>
+                                                    )}
+                                                    {/* Activity Status Text */}
+                                                    <span className="relative z-10">{user.activitystatus}</span>
                                                 </span>
+
+
                                             </div>
                                         )}
 

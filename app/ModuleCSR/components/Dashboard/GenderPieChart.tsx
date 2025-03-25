@@ -2,65 +2,57 @@
 import React, { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 // Register Chart.js components
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-// Type for chart data (optional, to help with typing)
 interface GenderPieChartProps {
-  startDate?: string;
-  endDate?: string;
   ReferenceID: string;
   Role: string;
 }
 
-const GenderPieChart: React.FC<GenderPieChartProps> = ({ startDate, endDate, ReferenceID, Role }) => {
+const GenderPieChart: React.FC<GenderPieChartProps> = ({ ReferenceID, Role }) => {
   const [genderData, setGenderData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedMonth, setSelectedMonth] = useState<string>((new Date().getMonth() + 1).toString()); // Default to current month
+  const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString()); // Default to current year
 
-  // Helper function to get the current month's start and end dates
-  const getCurrentMonthRange = () => {
-    const currentDate = new Date();
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    return { startOfMonth, endOfMonth };
-  };
-
+  // Fetch gender data based on selected month and year
   useEffect(() => {
     const fetchGenderData = async () => {
-      const { startOfMonth, endOfMonth } = getCurrentMonthRange();
-      const finalStartDate = startDate || startOfMonth.toISOString(); // Fallback to the current month if no startDate
-      const finalEndDate = endDate || endOfMonth.toISOString(); // Fallback to the current month if no endDate
-
       try {
-        const res = await fetch(`/api/ModuleCSR/Dashboard/Monitoring?startDate=${finalStartDate}&endDate=${finalEndDate}&ReferenceID=${ReferenceID}&Role=${Role}`);
+        const res = await fetch(
+          `/api/ModuleCSR/Dashboard/Monitoring?ReferenceID=${ReferenceID}&Role=${Role}&month=${selectedMonth}&year=${selectedYear}`
+        );
         const data = await res.json();
         if (res.ok) {
           setGenderData(data);
         }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching gender data:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchGenderData();
-  }, [startDate, endDate, ReferenceID, Role]);
+  }, [selectedMonth, selectedYear, ReferenceID, Role]);
 
+  // Pie chart data
   const pieChartData = {
-    labels: genderData ? genderData.map((item: any) => item._id) : [], // Gender status
+    labels: genderData ? genderData.map((item: any) => item._id) : [],
     datasets: [
       {
-        data: genderData ? genderData.map((item: any) => item.count) : [], // Count of each gender
-        backgroundColor: ["#B8742C", "#162F0B"], // Custom colors for gender
-        borderColor: "#fff", // Border color for better contrast
+        data: genderData ? genderData.map((item: any) => item.count) : [],
+        backgroundColor: ["#B8742C", "#162F0B"],
+        borderColor: "#fff",
         borderWidth: 2,
       },
     ],
   };
 
+  // Pie chart options
   const pieChartOptions = {
     responsive: true,
     animation: {
@@ -78,41 +70,77 @@ const GenderPieChart: React.FC<GenderPieChartProps> = ({ startDate, endDate, Ref
       tooltip: {
         callbacks: {
           label: function (tooltipItem: any) {
-            return `${tooltipItem.label}: ${tooltipItem.raw}`; // Tooltip format
+            return `${tooltipItem.label}: ${tooltipItem.raw}`;
           },
         },
       },
       datalabels: {
-        color: '#fff', // White color for the text
+        color: "#fff",
         font: {
-          weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
-          size: 14, // Font size for data labels
+          weight: "bold" as const,
+          size: 14,
         },
         formatter: function (value: any) {
-          return value; // Display the value directly inside the chart
+          return value;
         },
       },
     },
     layout: {
-      padding: 2, // Added padding for better view
+      padding: 2,
     },
     elements: {
       arc: {
-        borderWidth: 6, // Add border width for distinct arcs
+        borderWidth: 6,
       },
     },
   };
 
   return (
-    <div className="flex justify-center items-center w-full h-full">
-      <div className="w-full h-full">
-        <p className="text-xs">
-          <strong>Pie Chart</strong> tracking the count of <strong>male</strong> and <strong>female</strong> entries in the dataset. A loading message appears while data is fetched, and "No data available" will display if there's no data.
-        </p>
+    <div className="flex flex-col justify-center items-center w-full h-full p-4">
+      {/* Month and Year Filters */}
+      <div className="flex space-x-2 mb-4 w-full max-w-sm">
+        {/* Month Select */}
+        <select
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          className="border px-2 py-1 rounded text-xs"
+        >
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4">April</option>
+          <option value="5">May</option>
+          <option value="6">June</option>
+          <option value="7">July</option>
+          <option value="8">August</option>
+          <option value="9">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
 
+        {/* Year Select */}
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(e.target.value)}
+          className="border px-2 py-1 rounded text-xs"
+        >
+          {Array.from({ length: 5 }).map((_, i) => {
+            const year = new Date().getFullYear() - i;
+            return (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            );
+          })}
+        </select>
+      </div>
+
+      {/* Chart Display */}
+      <div className="w-full h-full">
         {loading ? (
           <p className="text-center text-gray-600 text-xs">Loading data...</p>
-        ) : genderData ? (
+        ) : genderData && genderData.length > 0 ? (
           <Pie data={pieChartData} options={pieChartOptions} plugins={[ChartDataLabels]} />
         ) : (
           <p className="text-center text-gray-600 text-xs">No data available</p>

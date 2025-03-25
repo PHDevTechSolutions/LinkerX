@@ -7,45 +7,49 @@ import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, Li
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
 
 interface CustomerTypeChartProps {
-  startDate?: string;
-  endDate?: string;
   ReferenceID: string;
   Role: string;
 }
 
-const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ startDate, endDate, ReferenceID, Role }) => {
-  const [genderData, setCustomerType] = useState<any>(null);
+const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ ReferenceID, Role }) => {
+  const [customerTypeData, setCustomerTypeData] = useState<any>(null);
+  const [selectedMonth, setSelectedMonth] = useState<string>(`${new Date().getMonth() + 1}`);
+  const [selectedYear, setSelectedYear] = useState<string>(`${new Date().getFullYear()}`);
+  const [loading, setLoading] = useState(true);
 
-  const getCurrentMonthRange = () => {
-    const currentDate = new Date();
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    return { startOfMonth, endOfMonth };
-  };
-
+  // ✅ Fetch data with month and year filters
   useEffect(() => {
-    const fetchGenderData = async () => {
-      const { startOfMonth, endOfMonth } = getCurrentMonthRange();
-      const finalStartDate = startDate || startOfMonth.toISOString(); // Fallback to current month if no startDate
-      const finalEndDate = endDate || endOfMonth.toISOString(); // Fallback to current month if no endDate
-      
-      const res = await fetch(`/api/ModuleCSR/Dashboard/CustomerType?startDate=${finalStartDate}&endDate=${finalEndDate}&ReferenceID=${ReferenceID}&Role=${Role}`);
-      const data = await res.json();
-      if (res.ok) {
-        setCustomerType(data);
+    const fetchCustomerTypeData = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `/api/ModuleCSR/Dashboard/CustomerType?ReferenceID=${ReferenceID}&Role=${Role}&month=${selectedMonth}&year=${selectedYear}`
+        );
+        const data = await res.json();
+        if (res.ok) {
+          setCustomerTypeData(data);
+        } else {
+          setCustomerTypeData(null);
+        }
+      } catch (error) {
+        console.error("Error fetching customer type data:", error);
+        setCustomerTypeData(null);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchGenderData();
-  }, [startDate, endDate, ReferenceID, Role]); // Depend on startDate and endDate
+    fetchCustomerTypeData();
+  }, [selectedMonth, selectedYear, ReferenceID, Role]);
 
+  // ✅ Prepare chart data
   const doughnutChartData = {
-    labels: genderData ? genderData.map((item: any) => item._id) : [],
+    labels: customerTypeData ? customerTypeData.map((item: any) => item._id) : [],
     datasets: [
       {
-        data: genderData ? genderData.map((item: any) => item.count) : [],
-        backgroundColor: ["#1B360D", "#744700", "#A64D79"], // Customer types color scheme
-        borderColor: "#fff", // Border color for better contrast
+        data: customerTypeData ? customerTypeData.map((item: any) => item.count) : [],
+        backgroundColor: ["#1B360D", "#744700", "#A64D79", "#332753", "#4C0000"],
+        borderColor: "#fff",
         borderWidth: 2,
       },
     ],
@@ -72,40 +76,67 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({ startDate, endDat
           },
         },
       },
-      datalabels: {
-        color: '#fff', // White color for the text
-        font: {
-          weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
-          size: 14, // Font size for data labels
-        },
-        formatter: function (value: any) {
-          return value; // Display the value directly inside the chart
-        },
-      },
     },
     layout: {
-      padding: 2, // Added padding for better view
+      padding: 2,
     },
     elements: {
       arc: {
-        borderWidth: 6, // Add border width to the arcs
+        borderWidth: 6,
       },
     },
-    cutout: '70%', // Doughnut hole
+    cutout: "70%",
   };
 
   return (
-    <div className="flex justify-center items-center w-full h-full">
+    <div className="flex flex-col justify-center items-center w-full h-full space-y-4">
+      {/* ✅ Month and Year Filters */}
+      <div className="flex space-x-4 mb-2">
+        {/* Month Filter */}
+        <select
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          className="border p-2 rounded text-xs bg-white"
+        >
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4">April</option>
+          <option value="5">May</option>
+          <option value="6">June</option>
+          <option value="7">July</option>
+          <option value="8">August</option>
+          <option value="9">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
+
+        {/* Year Filter */}
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(e.target.value)}
+          className="border p-2 rounded text-xs bg-white"
+        >
+          {Array.from({ length: 5 }, (_, i) => {
+            const year = new Date().getFullYear() - i;
+            return (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            );
+          })}
+        </select>
+      </div>
+
+      {/* ✅ Doughnut Chart */}
       <div className="w-full h-full">
-      <p className="text-xs">
-          <strong>Doughnut chart</strong> showing the count of <strong>customer type</strong> in the dataset. It updates
-          dynamically based on <strong>start</strong> and <strong>end dates</strong>. "Loading data..." is shown during fetch,
-          and "No data available" appears if there's no data.
-        </p>
-        {genderData ? (
+        {loading ? (
+          <p className="text-center text-gray-600 text-xs">Loading data...</p>
+        ) : customerTypeData && customerTypeData.length > 0 ? (
           <Doughnut data={doughnutChartData} options={doughnutChartOptions} />
         ) : (
-          <p className="text-center text-gray-600 text-xs">Loading data...</p>
+          <p className="text-center text-gray-600 text-xs">No data available</p>
         )}
       </div>
     </div>

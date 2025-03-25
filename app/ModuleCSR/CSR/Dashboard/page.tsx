@@ -102,14 +102,10 @@ const DashboardPage: React.FC = () => {
                   This chart tracks the traffic count from various sources such as <strong>Google Maps</strong>, <strong>Website</strong>, <strong>Facebook Main</strong>, <strong>Facebook Home</strong>, <strong>Viber</strong>, and other channels. It visualizes the volume of traffic coming from each source, providing insights into where your audience is engaging from. This data helps in understanding the reach and effectiveness of your various online platforms.
                 </p>
                 {activeTable === "barchart" && <BarChart
-                  startDate={startDate}
-                  endDate={endDate}
                   ReferenceID={userDetails.ReferenceID}
-                  Role={userDetails.Role}
                 />}
                 {activeTable === "metrictable" && <MetricTable
                   ReferenceID={userDetails.ReferenceID}
-                  Role={userDetails.Role}
                 />}
                 {activeTable === "inboundtraffic" && <InboundTrafficTable
                   ReferenceID={userDetails.ReferenceID}
@@ -129,20 +125,14 @@ const DashboardPage: React.FC = () => {
               </div>
               <div className="p-4">
                 {activeTab === "gender" && <GenderPieChart
-                  startDate={startDate}
-                  endDate={endDate}
                   ReferenceID={userDetails.ReferenceID}
                   Role={userDetails.Role}
                 />}
                 {activeTab === "customer" && <CustomerChart
-                  startDate={startDate}
-                  endDate={endDate}
                   ReferenceID={userDetails.ReferenceID}
                   Role={userDetails.Role}
                 />}
                 {activeTab === "customerType" && <CustomerTypeChart
-                  startDate={startDate}
-                  endDate={endDate}
                   ReferenceID={userDetails.ReferenceID}
                   Role={userDetails.Role}
                 />}
@@ -157,14 +147,10 @@ const DashboardPage: React.FC = () => {
               </div>
               <div className="p-4">
                 {activeSource === "source" && <CustomerSource
-                  startDate={startDate}
-                  endDate={endDate}
                   ReferenceID={userDetails.ReferenceID}
                   Role={userDetails.Role}
                 />}
                 {activeSource === "wrapup" && <Wrapup
-                  startDate={startDate}
-                  endDate={endDate}
                   ReferenceID={userDetails.ReferenceID}
                   Role={userDetails.Role} />}
               </div>

@@ -7,14 +7,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
+        // Extract query parameters
+        const { ReferenceID, Role, month, year } = req.query;
+
         // Connect to the database
         const db = await connectToDatabase();
         const monitoringCollection = db.collection("monitoring");
 
-        // Fetch **all** monitoring data (removing projection to include everything)
-        const data = await monitoringCollection.find({}).toArray();
+        // Create filter object
+        const matchFilter: any = {};
 
-        // Return the full dataset
+        // Apply month and year filter to createdAt
+        if (month && year) {
+            const monthNumber = parseInt(month as string, 10) - 1; // Convert month to zero-based index
+            const yearNumber = parseInt(year as string, 10);
+            const startDate = new Date(yearNumber, monthNumber, 1);
+            const endDate = new Date(yearNumber, monthNumber + 1, 0, 23, 59, 59);
+
+            matchFilter.createdAt = { $gte: startDate, $lte: endDate };
+        }
+
+        // Apply ReferenceID filter if Role is "Staff"
+        if (Role === "Staff" && ReferenceID) {
+            matchFilter.ReferenceID = ReferenceID;
+        }
+
+        // Fetch filtered monitoring data
+        const data = await monitoringCollection.find(matchFilter).toArray();
+
+        // Return the filtered dataset
         return res.status(200).json(data);
     } catch (error) {
         console.error("Error fetching monitoring data:", error);
