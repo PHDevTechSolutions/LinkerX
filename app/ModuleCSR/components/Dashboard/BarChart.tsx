@@ -1,152 +1,149 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import ChartDataLabels from "chartjs-plugin-datalabels";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ChartDataLabels
-);
+// Register the necessary chart.js components and the datalabels plugin
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
 interface Metric {
-  _id: string; // Channel name
-  count: number; // Total count for the channel
+  createdAt: string;
+  Channel: string;
+  Traffic: string;
 }
 
-interface BarChartProps {
+interface MetricTableProps {
   ReferenceID: string;
   month?: number;
   year?: number;
+  Role: string;
 }
 
-const BarChart: React.FC<BarChartProps> = ({ ReferenceID, month, year }) => {
-  const selectedMonth = month || new Date().getMonth() + 1;
-  const selectedYear = year || new Date().getFullYear();
+const MetricTable: React.FC<MetricTableProps> = ({
+  ReferenceID,
+  month,
+  year,
+  Role,
+}) => {
+  const [metrics, setMetrics] = useState<Metric[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const [chartData, setChartData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  // Fixed list of channels
+  const channels = [
+    "Google Maps",
+    "Website",
+    "FB Main",
+    "FB ES Home",
+    "Viber",
+    "Text Message",
+    "Instagram",
+    "Voice Call",
+    "Email",
+    "Whatsapp",
+    "Shopify",
+  ];
 
-  // Fetch data for the selected month and year
-  const fetchData = async (month: number, year: number) => {
-    try {
-      setLoading(true);
+  // Array of fixed colors for each channel
+  const colors = [
+    "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40", 
+    "#C9CBCF", "#8B0000", "#008080", "#FFD700", "#DC143C", "#20B2AA", 
+    "#8A2BE2", "#FF4500", "#00CED1", "#2E8B57", "#4682B4"
+  ];
 
-      // API URL with month and year passed correctly
-      const apiUrl = `/api/ModuleCSR/Dashboard/Channel?ReferenceID=${ReferenceID}&month=${month}&year=${year}`;
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const apiUrl = `/api/ModuleCSR/Dashboard/Metrics?ReferenceID=${ReferenceID}&month=${month}&year=${year}`;
+        const response = await fetch(apiUrl); // Fetching data from API
+        if (!response.ok) throw new Error("Failed to fetch data");
+        const data = await response.json();
 
-      const response = await fetch(apiUrl);
-      if (!response.ok) {
-        const errorDetails = await response.text();
-        throw new Error(`Failed to fetch data: ${errorDetails}`);
+        // ✅ Filter by month and year in frontend if backend is not filtering
+        const filteredData = data.filter((item: Metric) => {
+          const createdAtDate = new Date(item.createdAt);
+          return (
+            createdAtDate.getMonth() + 1 === month &&
+            createdAtDate.getFullYear() === year
+          );
+        });
+
+        setMetrics(filteredData);
+      } catch (error) {
+        console.error("Error fetching metrics:", error);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const data: Metric[] = await response.json();
+    fetchMetrics(); // Call the fetch function
+  }, [ReferenceID, Role, month, year]);
 
-      // Define the channels you want to display on the bar chart
-      const channels = [
-        "Google Maps", "Website", "FB Main", "FB EShome", "Viber",
-        "Text Message", "Instagram", "Voice Call", "Email", "WhatsApp", "Shopify"
-      ];
-
-      // Prepare the data for the chart
-      const trafficData = channels.map((channel) => {
-        const item = data.find((entry) => entry._id === channel);
-        return item ? item.count : 0; // If no data for the channel, use 0
-      });
-
-      // Define colors for the bars
-      const colors = [
-        "#3A7D44", "#27667B", "#497D74", "#27445D", "#3674B5", "#FBA518",
-        "#F9CB43", "#493D9E", "#77B254", "#8E1616", "#8E1316"
-      ];
-
-      // Update the chart data state
-      setChartData({
-        labels: channels, // Channel names
-        datasets: [
-          {
-            label: "Inbound Traffic Per Channel",
-            data: trafficData,
-            backgroundColor: colors.slice(0, trafficData.length),
-            borderColor: "#1E40AF",
-            borderWidth: 1,
-            datalabels: {
-              align: "center",
-              color: "#fff",
-              font: { size: 12, weight: "bold" },
-              formatter: (value: any) => value,
-            },
-          },
-        ],
-      });
-    } catch (error) {
-      setChartData(null);
-    } finally {
-      setLoading(false);
+  // Group by Channel, only for the predefined channels
+  const groupedMetrics = metrics.reduce((groups, metric) => {
+    if (channels.includes(metric.Channel)) {
+      if (!groups[metric.Channel]) {
+        groups[metric.Channel] = {
+          channel: metric.Channel,
+          traffic: 0,
+          items: [],
+        };
+      }
+      groups[metric.Channel].items.push(metric);
+      groups[metric.Channel].traffic += 1;
     }
+    return groups;
+  }, {} as Record<string, any>);
+
+  // Prepare data for the bar chart
+  const chartData = {
+    labels: Object.keys(groupedMetrics), // Channel names as labels
+    datasets: [
+      {
+        label: "Traffic per Channel", // Set your label here
+        data: Object.values(groupedMetrics).map((group) => group.traffic),
+        backgroundColor: Object.keys(groupedMetrics).map((_, index) => colors[index % colors.length]), // Apply fixed colors cyclically
+        borderColor: "#388E3C", // Border color for bars
+        borderWidth: 1, // Border width of bars
+        borderRadius: 10,
+      },
+    ],
   };
 
-  // Fetch data when month, year, or ReferenceID changes
-  useEffect(() => {
-    fetchData(selectedMonth, selectedYear);
-  }, [selectedMonth, selectedYear, ReferenceID]);
-
-  // Chart options
-  const options = {
+  // Chart options including data labels plugin
+  const chartOptions = {
     responsive: true,
     plugins: {
-      legend: { display: false },
-      title: {
-        display: true,
-        text: "Total Channel Count for Selected Month",
-        font: { size: 15 },
-      },
       datalabels: {
-        color: "#fff",
+        color: 'black', // White text color for data labels
         font: {
-          weight: "bold" as const,
-          size: 14,
+          weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
+          size: 8, // Font size for data labels
         },
         formatter: function (value: any) {
-          return value;
+          return value; // Display the value directly inside the chart
         },
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
+        backgroundColor: 'white', // Set background color of the label
+        borderRadius: 50, // Make the background circular
+        padding: 4, // Add padding inside the circle
+        align: 'center' as const, // Explicitly cast "center" to match the expected type
+        anchor: 'center' as const, // Explicitly cast "center" to match the expected type
       },
     },
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-4 w-full">
-      {/* Show loading or the chart */}
-      <div className="w-full flex justify-center items-center">
-        {loading ? (
-          <p>Loading...</p>
-        ) : chartData ? (
-          <Bar data={chartData} options={options} />
-        ) : (
-          <p>No data available for the selected period</p>
-        )}
-      </div>
+    <div className="bg-white shadow-md rounded-lg p-4">
+      {/* Loading or Bar Chart Content */}
+      {loading ? (
+        <p className="text-center">Loading...</p>
+      ) : (
+        <div>
+          <Bar data={chartData} options={chartOptions} />
+        </div>
+      )}
     </div>
   );
 };
 
-export default BarChart;
+export default MetricTable;
