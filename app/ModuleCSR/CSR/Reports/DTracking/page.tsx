@@ -232,7 +232,6 @@ const ReceivedPO: React.FC = () => {
                                             <DTrackingTable
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}
-                                                Role={user ? user.Role : ""}
                                             />
                                             <Pagination
                                                 currentPage={currentPage}
