@@ -274,8 +274,7 @@ const DashboardPage: React.FC = () => {
             <div className="flex gap-4 mt-4 mb-4">
               <div className="bg-white shadow-md rounded-lg p-4 w-full">
                 <h3 className="text-sm font-bold mb-2">
-                  TSA Traffic to Sales Conversion (ON Developing Wait for the
-                  Completion of New Taskflow)
+                  TSA Traffic to Sales Conversion
                 </h3>
                 <div className="p-4">
                   <TSASalesConversion
