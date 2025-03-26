@@ -156,6 +156,7 @@ const DataLogTable: React.FC<DataLogsTableProps> = ({ posts }) => {
               <th className="p-3 border whitespace-nowrap">Amount</th>
               <th className="p-3 border whitespace-nowrap">Quantity</th>
               <th className="p-3 border whitespace-nowrap">Traffic</th>
+              <th className="p-3 border whitespace-nowrap">Agent Name</th>
               <th className="p-3 border whitespace-nowrap">Date Created</th>
             </tr>
           </thead>
@@ -205,6 +206,7 @@ const DataLogTable: React.FC<DataLogsTableProps> = ({ posts }) => {
                 </td>
                 <td className="p-3 border whitespace-nowrap">{post.QtySold}</td>
                 <td className="p-3 border whitespace-nowrap">{post.Traffic}</td>
+                <td className="p-3 border whitespace-nowrap">{post.SalesAgent}</td>
                 <td className="p-3 border whitespace-nowrap">
                   {new Date(post.createdAt).toLocaleDateString()}
                 </td>

@@ -146,10 +146,6 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
                 legend: {
                   position: "top",
                 },
-                title: {
-                  display: true,
-                  text: "Agent Sales Funnel",
-                },
                 datalabels: {
                     color: 'black', // White text color for data labels
                     font: {
@@ -171,7 +167,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
                   beginAtZero: true,
                   title: {
                     display: true,
-                    text: "Amount",
+                    text: "Agents Sales Conversion",
                   },
                 },
                 y: {

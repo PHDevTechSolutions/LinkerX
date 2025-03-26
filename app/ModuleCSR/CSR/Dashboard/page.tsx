@@ -277,10 +277,13 @@ const DashboardPage: React.FC = () => {
                   TSA Traffic to Sales Conversion (ON Developing Wait for the
                   Completion of New Taskflow)
                 </h3>
-                <div className="flex border-b mb-4 text-xs font-bold">
+                <div className="p-4">
                   <TSASalesConversion
-
-                  />
+                      ReferenceID={userDetails.ReferenceID}
+                      Role={userDetails.Role}
+                      month={Number(selectedMonth)}
+                      year={Number(selectedYear)}
+                    />
                 </div>
               </div>
             </div>
