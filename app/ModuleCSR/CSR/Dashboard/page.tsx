@@ -14,12 +14,14 @@ import BarChart from "../../components/Dashboard/BarChart";
 import Wrapup from "../../components/Dashboard/Wrapup";
 import WrapupTable from "../../components/Dashboard/WrapupTable";
 import AgentSalesConversion from "../../components/Dashboard/AgentSalesConversionTable";
+import AgentSalesConversionWeekly from "../../components/Dashboard/AgentSalesConversionWeeklyTable";
 import TSASalesConversion from "../../components/Dashboard/TSASalesConversion";
 
 const DashboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("gender");
   const [activeTable, setactiveTable] = useState("barchart");
   const [activeSource, setactiveSource] = useState("source");
+  const [activeTableTraffic, setactiveTableTraffic] = useState("salesconversion");
   const [selectedMonth, setSelectedMonth] = useState<string>(
     `${new Date().getMonth() + 1}`
   );
@@ -122,9 +124,9 @@ const DashboardPage: React.FC = () => {
           <div className="flex gap-4 mb-4">
             <div className="bg-white shadow-md rounded-lg p-4 w-full">
               <div className="flex border-b mb-4 text-xs font-bold">
-                <button className={`p-2 flex-1 ${activeTable === "barchart" ? "border-b-2 border-blue-500" : "" }`} onClick={() => setactiveTable("barchart")}>Bar Chart</button>
-                <button className={`p-2 flex-1 ${activeTable === "metrictable" ? "border-b-2 border-blue-500" : "" }`} onClick={() => setactiveTable("metrictable")}>Metrics</button>
-                <button className={`p-2 flex-1 ${activeTable === "inboundtraffic" ? "border-b-2 border-blue-500" : "" }`} onClick={() => setactiveTable("inboundtraffic")}>Weekly Inbound Traffic Per Channel</button>
+                <button className={`p-2 flex-1 ${activeTable === "barchart" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("barchart")}>Bar Chart</button>
+                <button className={`p-2 flex-1 ${activeTable === "metrictable" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("metrictable")}>Metrics</button>
+                <button className={`p-2 flex-1 ${activeTable === "inboundtraffic" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("inboundtraffic")}>Weekly Inbound Traffic Per Channel</button>
               </div>
               <div className="p-4">
                 {activeTable === "barchart" && (
@@ -157,9 +159,9 @@ const DashboardPage: React.FC = () => {
             {/* Card 2: Tabbed Charts (30% width) */}
             <div className="bg-white shadow-lg rounded-lg p-4 w-[30%]">
               <div className="flex border-b mb-4 text-xs font-bold">
-                <button className={`p-2 flex-1 ${activeTab === "gender" ? "border-b-2 border-blue-500" : "" }`} onClick={() => setActiveTab("gender")}>Gender</button>
-                <button className={`p-2 flex-1 ${activeTab === "customer" ? "border-b-2 border-blue-500" : "" }`} onClick={() => setActiveTab("customer")}>Customer Status</button>
-                <button className={`p-2 flex-1 ${activeTab === "customerType" ? "border-b-2 border-blue-500" : "" }`} onClick={() => setActiveTab("customerType")}>Customer Type</button>
+                <button className={`p-2 flex-1 ${activeTab === "gender" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setActiveTab("gender")}>Gender</button>
+                <button className={`p-2 flex-1 ${activeTab === "customer" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setActiveTab("customer")}>Customer Status</button>
+                <button className={`p-2 flex-1 ${activeTab === "customerType" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setActiveTab("customerType")}>Customer Type</button>
               </div>
               <div className="p-4">
                 {activeTab === "gender" && (
@@ -192,9 +194,9 @@ const DashboardPage: React.FC = () => {
             {/* Card 3: Customer Source (70% width) */}
             <div className="bg-white shadow-lg rounded-lg p-8 w-[70%]">
               <div className="flex border-b mb-4 text-xs font-bold">
-                <button className={`p-2 flex-1 ${activeSource === "source" ? "border-b-2 border-blue-500" : "" }`} onClick={() => setactiveSource("source")}>Source</button>
-                <button className={`p-2 flex-1 ${activeSource === "wrapup" ? "border-b-2 border-blue-500" : "" }`} onClick={() => setactiveSource("wrapup")}>Wrap Up</button>
-                <button className={`p-2 flex-1 ${activeSource === "wraptable" ? "border-b-2 border-blue-500" : "" }`} onClick={() => setactiveSource("wraptable")}>Table</button>
+                <button className={`p-2 flex-1 ${activeSource === "source" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveSource("source")}>Source</button>
+                <button className={`p-2 flex-1 ${activeSource === "wrapup" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveSource("wrapup")}>Wrap Up</button>
+                <button className={`p-2 flex-1 ${activeSource === "wraptable" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveSource("wraptable")}>Table</button>
               </div>
               <div className="p-4">
                 {activeSource === "source" && (
@@ -230,17 +232,26 @@ const DashboardPage: React.FC = () => {
             <div className="flex gap-4 mt-4 mb-4">
               <div className="bg-white shadow-md rounded-lg p-2 w-full">
                 <div className="border-b mb-4 text-xs font-bold">
-                  <button className="p-2 flex-1 border-b-2 border-blue-500">
-                    Traffic to Sales Conversion
-                  </button>
+                  <button className={`p-2 flex-1 ${activeTableTraffic === "salesconversion" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("salesconversion")}>Traffic to Sales Conversion</button>
+                  <button className={`p-2 flex-1 ${activeTableTraffic === "salesweekly" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("salesweekly")}>Traffic to Sales Conversion ( Weekly )</button>
                 </div>
                 <div className="p-4">
-                  <AgentSalesConversion
-                    ReferenceID={userDetails.ReferenceID}
-                    Role={userDetails.Role}
-                    month={Number(selectedMonth)}
-                    year={Number(selectedYear)}
-                  />
+                  {activeTableTraffic === "salesconversion" && (
+                    <AgentSalesConversion
+                      ReferenceID={userDetails.ReferenceID}
+                      Role={userDetails.Role}
+                      month={Number(selectedMonth)}
+                      year={Number(selectedYear)}
+                    />
+                  )}
+                  {activeTableTraffic === "salesweekly" && (
+                    <AgentSalesConversionWeekly
+                      ReferenceID={userDetails.ReferenceID}
+                      Role={userDetails.Role}
+                      month={Number(selectedMonth)}
+                      year={Number(selectedYear)}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -256,7 +267,7 @@ const DashboardPage: React.FC = () => {
                 </h3>
                 <div className="flex border-b mb-4 text-xs font-bold">
                   <TSASalesConversion
-                    
+
                   />
                 </div>
               </div>
