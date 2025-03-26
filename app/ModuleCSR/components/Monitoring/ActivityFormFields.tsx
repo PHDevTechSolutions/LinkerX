@@ -533,6 +533,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <option value="JS-NCR-002">JS-NCR-002 - Sherilyn, Rapote</option>
                         <option value="AB-NCR-005">AB-NCR-005 - Vincent, Ortiz</option>
                         <option value="AB-NCR-001">AB-NCR-001 - Wilnie, Ardelozo</option>
+                        <option value="NTL-DVO-000">NTL-DVO-000 - Mamolo, Juverson</option>
                         <option value="LX-NCR-001">(TEST ACCOUNT)</option>
                     </select>
                 </div>
