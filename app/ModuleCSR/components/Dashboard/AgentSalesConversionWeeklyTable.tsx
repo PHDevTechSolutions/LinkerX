@@ -79,7 +79,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     {} as Record<string, Metric[]>
   );
 
-  // ✅ Calculate totals per agent + Week-wise amount
+  // ✅ Calculate totals per agent
   const calculateAgentTotals = (agentMetrics: Metric[]) => {
     const totals = agentMetrics.reduce(
       (acc, metric) => {
@@ -130,6 +130,40 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
       .toFixed(2)
       .replace(/\d(?=(\d{3})+\.)/g, "$&,")}`;
   };
+
+  // ✅ Calculate total for all agents
+  const calculateTotalMetrics = () => {
+    return Object.keys(groupedMetrics).reduce(
+      (totals, refId) => {
+        const agentMetrics = groupedMetrics[refId];
+        const agentTotals = calculateAgentTotals(agentMetrics);
+        totals.sales += agentTotals.sales;
+        totals.nonSales += agentTotals.nonSales;
+        totals.totalAmount += agentTotals.totalAmount;
+        totals.totalQtySold += agentTotals.totalQtySold;
+        totals.totalConversionToSale += agentTotals.totalConversionToSale;
+        totals.week1 += agentTotals.week1;
+        totals.week2 += agentTotals.week2;
+        totals.week3 += agentTotals.week3;
+        totals.week4 += agentTotals.week4;
+
+        return totals;
+      },
+      {
+        sales: 0,
+        nonSales: 0,
+        totalAmount: 0,
+        totalQtySold: 0,
+        totalConversionToSale: 0,
+        week1: 0,
+        week2: 0,
+        week3: 0,
+        week4: 0,
+      }
+    );
+  };
+
+  const totalMetrics = calculateTotalMetrics();
 
   return (
     <div className="overflow-x-auto max-h-screen overflow-y-auto">
@@ -192,6 +226,31 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
               </tr>
             )}
           </tbody>
+          {/* Add tfoot for totals */}
+          <tfoot className="bg-gray-100 text-[10px] text-center font-bold">
+            <tr>
+              <td className="border p-2">Total</td>
+              <td className="border p-2">{totalMetrics.sales}</td>
+              <td className="border p-2">{totalMetrics.nonSales}</td>
+              <td className="border p-2">
+                {formatAmountWithPeso(totalMetrics.totalAmount)}
+              </td>
+              <td className="border p-2">{totalMetrics.totalQtySold}</td>
+              <td className="border p-2">{totalMetrics.totalConversionToSale}</td>
+              <td className="border p-2">
+                {formatAmountWithPeso(totalMetrics.week1)}
+              </td>
+              <td className="border p-2">
+                {formatAmountWithPeso(totalMetrics.week2)}
+              </td>
+              <td className="border p-2">
+                {formatAmountWithPeso(totalMetrics.week3)}
+              </td>
+              <td className="border p-2">
+                {formatAmountWithPeso(totalMetrics.week4)}
+              </td>
+            </tr>
+          </tfoot>
         </table>
       )}
     </div>

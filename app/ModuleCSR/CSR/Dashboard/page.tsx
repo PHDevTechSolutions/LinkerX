@@ -142,6 +142,7 @@ const DashboardPage: React.FC = () => {
                     ReferenceID={userDetails.ReferenceID}
                     month={Number(selectedMonth)}
                     year={Number(selectedYear)}
+                    Role={userDetails.Role}
                   />
                 )}
                 {activeTable === "inboundtraffic" && (

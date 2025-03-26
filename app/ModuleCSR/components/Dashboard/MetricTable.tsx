@@ -16,12 +16,14 @@ interface MetricTableProps {
   ReferenceID: string;
   month?: number;
   year?: number;
+  Role: string;
 }
 
 const MetricTable: React.FC<MetricTableProps> = ({
   ReferenceID,
   month,
   year,
+  Role,
 }) => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
