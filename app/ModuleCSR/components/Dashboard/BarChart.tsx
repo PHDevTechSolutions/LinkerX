@@ -104,7 +104,6 @@ const MetricTable: React.FC<MetricTableProps> = ({
         data: Object.values(groupedMetrics).map((group) => group.traffic),
         backgroundColor: Object.keys(groupedMetrics).map((_, index) => colors[index % colors.length]), // Apply fixed colors cyclically
         borderColor: "#388E3C", // Border color for bars
-        borderWidth: 1, // Border width of bars
         borderRadius: 10,
       },
     ],

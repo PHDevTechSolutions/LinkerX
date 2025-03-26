@@ -125,7 +125,6 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
         }),
         backgroundColor: Object.keys(groupedMetrics).map((refId, index) => colorPalette[index % colorPalette.length]), // Assign fixed colors
         borderColor: "#1C4E80", // Customize border color
-        borderWidth: 1,
         borderRadius: 10,
       },
     ],
