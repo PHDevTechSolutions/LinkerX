@@ -15,13 +15,14 @@ import Wrapup from "../../components/Dashboard/Wrapup";
 import WrapupTable from "../../components/Dashboard/WrapupTable";
 import AgentSalesConversion from "../../components/Dashboard/AgentSalesConversionTable";
 import AgentSalesConversionWeekly from "../../components/Dashboard/AgentSalesConversionWeeklyTable";
+import AgentSalesConversionChart from "../../components/Dashboard/AgentSalesConversionChart";
 import TSASalesConversion from "../../components/Dashboard/TSASalesConversion";
 
 const DashboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("gender");
   const [activeTable, setactiveTable] = useState("barchart");
   const [activeSource, setactiveSource] = useState("source");
-  const [activeTableTraffic, setactiveTableTraffic] = useState("salesconversion");
+  const [activeTableTraffic, setactiveTableTraffic] = useState("saleschart");
   const [selectedMonth, setSelectedMonth] = useState<string>(
     `${new Date().getMonth() + 1}`
   );
@@ -232,10 +233,19 @@ const DashboardPage: React.FC = () => {
             <div className="flex gap-4 mt-4 mb-4">
               <div className="bg-white shadow-md rounded-lg p-2 w-full">
                 <div className="border-b mb-4 text-xs font-bold">
+                <button className={`p-2 flex-1 ${activeTableTraffic === "saleschart" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("saleschart")}>Chart</button>
                   <button className={`p-2 flex-1 ${activeTableTraffic === "salesconversion" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("salesconversion")}>Traffic to Sales Conversion</button>
                   <button className={`p-2 flex-1 ${activeTableTraffic === "salesweekly" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("salesweekly")}>Traffic to Sales Conversion ( Weekly )</button>
                 </div>
                 <div className="p-4">
+                {activeTableTraffic === "saleschart" && (
+                    <AgentSalesConversionChart
+                      ReferenceID={userDetails.ReferenceID}
+                      Role={userDetails.Role}
+                      month={Number(selectedMonth)}
+                      year={Number(selectedYear)}
+                    />
+                  )}
                   {activeTableTraffic === "salesconversion" && (
                     <AgentSalesConversion
                       ReferenceID={userDetails.ReferenceID}

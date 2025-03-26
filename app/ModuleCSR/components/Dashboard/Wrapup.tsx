@@ -137,15 +137,15 @@ const Wrapup: React.FC<WrapupProps> = ({ ReferenceID, Role, month, year }) => {
         font: { size: 15 },
       },
       datalabels: {
-        color: '#fff', // White text color for data labels
+        color: 'black', // White text color for data labels
         font: {
           weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
-          size: 10, // Font size for data labels
+          size: 8, // Font size for data labels
         },
         formatter: function (value: any) {
           return value; // Display the value directly inside the chart
         },
-        backgroundColor: 'black', // Set background color of the label
+        backgroundColor: 'white', // Set background color of the label
         borderRadius: 50, // Make the background circular
         padding: 4, // Add padding inside the circle
         align: 'center', // Center the label within the circle

@@ -89,6 +89,16 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({
           },
         },
       },
+      datalabels: {
+        color: "#fff",
+        font: {
+          weight: "bold" as const,
+          size: 14,
+        },
+        formatter: function (value: any) {
+          return value;
+        },
+      },
     },
     layout: {
       padding: 2,
