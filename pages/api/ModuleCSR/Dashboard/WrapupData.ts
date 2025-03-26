@@ -11,42 +11,32 @@ export default async function fetchMetrics(
   }
 
   try {
-    const { ReferenceID, Role, month, year } = req.query;
+    const { ReferenceID, Role } = req.query;
 
-    // Validate Role and ReferenceID
+    // ✅ Validate Role and ReferenceID
     if (!Role || typeof Role !== "string") {
       return res.status(400).json({ error: "Invalid Role parameter" });
     }
 
-    // Connect to database
+    // ✅ Connect to database
     const db = await connectToDatabase();
     const monitoringCollection = db.collection("monitoring");
 
-    // Build match conditions
+    // ✅ Role-based filtering
     const matchConditions: any = {};
-
-    // Role-based filtering
     if (Role === "Staff" && ReferenceID) {
       matchConditions.ReferenceID = ReferenceID;
     } else if (Role !== "Admin" && Role !== "Super Admin") {
       return res.status(403).json({ error: "Unauthorized role" });
     }
 
-    // Month and year filters
-    if (month && year) {
-      matchConditions.createdAt = {
-        $gte: new Date(`${year}-${month}-01`),
-        $lt: new Date(`${year}-${Number(month) + 1}-01`),
-      };
-    }
-
-    // Fetch documents from the monitoring collection
+    // ✅ Fetch documents from the monitoring collection
     const allMetrics = await monitoringCollection
       .find(matchConditions)
       .project({ createdAt: 1, WrapUp: 1 })
       .toArray();
 
-    // Return the fetched data
+    // ✅ Return all data (filtering happens on frontend)
     res.status(200).json(allMetrics);
   } catch (error: any) {
     console.error("Error fetching metrics:", error.message);
