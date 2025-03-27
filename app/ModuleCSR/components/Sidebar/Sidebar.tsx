@@ -68,7 +68,8 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       icon: CiInboxIn,
       subItems: [
         { title: 'Tickets', href: `/ModuleCSR/CSR/Monitoring/Activities${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Automated Tickets', href: `/ModuleCSR/CSR/AutomatedTickets/Tickets${userId ? `?id=${encodeURIComponent(userId)}` : ''}` }
+        { title: 'Automated Tickets', href: `/ModuleCSR/CSR/AutomatedTickets/Tickets${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Website Portal ( Inquiries )', href: `/ModuleCSR/CSR/WebsiteInquiry${userId ? `?id=${encodeURIComponent(userId)}` : ''}` }
       ],
     },
     {
