@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { CiClock2, CiMenuBurger, CiUser, CiSettings, CiBellOn, CiCircleRemove, CiDark, CiSun, CiSearch } from "react-icons/ci";
+import { FaExclamationCircle, FaCheckCircle } from "react-icons/fa";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { motion } from "framer-motion";
 
@@ -63,6 +64,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const [activeTab, setActiveTab] = useState<"notifications" | "messages">("notifications");
   const [loadingId, setLoadingId] = useState<number | null>(null);
+
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [selectedNotif, setSelectedNotif] = useState<any>(null);
+  const [loadingRead, setLoadingRead] = useState<boolean>(false);
+
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -188,10 +194,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
   }, [userReferenceId]);
-
-
-
-
 
   // ✅ Handle click outside to close notifications
   useEffect(() => {
@@ -355,6 +357,22 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   };
 
+  useEffect(() => {
+    // ✅ Find the first pending Inquiry Notification and show modal if found
+    const inquiryNotif = notifications.find(
+      (notif) => notif.status === "pending" && notif.type === "Inquiry Notification"
+    );
+
+    if (inquiryNotif) {
+      setSelectedNotif(inquiryNotif);
+      setShowModal(true);
+    } else {
+      setShowModal(false);
+    }
+  }, [notifications]);
+
+
+
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center space-x-4">
@@ -472,10 +490,10 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                               onClick={() => handleMarkAsRead(notif.id)}
                               disabled={loadingId === notif.id}
                               className={`text-[9px] mb-2 cursor-pointer absolute top-2 right-2 ${notif.status === "Read"
-                                  ? "text-green-600 font-bold"
-                                  : loadingId === notif.id
-                                    ? "text-gray-500 cursor-not-allowed"
-                                    : "text-blue-600 hover:text-blue-800"
+                                ? "text-green-600 font-bold"
+                                : loadingId === notif.id
+                                  ? "text-gray-500 cursor-not-allowed"
+                                  : "text-blue-600 hover:text-blue-800"
                                 }`}
                             >
                               {loadingId === notif.id
@@ -498,6 +516,41 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
               )}
             </div>
           </motion.div>
+        )}
+
+        {showModal && selectedNotif && (
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
+            <div
+              className="relative bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-sm border-2 border-red-600 animate-continuous-shake"
+            >
+              <h2 className="text-lg font-bold text-red-600 mb-2 flex items-center justify-center space-x-2">
+                <FaExclamationCircle className="text-red-600" /> {/* Inquiry Icon */}
+                <span>Inquiry Notification</span>
+              </h2>
+
+              <p className="text-md font-bold italic text-gray-700 mb-4">
+                {selectedNotif.message}
+              </p>
+
+              {/* Timestamp */}
+              <span className="text-[10px] text-gray-500 block mb-4">
+                {new Date(selectedNotif.date_created).toLocaleString()}
+              </span>
+
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={() => {
+                    handleMarkAsRead(selectedNotif.id);
+                    setShowModal(false);
+                  }}
+                  className="px-4 py-2 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center space-x-1"
+                >
+                  <FaCheckCircle className="text-white" /> {/* Check Icon */}
+                  <span>Mark as Read</span>
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* User Dropdown */}
