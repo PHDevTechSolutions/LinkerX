@@ -2,24 +2,44 @@ import React, { useEffect, useState } from "react";
 
 interface UsersCardProps {
   posts: any[];
-  referenceid?: string;
+  userDetails: any;
 }
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
+const UsersCard: React.FC<UsersCardProps> = ({ posts, userDetails }) => {
   const [updatedUser, setUpdatedUser] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(15); // Show 15 items per page
 
   useEffect(() => {
-    setUpdatedUser(posts);
-  }, [posts]);
+    setUpdatedUser(filteredAccounts);
+  }, [posts, userDetails]);
 
-  // Pagination Logic
+  // ✅ Filtered Accounts Logic based on Role and ReferenceID
+  const filteredAccounts = Array.isArray(posts)
+    ? posts
+        .filter((post) => {
+          const userReferenceID = userDetails.ReferenceID;
+
+          const matchesReferenceID =
+            (userDetails.Role === "Manager" && post?.manager === userReferenceID) ||
+            (userDetails.Role === "Territory Sales Manager" && post?.tsm === userReferenceID) ||
+            (userDetails.Role === "Territory Sales Associate" && post?.referenceid === userReferenceID);
+
+          return matchesReferenceID;
+        })
+        .sort(
+          (a, b) =>
+            new Date(b.date_created).getTime() -
+            new Date(a.date_created).getTime()
+        )
+    : [];
+
+  // ✅ Pagination Logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = updatedUser.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredAccounts.slice(indexOfFirstItem, indexOfLastItem);
 
-  const totalPages = Math.ceil(updatedUser.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredAccounts.length / itemsPerPage);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -60,10 +80,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan={4}
-                  className="p-4 text-center text-gray-500"
-                >
+                <td colSpan={5} className="p-4 text-center text-gray-500">
                   No records found.
                 </td>
               </tr>
@@ -79,7 +96,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className={`px-3 py-1 rounded border ${
-              currentPage === 1 ? "bg-gray-200 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"
+              currentPage === 1
+                ? "bg-gray-200 cursor-not-allowed"
+                : "bg-blue-500 text-white hover:bg-blue-600"
             }`}
           >
             Prev
@@ -89,7 +108,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
               key={index + 1}
               onClick={() => handlePageChange(index + 1)}
               className={`px-3 py-1 rounded border ${
-                currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-100 hover:bg-gray-200"
+                currentPage === index + 1
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
               {index + 1}
@@ -99,7 +120,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className={`px-3 py-1 rounded border ${
-              currentPage === totalPages ? "bg-gray-200 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"
+              currentPage === totalPages
+                ? "bg-gray-200 cursor-not-allowed"
+                : "bg-blue-500 text-white hover:bg-blue-600"
             }`}
           >
             Next

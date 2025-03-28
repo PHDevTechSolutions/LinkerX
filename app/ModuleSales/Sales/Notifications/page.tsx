@@ -101,28 +101,28 @@ const ListofUser: React.FC = () => {
           ? post?.typeclient === selectedClientType
           : true;
 
+        // ✅ ReferenceID-based filtering based on user role
         const userReferenceID = userDetails.ReferenceID;
         const matchesReferenceID =
-          post?.referenceid === userReferenceID ||
-          post?.ReferenceID === userReferenceID ||
-          (userDetails.Role === "Manager"
-            ? post?.manager === userReferenceID
-            : userDetails.Role === "Territory Sales Manager"
-            ? post?.tsm === userReferenceID
-            : userDetails.Role === "Territory Sales Associate"
-            ? post?.referenceid === userReferenceID
-            : false);
+          (userDetails.Role === "Manager" && post?.manager === userReferenceID) ||
+          (userDetails.Role === "Territory Sales Manager" && post?.tsm === userReferenceID) ||
+          (userDetails.Role === "Territory Sales Associate" && post?.referenceid === userReferenceID);
 
         return (
-          hasType && // Filter based on type, not title
+          hasType &&
           matchesSearchTerm &&
           isWithinDateRange &&
           matchesClientType &&
           matchesReferenceID
         );
       })
-      .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.date_created).getTime() -
+          new Date(a.date_created).getTime()
+      )
   : [];
+
 
     const currentPosts = filteredAccounts.slice();
     const totalPages = Math.ceil(filteredAccounts.length);
@@ -152,6 +152,7 @@ const ListofUser: React.FC = () => {
                                         <h2 className="text-lg font-bold mb-2">Notifications</h2>
                                         <UsersCard
                                             posts={filteredAccounts}
+                                            userDetails={userDetails}
                                         />
                                     </div>
                                 </>
