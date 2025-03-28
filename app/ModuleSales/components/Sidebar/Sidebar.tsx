@@ -12,12 +12,18 @@ import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
 
-const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: boolean }> = ({ isOpen, onClose, isDarkMode }) => {
+const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: boolean; userReferenceId: string; }> = ({ isOpen, onClose, isDarkMode, userReferenceId }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
-  const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", });
+  const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", ReferenceID: "" });
   const router = useRouter();
+  const [userNotifications, setUserNotifications] = useState<any>(null);
+  const [inactiveAccount, setInactiveAccount] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const [pendingInquiryCount, setPendingInquiryCount] = useState(0);
+  const [pendingInactiveCount, setPendingInactiveCount] = useState(0);
 
   // Retrieve the selected avatar from localStorage or default if not set
   const selectedAvatar = localStorage.getItem('selectedAvatar') || `https://robohash.org/${userDetails.Firstname}${userDetails.Lastname}?size=200x200`;
@@ -44,6 +50,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
           Role: data.Role || "Admin",
           Company: data.Company || "Ecoshift Corporation",
           Status: data.Status || "None",
+          ReferenceID: data.ReferenceID,
         });
       } catch (error) {
         console.error("Error fetching user details:", error);
@@ -63,6 +70,78 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       [section]: !prevSections[section],
     }));
   };
+
+  useEffect(() => {
+    const fetchUserNotification = async () => {
+      try {
+        // Fetch notifications and pass ReferenceID from MongoDB
+        const response = await fetch(`/api/ModuleSales/Task/Callback/CountInquiries?referenceId=${userDetails.ReferenceID}`);
+
+        if (!response.ok) throw new Error("Failed to fetch user notifications");
+
+        const result = await response.json();
+
+        if (!result.success) {
+          console.error(result.error);
+          return;
+        }
+
+        const data = result.data; // Access the notifications array
+        setUserNotifications(data); // Set the fetched data to state
+
+        // Count "Pending" status with type "Inquiry Notification"
+        const pendingCount = data.filter(
+          (notification: any) =>
+            notification.status?.toLowerCase() === "pending" &&
+            notification.type?.toLowerCase() === "inquiry notification"
+        ).length;
+
+        setPendingInquiryCount(pendingCount); // Update state with the count
+      } catch (error) {
+        console.error("Error fetching user notifications:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (userDetails.ReferenceID) fetchUserNotification();
+  }, [userDetails.ReferenceID]);
+
+  useEffect(() => {
+    const fetchAccountInactive = async () => {
+      try {
+        // Fetch accounts and pass ReferenceID from MongoDB
+        const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchInactiveCount?referenceId=${userDetails.ReferenceID}`);
+  
+        if (!response.ok) throw new Error("Failed to fetch inactive accounts");
+  
+        const result = await response.json();
+  
+        if (!result.success) {
+          console.error(result.error);
+          return;
+        }
+  
+        const data = result.data; // Access the accounts array
+        setInactiveAccount(data); // Set the fetched data to state
+  
+        // Count "Inactive" accounts
+        const inactiveCount = data.filter(
+          (account: any) => account.status?.toLowerCase() === "inactive"
+        ).length;
+  
+        setPendingInactiveCount(inactiveCount); // Update state with the count
+      } catch (error) {
+        console.error("Error fetching inactive accounts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    if (userDetails.ReferenceID) fetchAccountInactive();
+  }, [userDetails.ReferenceID]);
+  
+
 
   const menuItems = [
     {
@@ -248,7 +327,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         {/* User Details Section */}
         {!collapsed && (
           <div className="p-6 text-xs text-left border-b">
-            <img src={selectedAvatar} alt="Avatar" className="w-12 h-12 object-cover rounded-full mb-2"/>
+            <img src={selectedAvatar} alt="Avatar" className="w-12 h-12 object-cover rounded-full mb-2" />
             <p className="font-bold uppercase text-sm">
               {userDetails.Firstname}, {userDetails.Lastname}
             </p>
@@ -291,11 +370,17 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
               {/* Main Menu Button */}
               <button
                 onClick={() => handleToggle(item.title)}
-                className={`flex items-center w-full p-4 hover:bg-green-900 rounded hover:rounded-md hover:text-white transition-all duration-300 ease-in-out hover:shadow-md 
-                  active:scale-95 ${collapsed ? "justify-center" : ""}`}
+                className={`flex items-center w-full p-4 hover:bg-green-900 rounded hover:rounded-md hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""}`}
               >
                 <item.icon size={18} />
                 {!collapsed && <span className="ml-2">{item.title}</span>}
+                {/* Only show the count if it's greater than zero */}
+                {item.title === 'Task' && pendingInquiryCount > 0 && (
+                  <span className="ml-2 text-[8px] bg-red-700 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInquiryCount}</span>
+                )}
+                {item.title === 'My Companies' && pendingInactiveCount > 0 && (
+                  <span className="ml-2 text-[8px] bg-red-700 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount}</span>
+                )}
                 {!collapsed && (
                   <span className="ml-auto">
                     {openSections[item.title] ? <FaMinus size={10} /> : <FaPlus size={10} />}
@@ -304,10 +389,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
               </button>
 
               {/* Submenu Items (Collapsible) */}
-              <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out text-gray-900
-                  ${openSections[item.title] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
-              >
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out text-gray-900 ${openSections[item.title] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}>
                 {openSections[item.title] && !collapsed && (
                   <div>
                     {item.subItems.map((subItem, subIndex) => (
@@ -319,6 +401,12 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
                       >
                         <FaRegCircle size={10} className="mr-2 ml-2" />
                         {subItem.title}
+                        {subItem.title === 'CSR Inquiries' && pendingInquiryCount > 0 && (
+                          <span className="ml-2 text-[8px] bg-red-700 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInquiryCount}</span>
+                        )}
+                        {subItem.title === 'Inactive Companies' && pendingInactiveCount > 0 && (
+                          <span className="ml-2 text-[8px] bg-red-700 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount}</span>
+                        )}
                       </Link>
                     ))}
                   </div>
@@ -326,6 +414,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
               </div>
             </div>
           ))}
+
         </div>
       </div>
     </>

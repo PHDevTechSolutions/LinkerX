@@ -371,8 +371,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   }, [notifications]);
 
-
-
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center space-x-4">

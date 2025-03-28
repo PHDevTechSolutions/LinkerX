@@ -23,21 +23,9 @@ const DashboardPage: React.FC = () => {
   const [activeTable, setactiveTable] = useState("barchart");
   const [activeSource, setactiveSource] = useState("source");
   const [activeTableTraffic, setactiveTableTraffic] = useState("saleschart");
-  const [selectedMonth, setSelectedMonth] = useState<string>(
-    `${new Date().getMonth() + 1}`
-  );
-  const [selectedYear, setSelectedYear] = useState<string>(
-    `${new Date().getFullYear()}`
-  );
-  const [userDetails, setUserDetails] = useState({
-    UserId: "",
-    ReferenceID: "",
-    Firstname: "",
-    Lastname: "",
-    Email: "",
-    Role: "",
-  });
-
+  const [selectedMonth, setSelectedMonth] = useState<string>(`${new Date().getMonth() + 1}`);
+  const [selectedYear, setSelectedYear] = useState<string>(`${new Date().getFullYear()}`);
+  const [userDetails, setUserDetails] = useState({ UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -83,11 +71,7 @@ const DashboardPage: React.FC = () => {
             <div className="bg-white shadow-md rounded-lg p-4 w-full">
               <div className="flex gap-2">
                 {/* Month Filter */}
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="p-2 border rounded text-xs bg-white"
-                >
+                <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="p-2 border rounded text-xs bg-white">
                   <option value="1">January</option>
                   <option value="2">February</option>
                   <option value="3">March</option>
@@ -101,13 +85,8 @@ const DashboardPage: React.FC = () => {
                   <option value="11">November</option>
                   <option value="12">December</option>
                 </select>
-
                 {/* Year Filter */}
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
-                  className="p-2 border rounded text-xs bg-white"
-                >
+                <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} className="p-2 border rounded text-xs bg-white">
                   {Array.from({ length: 5 }, (_, i) => {
                     const year = new Date().getFullYear() - i;
                     return (
@@ -231,60 +210,56 @@ const DashboardPage: React.FC = () => {
           </div>
 
           {/* Card 4: Tables */}
-          
-            <div className="flex gap-4 mt-4 mb-4">
-              <div className="bg-white shadow-md rounded-lg p-2 w-full">
-                <div className="border-b mb-4 text-xs font-bold">
+          <div className="flex gap-4 mt-4 mb-4">
+            <div className="bg-white shadow-md rounded-lg p-2 w-full">
+              <div className="border-b mb-4 text-xs font-bold">
                 <button className={`p-2 flex-1 ${activeTableTraffic === "saleschart" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("saleschart")}>Chart</button>
-                  <button className={`p-2 flex-1 ${activeTableTraffic === "salesconversion" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("salesconversion")}>Traffic to Sales Conversion</button>
-                  <button className={`p-2 flex-1 ${activeTableTraffic === "salesweekly" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("salesweekly")}>Traffic to Sales Conversion ( Weekly )</button>
-                </div>
-                <div className="p-4">
+                <button className={`p-2 flex-1 ${activeTableTraffic === "salesconversion" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("salesconversion")}>Traffic to Sales Conversion</button>
+                <button className={`p-2 flex-1 ${activeTableTraffic === "salesweekly" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("salesweekly")}>Traffic to Sales Conversion ( Weekly )</button>
+              </div>
+              <div className="p-4">
                 {activeTableTraffic === "saleschart" && (
-                    <AgentSalesConversionChart
-                      ReferenceID={userDetails.ReferenceID}
-                      Role={userDetails.Role}
-                      month={Number(selectedMonth)}
-                      year={Number(selectedYear)}
-                    />
-                  )}
-                  {activeTableTraffic === "salesconversion" && (
-                    <AgentSalesConversion
-                      ReferenceID={userDetails.ReferenceID}
-                      Role={userDetails.Role}
-                      month={Number(selectedMonth)}
-                      year={Number(selectedYear)}
-                    />
-                  )}
-                  {activeTableTraffic === "salesweekly" && (
-                    <AgentSalesConversionWeekly
-                      ReferenceID={userDetails.ReferenceID}
-                      Role={userDetails.Role}
-                      month={Number(selectedMonth)}
-                      year={Number(selectedYear)}
-                    />
-                  )}
-                </div>
+                  <AgentSalesConversionChart
+                    ReferenceID={userDetails.ReferenceID}
+                    Role={userDetails.Role}
+                    month={Number(selectedMonth)}
+                    year={Number(selectedYear)}
+                  />
+                )}
+                {activeTableTraffic === "salesconversion" && (
+                  <AgentSalesConversion
+                    ReferenceID={userDetails.ReferenceID}
+                    Role={userDetails.Role}
+                    month={Number(selectedMonth)}
+                    year={Number(selectedYear)}
+                  />
+                )}
+                {activeTableTraffic === "salesweekly" && (
+                  <AgentSalesConversionWeekly
+                    ReferenceID={userDetails.ReferenceID}
+                    Role={userDetails.Role}
+                    month={Number(selectedMonth)}
+                    year={Number(selectedYear)}
+                  />
+                )}
               </div>
             </div>
-          
+          </div>
 
           {/* Card 5: TSA Sales Conversion */}
-            <div className="flex gap-4 mt-4 mb-4">
-              <div className="bg-white shadow-md rounded-lg p-4 w-full">
-                <h3 className="text-sm font-bold mb-2">
-                  TSA Traffic to Sales Conversion
-                </h3>
-                <div className="p-4">
-                  <TSASalesConversion
-                      ReferenceID={userDetails.ReferenceID}
-                      Role={userDetails.Role}
-                      month={Number(selectedMonth)}
-                      year={Number(selectedYear)}
-                    />
-                </div>
+          <div className="flex gap-4 mt-4 mb-4">
+            <div className="bg-white shadow-md rounded-lg p-4 w-full">
+              <h3 className="text-sm font-bold mb-2">TSA Traffic to Sales Conversion</h3>
+              <div className="p-4">
+                <TSASalesConversion
+                  ReferenceID={userDetails.ReferenceID}
+                  Role={userDetails.Role}
+                  month={Number(selectedMonth)}
+                  year={Number(selectedYear)}
+                />
               </div>
             </div>
+          </div>
         </div>
       </ParentLayout>
     </SessionChecker>
