@@ -8,6 +8,7 @@ interface Metric {
   QtySold: number;
   Status: string;
   Traffic: string;
+  ReferenceID: string; // Add this property for filtering
 }
 
 interface MetricTableProps {
@@ -49,13 +50,22 @@ const MetricTable: React.FC<MetricTableProps> = ({
         if (!response.ok) throw new Error("Failed to fetch data");
         const data = await response.json();
 
-        // ✅ Filter by month and year in frontend if backend is not filtering
+        // Filter data based on the Role
         const filteredData = data.filter((item: Metric) => {
           const createdAtDate = new Date(item.createdAt);
-          return (
+          const isWithinMonthAndYear =
             createdAtDate.getMonth() + 1 === month &&
-            createdAtDate.getFullYear() === year
-          );
+            createdAtDate.getFullYear() === year;
+
+          if (Role === "Staff") {
+            // Only show data for the current ReferenceID if the role is Staff
+            return (
+              item.ReferenceID === ReferenceID &&
+              isWithinMonthAndYear
+            );
+          }
+          // Admin and Superadmin see all data
+          return isWithinMonthAndYear;
         });
 
         setMetrics(filteredData);

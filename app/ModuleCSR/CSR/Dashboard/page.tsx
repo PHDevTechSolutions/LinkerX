@@ -231,7 +231,7 @@ const DashboardPage: React.FC = () => {
           </div>
 
           {/* Card 4: Tables */}
-          {userDetails.Role !== "Staff" && (
+          
             <div className="flex gap-4 mt-4 mb-4">
               <div className="bg-white shadow-md rounded-lg p-2 w-full">
                 <div className="border-b mb-4 text-xs font-bold">
@@ -267,10 +267,9 @@ const DashboardPage: React.FC = () => {
                 </div>
               </div>
             </div>
-          )}
+          
 
           {/* Card 5: TSA Sales Conversion */}
-          {userDetails.Role !== "Staff" && (
             <div className="flex gap-4 mt-4 mb-4">
               <div className="bg-white shadow-md rounded-lg p-4 w-full">
                 <h3 className="text-sm font-bold mb-2">
@@ -286,7 +285,6 @@ const DashboardPage: React.FC = () => {
                 </div>
               </div>
             </div>
-          )}
         </div>
       </ParentLayout>
     </SessionChecker>
