@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ReactNode } from "react";
 import Sidebar from "../Sidebar/Sidebar";
 import Navbar from "../Navbar/Navbar";
+import Footer from "../Footer/Footer";
 import { useRouter } from "next/router";
 
 interface ParentLayoutProps {
@@ -144,9 +145,8 @@ const ParentLayout: React.FC<ParentLayoutProps> = ({ children }) => {
       <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(!isSidebarOpen)} isDarkMode={isDarkMode} />
       <div className={`flex-grow transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"} md:ml-64`}>
         <Navbar onToggleSidebar={() => setSidebarOpen(!isSidebarOpen)} onToggleTheme={() => setDarkMode(!isDarkMode)} isDarkMode={isDarkMode} sidebarLinks={sidebarLinks} />
-        <main className="p-4 min-h-screen">
-          {children}
-        </main>
+        <main className="p-4 min-h-screen">{children}</main>
+        <Footer />
       </div>
     </div>
   );
