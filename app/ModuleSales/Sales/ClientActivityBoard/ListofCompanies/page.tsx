@@ -357,149 +357,151 @@ const ListofUser: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            {showForm ? (
-                                <AddPostForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditUser(null);
-                                    }}
-                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
-                                    userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
-                                    editUser={editUser}
-                                />
-                            ) : showImportForm ? (
-                                <div className="bg-white p-4 shadow-md rounded-md">
-                                    <h2 className="text-lg font-bold mb-2">Account Import Section</h2>
-                                    <p className="text-xs text-gray-600 mb-4">
-                                        The <strong>Account Import Section</strong> allows users to upload and integrate bulk account data into the system.
-                                        This feature facilitates the efficient addition of multiple accounts, enabling streamlined data management and reducing manual entry errors.
-                                    </p>
-                                    <form onSubmit={handleFileUpload}>
-                                        <div className="flex flex-wrap -mx-4">
-                                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                                                <label className="block text-xs font-bold mb-2" htmlFor="Manager">Regional Manager</label>
-                                                <p className="text-xs text-gray-600 mb-4">
-                                                    Select the <strong>Regional Manager</strong> responsible for overseeing regional operations.
-                                                </p>
-                                                {isEditing ? (
-                                                    <input type="text" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
-                                                ) : (
-                                                    <Select id="Manager" options={managerOptions} value={selectedManager} onChange={(option) => {
-                                                        setSelectedManager(option);
-                                                        setmanager(option ? option.value : ""); // Save ReferenceID as Manager
-                                                    }} className="text-xs capitalize" />
-                                                )}
-                                            </div>
-                                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                                                <label className="block text-xs font-bold mb-2" htmlFor="TSM">Territory Sales Manager</label>
-                                                <p className="text-xs text-gray-600 mb-4">
-                                                    Select the <strong>Territory Sales Manager</strong> overseeing sales performance in a specific territory.
-                                                </p>
-                                                {isEditing ? (
-                                                    <input type="text" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
-                                                ) : (
-                                                    <Select id="TSM" options={TSMOptions} value={selectedTSM} onChange={(option) => {
-                                                        setSelectedTSM(option);
-                                                        settsm(option ? option.value : ""); // Save ReferenceID as Manager
-                                                    }} className="text-xs capitalize" />
-                                                )}
-                                            </div>
-                                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                                                <label className="block text-xs font-bold mb-2" htmlFor="referenceid">Territory Sales Associate</label>
-                                                {isEditing ? (
-                                                    <input type="text" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
-                                                ) : (
-                                                    <Select id="ReferenceID" options={TSAOptions} value={selectedReferenceID} onChange={(option) => {
-                                                        setSelectedReferenceID(option);
-                                                        setreferenceid(option ? option.value : ""); // Save ReferenceID as Manager
-                                                    }} className="text-xs capitalize" />
-                                                )}
-                                                <p className="text-xs text-gray-600 mt-4">
-                                                    Select the <strong>Territory Sales Associate</strong> assisting the Territory Sales Manager.
-                                                </p>
-                                            </div>
-                                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                                                <label className="block text-xs font-bold mb-2" htmlFor="status">Status</label>
-                                                <select value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
-                                                    <option value="">Select Status</option>
-                                                    <option value="Active">Active</option>
-                                                    <option value="Used">Used</option>
-                                                    <option value="Inactive">Inactive</option>
-                                                </select>
-                                                <p className="text-xs text-gray-600 mt-4">
-                                                    Select the <strong>Status</strong> of the account to indicate its current state (Active, Used, or Inactive).
-                                                </p>
-                                            </div>
-                                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                                                <label className="block text-xs font-bold mb-2" htmlFor="fileUpload">File Upload</label>
-                                                <input type="file" className="w-full px-3 py-2 border rounded text-xs capitalize" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-                                                <p className="text-xs text-gray-600 mt-4">
-                                                    Upload a file by selecting it from your device. The uploaded file can be used for further processing.
-                                                </p>
-                                            </div>
-
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button type="submit" className="bg-blue-900 text-xs text-white px-4 py-2 rounded flex items-center gap-1"><CiSaveUp2 size={20} /> Upload</button>
-                                            <button type="button" className="bg-gray-500 text-xs text-white px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowImportForm(false)}><CiCircleRemove size={20} />Cancel</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            ) : (
-                                <>
-                                    <div className="flex justify-between items-center mb-4">
-                                        <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
-                                            <CiSquarePlus size={16} /> Add Companies
-                                        </button>
-                                        <div className="flex gap-2">
-                                            <button onClick={exportToExcel} className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
-                                                <CiExport size={16} /> Export
-                                            </button>
-                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-800 hover:text-white transition" onClick={() => setShowImportForm(true)}>
-                                                <CiImport size={16} /> Import Account
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Company Accounts Overview</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+                                {showForm ? (
+                                    <AddPostForm
+                                        onCancel={() => {
+                                            setShowForm(false);
+                                            setEditUser(null);
+                                        }}
+                                        refreshPosts={fetchAccount}  // Pass the refreshPosts callback
+                                        userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
+                                        editUser={editUser}
+                                    />
+                                ) : showImportForm ? (
+                                    <div className="bg-white p-4 shadow-md rounded-md">
+                                        <h2 className="text-lg font-bold mb-2">Account Import Section</h2>
                                         <p className="text-xs text-gray-600 mb-4">
-                                            The <strong>Company Accounts Overview</strong> section displays a comprehensive list of all accounts related to various companies. It allows users to filter accounts based on various criteria like client type, date range, and more, ensuring efficient navigation and analysis of company data. The table below showcases the detailed information about each account.
+                                            The <strong>Account Import Section</strong> allows users to upload and integrate bulk account data into the system.
+                                            This feature facilitates the efficient addition of multiple accounts, enabling streamlined data management and reducing manual entry errors.
                                         </p>
-                                        <SearchFilters
-                                            searchTerm={searchTerm}
-                                            setSearchTerm={setSearchTerm}
-                                            postsPerPage={postsPerPage}
-                                            setPostsPerPage={setPostsPerPage}
-                                            selectedClientType={selectedClientType}
-                                            setSelectedClientType={setSelectedClientType}
-                                            startDate={startDate}
-                                            setStartDate={setStartDate}
-                                            endDate={endDate}
-                                            setEndDate={setEndDate}
-                                        />
-                                        <UsersTable
-                                            posts={currentPosts}
-                                            handleEdit={handleEdit}
-                                            ReferenceID={userDetails.ReferenceID}
-                                            fetchAccount={fetchAccount}
-                                        />
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                        />
+                                        <form onSubmit={handleFileUpload}>
+                                            <div className="flex flex-wrap -mx-4">
+                                                <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                                                    <label className="block text-xs font-bold mb-2" htmlFor="Manager">Regional Manager</label>
+                                                    <p className="text-xs text-gray-600 mb-4">
+                                                        Select the <strong>Regional Manager</strong> responsible for overseeing regional operations.
+                                                    </p>
+                                                    {isEditing ? (
+                                                        <input type="text" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                                                    ) : (
+                                                        <Select id="Manager" options={managerOptions} value={selectedManager} onChange={(option) => {
+                                                            setSelectedManager(option);
+                                                            setmanager(option ? option.value : ""); // Save ReferenceID as Manager
+                                                        }} className="text-xs capitalize" />
+                                                    )}
+                                                </div>
+                                                <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                                                    <label className="block text-xs font-bold mb-2" htmlFor="TSM">Territory Sales Manager</label>
+                                                    <p className="text-xs text-gray-600 mb-4">
+                                                        Select the <strong>Territory Sales Manager</strong> overseeing sales performance in a specific territory.
+                                                    </p>
+                                                    {isEditing ? (
+                                                        <input type="text" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                                                    ) : (
+                                                        <Select id="TSM" options={TSMOptions} value={selectedTSM} onChange={(option) => {
+                                                            setSelectedTSM(option);
+                                                            settsm(option ? option.value : ""); // Save ReferenceID as Manager
+                                                        }} className="text-xs capitalize" />
+                                                    )}
+                                                </div>
+                                                <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                                                    <label className="block text-xs font-bold mb-2" htmlFor="referenceid">Territory Sales Associate</label>
+                                                    {isEditing ? (
+                                                        <input type="text" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                                                    ) : (
+                                                        <Select id="ReferenceID" options={TSAOptions} value={selectedReferenceID} onChange={(option) => {
+                                                            setSelectedReferenceID(option);
+                                                            setreferenceid(option ? option.value : ""); // Save ReferenceID as Manager
+                                                        }} className="text-xs capitalize" />
+                                                    )}
+                                                    <p className="text-xs text-gray-600 mt-4">
+                                                        Select the <strong>Territory Sales Associate</strong> assisting the Territory Sales Manager.
+                                                    </p>
+                                                </div>
+                                                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                                                    <label className="block text-xs font-bold mb-2" htmlFor="status">Status</label>
+                                                    <select value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                                        <option value="">Select Status</option>
+                                                        <option value="Active">Active</option>
+                                                        <option value="Used">Used</option>
+                                                        <option value="Inactive">Inactive</option>
+                                                    </select>
+                                                    <p className="text-xs text-gray-600 mt-4">
+                                                        Select the <strong>Status</strong> of the account to indicate its current state (Active, Used, or Inactive).
+                                                    </p>
+                                                </div>
+                                                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                                                    <label className="block text-xs font-bold mb-2" htmlFor="fileUpload">File Upload</label>
+                                                    <input type="file" className="w-full px-3 py-2 border rounded text-xs capitalize" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+                                                    <p className="text-xs text-gray-600 mt-4">
+                                                        Upload a file by selecting it from your device. The uploaded file can be used for further processing.
+                                                    </p>
+                                                </div>
 
-                                        <div className="text-xs mt-2">
-                                            Showing {indexOfFirstPost + 1} to{" "}
-                                            {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                            {filteredAccounts.length} entries
-                                        </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button type="submit" className="bg-blue-900 text-xs text-white px-4 py-2 rounded flex items-center gap-1"><CiSaveUp2 size={20} /> Upload</button>
+                                                <button type="button" className="bg-gray-500 text-xs text-white px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowImportForm(false)}><CiCircleRemove size={20} />Cancel</button>
+                                            </div>
+                                        </form>
                                     </div>
-                                </>
-                            )}
+                                ) : (
+                                    <>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
+                                                <CiSquarePlus size={16} /> Add Companies
+                                            </button>
+                                            <div className="flex gap-2">
+                                                <button onClick={exportToExcel} className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
+                                                    <CiExport size={16} /> Export
+                                                </button>
+                                                <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-800 hover:text-white transition" onClick={() => setShowImportForm(true)}>
+                                                    <CiImport size={16} /> Import Account
+                                                </button>
+                                            </div>
+                                        </div>
 
-                            <ToastContainer className="text-xs" autoClose={1000} />
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">Company Accounts Overview</h2>
+                                            <p className="text-xs text-gray-600 mb-4">
+                                                The <strong>Company Accounts Overview</strong> section displays a comprehensive list of all accounts related to various companies. It allows users to filter accounts based on various criteria like client type, date range, and more, ensuring efficient navigation and analysis of company data. The table below showcases the detailed information about each account.
+                                            </p>
+                                            <SearchFilters
+                                                searchTerm={searchTerm}
+                                                setSearchTerm={setSearchTerm}
+                                                postsPerPage={postsPerPage}
+                                                setPostsPerPage={setPostsPerPage}
+                                                selectedClientType={selectedClientType}
+                                                setSelectedClientType={setSelectedClientType}
+                                                startDate={startDate}
+                                                setStartDate={setStartDate}
+                                                endDate={endDate}
+                                                setEndDate={setEndDate}
+                                            />
+                                            <UsersTable
+                                                posts={currentPosts}
+                                                handleEdit={handleEdit}
+                                                ReferenceID={userDetails.ReferenceID}
+                                                fetchAccount={fetchAccount}
+                                            />
+                                            <Pagination
+                                                currentPage={currentPage}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                            />
+
+                                            <div className="text-xs mt-2">
+                                                Showing {indexOfFirstPost + 1} to{" "}
+                                                {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
+                                                {filteredAccounts.length} entries
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                <ToastContainer className="text-xs" autoClose={1000} />
+                            </div>
                         </div>
                     )}
                 </UserFetcher>

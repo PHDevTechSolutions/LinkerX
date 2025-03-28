@@ -17,7 +17,7 @@ import ExcelJS from "exceljs";
 
 
 // Icons
-import { CiSquarePlus, CiImport, CiExport  } from "react-icons/ci";
+import { CiSquarePlus, CiImport, CiExport } from "react-icons/ci";
 import { FiUpload } from "react-icons/fi";
 import Select from "react-select";
 
@@ -36,7 +36,7 @@ const ListofUser: React.FC = () => {
     const [userDetails, setUserDetails] = useState({
         UserId: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
     });
-    
+
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +53,7 @@ const ListofUser: React.FC = () => {
     const [selectedTSM, setSelectedTSM] = useState<{ value: string; label: string } | null>(null);
     const [TSAOptions, setTSAOptions] = useState<{ value: string; label: string }[]>([]);
     const [selectedReferenceID, setSelectedReferenceID] = useState<{ value: string; label: string } | null>(null);
-    
+
     const handleFileUpload = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -251,28 +251,28 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-    ? posts.filter((post) => {
-        // Check if the company name matches the search term
-        const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+        ? posts.filter((post) => {
+            // Check if the company name matches the search term
+            const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
 
-        // Parse the date_created field
-        const postDate = post.date_created ? new Date(post.date_created) : null;
+            // Parse the date_created field
+            const postDate = post.date_created ? new Date(post.date_created) : null;
 
-        // Check if the post's date is within the selected date range
-        const isWithinDateRange = (
-            (!startDate || (postDate && postDate >= new Date(startDate))) &&
-            (!endDate || (postDate && postDate <= new Date(endDate)))
-        );
+            // Check if the post's date is within the selected date range
+            const isWithinDateRange = (
+                (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                (!endDate || (postDate && postDate <= new Date(endDate)))
+            );
 
-        // Check if the post matches the selected client type
-        const matchesClientType = selectedClientType
-            ? post?.typeclient === selectedClientType
-            : true;
+            // Check if the post matches the selected client type
+            const matchesClientType = selectedClientType
+                ? post?.typeclient === selectedClientType
+                : true;
 
-        // Return the filtered result
-        return matchesSearchTerm && isWithinDateRange && matchesClientType;
-    })
-    : [];
+            // Return the filtered result
+            return matchesSearchTerm && isWithinDateRange && matchesClientType;
+        })
+        : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -289,40 +289,40 @@ const ListofUser: React.FC = () => {
     const exportToExcel = () => {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Company Accounts");
-      
+
         // Set column headers
         worksheet.columns = [
-          { header: 'companyname', key: 'companyname', width: 20 },
-          { header: 'contactperson', key: 'contactperson', width: 20 },
-          { header: 'contactnumber', key: 'contactnumber', width: 20 },
-          { header: 'emailaddress', key: 'emailaddress', width: 20 },
-          { header: 'typeclient', key: 'typeclient', width: 20 },
-          { header: 'address', key: 'address', width: 20 },
-          { header: 'area', key: 'area', width: 20 },
+            { header: 'companyname', key: 'companyname', width: 20 },
+            { header: 'contactperson', key: 'contactperson', width: 20 },
+            { header: 'contactnumber', key: 'contactnumber', width: 20 },
+            { header: 'emailaddress', key: 'emailaddress', width: 20 },
+            { header: 'typeclient', key: 'typeclient', width: 20 },
+            { header: 'address', key: 'address', width: 20 },
+            { header: 'area', key: 'area', width: 20 },
         ];
-      
+
         // Loop through all filtered posts to ensure the full set of data is exported
         filteredAccounts.forEach((post) => {
-          worksheet.addRow({
-            companyname: post.companyname,
-            contactperson: post.contactperson,
-            contactnumber: post.contactnumber,
-            emailaddress: post.emailaddress,
-            typeclient: post.typeclient,
-            address: post.address,
-            area: post.area
-          });
+            worksheet.addRow({
+                companyname: post.companyname,
+                contactperson: post.contactperson,
+                contactnumber: post.contactnumber,
+                emailaddress: post.emailaddress,
+                typeclient: post.typeclient,
+                address: post.address,
+                area: post.area
+            });
         });
-      
+
         // Save to file
         workbook.xlsx.writeBuffer().then((buffer) => {
-          const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(blob);
-          link.download = "CompanyAccounts.xlsx";
-          link.click();
+            const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "CompanyAccounts.xlsx";
+            link.click();
         });
-      };
+    };
 
     return (
         <SessionChecker>
@@ -330,122 +330,124 @@ const ListofUser: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            {showForm ? (
-                                <AddPostForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditUser(null);
-                                    }}
-                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
-                                    userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
-                                    editUser={editUser}
-                                />
-                            ) : showImportForm ? (
-                                <div className="bg-white p-4 shadow-md rounded-md">
-                                    <h2 className="text-lg font-bold mb-2">Import Accounts</h2>
-                                    <form onSubmit={handleFileUpload}>
-                                        <div className="flex flex-wrap -mx-4">
-                                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                                                <label className="block text-xs font-bold mb-2" htmlFor="Manager">Manager</label>
-                                                {isEditing ? (
-                                                    <input type="text" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
-                                                ) : (
-                                                    <Select id="Manager" options={managerOptions} value={selectedManager} onChange={(option) => {
-                                                        setSelectedManager(option);
-                                                        setmanager(option ? option.value : ""); // Save ReferenceID as Manager
-                                                    }} className="text-xs capitalize" />
-                                                )}
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+                                {showForm ? (
+                                    <AddPostForm
+                                        onCancel={() => {
+                                            setShowForm(false);
+                                            setEditUser(null);
+                                        }}
+                                        refreshPosts={fetchAccount}  // Pass the refreshPosts callback
+                                        userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
+                                        editUser={editUser}
+                                    />
+                                ) : showImportForm ? (
+                                    <div className="bg-white p-4 shadow-md rounded-md">
+                                        <h2 className="text-lg font-bold mb-2">Import Accounts</h2>
+                                        <form onSubmit={handleFileUpload}>
+                                            <div className="flex flex-wrap -mx-4">
+                                                <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                                                    <label className="block text-xs font-bold mb-2" htmlFor="Manager">Manager</label>
+                                                    {isEditing ? (
+                                                        <input type="text" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                                                    ) : (
+                                                        <Select id="Manager" options={managerOptions} value={selectedManager} onChange={(option) => {
+                                                            setSelectedManager(option);
+                                                            setmanager(option ? option.value : ""); // Save ReferenceID as Manager
+                                                        }} className="text-xs capitalize" />
+                                                    )}
+                                                </div>
+                                                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                                                    <label className="block text-xs font-bold mb-2" htmlFor="TSM">Territory Sales Manager</label>
+                                                    {isEditing ? (
+                                                        <input type="text" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                                                    ) : (
+                                                        <Select id="TSM" options={TSMOptions} value={selectedTSM} onChange={(option) => {
+                                                            setSelectedTSM(option);
+                                                            settsm(option ? option.value : ""); // Save ReferenceID as Manager
+                                                        }} className="text-xs capitalize" />
+                                                    )}
+                                                </div>
+                                                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                                                    <label className="block text-xs font-bold mb-2" htmlFor="referenceid">Territory Sales Associate</label>
+                                                    {isEditing ? (
+                                                        <input type="text" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                                                    ) : (
+                                                        <Select id="ReferenceID" options={TSAOptions} value={selectedReferenceID} onChange={(option) => {
+                                                            setSelectedReferenceID(option);
+                                                            setreferenceid(option ? option.value : ""); // Save ReferenceID as Manager
+                                                        }} className="text-xs capitalize" />
+                                                    )}
+                                                </div>
+                                                <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                                                    <select value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                                                        <option value="">Select Status</option>
+                                                        <option value="Active">Active</option>
+                                                        <option value="Used">Used</option>
+                                                        <option value="Inactive">Inactive</option>
+                                                    </select>
+                                                </div>
+                                                <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                                                    <input type="file" className="w-full px-3 py-2 border rounded text-xs capitalize" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+                                                </div>
                                             </div>
-                                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                                                <label className="block text-xs font-bold mb-2" htmlFor="TSM">Territory Sales Manager</label>
-                                                {isEditing ? (
-                                                    <input type="text" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
-                                                ) : (
-                                                    <Select id="TSM" options={TSMOptions} value={selectedTSM} onChange={(option) => {
-                                                        setSelectedTSM(option);
-                                                        settsm(option ? option.value : ""); // Save ReferenceID as Manager
-                                                    }} className="text-xs capitalize" />
-                                                )}
+                                            <div className="flex gap-2">
+                                                <button type="submit" className="bg-blue-600 text-xs text-white px-4 py-2 rounded">Upload</button>
+                                                <button type="button" className="bg-gray-500 text-xs text-white px-4 py-2 rounded" onClick={() => setShowImportForm(false)}>Cancel</button>
                                             </div>
-                                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                                                <label className="block text-xs font-bold mb-2" htmlFor="referenceid">Territory Sales Associate</label>
-                                                {isEditing ? (
-                                                    <input type="text" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
-                                                ) : (
-                                                    <Select id="ReferenceID" options={TSAOptions} value={selectedReferenceID} onChange={(option) => {
-                                                        setSelectedReferenceID(option);
-                                                        setreferenceid(option ? option.value : ""); // Save ReferenceID as Manager
-                                                    }} className="text-xs capitalize" />
-                                                )}
-                                            </div>
-                                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                                            <select value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
-                                                <option value="">Select Status</option>
-                                                <option value="Active">Active</option>
-                                                <option value="Used">Used</option>
-                                                <option value="Inactive">Inactive</option>
-                                            </select>
-                                            </div>
-                                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                                                <input type="file" className="w-full px-3 py-2 border rounded text-xs capitalize" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button type="submit" className="bg-blue-600 text-xs text-white px-4 py-2 rounded">Upload</button>
-                                            <button type="button" className="bg-gray-500 text-xs text-white px-4 py-2 rounded" onClick={() => setShowImportForm(false)}>Cancel</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            ) : (
-                                <>
-                                    <div className="flex justify-between items-center mb-4">
-                                        <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
-                                            <CiSquarePlus size={16} /> Add Companies
-                                        </button>
-                                        <div className="flex gap-2">
-                                            <button onClick={exportToExcel} className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
-                                                <CiExport size={16} /> Export
-                                            </button>
-                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-800 hover:text-white transition" onClick={() => setShowImportForm(true)}>
-                                                <CiImport size={16} /> Import Account
-                                            </button>
-                                        </div>
+                                        </form>
                                     </div>
-
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Company Accounts</h2>
-                                        <SearchFilters
-                                            searchTerm={searchTerm}
-                                            setSearchTerm={setSearchTerm}
-                                            postsPerPage={postsPerPage}
-                                            setPostsPerPage={setPostsPerPage}
-                                            selectedClientType={selectedClientType}
-                                            setSelectedClientType={setSelectedClientType}
-                                            startDate={startDate}
-                                            setStartDate={setStartDate}
-                                            endDate={endDate}
-                                            setEndDate={setEndDate}
-                                        />
-                                        <UsersTable
-                                            posts={currentPosts}
-                                            handleEdit={handleEdit}
-                                        />
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                        />
-
-                                        <div className="text-xs mt-2">
-                                            Showing {indexOfFirstPost + 1} to{" "}
-                                            {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                            {filteredAccounts.length} entries
+                                ) : (
+                                    <>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
+                                                <CiSquarePlus size={16} /> Add Companies
+                                            </button>
+                                            <div className="flex gap-2">
+                                                <button onClick={exportToExcel} className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
+                                                    <CiExport size={16} /> Export
+                                                </button>
+                                                <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-800 hover:text-white transition" onClick={() => setShowImportForm(true)}>
+                                                    <CiImport size={16} /> Import Account
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </>
-                            )}
 
-                            <ToastContainer className="text-xs" autoClose={1000} />
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">Company Accounts</h2>
+                                            <SearchFilters
+                                                searchTerm={searchTerm}
+                                                setSearchTerm={setSearchTerm}
+                                                postsPerPage={postsPerPage}
+                                                setPostsPerPage={setPostsPerPage}
+                                                selectedClientType={selectedClientType}
+                                                setSelectedClientType={setSelectedClientType}
+                                                startDate={startDate}
+                                                setStartDate={setStartDate}
+                                                endDate={endDate}
+                                                setEndDate={setEndDate}
+                                            />
+                                            <UsersTable
+                                                posts={currentPosts}
+                                                handleEdit={handleEdit}
+                                            />
+                                            <Pagination
+                                                currentPage={currentPage}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                            />
+
+                                            <div className="text-xs mt-2">
+                                                Showing {indexOfFirstPost + 1} to{" "}
+                                                {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
+                                                {filteredAccounts.length} entries
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                <ToastContainer className="text-xs" autoClose={1000} />
+                            </div>
                         </div>
                     )}
                 </UserFetcher>

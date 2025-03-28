@@ -175,47 +175,49 @@ const ListofUser: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            {showForm ? (
-                                <AddPostForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditUser(null);
-                                    }}
-                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
-                                    userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
-                                    editUser={editUser}
-                                />
-                            ) : (
-                                <>
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Historical Company Transaction Overview</h2>
-                                        <p className="text-xs text-gray-600 mb-4">
-                                            The <strong>Historical Company Transaction Overview</strong> section provides a detailed record of past business activities,
-                                            focusing on key metrics such as sales, client interactions, and team performance over time. It includes information such as
-                                            the <strong>company name, sales order (SO) details, client type, call type, activity type, call outcome, remarks,
-                                                attached files, status, duration,</strong> and <strong>time spent</strong>. This report serves as a valuable tool for tracking
-                                            long-term trends, enabling better decision-making and ensuring effective follow-ups and client engagement.
-                                        </p>
-                                        <SearchFilters
-                                            searchTerm={searchTerm}
-                                            setSearchTerm={setSearchTerm}
-                                            postsPerPage={postsPerPage}
-                                            setPostsPerPage={setPostsPerPage}
-                                            selectedClientType={selectedClientType}
-                                            setSelectedClientType={setSelectedClientType}
-                                            startDate={startDate}
-                                            setStartDate={setStartDate}
-                                            endDate={endDate}
-                                            setEndDate={setEndDate}
-                                        />
-                                        <UsersTable
-                                            posts={filteredAccounts}
-                                        />
-                                    </div>
-                                </>
-                            )}
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+                                {showForm ? (
+                                    <AddPostForm
+                                        onCancel={() => {
+                                            setShowForm(false);
+                                            setEditUser(null);
+                                        }}
+                                        refreshPosts={fetchAccount}  // Pass the refreshPosts callback
+                                        userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
+                                        editUser={editUser}
+                                    />
+                                ) : (
+                                    <>
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">Historical Company Transaction Overview</h2>
+                                            <p className="text-xs text-gray-600 mb-4">
+                                                The <strong>Historical Company Transaction Overview</strong> section provides a detailed record of past business activities,
+                                                focusing on key metrics such as sales, client interactions, and team performance over time. It includes information such as
+                                                the <strong>company name, sales order (SO) details, client type, call type, activity type, call outcome, remarks,
+                                                    attached files, status, duration,</strong> and <strong>time spent</strong>. This report serves as a valuable tool for tracking
+                                                long-term trends, enabling better decision-making and ensuring effective follow-ups and client engagement.
+                                            </p>
+                                            <SearchFilters
+                                                searchTerm={searchTerm}
+                                                setSearchTerm={setSearchTerm}
+                                                postsPerPage={postsPerPage}
+                                                setPostsPerPage={setPostsPerPage}
+                                                selectedClientType={selectedClientType}
+                                                setSelectedClientType={setSelectedClientType}
+                                                startDate={startDate}
+                                                setStartDate={setStartDate}
+                                                endDate={endDate}
+                                                setEndDate={setEndDate}
+                                            />
+                                            <UsersTable
+                                                posts={filteredAccounts}
+                                            />
+                                        </div>
+                                    </>
+                                )}
 
-                            <ToastContainer className="text-xs" autoClose={1000} />
+                                <ToastContainer className="text-xs" autoClose={1000} />
+                            </div>
                         </div>
                     )}
                 </UserFetcher>

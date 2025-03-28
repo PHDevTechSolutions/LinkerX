@@ -136,27 +136,29 @@ const ListofUser: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            {showForm ? (
-                                <></>
-                            ) : (
-                                <>
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Client Coverage Guide</h2>
-                                        <p className="text-xs text-gray-600 mb-4">
-                                            The <strong>Client Coverage Guide</strong> provides a comprehensive overview of all transaction histories for each company. It serves as a detailed record of discussions and agreements made with clients, helping to track important conversations, updates, and transactions. By reviewing this guide, users can quickly access relevant information about each client, ensuring efficient management of customer relations and providing a reliable reference for future interactions.
-                                        </p>
-                                        <SearchFilters
-                                            searchTerm={searchTerm}
-                                            setSearchTerm={setSearchTerm}
-                                        />
-                                        <UsersTable
-                                            posts={filteredAccounts}
-                                        />
-                                    </div>
-                                </>
-                            )}
+                            <div className="grid grid-cols-1 md:grid-cols-1">
+                                {showForm ? (
+                                    <></>
+                                ) : (
+                                    <>
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">Client Coverage Guide</h2>
+                                            <p className="text-xs text-gray-600 mb-4">
+                                                The <strong>Client Coverage Guide</strong> provides a comprehensive overview of all transaction histories for each company. It serves as a detailed record of discussions and agreements made with clients, helping to track important conversations, updates, and transactions. By reviewing this guide, users can quickly access relevant information about each client, ensuring efficient management of customer relations and providing a reliable reference for future interactions.
+                                            </p>
+                                            <SearchFilters
+                                                searchTerm={searchTerm}
+                                                setSearchTerm={setSearchTerm}
+                                            />
+                                            <UsersTable
+                                                posts={filteredAccounts}
+                                            />
+                                        </div>
+                                    </>
+                                )}
 
-                            <ToastContainer className="text-xs" autoClose={1000} />
+                                <ToastContainer className="text-xs" autoClose={1000} />
+                            </div>
                         </div>
                     )}
                 </UserFetcher>

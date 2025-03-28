@@ -127,56 +127,58 @@ const ListofUser: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            {showForm ? (
-                                <AddPostForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditUser(null);
-                                    }}
-                                    refreshPosts={fetchUsers}  // Pass the refreshPosts callback
-                                    userName={user ? user.userName : ""}  // Ensure userName is passed properly
-                                    userDetails={{ id: editUser ? editUser._id : userDetails.UserId }}  // Ensure id is passed correctly
-                                    editUser={editUser}
-                                />
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+                                {showForm ? (
+                                    <AddPostForm
+                                        onCancel={() => {
+                                            setShowForm(false);
+                                            setEditUser(null);
+                                        }}
+                                        refreshPosts={fetchUsers}  // Pass the refreshPosts callback
+                                        userName={user ? user.userName : ""}  // Ensure userName is passed properly
+                                        userDetails={{ id: editUser ? editUser._id : userDetails.UserId }}  // Ensure id is passed correctly
+                                        editUser={editUser}
+                                    />
 
-                            ) : (
-                                <>
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Territory Sales Associates</h2>
-                                        <p className="text-xs text-gray-600 mb-4">
-                                            <strong>Territory Sales Associates (TSAs)</strong> are responsible for managing client relationships,
-                                            driving sales, and expanding market reach within their designated territories.
-                                            They play a key role in engaging with customers, following up on leads,
-                                            and ensuring excellent service. Their performance is evaluated based on
-                                            client interactions, successful conversions, and overall contribution to sales growth.
-                                        </p>
-                                        <SearchFilters
-                                            searchTerm={searchTerm}
-                                            setSearchTerm={setSearchTerm}
-                                            postsPerPage={postsPerPage}
-                                            setPostsPerPage={setPostsPerPage}
-                                        />
-                                        <UsersTable
-                                            posts={currentPosts}
-                                            handleEdit={handleEdit}
-                                            userDetails={userDetails}
-                                        />
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                        />
+                                ) : (
+                                    <>
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">Territory Sales Associates</h2>
+                                            <p className="text-xs text-gray-600 mb-4">
+                                                <strong>Territory Sales Associates (TSAs)</strong> are responsible for managing client relationships,
+                                                driving sales, and expanding market reach within their designated territories.
+                                                They play a key role in engaging with customers, following up on leads,
+                                                and ensuring excellent service. Their performance is evaluated based on
+                                                client interactions, successful conversions, and overall contribution to sales growth.
+                                            </p>
+                                            <SearchFilters
+                                                searchTerm={searchTerm}
+                                                setSearchTerm={setSearchTerm}
+                                                postsPerPage={postsPerPage}
+                                                setPostsPerPage={setPostsPerPage}
+                                            />
+                                            <UsersTable
+                                                posts={currentPosts}
+                                                handleEdit={handleEdit}
+                                                userDetails={userDetails}
+                                            />
+                                            <Pagination
+                                                currentPage={currentPage}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                            />
 
-                                        <div className="text-xs mt-2">
-                                            Showing {indexOfFirstPost + 1} to{" "}
-                                            {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                            {filteredAccounts.length} entries
+                                            <div className="text-xs mt-2">
+                                                Showing {indexOfFirstPost + 1} to{" "}
+                                                {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
+                                                {filteredAccounts.length} entries
+                                            </div>
                                         </div>
-                                    </div>
-                                </>
-                            )}
+                                    </>
+                                )}
 
-                            <ToastContainer className="text-xs" autoClose={1000} />
+                                <ToastContainer className="text-xs" autoClose={1000} />
+                            </div>
                         </div>
                     )}
                 </UserFetcher>

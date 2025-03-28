@@ -126,40 +126,42 @@ const OutboundCallPage: React.FC = () => {
         <UserFetcher>
           {(userName) => (
             <div className="container mx-auto p-4">
-              <h2 className="text-lg font-bold mb-2">Account Records Management</h2>
-              <p className="text-xs mb-2">
-                This section displays the Account Management Database, which serves as a central hub for storing and managing account-related records. It provides an organized way to track and update account details efficiently.
-              </p>
+              <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+                <h2 className="text-lg font-bold mb-2">Account Records Management</h2>
+                <p className="text-xs mb-2">
+                  This section displays the Account Management Database, which serves as a central hub for storing and managing account-related records. It provides an organized way to track and update account details efficiently.
+                </p>
 
-              {/* Display total entries */}
-              <div className="mb-4 text-xs">
-                Total Entries: {filteredPosts.length}
-              </div>
+                {/* Display total entries */}
+                <div className="mb-4 text-xs">
+                  Total Entries: {filteredPosts.length}
+                </div>
 
-              <div className="mb-4 p-4 bg-white shadow-md rounded-md text-gray-900">
-                <SearchFilters
-                  searchTerm={searchTerm}
-                  setSearchTerm={setSearchTerm}
-                  selectedTSA={selectedTSA}
-                  setselectedTSA={setselectedTSA}
-                  selectedClientType={selectedClientType}
-                  setSelectedClientType={setSelectedClientType}
-                  postsPerPage={postsPerPage}
-                  setPostsPerPage={setPostsPerPage}
-                  startDate={startDate}
-                  setStartDate={setStartDate}
-                  endDate={endDate}
-                  setEndDate={setEndDate}
-                />
-                <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"><CiExport size={20} /> Export to Excel</button>
-                <OutboundTable posts={currentPosts} />
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  setCurrentPage={setCurrentPage}
-                />
+                <div className="mb-4 p-4 bg-white shadow-md rounded-md text-gray-900">
+                  <SearchFilters
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    selectedTSA={selectedTSA}
+                    setselectedTSA={setselectedTSA}
+                    selectedClientType={selectedClientType}
+                    setSelectedClientType={setSelectedClientType}
+                    postsPerPage={postsPerPage}
+                    setPostsPerPage={setPostsPerPage}
+                    startDate={startDate}
+                    setStartDate={setStartDate}
+                    endDate={endDate}
+                    setEndDate={setEndDate}
+                  />
+                  <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"><CiExport size={20} /> Export to Excel</button>
+                  <OutboundTable posts={currentPosts} />
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    setCurrentPage={setCurrentPage}
+                  />
+                </div>
+                <ToastContainer />
               </div>
-              <ToastContainer />
             </div>
           )}
         </UserFetcher>

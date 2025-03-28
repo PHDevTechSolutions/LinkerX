@@ -166,62 +166,64 @@ const ListofUser: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            {showForm ? (
-                                <AddPostForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditUser(null);
-                                    }}
-                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
-                                    userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
-                                    editUser={editUser}
-                                />
-                            ) : (
-                                <>
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg overflow-x-auto w-full">
-                                        <h2 className="text-lg font-bold mb-2">Team Daily Activities</h2>
-                                        <p className="text-xs text-gray-600 mb-4">
-                                            The <strong>Team Daily Activities</strong> section provides a detailed overview
-                                            of daily operations, tracking key metrics related to sales and client interactions.
-                                            It includes information such as the <strong>company name, sales order (SO) details, client type,
-                                                type of call, activity type, call outcome, remarks, attached files, status,
-                                                duration,</strong> and <strong>time consumed</strong>. This report helps monitor team performance,
-                                            ensuring efficient follow-ups and effective client engagement.
-                                        </p>
-                                        <SearchFilters
-                                            searchTerm={searchTerm}
-                                            setSearchTerm={setSearchTerm}
-                                            postsPerPage={postsPerPage}
-                                            setPostsPerPage={setPostsPerPage}
-                                            selectedClientType={selectedClientType}
-                                            setSelectedClientType={setSelectedClientType}
-                                            startDate={startDate}
-                                            setStartDate={setStartDate}
-                                            endDate={endDate}
-                                            setEndDate={setEndDate}
-                                        />
-                                        <UsersTable
-                                            posts={currentPosts}
-                                            handleEdit={handleEdit}
-                                            ReferenceID={userDetails.ReferenceID}
-                                            fetchAccount={fetchAccount}
-                                        />
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                        />
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+                                {showForm ? (
+                                    <AddPostForm
+                                        onCancel={() => {
+                                            setShowForm(false);
+                                            setEditUser(null);
+                                        }}
+                                        refreshPosts={fetchAccount}  // Pass the refreshPosts callback
+                                        userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
+                                        editUser={editUser}
+                                    />
+                                ) : (
+                                    <>
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg overflow-x-auto w-full">
+                                            <h2 className="text-lg font-bold mb-2">Team Daily Activities</h2>
+                                            <p className="text-xs text-gray-600 mb-4">
+                                                The <strong>Team Daily Activities</strong> section provides a detailed overview
+                                                of daily operations, tracking key metrics related to sales and client interactions.
+                                                It includes information such as the <strong>company name, sales order (SO) details, client type,
+                                                    type of call, activity type, call outcome, remarks, attached files, status,
+                                                    duration,</strong> and <strong>time consumed</strong>. This report helps monitor team performance,
+                                                ensuring efficient follow-ups and effective client engagement.
+                                            </p>
+                                            <SearchFilters
+                                                searchTerm={searchTerm}
+                                                setSearchTerm={setSearchTerm}
+                                                postsPerPage={postsPerPage}
+                                                setPostsPerPage={setPostsPerPage}
+                                                selectedClientType={selectedClientType}
+                                                setSelectedClientType={setSelectedClientType}
+                                                startDate={startDate}
+                                                setStartDate={setStartDate}
+                                                endDate={endDate}
+                                                setEndDate={setEndDate}
+                                            />
+                                            <UsersTable
+                                                posts={currentPosts}
+                                                handleEdit={handleEdit}
+                                                ReferenceID={userDetails.ReferenceID}
+                                                fetchAccount={fetchAccount}
+                                            />
+                                            <Pagination
+                                                currentPage={currentPage}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                            />
 
-                                        <div className="text-xs mt-2">
-                                            Showing {indexOfFirstPost + 1} to{" "}
-                                            {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                            {filteredAccounts.length} entries
+                                            <div className="text-xs mt-2">
+                                                Showing {indexOfFirstPost + 1} to{" "}
+                                                {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
+                                                {filteredAccounts.length} entries
+                                            </div>
                                         </div>
-                                    </div>
-                                </>
-                            )}
+                                    </>
+                                )}
 
-                            <ToastContainer className="text-xs" autoClose={1000} />
+                                <ToastContainer className="text-xs" autoClose={1000} />
+                            </div>
                         </div>
                     )}
                 </UserFetcher>

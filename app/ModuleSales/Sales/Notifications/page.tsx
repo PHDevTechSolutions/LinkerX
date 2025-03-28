@@ -86,42 +86,42 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (title)
     const filteredAccounts = Array.isArray(posts)
-  ? posts
-      .filter((post) => {
-        const hasType = !!post?.type; // Check if type exists
-        const matchesSearchTerm =
-          hasType && post.type.toLowerCase().includes(searchTerm.toLowerCase());
+        ? posts
+            .filter((post) => {
+                const hasType = !!post?.type; // Check if type exists
+                const matchesSearchTerm =
+                    hasType && post.type.toLowerCase().includes(searchTerm.toLowerCase());
 
-        const postDate = post.date_created ? new Date(post.date_created) : null;
-        const isWithinDateRange =
-          (!startDate || (postDate && postDate >= new Date(startDate))) &&
-          (!endDate || (postDate && postDate <= new Date(endDate)));
+                const postDate = post.date_created ? new Date(post.date_created) : null;
+                const isWithinDateRange =
+                    (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                    (!endDate || (postDate && postDate <= new Date(endDate)));
 
-        const matchesClientType = selectedClientType
-          ? post?.typeclient === selectedClientType
-          : true;
+                const matchesClientType = selectedClientType
+                    ? post?.typeclient === selectedClientType
+                    : true;
 
-        // ✅ ReferenceID-based filtering based on user role
-        const userReferenceID = userDetails.ReferenceID;
-        const matchesReferenceID =
-          (userDetails.Role === "Manager" && post?.manager === userReferenceID) ||
-          (userDetails.Role === "Territory Sales Manager" && post?.tsm === userReferenceID) ||
-          (userDetails.Role === "Territory Sales Associate" && post?.referenceid === userReferenceID);
+                // ✅ ReferenceID-based filtering based on user role
+                const userReferenceID = userDetails.ReferenceID;
+                const matchesReferenceID =
+                    (userDetails.Role === "Manager" && post?.manager === userReferenceID) ||
+                    (userDetails.Role === "Territory Sales Manager" && post?.tsm === userReferenceID) ||
+                    (userDetails.Role === "Territory Sales Associate" && post?.referenceid === userReferenceID);
 
-        return (
-          hasType &&
-          matchesSearchTerm &&
-          isWithinDateRange &&
-          matchesClientType &&
-          matchesReferenceID
-        );
-      })
-      .sort(
-        (a, b) =>
-          new Date(b.date_created).getTime() -
-          new Date(a.date_created).getTime()
-      )
-  : [];
+                return (
+                    hasType &&
+                    matchesSearchTerm &&
+                    isWithinDateRange &&
+                    matchesClientType &&
+                    matchesReferenceID
+                );
+            })
+            .sort(
+                (a, b) =>
+                    new Date(b.date_created).getTime() -
+                    new Date(a.date_created).getTime()
+            )
+        : [];
 
 
     const currentPosts = filteredAccounts.slice();
@@ -133,32 +133,34 @@ const ListofUser: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            {showForm ? (
-                                <AddPostForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditUser(null);
-                                    }}
-                                    refreshPosts={fetchAccount}
-                                    userDetails={{
-                                        id: editUser ? editUser.id : userDetails.UserId,
-                                        referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
-                                    }}
-                                    editUser={editUser}
-                                />
-                            ) : (
-                                <>
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Notifications</h2>
-                                        <UsersCard
-                                            posts={filteredAccounts}
-                                            userDetails={userDetails}
-                                        />
-                                    </div>
-                                </>
-                            )}
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+                                {showForm ? (
+                                    <AddPostForm
+                                        onCancel={() => {
+                                            setShowForm(false);
+                                            setEditUser(null);
+                                        }}
+                                        refreshPosts={fetchAccount}
+                                        userDetails={{
+                                            id: editUser ? editUser.id : userDetails.UserId,
+                                            referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
+                                        }}
+                                        editUser={editUser}
+                                    />
+                                ) : (
+                                    <>
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">Notifications</h2>
+                                            <UsersCard
+                                                posts={filteredAccounts}
+                                                userDetails={userDetails}
+                                            />
+                                        </div>
+                                    </>
+                                )}
 
-                            <ToastContainer className="text-xs" />
+                                <ToastContainer className="text-xs" />
+                            </div>
                         </div>
                     )}
                 </UserFetcher>

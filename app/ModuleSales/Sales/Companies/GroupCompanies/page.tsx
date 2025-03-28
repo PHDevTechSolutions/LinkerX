@@ -142,57 +142,59 @@ const ListofUser: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            {showForm ? (
-                                <AddPostForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditUser(null);
-                                    }}
-                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
-                                    userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
-                                    editUser={editUser}
-                                />
-                            ) : (
-                                <>
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Company Groups</h2>
-                                        <p className="text-xs text-gray-600 mb-4">
-                                            This section allows you to filter and search through different company groups.
-                                            You can use the search bar to search for company names and apply various filters based on client type and the date range.
-                                            The filter options help you narrow down your results efficiently, making it easier to manage and track company groups.
-                                        </p>
-                                        <SearchFilters
-                                            searchTerm={searchTerm}
-                                            setSearchTerm={setSearchTerm}
-                                            postsPerPage={postsPerPage}
-                                            setPostsPerPage={setPostsPerPage}
-                                            selectedClientType={selectedClientType}
-                                            setSelectedClientType={setSelectedClientType}
-                                            startDate={startDate}
-                                            setStartDate={setStartDate}
-                                            endDate={endDate}
-                                            setEndDate={setEndDate}
-                                        />
-                                        <UsersTable
-                                            posts={currentPosts}
-                                            handleEdit={handleEdit}
-                                        />
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                        />
+                            <div className="grid grid-cols-1 md:grid-cols-1">
+                                {showForm ? (
+                                    <AddPostForm
+                                        onCancel={() => {
+                                            setShowForm(false);
+                                            setEditUser(null);
+                                        }}
+                                        refreshPosts={fetchAccount}  // Pass the refreshPosts callback
+                                        userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
+                                        editUser={editUser}
+                                    />
+                                ) : (
+                                    <>
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">Company Groups</h2>
+                                            <p className="text-xs text-gray-600 mb-4">
+                                                This section allows you to filter and search through different company groups.
+                                                You can use the search bar to search for company names and apply various filters based on client type and the date range.
+                                                The filter options help you narrow down your results efficiently, making it easier to manage and track company groups.
+                                            </p>
+                                            <SearchFilters
+                                                searchTerm={searchTerm}
+                                                setSearchTerm={setSearchTerm}
+                                                postsPerPage={postsPerPage}
+                                                setPostsPerPage={setPostsPerPage}
+                                                selectedClientType={selectedClientType}
+                                                setSelectedClientType={setSelectedClientType}
+                                                startDate={startDate}
+                                                setStartDate={setStartDate}
+                                                endDate={endDate}
+                                                setEndDate={setEndDate}
+                                            />
+                                            <UsersTable
+                                                posts={currentPosts}
+                                                handleEdit={handleEdit}
+                                            />
+                                            <Pagination
+                                                currentPage={currentPage}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                            />
 
-                                        <div className="text-xs mt-2">
-                                            Showing {indexOfFirstPost + 1} to{" "}
-                                            {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                            {filteredAccounts.length} entries
+                                            <div className="text-xs mt-2">
+                                                Showing {indexOfFirstPost + 1} to{" "}
+                                                {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
+                                                {filteredAccounts.length} entries
+                                            </div>
                                         </div>
-                                    </div>
-                                </>
-                            )}
+                                    </>
+                                )}
 
-                            <ToastContainer className="text-xs" autoClose={1000} />
+                                <ToastContainer className="text-xs" autoClose={1000} />
+                            </div>
                         </div>
                     )}
                 </UserFetcher>

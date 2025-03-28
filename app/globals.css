@@ -57,4 +57,10 @@ body {
   animation: continuous-shake 1s infinite ease-in-out; /* 🔥 Infinite bounce shake */
 }
 
-
+@media (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

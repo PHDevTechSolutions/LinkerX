@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ProfileForm from "../../components/Profile/ProfileForm"; // Import the form component
 
 const ProfilePage: React.FC = () => {
-    const [userDetails, setUserDetails] = useState({id: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Status: "",});
+    const [userDetails, setUserDetails] = useState({ id: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Status: "", });
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -87,15 +87,17 @@ const ProfilePage: React.FC = () => {
         <SessionChecker>
             <ParentLayout>
                 <div className="container mx-auto p-6 text-gray-900 bg-white rounded-md">
-                    <h1 className="text-lg font-bold mb-4">Update Profile</h1>
-                    {error && <div className="text-red-500 mb-4">{error}</div>}
-                    {/* Use ProfileForm component here */}
-                    <ProfileForm
-                        userDetails={userDetails}
-                        handleSubmit={handleSubmit}
-                        handleChange={handleChange}
-                        handleSelectChange={handleSelectChange}
-                    />
+                    <div className="grid grid-cols-1 md:grid-cols-1">
+                        <h1 className="text-lg font-bold mb-4">Update Profile</h1>
+                        {error && <div className="text-red-500 mb-4">{error}</div>}
+                        {/* Use ProfileForm component here */}
+                        <ProfileForm
+                            userDetails={userDetails}
+                            handleSubmit={handleSubmit}
+                            handleChange={handleChange}
+                            handleSelectChange={handleSelectChange}
+                        />
+                    </div>
                 </div>
                 <ToastContainer />
             </ParentLayout>

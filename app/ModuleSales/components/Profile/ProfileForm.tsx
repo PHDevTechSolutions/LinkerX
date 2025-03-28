@@ -65,7 +65,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
     }, []);
 
     return (
-        <div className="grid grid-cols-2 gap-6 p-6 text-xs">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6 p-6 text-xs">
             <div className="bg-white shadow-md rounded-lg p-6">
                 <button
                     className={`py-2 px-4 ${activeTab === 'profile' ? 'border-b-2 border-blue-500' : 'text-gray-500'}`}

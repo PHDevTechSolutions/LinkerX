@@ -155,6 +155,7 @@ const ListofUser: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
                             {showForm ? (
                                 <AddPostForm
                                     onCancel={() => {
@@ -192,6 +193,7 @@ const ListofUser: React.FC = () => {
                             )}
 
                             <ToastContainer className="text-xs" autoClose={1000} />
+                        </div>
                         </div>
                     )}
                 </UserFetcher>

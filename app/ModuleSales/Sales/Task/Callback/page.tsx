@@ -228,48 +228,50 @@ const ListofUser: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            {showForm ? (
-                                <></>
-                            ) : (
-                                <>
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Callback's</h2>
-                                        <p className="text-xs text-gray-600 mb-4">
-                                            This section displays all the callbacks that are scheduled, along with their set times. You can track the callback timings and stay updated with the upcoming tasks.
-                                            The calendar and timer functionality allows for better scheduling and monitoring of each callback, ensuring no callback is missed.
-                                        </p>
-                                        <UsersTable
-                                            posts={currentPosts}
-                                            handleDelete={confirmDelete}
-                                        />
-                                    </div>
-                                </>
-                            )}
+                            <div className="grid grid-cols-1 md:grid-cols-1">
+                                {showForm ? (
+                                    <></>
+                                ) : (
+                                    <>
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">Callback's</h2>
+                                            <p className="text-xs text-gray-600 mb-4">
+                                                This section displays all the callbacks that are scheduled, along with their set times. You can track the callback timings and stay updated with the upcoming tasks.
+                                                The calendar and timer functionality allows for better scheduling and monitoring of each callback, ensuring no callback is missed.
+                                            </p>
+                                            <UsersTable
+                                                posts={currentPosts}
+                                                handleDelete={confirmDelete}
+                                            />
+                                        </div>
+                                    </>
+                                )}
 
-                            {showDeleteModal && (
-                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                                    <div className="bg-white p-4 rounded shadow-lg">
-                                        <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
-                                        <p className="text-xs">Are you sure you want to delete this post?</p>
-                                        <div className="mt-4 flex justify-end">
-                                            <button
-                                                className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2"
-                                                onClick={handleDelete}
-                                            >
-                                                Delete
-                                            </button>
-                                            <button
-                                                className="bg-gray-300 text-xs px-4 py-2 rounded"
-                                                onClick={() => setShowDeleteModal(false)}
-                                            >
-                                                Cancel
-                                            </button>
+                                {showDeleteModal && (
+                                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                        <div className="bg-white p-4 rounded shadow-lg">
+                                            <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
+                                            <p className="text-xs">Are you sure you want to delete this post?</p>
+                                            <div className="mt-4 flex justify-end">
+                                                <button
+                                                    className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2"
+                                                    onClick={handleDelete}
+                                                >
+                                                    Delete
+                                                </button>
+                                                <button
+                                                    className="bg-gray-300 text-xs px-4 py-2 rounded"
+                                                    onClick={() => setShowDeleteModal(false)}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            <ToastContainer className="text-xs" />
+                                <ToastContainer className="text-xs" />
+                            </div>
                         </div>
                     )}
                 </UserFetcher>

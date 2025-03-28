@@ -26,7 +26,6 @@ const TileLayer = dynamic(() => import("react-leaflet").then((mod) => mod.TileLa
 const Marker = dynamic(() => import("react-leaflet").then((mod) => mod.Marker), { ssr: false });
 const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), { ssr: false });
 
-
 type Activity = {
   date_created: string; // or Date if it's a Date object
   typeactivity: string;
@@ -141,7 +140,6 @@ const DashboardPage: React.FC = () => {
   const [totalActualSalesWeek, setTotalActualSalesWeek] = useState(0);
   const [totalActualSalesMonth, setTotalActualSalesMonth] = useState(0);
 
-
   useEffect(() => {
     (async () => {
       const leaflet = await import("leaflet");
@@ -219,7 +217,7 @@ const DashboardPage: React.FC = () => {
       timeZone: "Asia/Manila",
     });
   };
-  
+
   // Effect to update currentDateTime continuously unless the timer is running
   useEffect(() => {
     const now = new Date();
@@ -870,67 +868,70 @@ const DashboardPage: React.FC = () => {
                               recent activities tied to the account, showing details like the date, company name, activity type, status, and remarks. The status is color-coded (Cold, Warm, Hot, Done) for quick progress assessment.
                             </p>
                           </div>
-                          <table className="min-w-full bg-white table-auto text-xs">
-                            <thead>
-                              <tr>
-                                <th className="py-3 px-4 text-left">Date</th>
-                                <th className="py-3 px-4 text-left">Company Name</th>
-                                <th className="py-3 px-4 text-left">Type of Activity</th>
-                                <th className="py-3 px-4 text-left">Status</th>
-                                <th className="py-3 px-4 text-left">Remarks</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {activityList && activityList.length > 0 ? (
-                                activityList.map((activity, index) => {
-                                  // Define the badge color based on activity status
-                                  let statusBadgeColor = "";
-                                  switch (activity.activitystatus) {
-                                    case "Cold":
-                                      statusBadgeColor = "bg-blue-500 text-white";
-                                      break;
-                                    case "Warm":
-                                      statusBadgeColor = "bg-yellow-500 text-black";
-                                      break;
-                                    case "Hot":
-                                      statusBadgeColor = "bg-red-500 text-white";
-                                      break;
-                                    case "Done":
-                                      statusBadgeColor = "bg-green-500 text-white";
-                                      break;
-                                    default:
-                                      statusBadgeColor = "bg-gray-300 text-black";
-                                  }
-
-                                  return (
-                                    <tr key={index} className="border-t border-gray-100 capitalize">
-                                      <td className="py-4 px-6">
-                                        {new Date(activity.date_created).toLocaleDateString()}
-                                      </td>
-                                      <td className="py-4 px-6">{activity.companyname}</td>
-                                      <td className="py-4 px-6">{activity.typeactivity}</td>
-                                      <td className="py-4 px-6">
-                                        <span
-                                          className={`inline-block px-2 py-1 rounded-full text-[8px] ${statusBadgeColor}`}
-                                        >
-                                          {activity.activitystatus}
-                                        </span>
-                                      </td>
-                                      <td className="py-4 px-6">
-                                        {activity.remarks ? activity.remarks : activity.activityremarks}
-                                      </td>
-                                    </tr>
-                                  );
-                                })
-                              ) : (
+                          <div className="overflow-x-auto">
+                            <table className="min-w-full bg-white table-auto text-xs">
+                              <thead>
                                 <tr>
-                                  <td colSpan={5} className="text-center py-4 px-6">
-                                    No data available
-                                  </td>
+                                  <th className="py-3 px-4 text-left">Date</th>
+                                  <th className="py-3 px-4 text-left">Company Name</th>
+                                  <th className="py-3 px-4 text-left">Type of Activity</th>
+                                  <th className="py-3 px-4 text-left">Status</th>
+                                  <th className="py-3 px-4 text-left">Remarks</th>
                                 </tr>
-                              )}
-                            </tbody>
-                          </table>
+                              </thead>
+                              <tbody>
+                                {activityList && activityList.length > 0 ? (
+                                  activityList.map((activity, index) => {
+                                    // Define the badge color based on activity status
+                                    let statusBadgeColor = "";
+                                    switch (activity.activitystatus) {
+                                      case "Cold":
+                                        statusBadgeColor = "bg-blue-500 text-white";
+                                        break;
+                                      case "Warm":
+                                        statusBadgeColor = "bg-yellow-500 text-black";
+                                        break;
+                                      case "Hot":
+                                        statusBadgeColor = "bg-red-500 text-white";
+                                        break;
+                                      case "Done":
+                                        statusBadgeColor = "bg-green-500 text-white";
+                                        break;
+                                      default:
+                                        statusBadgeColor = "bg-gray-300 text-black";
+                                    }
+
+                                    return (
+                                      <tr key={index} className="border-t border-gray-100 capitalize">
+                                        <td className="py-4 px-6">
+                                          {new Date(activity.date_created).toLocaleDateString()}
+                                        </td>
+                                        <td className="py-4 px-6">{activity.companyname}</td>
+                                        <td className="py-4 px-6">{activity.typeactivity}</td>
+                                        <td className="py-4 px-6">
+                                          <span
+                                            className={`inline-block px-2 py-1 rounded-full text-[8px] ${statusBadgeColor}`}
+                                          >
+                                            {activity.activitystatus}
+                                          </span>
+                                        </td>
+                                        <td className="py-4 px-6">
+                                          {activity.remarks ? activity.remarks : activity.activityremarks}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })
+                                ) : (
+                                  <tr>
+                                    <td colSpan={5} className="text-center py-4 px-6">
+                                      No data available
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+
                         </>
                       )}
 
@@ -1007,7 +1008,6 @@ const DashboardPage: React.FC = () => {
 
                         </div>
                       )}
-
 
                     </div>
                   </div>

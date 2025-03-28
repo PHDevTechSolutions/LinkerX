@@ -155,43 +155,45 @@ const ListofUser: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            {showForm ? (
-                                <AddPostForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditUser(null);
-                                    }}
-                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
-                                    userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
-                                    editUser={editUser}
-                                />
-                            ) : (
-                                <>
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Sales Performance Summary</h2>
-                                        <p className="text-xs text-gray-600 mb-2">
-                                            A summary of each agent’s Month-to-Date (MTD) and Year-to-Date (YTD) sales performance, tracking progress, conversions, and overall sales efficiency.
-                                        </p>
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+                                {showForm ? (
+                                    <AddPostForm
+                                        onCancel={() => {
+                                            setShowForm(false);
+                                            setEditUser(null);
+                                        }}
+                                        refreshPosts={fetchAccount}  // Pass the refreshPosts callback
+                                        userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
+                                        editUser={editUser}
+                                    />
+                                ) : (
+                                    <>
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">Sales Performance Summary</h2>
+                                            <p className="text-xs text-gray-600 mb-2">
+                                                A summary of each agent’s Month-to-Date (MTD) and Year-to-Date (YTD) sales performance, tracking progress, conversions, and overall sales efficiency.
+                                            </p>
 
-                                        <SearchFilters
-                                            searchTerm={searchTerm}
-                                            setSearchTerm={setSearchTerm}
-                                            startDate={startDate}
-                                            setStartDate={setStartDate}
-                                            endDate={endDate}
-                                            setEndDate={setEndDate}
-                                        />
-                                        <UsersTable
-                                            posts={filteredAccounts}
-                                            handleEdit={handleEdit}
-                                            ReferenceID={userDetails.ReferenceID}
-                                            fetchAccount={fetchAccount}
-                                        />
-                                    </div>
-                                </>
-                            )}
+                                            <SearchFilters
+                                                searchTerm={searchTerm}
+                                                setSearchTerm={setSearchTerm}
+                                                startDate={startDate}
+                                                setStartDate={setStartDate}
+                                                endDate={endDate}
+                                                setEndDate={setEndDate}
+                                            />
+                                            <UsersTable
+                                                posts={filteredAccounts}
+                                                handleEdit={handleEdit}
+                                                ReferenceID={userDetails.ReferenceID}
+                                                fetchAccount={fetchAccount}
+                                            />
+                                        </div>
+                                    </>
+                                )}
 
-                            <ToastContainer className="text-xs" autoClose={1000} />
+                                <ToastContainer className="text-xs" autoClose={1000} />
+                            </div>
                         </div>
                     )}
                 </UserFetcher>

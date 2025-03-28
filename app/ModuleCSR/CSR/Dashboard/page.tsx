@@ -101,7 +101,7 @@ const DashboardPage: React.FC = () => {
           </div>
 
           {/* Card 1: Bar Charts */}
-          <div className="flex gap-4 mb-4">
+          <div className="flex gap-4 mb-4 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1">
             <div className="bg-white shadow-md rounded-lg p-4 w-full">
               <div className="flex border-b mb-4 text-xs font-bold">
                 <button className={`p-2 flex-1 ${activeTable === "barchart" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("barchart")}>Bar Chart</button>
@@ -134,6 +134,7 @@ const DashboardPage: React.FC = () => {
                   />
                 )}
               </div>
+
             </div>
           </div>
 

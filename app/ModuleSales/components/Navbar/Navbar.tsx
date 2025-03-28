@@ -378,12 +378,12 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           <CiMenuBurger />
         </button>
 
-        <span className="flex items-center border shadow-md text-xs font-medium px-3 py-1 rounded-full">
+        <span className="flex items-center border shadow-md text-xs font-medium px-3 py-1 rounded-full md:block hidden">
           <CiClock2 size={15} className="mr-1" /> {currentTime}
         </span>
 
         {/* Search Bar */}
-        <form onSubmit={handleSearch} className="relative">
+        <form onSubmit={handleSearch} className="relative md:block hidden">
           <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
           <input type="text" placeholder="Search directories.." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 pr-3 py-1 text-xs text-gray-900 border rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 capitalize" />
           {isSearching && (

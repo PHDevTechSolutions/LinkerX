@@ -112,61 +112,63 @@ const ListofUser: React.FC = () => {
 
                         return (
                             <div className="container mx-auto p-4 text-gray-900">
-                                {showForm ? (
-                                    <AddPostForm
-                                        onCancel={() => {
-                                            setShowForm(false);
-                                            setEditUser(null);
-                                        }}
-                                        refreshPosts={fetchUsers}
-                                        userName={user?.userName || ""}
-                                        userDetails={{ id: editUser ? editUser._id : "" }}
-                                        editUser={editUser}
-                                    />
-                                ) : (
-                                    <>
-                                        <div className="flex justify-between items-center mb-4">
-                                            <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded flex items-center gap-1" onClick={() => setShowForm(true)}>
-                                                                                            <CiCirclePlus size={20} />Add Ticket
-                                                                                        </button>
-                                        </div>
-
-                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">List of Users</h2>
-                                            <SearchFilters
-                                                searchTerm={searchTerm}
-                                                setSearchTerm={setSearchTerm}
-                                                postsPerPage={postsPerPage}
-                                                setPostsPerPage={setPostsPerPage}
-                                            />
-                                            <UsersTable posts={currentPosts} handleEdit={handleEdit} handleDelete={confirmDelete} />
-                                            <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
-
-                                            <div className="text-xs mt-2">
-                                                Showing {indexOfFirstPost + 1} to {Math.min(indexOfLastPost, filteredAccounts.length)} of {filteredAccounts.length} entries
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-
-                                {showDeleteModal && (
-                                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                                        <div className="bg-white p-4 rounded shadow-lg">
-                                            <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
-                                            <p className="text-xs">Are you sure you want to delete this user?</p>
-                                            <div className="mt-4 flex justify-end">
-                                                <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2" onClick={handleDelete}>
-                                                    Delete
-                                                </button>
-                                                <button className="bg-gray-300 text-xs px-4 py-2 rounded" onClick={() => setShowDeleteModal(false)}>
-                                                    Cancel
+                                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+                                    {showForm ? (
+                                        <AddPostForm
+                                            onCancel={() => {
+                                                setShowForm(false);
+                                                setEditUser(null);
+                                            }}
+                                            refreshPosts={fetchUsers}
+                                            userName={user?.userName || ""}
+                                            userDetails={{ id: editUser ? editUser._id : "" }}
+                                            editUser={editUser}
+                                        />
+                                    ) : (
+                                        <>
+                                            <div className="flex justify-between items-center mb-4">
+                                                <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded flex items-center gap-1" onClick={() => setShowForm(true)}>
+                                                    <CiCirclePlus size={20} />Add Ticket
                                                 </button>
                                             </div>
-                                        </div>
-                                    </div>
-                                )}
 
-                                <ToastContainer />
+                                            <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                                <h2 className="text-lg font-bold mb-2">List of Users</h2>
+                                                <SearchFilters
+                                                    searchTerm={searchTerm}
+                                                    setSearchTerm={setSearchTerm}
+                                                    postsPerPage={postsPerPage}
+                                                    setPostsPerPage={setPostsPerPage}
+                                                />
+                                                <UsersTable posts={currentPosts} handleEdit={handleEdit} handleDelete={confirmDelete} />
+                                                <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
+
+                                                <div className="text-xs mt-2">
+                                                    Showing {indexOfFirstPost + 1} to {Math.min(indexOfLastPost, filteredAccounts.length)} of {filteredAccounts.length} entries
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {showDeleteModal && (
+                                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                            <div className="bg-white p-4 rounded shadow-lg">
+                                                <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
+                                                <p className="text-xs">Are you sure you want to delete this user?</p>
+                                                <div className="mt-4 flex justify-end">
+                                                    <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2" onClick={handleDelete}>
+                                                        Delete
+                                                    </button>
+                                                    <button className="bg-gray-300 text-xs px-4 py-2 rounded" onClick={() => setShowDeleteModal(false)}>
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <ToastContainer />
+                                </div>
                             </div>
                         );
                     }}

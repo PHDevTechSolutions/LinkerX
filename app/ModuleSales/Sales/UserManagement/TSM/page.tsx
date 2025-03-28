@@ -158,83 +158,85 @@ const ListofUser: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            {showForm ? (
-                                <AddPostForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditUser(null);
-                                    }}
-                                    refreshPosts={fetchUsers}  // Pass the refreshPosts callback
-                                    userName={user ? user.userName : ""}  // Ensure userName is passed properly
-                                    userDetails={{ id: editUser ? editUser._id : userDetails.UserId }}  // Ensure id is passed correctly
-                                    editUser={editUser}
-                                />
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+                                {showForm ? (
+                                    <AddPostForm
+                                        onCancel={() => {
+                                            setShowForm(false);
+                                            setEditUser(null);
+                                        }}
+                                        refreshPosts={fetchUsers}  // Pass the refreshPosts callback
+                                        userName={user ? user.userName : ""}  // Ensure userName is passed properly
+                                        userDetails={{ id: editUser ? editUser._id : userDetails.UserId }}  // Ensure id is passed correctly
+                                        editUser={editUser}
+                                    />
 
-                            ) : (
-                                <>
-                                    <div className="flex justify-between items-center mb-4">
-                                        <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
-                                            <CiSquarePlus size={20} />Add Account
-                                        </button>
-                                    </div>
-
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Territory Sales Manager</h2>
-                                        <SearchFilters
-                                            searchTerm={searchTerm}
-                                            setSearchTerm={setSearchTerm}
-                                            postsPerPage={postsPerPage}
-                                            setPostsPerPage={setPostsPerPage}
-                                        />
-                                        <UsersTable
-                                            posts={currentPosts}
-                                            handleEdit={handleEdit}
-                                            handleDelete={confirmDelete}
-                                            Role={user ? user.Role : ""}
-                                            Department={user ? user.Department : ""}
-                                            TSM={user ? user.TSM : ""}
-                                            Manager={user ? user.Manager : ""}
-                                            fetchUsers={fetchUsers}
-                                        />
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                        />
-
-                                        <div className="text-xs mt-2">
-                                            Showing {indexOfFirstPost + 1} to{" "}
-                                            {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                            {filteredAccounts.length} entries
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-
-                            {showDeleteModal && (
-                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                                    <div className="bg-white p-4 rounded shadow-lg">
-                                        <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
-                                        <p className="text-xs">Are you sure you want to delete this post?</p>
-                                        <div className="mt-4 flex justify-end">
-                                            <button
-                                                className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2"
-                                                onClick={handleDelete}
-                                            >
-                                                Delete
-                                            </button>
-                                            <button
-                                                className="bg-gray-300 text-xs px-4 py-2 rounded"
-                                                onClick={() => setShowDeleteModal(false)}
-                                            >
-                                                Cancel
+                                ) : (
+                                    <>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
+                                                <CiSquarePlus size={20} />Add Account
                                             </button>
                                         </div>
-                                    </div>
-                                </div>
-                            )}
 
-                            <ToastContainer className="text-xs" autoClose={1000} />
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">Territory Sales Manager</h2>
+                                            <SearchFilters
+                                                searchTerm={searchTerm}
+                                                setSearchTerm={setSearchTerm}
+                                                postsPerPage={postsPerPage}
+                                                setPostsPerPage={setPostsPerPage}
+                                            />
+                                            <UsersTable
+                                                posts={currentPosts}
+                                                handleEdit={handleEdit}
+                                                handleDelete={confirmDelete}
+                                                Role={user ? user.Role : ""}
+                                                Department={user ? user.Department : ""}
+                                                TSM={user ? user.TSM : ""}
+                                                Manager={user ? user.Manager : ""}
+                                                fetchUsers={fetchUsers}
+                                            />
+                                            <Pagination
+                                                currentPage={currentPage}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                            />
+
+                                            <div className="text-xs mt-2">
+                                                Showing {indexOfFirstPost + 1} to{" "}
+                                                {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
+                                                {filteredAccounts.length} entries
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {showDeleteModal && (
+                                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                        <div className="bg-white p-4 rounded shadow-lg">
+                                            <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
+                                            <p className="text-xs">Are you sure you want to delete this post?</p>
+                                            <div className="mt-4 flex justify-end">
+                                                <button
+                                                    className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2"
+                                                    onClick={handleDelete}
+                                                >
+                                                    Delete
+                                                </button>
+                                                <button
+                                                    className="bg-gray-300 text-xs px-4 py-2 rounded"
+                                                    onClick={() => setShowDeleteModal(false)}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <ToastContainer className="text-xs" autoClose={1000} />
+                            </div>
                         </div>
                     )}
                 </UserFetcher>

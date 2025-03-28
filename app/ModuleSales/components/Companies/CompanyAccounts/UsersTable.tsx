@@ -323,9 +323,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 overflow-x-auto">
       {/* Bulk Action Buttons */}
-      <div className="flex gap-2 mb-3">
+
+      <div className="flex gap-2 mb-3 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
         <button onClick={toggleBulkEditMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-900 hover:text-white">
           <CiEdit size={16} />
           {bulkEditMode ? "Cancel Bulk Edit" : "Bulk Edit"}
@@ -346,6 +347,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
           Refresh
         </button>
       </div>
+
       {/* Bulk Action Panel */}
       {(bulkDeleteMode || bulkEditMode || bulkEditStatusMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
         <div className="mb-4 p-3 bg-gray-100 rounded-md text-xs">
@@ -433,63 +435,64 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
       )}
 
       {/* Users Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 text-xs">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-2 border"></th>
-              <th className="p-2 border">Company Name</th>
-              <th className="p-2 border">Contact Person</th>
-              <th className="p-2 border">Contact Number</th>
-              <th className="p-2 border">Email Address</th>
-              <th className="p-2 border">Address</th>
-              <th className="p-2 border">Area</th>
-              <th className="p-2 border">Type of Client</th>
-              <th className="p-2 border">Status</th>
-              <th className="p-2 border">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {updatedUser.length > 0 ? (
-              updatedUser.map((post) => (
-                <tr key={post.id} className="hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02]">
-                  <td className="p-2 border text-center">
-                    {(bulkDeleteMode || bulkEditMode || bulkEditStatusMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
-                      <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4" />
-                    )}
-                  </td>
-                  <td className="p-2 border">{post.companyname}</td>
-                  <td className="p-2 border">{post.contactperson}</td>
-                  <td className="p-2 border">{post.contactnumber}</td>
-                  <td className="p-2 border lowercase">{post.emailaddress}</td>
-                  <td className="p-2 border">{post.address}</td>
-                  <td className="p-2 border">{post.area}</td>
-                  <td className="p-2 border">{post.typeclient}</td>
-                  <td className="p-2 border">
-                    <span
-                      className={`px-2 py-1 text-[8px] font-semibold rounded-full ${post.status === "Active"
-                        ? "bg-green-900 text-gray-100"
-                        : post.status === "Used"
-                          ? "bg-blue-900 text-gray-100"
-                          : "bg-green-100 text-green-700"
-                        }`}
-                    >
-                      {post.status}
-                    </span>
-                  </td>
-                  <td className="p-2 border">
-                    <button className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left flex items-center gap-1" onClick={() => handleEdit(post)}><CiEdit /></button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={10} className="p-4 text-center text-gray-500">No accounts available</td>
+      <table className="w-full bg-white border border-gray-200 text-xs overflow-x-auto">
+        <thead>
+          <tr className="bg-gray-100 text-left">
+            <th className="p-2 border"></th>
+            <th className="p-2 border">Company Name</th>
+            <th className="p-2 border">Contact Person</th>
+            <th className="p-2 border">Contact Number</th>
+            <th className="p-2 border">Email Address</th>
+            <th className="p-2 border">Address</th>
+            <th className="p-2 border">Area</th>
+            <th className="p-2 border">Type of Client</th>
+            <th className="p-2 border">Status</th>
+            <th className="p-2 border">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {updatedUser.length > 0 ? (
+            updatedUser.map((post) => (
+              <tr key={post.id} className="hover:bg-gray-50 capitalize">
+                <td className="p-2 border text-center">
+                  {(bulkDeleteMode || bulkEditMode || bulkEditStatusMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
+                    <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4" />
+                  )}
+                </td>
+                <td className="p-2 border whitespace-nowrap">{post.companyname}</td>
+                <td className="p-2 border whitespace-nowrap">{post.contactperson}</td>
+                <td className="p-2 border whitespace-nowrap">{post.contactnumber}</td>
+                <td className="p-2 border lowercase whitespace-nowrap">{post.emailaddress}</td>
+                <td className="p-2 border whitespace-nowrap">{post.address}</td>
+                <td className="p-2 border whitespace-nowrap">{post.area}</td>
+                <td className="p-2 border whitespace-nowrap">{post.typeclient}</td>
+                <td className="p-2 border whitespace-nowrap">
+                  <span
+                    className={`px-2 py-1 text-[8px] font-semibold rounded-full whitespace-nowrap ${post.status === "Active"
+                      ? "bg-green-900 text-gray-100"
+                      : post.status === "Used"
+                        ? "bg-blue-900 text-gray-100"
+                        : "bg-green-100 text-green-700"
+                      }`}
+                  >
+                    {post.status}
+                  </span>
+                </td>
+                <td className="p-2 border">
+                  <button className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left flex items-center gap-1" onClick={() => handleEdit(post)}>
+                    <CiEdit />
+                  </button>
+                </td>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={10} className="p-4 text-center text-gray-500">No accounts available</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
     </div>
   );
 };
