@@ -16,6 +16,7 @@ interface Notification {
   typecall: string;
   message: string;
   type: string;
+  status: string;
 }
 
 interface SidebarSubLink {
@@ -53,11 +54,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const [allNotifications, setAllNotifications] = useState<Notification[]>([]); // 🔹 All notifications
   const notificationRef = useRef<HTMLDivElement>(null);
   const [notificationCount, setNotificationCount] = useState(0);
-  const [showModal, setShowModal] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const openModal = () => setShowModal(true);
-  const closeModal = () => setShowModal(false);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -66,6 +62,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const [showSidebar, setShowSidebar] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const [activeTab, setActiveTab] = useState<"notifications" | "messages">("notifications");
+  const [loadingId, setLoadingId] = useState<number | null>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -175,7 +172,12 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           });
 
         // Set valid notifications
-        setNotifications(validNotifications);
+        setNotifications(
+          validNotifications.map((notif: any) => ({
+            ...notif,
+            status: notif.status, // ✅ Add status correctly
+          }))
+        );
         setNotificationCount(validNotifications.length);
       } catch (error) {
         console.error("Error fetching notifications:", error);
@@ -187,34 +189,9 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     return () => clearInterval(interval);
   }, [userReferenceId]);
 
-  // ✅ Handle notification click
-  useEffect(() => {
-    const dismissedIds = JSON.parse(localStorage.getItem("dismissedNotifications") || "[]");
-    const filteredNotifications = allNotifications.filter((notif) => !dismissedIds.includes(notif.id));
-    setNotifications(filteredNotifications);
-    setNotificationCount(filteredNotifications.length);
-  }, [allNotifications]);
 
-  // ✅ Handle Notification Click / Mark as Read
-const handleNotificationClick = (notifId: number) => {
-  // Remove specific notification by ID
-  const updatedNotifications = notifications.filter(
-    (notif) => notif.id !== notifId
-  );
-  setNotifications(updatedNotifications);
-  setNotificationCount(updatedNotifications.length);
 
-  // ✅ Store dismissed notification ID in localStorage
-  const dismissedIds = JSON.parse(
-    localStorage.getItem("dismissedNotifications") || "[]"
-  );
-  localStorage.setItem(
-    "dismissedNotifications",
-    JSON.stringify([...dismissedIds, notifId])
-  );
-};
 
-  
 
   // ✅ Handle click outside to close notifications
   useEffect(() => {
@@ -339,6 +316,45 @@ const handleNotificationClick = (notifId: number) => {
     };
   }, []);
 
+  // ✅ Mark as Read Function - Corrected Type
+  const handleMarkAsRead = async (notifId: number) => {
+    try {
+      setLoadingId(notifId); // Start loading
+
+      const response = await fetch(
+        "/api/ModuleSales/Notification/UpdateNotifications",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ notifId, status: "Read" }),
+        }
+      );
+
+      if (response.ok) {
+        // ✅ Update status to "Read"
+        const updatedNotifications = notifications.map((notif) =>
+          notif.id === notifId ? { ...notif, status: "Read" } : notif
+        );
+        setNotifications(updatedNotifications);
+
+        // ✅ Remove after 1 minute
+        setTimeout(() => {
+          setNotifications((prev) =>
+            prev.filter((notif) => notif.id !== notifId)
+          );
+        }, 60000); // 1 minute (60,000 ms)
+      } else {
+        console.error("Error updating notification status");
+      }
+    } catch (error) {
+      console.error("Error marking as read:", error);
+    } finally {
+      setLoadingId(null); // Stop loading
+    }
+  };
+
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center space-x-4">
@@ -381,28 +397,19 @@ const handleNotificationClick = (notifId: number) => {
         </button>
 
         {/* Notifications */}
-        <button
-          onClick={() => setShowSidebar((prev) => !prev)}
-          className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full"
-        >
+        <button onClick={() => setShowSidebar((prev) => !prev)} className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full">
           <CiBellOn size={20} />
-          {notifications.length > 0 && (
+          {notifications.filter((notif) => notif.status === "pending").length > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {notifications.length}
+              {notifications.filter((notif) => notif.status === "pending").length}
             </span>
           )}
         </button>
 
         {/* Notification Dropdown */}
         {showSidebar && (
-          <motion.div
-            ref={sidebarRef}
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed top-0 right-0 w-80 h-full bg-white border-l border-gray-300 shadow-lg z-[1000] flex flex-col"
-          >
+          <motion.div ref={sidebarRef} initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ duration: 0.3, ease: "easeInOut" }} className="fixed top-0 right-0 w-80 h-full bg-white border-l border-gray-300 shadow-lg z-[1000] flex flex-col">
+
             {/* 🔧 Header */}
             <div className="flex items-center justify-between p-3 border-b">
               <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
@@ -433,33 +440,49 @@ const handleNotificationClick = (notifId: number) => {
               {activeTab === "notifications" ? (
                 // ✅ Notifications Tab
                 <>
-                  {notifications.length > 0 ? (
+                  {notifications.filter((notif) => notif.status === "pending").length > 0 ? (
                     <ul className="space-y-2">
-                      {notifications.map((notif, index) => (
-                        <li
-                          key={notif.id || index}
-                          className="p-3 border-b hover:bg-gray-200 text-xs bg-gray-100 text-gray-900 capitalize text-left rounded-md relative"
-                        >
-                          <p className="text-[10px] mt-5">{notif.message}</p>
+                      {notifications
+                        .filter((notif) => notif.status === "pending")
+                        .map((notif, index) => (
+                          <li key={notif.id || index} className="p-3 border-b hover:bg-gray-200 text-xs bg-gray-100 text-gray-900 capitalize text-left rounded-md relative">
+                            <p className="text-[10px] mt-5">{notif.message}</p>
 
-                          {/* Timestamp */}
-                          {notif.callback && notif.type === "Callback Notification" && (
-                            <span className="text-[8px] mt-1 block">{new Date(notif.callback).toLocaleString()}</span>
-                          )}
-                          {notif.date_created &&
-                            (notif.type === "Inquiry Notification" || notif.type === "Follow-Up Notification") && (
-                              <span className="text-[8px] mt-1 block">{new Date(notif.date_created).toLocaleString()}</span>
+                            {/* Timestamp for Callback Notification */}
+                            {notif.callback && notif.type === "Callback Notification" && (
+                              <span className="text-[8px] mt-1 block">
+                                {new Date(notif.callback).toLocaleString()}
+                              </span>
                             )}
 
-                          {/* ✅ Mark as Read Button */}
-                          <button
-                            onClick={() => handleNotificationClick(notif.id)}
-                            className="text-[9px] text-blue-600 underline mb-2 cursor-pointer hover:text-blue-800 absolute top-2 right-2"
-                          >
-                            Mark as Read
-                          </button>
-                        </li>
-                      ))}
+                            {/* Timestamp for Inquiry and Follow-Up Notification */}
+                            {notif.date_created &&
+                              (notif.type === "Inquiry Notification" ||
+                                notif.type === "Follow-Up Notification") && (
+                                <span className="text-[8px] mt-1 block">
+                                  {new Date(notif.date_created).toLocaleString()}
+                                </span>
+                              )}
+
+                            {/* ✅ Mark as Read Button */}
+                            <button
+                              onClick={() => handleMarkAsRead(notif.id)}
+                              disabled={loadingId === notif.id}
+                              className={`text-[9px] underline mb-2 cursor-pointer absolute top-2 right-2 ${notif.status === "Read"
+                                ? "text-green-600 font-bold"
+                                : loadingId === notif.id
+                                  ? "text-gray-500 cursor-not-allowed"
+                                  : "text-blue-600 hover:text-blue-800"
+                                }`}
+                            >
+                              {loadingId === notif.id
+                                ? "Loading..."
+                                : notif.status === "Read"
+                                  ? "Read"
+                                  : "Mark as Read"}
+                            </button>
+                          </li>
+                        ))}
                     </ul>
                   ) : (
                     <p className="text-xs p-4 text-gray-500 text-center">No new notifications</p>

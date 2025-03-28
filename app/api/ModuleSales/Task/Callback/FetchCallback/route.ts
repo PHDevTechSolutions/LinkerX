@@ -19,7 +19,7 @@ export async function GET(req: Request) {
 
         // ✅ Updated Query: Check both referenceId and tsm
         const progressData = await sql`
-        SELECT callback, message, type, date_created, tsm, referenceid, csragent
+        SELECT callback, message, type, date_created, tsm, referenceid, csragent, status, id
         FROM notification 
         WHERE referenceid = ${referenceId} OR tsm = ${referenceId} OR csragent = ${referenceId};
         `;

@@ -36,12 +36,13 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
               <th className="p-2 border">Message</th>
               <th className="p-2 border">Callback</th>
               <th className="p-2 border">Type</th>
+              <th className="p-2 border">Status</th>
             </tr>
           </thead>
           <tbody>
             {currentItems.length > 0 ? (
               currentItems.map((post) => (
-                <tr key={post.id} className="hover:bg-gray-50">
+                <tr key={post.id} className="hover:bg-gray-50 capitalize">
                   <td className="p-2 border">
                     {new Date(post.date_created).toLocaleString()}
                   </td>
@@ -54,6 +55,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                     )}
                   </td>
                   <td className="p-2 border">{post.type || "N/A"}</td>
+                  <td className="p-2 border">{post.status}</td>
                 </tr>
               ))
             ) : (
