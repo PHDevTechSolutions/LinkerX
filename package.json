@@ -48,7 +48,8 @@
     "react-window": "^1.8.11",
     "socket.io-client": "^4.8.1",
     "three": "^0.174.0",
-    "three-stdlib": "^2.35.14"
+    "three-stdlib": "^2.35.14",
+    "twilio": "^5.5.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
