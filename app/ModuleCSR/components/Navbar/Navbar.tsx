@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { IoIosMenu } from "react-icons/io";
 import { CiClock2, CiMenuBurger, CiUser, CiSettings, CiBellOn, CiCircleRemove, CiDark, CiSun, CiSearch } from "react-icons/ci";
+import { IoIosCloseCircleOutline } from "react-icons/io";
+import { motion } from "framer-motion";
 
 interface Notification {
   id: number;
@@ -38,14 +40,14 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]); // Unread notifications
-  const [allNotifications, setAllNotifications] = useState<Notification[]>([]); // All notifications
   const notificationRef = useRef<HTMLDivElement>(null);
   const [notificationCount, setNotificationCount] = useState(0);
-  const [showModal, setShowModal] = useState(false);
   const [usersList, setUsersList] = useState<any[]>([]);
 
-  const openModal = () => setShowModal(true);
-  const closeModal = () => setShowModal(false);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const [activeTab, setActiveTab] = useState<"notifications" | "messages">("notifications");
+  const [loadingId, setLoadingId] = useState<number | null>(null);
 
   // Fetch user data
   useEffect(() => {
@@ -151,16 +153,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     return () => clearInterval(interval);
   }, [userReferenceId, usersList]);
 
-  // ✅ Handle notification click and dismiss
-  const handleNotificationClick = (notifId: number) => {
-    const updatedNotifications = notifications.filter((notif) => notif.id !== notifId);
-    setNotifications(updatedNotifications);
-    setNotificationCount(updatedNotifications.length);
-
-    const dismissedIds = JSON.parse(localStorage.getItem("dismissedNotifications") || "[]");
-    localStorage.setItem("dismissedNotifications", JSON.stringify([...dismissedIds, notifId]));
-  };
-
   // ✅ Handle click outside to close notifications
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -195,6 +187,61 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   }, [isDarkMode]);
 
+  // ✅ Handle notification click and dismiss
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setShowNotifications(false); // This could be closing the modal prematurely
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleMarkAsRead = async (notifId: number) => {
+    try {
+      setLoadingId(notifId); // Start loading
+
+      const response = await fetch(
+        "/api/ModuleSales/Notification/UpdateNotifications",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ notifId, status: "Read" }),
+        }
+      );
+
+      if (response.ok) {
+        // ✅ Update status to "Read"
+        const updatedNotifications = notifications.map((notif) =>
+          notif.id === notifId ? { ...notif, status: "Read" } : notif
+        );
+        setNotifications(updatedNotifications);
+
+        // ✅ Remove after 1 minute
+        setTimeout(() => {
+          setNotifications((prev) =>
+            prev.filter((notif) => notif.id !== notifId)
+          );
+        }, 60000); // 1 minute (60,000 ms)
+      } else {
+        console.error("Error updating notification status");
+      }
+    } catch (error) {
+      console.error("Error marking as read:", error);
+    } finally {
+      setLoadingId(null); // Stop loading
+    }
+  };
+
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center">
@@ -225,92 +272,98 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         </button>
 
         {/* Notification Icon */}
-        <button
-          onClick={() => setShowNotifications((prevState) => !prevState)}
-
-          className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full"
-        >
+        <button onClick={() => setShowSidebar((prev) => !prev)} className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full">
           <CiBellOn size={20} />
-          {notifications.length > 0 && (
+          {notifications.filter((notif) => notif.status === "pending").length > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {notifications.length}
+              {notifications.filter((notif) => notif.status === "pending").length}
             </span>
           )}
         </button>
 
-        {showNotifications && notifications.length > 0 && (
-          <div
-            ref={notificationRef}
-            className="fixed top-14 right-4 w-80 bg-white border border-gray-300 rounded shadow-lg p-2 z-[9999]"
-          >
-            <h3 className="text-xs font-semibold px-2 py-1 border-b flex justify-between items-center">
-              <span className="text-gray-900">Notifications</span>
-              <button className="flex items-center gap-2 text-xs text-gray-900" onClick={openModal}>
-                <CiSettings className="text-xs" /> All
+        {showSidebar && (
+          <motion.div ref={sidebarRef} initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ duration: 0.3, ease: "easeInOut" }} className="fixed top-0 right-0 w-80 h-full bg-white border-l border-gray-300 shadow-lg z-[1000] flex flex-col">
+
+            {/* 🔧 Header */}
+            <div className="flex items-center justify-between p-3 border-b">
+              <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
+              <button onClick={() => setShowSidebar(false)} >
+                <IoIosCloseCircleOutline size={20} />
               </button>
-            </h3>
+            </div>
 
-            {notifications.length > 0 ? (
-              <ul className="overflow-auto max-h-60 z-[9999]">
-                {notifications.map((notif, index) => (
-                  <li
-                    key={notif.id || index} // Fallback to index if id is missing
-                    onClick={() => handleNotificationClick(notif.id)}
-                    className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100 text-gray-900 capitalize"
-                  >
-                    <p className="text-[10px]">
-                      {notif.message} Processed By {notif.agentfullname}
-                    </p>
-
-                    {/* ✅ CSR Notification */}
-                    {notif.date_created && notif.type === "CSR Notification" && (
-                      <span className="text-[8px] mt-1 block">
-                        {new Date(notif.date_created).toLocaleString()}
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-xs p-2 text-gray-500 text-center">No new notifications</p>
-            )}
-          </div>
-        )}
-
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-[30%] max-w-3xl max-h-[80vh] overflow-y-auto">
-              <h2 className="text-lg font-semibold mb-4">All Past Notifications</h2>
-              <div className="max-h-[60vh] overflow-y-auto text-left">
-                {allNotifications.length > 0 ? (
-                  <ul>
-                    {allNotifications.map((notif) => (
-                      <li
-                        key={notif.id}
-                        className="px-4 py-3 border-b text-xs hover:bg-gray-100 whitespace-normal break-words capitalize"
-                      >
-                        <>
-                          <strong>The {notif.companyname}:</strong> has been processed by {notif.salesagentname}.
-                          <span className="text-gray-500 text-xs mt-1 block">
-                            {new Date(notif.date_updated).toLocaleString()}
-                          </span>
-                        </>
-
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-center text-gray-500 text-sm">No past notifications available.</p>
-                )}
-
-              </div>
-              <div className="mt-4 flex justify-end">
-                <button onClick={closeModal} className="px-4 py-2 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">
-                  Close
+            {/* 📜 Notifications List */}
+            <div className="flex-1 overflow-auto p-2">
+              <div className="flex border-b mb-2">
+                <button
+                  onClick={() => setActiveTab("notifications")}
+                  className={`flex-1 text-center py-2 text-xs font-semibold ${activeTab === "notifications" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"
+                    }`}
+                >
+                  Notifications
+                </button>
+                <button
+                  onClick={() => setActiveTab("messages")}
+                  className={`flex-1 text-center py-2 text-xs font-semibold ${activeTab === "messages" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"
+                    }`}
+                >
+                  Messages
                 </button>
               </div>
+
+              {activeTab === "notifications" ? (
+                // ✅ Notifications Tab
+                <>
+                  {notifications.filter((notif) => notif.status === "pending").length > 0 ? (
+                    <ul className="space-y-2">
+                      {notifications
+                        .filter((notif) => notif.status === "pending")
+                        .map((notif, index) => (
+                          <li
+                            key={notif.id || index}
+                            className={`p-3 border-b hover:bg-gray-200 text-xs text-gray-900 capitalize text-left rounded-md relative ${notif.type === "Inquiry Notification" ? "bg-yellow-200" : "bg-gray-100"
+                              }`}
+                          >
+                            <p className="text-[10px] mt-5">{notif.message} Processed By {notif.agentfullname}</p>
+
+                            {/* Timestamp for Callback Notification */}
+                            {notif.date_created && notif.type === "CSR Notification" && (
+                              <span className="text-[8px] mt-1 block">
+                                {new Date(notif.date_created).toLocaleString()}
+                              </span>
+                            )}
+
+                            {/* ✅ Mark as Read Button */}
+                            <button
+                              onClick={() => handleMarkAsRead(notif.id)}
+                              disabled={loadingId === notif.id}
+                              className={`text-[9px] mb-2 cursor-pointer absolute top-2 right-2 ${notif.status === "Read"
+                                ? "text-green-600 font-bold"
+                                : loadingId === notif.id
+                                  ? "text-gray-500 cursor-not-allowed"
+                                  : "text-blue-600 hover:text-blue-800"
+                                }`}
+                            >
+                              {loadingId === notif.id
+                                ? "Loading..."
+                                : notif.status === "Read"
+                                  ? "Read"
+                                  : "Mark as Read"}
+                            </button>
+                          </li>
+
+                        ))}
+                    </ul>
+                  ) : (
+                    <p className="text-xs p-4 text-gray-500 text-center">No new notifications</p>
+                  )}
+                </>
+              ) : (
+                // ❌ Empty Messages Tab
+                <div className="p-4 text-center text-xs text-gray-500">No messages available</div>
+              )}
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* User Dropdown */}
