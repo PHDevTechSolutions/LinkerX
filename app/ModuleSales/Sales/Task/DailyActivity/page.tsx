@@ -116,43 +116,6 @@ const ListofUser: React.FC = () => {
 
     const taskRef = useRef<HTMLDivElement | null>(null); // Reference for My Task div
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const phoneNumber = "09383882697";
-
-    const handleCallClick = () => {
-        setIsModalOpen(true);
-    };
-
-    // Handle closing the modal
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
-
-    // Handle proceeding with the call
-    const handleProceedCall = async () => {
-        try {
-          const response = await fetch("/api/ModuleSales/Task/Call", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ phoneNumber }),
-          });
-    
-          const data = await response.json();
-    
-          if (data.success) {
-            alert(`Calling ${phoneNumber}... Call SID: ${data.callSid}`);
-          } else {
-            alert("Failed to make the call. Please try again.");
-          }
-        } catch (error) {
-          console.error("Error making call:", error);
-          alert("Error connecting to the server.");
-        }
-        setIsModalOpen(false);
-      };
-
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
         const fetchUserData = async () => {
@@ -230,7 +193,7 @@ const ListofUser: React.FC = () => {
                 const matchesClientType = selectedClientType
                     ? post?.typeclient === selectedClientType
                     : true;
-
+                
                 const matchesStatus = selectedStatus
                     ? post?.activitystatus === selectedStatus
                     : true;
@@ -546,7 +509,7 @@ const ListofUser: React.FC = () => {
                 const activeCompanies = data.data.filter((company: Company) => company.status === "Active" || company.status === "Used");
                 setPost(activeCompanies);
             } else {
-
+                
                 setPost([]);
             }
         } catch (error) {
@@ -821,30 +784,30 @@ const ListofUser: React.FC = () => {
                         }),
                     }
                 );
-
+    
                 if (response.ok) {
                     const result = await response.json();
                     console.log("✅ Company status updated successfully:", result.data);
-
+    
                     // Remove the used company from the list
                     const updatedCompanies = todayCompanies.filter(
                         (company) => company.id !== selectedCompany.id
                     );
-
+    
                     // Reduce remaining balance after using one company
                     const newBalance = Math.max(0, remainingBalance - 1);
                     setTodayCompanies(updatedCompanies);
                     setRemainingBalance(newBalance);
-
+    
                     // Save updated data to the database after status update
                     await saveToDatabase(updatedCompanies, newBalance);
-
+    
                     // Set updated status of the company
                     setSelectedCompany({
                         ...selectedCompany,
                         status: "Used",
                     });
-
+    
                     // Show form after update
                     setShowForm(true);
                 } else {
@@ -858,7 +821,7 @@ const ListofUser: React.FC = () => {
             }
         }
     };
-
+    
     // Handle Cancel to Close Modal
     const handleCancel = () => {
         setShowModal(false);
@@ -914,39 +877,6 @@ const ListofUser: React.FC = () => {
                                             >
                                                 <PiHandTapThin size={20} /> Tap
                                             </button>
-                                            <button
-                                                className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
-                                                onClick={handleCallClick}
-                                            >
-                                                <PiHandTapThin size={20} /> Call
-                                            </button>
-                                            {isModalOpen && (
-                                                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                                                    <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
-                                                        <h2 className="text-lg font-bold mb-4 text-gray-700">Confirm Call</h2>
-                                                        <p className="text-sm text-gray-600 mb-6">
-                                                            Are you sure you want to call <span className="font-bold">{phoneNumber}</span>?
-                                                        </p>
-                                                        <div className="flex justify-center gap-4">
-                                                            {/* Proceed Button */}
-                                                            <button
-                                                                onClick={handleProceedCall}
-                                                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                                                            >
-                                                                Proceed
-                                                            </button>
-
-                                                            {/* Cancel Button */}
-                                                            <button
-                                                                onClick={handleCloseModal}
-                                                                className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
-                                                            >
-                                                                Cancel
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
                                         </div>
 
                                         {showPersonalForm && (

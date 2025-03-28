@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { CiClock2, CiMenuBurger, CiUser, CiSettings, CiBellOn, CiCircleRemove, CiDark, CiSun, CiSearch } from "react-icons/ci";
+import { IoIosCloseCircleOutline } from "react-icons/io";
+import { motion } from "framer-motion";
 
 interface Notification {
   id: number;
@@ -34,7 +36,8 @@ interface NavbarProps {
   sidebarLinks: SidebarLink[];
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkMode, sidebarLinks }) => {
+const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkMode, sidebarLinks
+}) => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [TargetQuota, setUserTargetQuota] = useState("");
@@ -59,6 +62,20 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+
+  const [showSidebar, setShowSidebar] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const [activeTab, setActiveTab] = useState<"notifications" | "messages">("notifications");
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        setShowSidebar(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Load dismissed notifications from localStorage
   useEffect(() => {
@@ -171,14 +188,33 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   }, [userReferenceId]);
 
   // ✅ Handle notification click
-  const handleNotificationClick = (notifId: number) => {
-    const updatedNotifications = notifications.filter((notif) => notif.id !== notifId);
-    setNotifications(updatedNotifications);
-    setNotificationCount(updatedNotifications.length);
-
+  useEffect(() => {
     const dismissedIds = JSON.parse(localStorage.getItem("dismissedNotifications") || "[]");
-    localStorage.setItem("dismissedNotifications", JSON.stringify([...dismissedIds, notifId]));
-  };
+    const filteredNotifications = allNotifications.filter((notif) => !dismissedIds.includes(notif.id));
+    setNotifications(filteredNotifications);
+    setNotificationCount(filteredNotifications.length);
+  }, [allNotifications]);
+
+  // ✅ Handle Notification Click / Mark as Read
+const handleNotificationClick = (notifId: number) => {
+  // Remove specific notification by ID
+  const updatedNotifications = notifications.filter(
+    (notif) => notif.id !== notifId
+  );
+  setNotifications(updatedNotifications);
+  setNotificationCount(updatedNotifications.length);
+
+  // ✅ Store dismissed notification ID in localStorage
+  const dismissedIds = JSON.parse(
+    localStorage.getItem("dismissedNotifications") || "[]"
+  );
+  localStorage.setItem(
+    "dismissedNotifications",
+    JSON.stringify([...dismissedIds, notifId])
+  );
+};
+
+  
 
   // ✅ Handle click outside to close notifications
   useEffect(() => {
@@ -346,8 +382,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
         {/* Notifications */}
         <button
-          onClick={() => setShowNotifications((prevState) => !prevState)}
-          disabled={modalOpen}
+          onClick={() => setShowSidebar((prev) => !prev)}
           className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full"
         >
           <CiBellOn size={20} />
@@ -359,55 +394,83 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         </button>
 
         {/* Notification Dropdown */}
-        {showNotifications && notifications.length > 0 && (
-          <div
-            ref={notificationRef}
-            className="fixed top-14 right-4 w-80 bg-white border border-gray-300 rounded shadow-lg p-2 z-[1000]"
+        {showSidebar && (
+          <motion.div
+            ref={sidebarRef}
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="fixed top-0 right-0 w-80 h-full bg-white border-l border-gray-300 shadow-lg z-[1000] flex flex-col"
           >
-            <h3 className="text-xs font-semibold px-2 py-1 border-b flex justify-between items-center">
-              <span className="text-gray-900">Notifications</span>
-              <button className="flex items-center gap-2 text-xs text-gray-900" onClick={openModal}>
-                <CiSettings className="text-xs" /> All
+            {/* 🔧 Header */}
+            <div className="flex items-center justify-between p-3 border-b">
+              <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
+              <button onClick={() => setShowSidebar(false)} >
+                <IoIosCloseCircleOutline size={20} />
               </button>
-            </h3>
+            </div>
 
-            {notifications.length > 0 ? (
-              <ul className="overflow-auto max-h-60 z-[9999]">
-                {notifications.map((notif, index) => (
-                  <li
-                    key={notif.id || index} // Fallback to index if id is missing
-                    onClick={() => handleNotificationClick(notif.id)}
-                    className="px-3 py-2 border-b hover:bg-gray-200 cursor-pointer text-xs text-left bg-gray-100 text-gray-900 capitalize"
-                  >
-                    <p className="text-[10px]">{notif.message}</p>
+            {/* 📜 Notifications List */}
+            <div className="flex-1 overflow-auto p-2">
+              <div className="flex border-b mb-2">
+                <button
+                  onClick={() => setActiveTab("notifications")}
+                  className={`flex-1 text-center py-2 text-xs font-semibold ${activeTab === "notifications" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"
+                    }`}
+                >
+                  Notifications
+                </button>
+                <button
+                  onClick={() => setActiveTab("messages")}
+                  className={`flex-1 text-center py-2 text-xs font-semibold ${activeTab === "messages" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"
+                    }`}
+                >
+                  Messages
+                </button>
+              </div>
 
-                    {/* ✅ Callback Notification */}
-                    {notif.callback && notif.type === "Callback Notification" && (
-                      <span className="text-[8px] mt-1 block">
-                        {new Date(notif.callback).toLocaleString()}
-                      </span>
-                    )}
+              {activeTab === "notifications" ? (
+                // ✅ Notifications Tab
+                <>
+                  {notifications.length > 0 ? (
+                    <ul className="space-y-2">
+                      {notifications.map((notif, index) => (
+                        <li
+                          key={notif.id || index}
+                          className="p-3 border-b hover:bg-gray-200 text-xs bg-gray-100 text-gray-900 capitalize text-left rounded-md relative"
+                        >
+                          <p className="text-[10px] mt-5">{notif.message}</p>
 
-                    {/* ✅ Inquiry Notification */}
-                    {notif.date_created && notif.type === "Inquiry Notification" && (
-                      <span className="text-[8px] mt-1 block">
-                        {new Date(notif.date_created).toLocaleString()}
-                      </span>
-                    )}
+                          {/* Timestamp */}
+                          {notif.callback && notif.type === "Callback Notification" && (
+                            <span className="text-[8px] mt-1 block">{new Date(notif.callback).toLocaleString()}</span>
+                          )}
+                          {notif.date_created &&
+                            (notif.type === "Inquiry Notification" || notif.type === "Follow-Up Notification") && (
+                              <span className="text-[8px] mt-1 block">{new Date(notif.date_created).toLocaleString()}</span>
+                            )}
 
-                    {/* ✅ Follow-Up Notification */}
-                    {notif.date_created && notif.type === "Follow-Up Notification" && (
-                      <span className="text-[8px] mt-1 block">
-                        {new Date(notif.date_created).toLocaleString()}
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-xs p-2 text-gray-500 text-center">No new notifications</p>
-            )}
-          </div>
+                          {/* ✅ Mark as Read Button */}
+                          <button
+                            onClick={() => handleNotificationClick(notif.id)}
+                            className="text-[9px] text-blue-600 underline mb-2 cursor-pointer hover:text-blue-800 absolute top-2 right-2"
+                          >
+                            Mark as Read
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-xs p-4 text-gray-500 text-center">No new notifications</p>
+                  )}
+                </>
+              ) : (
+                // ❌ Empty Messages Tab
+                <div className="p-4 text-center text-xs text-gray-500">No messages available</div>
+              )}
+            </div>
+          </motion.div>
         )}
 
         {/* User Dropdown */}
