@@ -16,23 +16,29 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, userDetails }) => {
 
   // ✅ Filtered Accounts Logic based on Role and ReferenceID
   const filteredAccounts = Array.isArray(posts)
-    ? posts
-        .filter((post) => {
-          const userReferenceID = userDetails.ReferenceID;
+  ? posts
+      .filter((post) => {
+        const userReferenceID = userDetails.ReferenceID;
 
-          const matchesReferenceID =
-            (userDetails.Role === "Manager" && post?.manager === userReferenceID) ||
-            (userDetails.Role === "Territory Sales Manager" && post?.tsm === userReferenceID) ||
-            (userDetails.Role === "Territory Sales Associate" && post?.referenceid === userReferenceID);
+        // ✅ Check role and apply correct filters
+        const matchesReferenceID =
+          (userDetails.Role === "Manager" && post?.manager === userReferenceID) ||
+          (userDetails.Role === "Territory Sales Manager" &&
+            post?.tsm === userReferenceID &&
+            post?.type === "Follow-Up Notification") || // ✅ Show only Follow-Up Notification for TSM
+          (userDetails.Role === "Territory Sales Associate" &&
+            post?.referenceid === userReferenceID &&
+            post?.type !== "CSR Notification" && post?.type !== "Follow-Up Notification"); // ✅ Exclude CSR Notification for TSA
 
-          return matchesReferenceID;
-        })
-        .sort(
-          (a, b) =>
-            new Date(b.date_created).getTime() -
-            new Date(a.date_created).getTime()
-        )
-    : [];
+        return matchesReferenceID;
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.date_created).getTime() -
+          new Date(a.date_created).getTime()
+      )
+  : [];
+
 
   // ✅ Pagination Logic
   const indexOfLastItem = currentPage * itemsPerPage;

@@ -445,7 +445,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                       {notifications
                         .filter((notif) => notif.status === "pending")
                         .map((notif, index) => (
-                          <li key={notif.id || index} className="p-3 border-b hover:bg-gray-200 text-xs bg-gray-100 text-gray-900 capitalize text-left rounded-md relative">
+                          <li
+                            key={notif.id || index}
+                            className={`p-3 border-b hover:bg-gray-200 text-xs text-gray-900 capitalize text-left rounded-md relative ${notif.type === "Inquiry Notification" ? "bg-yellow-200" : "bg-gray-100"
+                              }`}
+                          >
                             <p className="text-[10px] mt-5">{notif.message}</p>
 
                             {/* Timestamp for Callback Notification */}
@@ -457,8 +461,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
                             {/* Timestamp for Inquiry and Follow-Up Notification */}
                             {notif.date_created &&
-                              (notif.type === "Inquiry Notification" ||
-                                notif.type === "Follow-Up Notification") && (
+                              (notif.type === "Inquiry Notification" || notif.type === "Follow-Up Notification") && (
                                 <span className="text-[8px] mt-1 block">
                                   {new Date(notif.date_created).toLocaleString()}
                                 </span>
@@ -468,11 +471,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                             <button
                               onClick={() => handleMarkAsRead(notif.id)}
                               disabled={loadingId === notif.id}
-                              className={`text-[9px] underline mb-2 cursor-pointer absolute top-2 right-2 ${notif.status === "Read"
-                                ? "text-green-600 font-bold"
-                                : loadingId === notif.id
-                                  ? "text-gray-500 cursor-not-allowed"
-                                  : "text-blue-600 hover:text-blue-800"
+                              className={`text-[9px] mb-2 cursor-pointer absolute top-2 right-2 ${notif.status === "Read"
+                                  ? "text-green-600 font-bold"
+                                  : loadingId === notif.id
+                                    ? "text-gray-500 cursor-not-allowed"
+                                    : "text-blue-600 hover:text-blue-800"
                                 }`}
                             >
                               {loadingId === notif.id
@@ -482,6 +485,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                                   : "Mark as Read"}
                             </button>
                           </li>
+
                         ))}
                     </ul>
                   ) : (
