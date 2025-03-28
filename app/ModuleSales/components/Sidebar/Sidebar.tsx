@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
 
-const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: boolean; userReferenceId: string; }> = ({ isOpen, onClose, isDarkMode, userReferenceId }) => {
+const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: boolean; }> = ({ isOpen, onClose, isDarkMode }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
