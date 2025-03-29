@@ -33,13 +33,6 @@ const MetricTable: React.FC<MetricTableProps> = ({
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [selectedMonth, setSelectedMonth] = useState<number>(
-    new Date().getMonth() + 1
-  );
-  const [selectedYear, setSelectedYear] = useState<number>(
-    new Date().getFullYear()
-  );
-
   const allChannels = [
     "Google Maps",
     "Website",
@@ -56,8 +49,8 @@ const MetricTable: React.FC<MetricTableProps> = ({
 
   // ✅ Fetch data with month and year filtering
   const fetchMetricsData = async (
-    selectedMonth: number,
-    selectedYear: number
+    month: number,
+    year: number
   ) => {
     try {
       setLoading(true);
@@ -71,8 +64,8 @@ const MetricTable: React.FC<MetricTableProps> = ({
       const filteredData = data.filter((metric: Metric) => {
         const metricDate = new Date(metric.createdAt);
         return (
-          metricDate.getMonth() + 1 === selectedMonth &&
-          metricDate.getFullYear() === selectedYear
+          metricDate.getMonth() + 1 === month &&
+          metricDate.getFullYear() === year
         );
       });
 

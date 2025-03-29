@@ -135,32 +135,34 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
       {loading ? (
         <p className="text-xs">Loading...</p>
       ) : (
-        <div className="max-w-4xl mx-auto">
+        <div className="w-full mx-auto">
           {/* Bar chart with horizontal bars */}
           <Bar
             data={chartData}
             options={{
               indexAxis: "y", // Horizontal bar chart
               responsive: true,
+              maintainAspectRatio: true, // ✅ Allow custom height
+              aspectRatio: 2,
               plugins: {
                 legend: {
                   position: "top",
                 },
                 datalabels: {
-                    color: 'black', // White text color for data labels
-                    font: {
-                      weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
-                      size: 8, // Font size for data labels
-                    },
-                    formatter: function (value: any) {
-                      return value; // Display the value directly inside the chart
-                    },
-                    backgroundColor: 'white', // Set background color of the label
-                    borderRadius: 50, // Make the background circular
-                    padding: 4, // Add padding inside the circle
-                    align: 'center', // Center the label within the circle
-                    anchor: 'center', // Anchor the label to the center of the bar
+                  color: 'black', // White text color for data labels
+                  font: {
+                    weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
+                    size: 8, // Font size for data labels
                   },
+                  formatter: function (value: any) {
+                    return value; // Display the value directly inside the chart
+                  },
+                  backgroundColor: 'white', // Set background color of the label
+                  borderRadius: 50, // Make the background circular
+                  padding: 4, // Add padding inside the circle
+                  align: 'center', // Center the label within the circle
+                  anchor: 'center', // Anchor the label to the center of the bar
+                },
               },
               scales: {
                 x: {

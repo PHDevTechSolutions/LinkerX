@@ -110,6 +110,8 @@ const Wrapup: React.FC<WrapupProps> = ({ ReferenceID, Role, month, year }) => {
   const barChartOptions: any = {
     indexAxis: "y",
     responsive: true,
+    maintainAspectRatio: true, // ✅ Allow custom height
+    aspectRatio: 1,
     plugins: {
       legend: {
         display: true,

@@ -19,15 +19,27 @@ import AgentSalesConversionChart from "../../components/Dashboard/AgentSalesConv
 import TSASalesConversion from "../../components/Dashboard/TSASalesConversion";
 
 const DashboardPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("gender");
-  const [activeTable, setactiveTable] = useState("barchart");
-  const [activeSource, setactiveSource] = useState("source");
-  const [activeTableTraffic, setactiveTableTraffic] = useState("saleschart");
-  const [selectedMonth, setSelectedMonth] = useState<string>(`${new Date().getMonth() + 1}`);
-  const [selectedYear, setSelectedYear] = useState<string>(`${new Date().getFullYear()}`);
-  const [userDetails, setUserDetails] = useState({ UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", });
+  const [selectedMonth, setSelectedMonth] = useState<string>(
+    `${new Date().getMonth() + 1}`
+  );
+  const [selectedYear, setSelectedYear] = useState<string>(
+    `${new Date().getFullYear()}`
+  );
+  const [userDetails, setUserDetails] = useState({
+    UserId: "",
+    ReferenceID: "",
+    Firstname: "",
+    Lastname: "",
+    Email: "",
+    Role: "",
+  });
+
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("gender");
+  const [activeTable, setactiveTable] = useState("metrictable");
+  const [activeSource, setactiveSource] = useState("source");
+  const [activeTableTraffic, setactiveTableTraffic] = useState("saleschart");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -71,7 +83,11 @@ const DashboardPage: React.FC = () => {
             <div className="bg-white shadow-md rounded-lg p-4 w-full">
               <div className="flex gap-2">
                 {/* Month Filter */}
-                <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="p-2 border rounded text-xs bg-white">
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="p-2 border rounded text-xs bg-white"
+                >
                   <option value="1">January</option>
                   <option value="2">February</option>
                   <option value="3">March</option>
@@ -85,8 +101,13 @@ const DashboardPage: React.FC = () => {
                   <option value="11">November</option>
                   <option value="12">December</option>
                 </select>
+
                 {/* Year Filter */}
-                <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} className="p-2 border rounded text-xs bg-white">
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  className="p-2 border rounded text-xs bg-white"
+                >
                   {Array.from({ length: 5 }, (_, i) => {
                     const year = new Date().getFullYear() - i;
                     return (
@@ -100,23 +121,24 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Card 1: Bar Charts */}
-          <div className="flex gap-4 mb-4 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1">
-            <div className="bg-white shadow-md rounded-lg p-4 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 gap-4">
+            <div className="bg-white shadow-md rounded-lg p-4">
+              <div className="flex flex-col justify-between h-full">
+                <BarChart
+                  ReferenceID={userDetails.ReferenceID}
+                  month={Number(selectedMonth)}
+                  year={Number(selectedYear)}
+                  Role={userDetails.Role}
+                />
+              </div>
+            </div>
+
+            <div className="bg-white shadow-md rounded-lg p-4">
               <div className="flex border-b mb-4 text-xs font-bold">
-                <button className={`p-2 flex-1 ${activeTable === "barchart" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("barchart")}>Bar Chart</button>
                 <button className={`p-2 flex-1 ${activeTable === "metrictable" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("metrictable")}>Metrics</button>
                 <button className={`p-2 flex-1 ${activeTable === "inboundtraffic" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("inboundtraffic")}>Weekly Inbound Traffic Per Channel</button>
               </div>
               <div className="p-4">
-                {activeTable === "barchart" && (
-                  <BarChart
-                    ReferenceID={userDetails.ReferenceID}
-                    month={Number(selectedMonth)}
-                    year={Number(selectedYear)}
-                    Role={userDetails.Role}
-                  />
-                )}
                 {activeTable === "metrictable" && (
                   <MetricTable
                     ReferenceID={userDetails.ReferenceID}
@@ -134,48 +156,47 @@ const DashboardPage: React.FC = () => {
                   />
                 )}
               </div>
+            </div>
 
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-4 mt-4">
+            <div className="bg-white shadow-md rounded-lg p-4">
+              <div className="flex flex-col justify-between h-full">
+                <GenderPieChart
+                  ReferenceID={userDetails.ReferenceID}
+                  Role={userDetails.Role}
+                  month={Number(selectedMonth)}
+                  year={Number(selectedYear)}
+                />
+              </div>
+            </div>
+
+            <div className="bg-white shadow-md rounded-lg p-4">
+              <div className="flex flex-col justify-between h-full">
+                <CustomerChart
+                  ReferenceID={userDetails.ReferenceID}
+                  Role={userDetails.Role}
+                  month={Number(selectedMonth)}
+                  year={Number(selectedYear)}
+                />
+              </div>
+            </div>
+
+            <div className="bg-white shadow-md rounded-lg p-4">
+              <div className="flex flex-col justify-between h-full">
+                <CustomerTypeChart
+                  ReferenceID={userDetails.ReferenceID}
+                  Role={userDetails.Role}
+                  month={Number(selectedMonth)}
+                  year={Number(selectedYear)}
+                />
+              </div>
             </div>
           </div>
 
-          <div className="flex gap-4">
-            {/* Card 2: Tabbed Charts (30% width) */}
-            <div className="bg-white shadow-lg rounded-lg p-4 w-[30%]">
-              <div className="flex border-b mb-4 text-xs font-bold">
-                <button className={`p-2 flex-1 ${activeTab === "gender" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setActiveTab("gender")}>Gender</button>
-                <button className={`p-2 flex-1 ${activeTab === "customer" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setActiveTab("customer")}>Customer Status</button>
-                <button className={`p-2 flex-1 ${activeTab === "customerType" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setActiveTab("customerType")}>Customer Type</button>
-              </div>
-              <div className="p-4">
-                {activeTab === "gender" && (
-                  <GenderPieChart
-                    ReferenceID={userDetails.ReferenceID}
-                    Role={userDetails.Role}
-                    month={Number(selectedMonth)}
-                    year={Number(selectedYear)}
-                  />
-                )}
-                {activeTab === "customer" && (
-                  <CustomerChart
-                    ReferenceID={userDetails.ReferenceID}
-                    Role={userDetails.Role}
-                    month={Number(selectedMonth)}
-                    year={Number(selectedYear)}
-                  />
-                )}
-                {activeTab === "customerType" && (
-                  <CustomerTypeChart
-                    ReferenceID={userDetails.ReferenceID}
-                    Role={userDetails.Role}
-                    month={Number(selectedMonth)}
-                    year={Number(selectedYear)}
-                  />
-                )}
-              </div>
-            </div>
-
-            {/* Card 3: Customer Source (70% width) */}
-            <div className="bg-white shadow-lg rounded-lg p-8 w-[70%]">
+          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 xl:grid-cols-1 gap-4 mt-4">
+            <div className="bg-white shadow-lg rounded-lg p-8">
               <div className="flex border-b mb-4 text-xs font-bold">
                 <button className={`p-2 flex-1 ${activeSource === "source" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveSource("source")}>Source</button>
                 <button className={`p-2 flex-1 ${activeSource === "wrapup" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveSource("wrapup")}>Wrap Up</button>
@@ -208,50 +229,48 @@ const DashboardPage: React.FC = () => {
                 )}
               </div>
             </div>
-          </div>
 
-          {/* Card 4: Tables */}
-          <div className="flex gap-4 mt-4 mb-4">
-            <div className="bg-white shadow-md rounded-lg p-2 w-full">
-              <div className="border-b mb-4 text-xs font-bold">
-                <button className={`p-2 flex-1 ${activeTableTraffic === "saleschart" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("saleschart")}>Chart</button>
-                <button className={`p-2 flex-1 ${activeTableTraffic === "salesconversion" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("salesconversion")}>Traffic to Sales Conversion</button>
-                <button className={`p-2 flex-1 ${activeTableTraffic === "salesweekly" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("salesweekly")}>Traffic to Sales Conversion ( Weekly )</button>
-              </div>
-              <div className="p-4">
-                {activeTableTraffic === "saleschart" && (
-                  <AgentSalesConversionChart
-                    ReferenceID={userDetails.ReferenceID}
-                    Role={userDetails.Role}
-                    month={Number(selectedMonth)}
-                    year={Number(selectedYear)}
-                  />
-                )}
-                {activeTableTraffic === "salesconversion" && (
-                  <AgentSalesConversion
-                    ReferenceID={userDetails.ReferenceID}
-                    Role={userDetails.Role}
-                    month={Number(selectedMonth)}
-                    year={Number(selectedYear)}
-                  />
-                )}
-                {activeTableTraffic === "salesweekly" && (
-                  <AgentSalesConversionWeekly
-                    ReferenceID={userDetails.ReferenceID}
-                    Role={userDetails.Role}
-                    month={Number(selectedMonth)}
-                    year={Number(selectedYear)}
-                  />
-                )}
+            <div className="flex gap-4 mt-4 mb-4">
+              <div className="bg-white shadow-md rounded-lg p-2 w-full">
+                <div className="border-b mb-4 text-xs font-bold">
+                  <button className={`p-2 flex-1 ${activeTableTraffic === "saleschart" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("saleschart")}>Chart</button>
+                  <button className={`p-2 flex-1 ${activeTableTraffic === "salesconversion" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("salesconversion")}>Traffic to Sales Conversion</button>
+                  <button className={`p-2 flex-1 ${activeTableTraffic === "salesweekly" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTableTraffic("salesweekly")}>Traffic to Sales Conversion ( Weekly )</button>
+                </div>
+                <div className="p-4">
+                  {activeTableTraffic === "saleschart" && (
+                    <AgentSalesConversionChart
+                      ReferenceID={userDetails.ReferenceID}
+                      Role={userDetails.Role}
+                      month={Number(selectedMonth)}
+                      year={Number(selectedYear)}
+                    />
+                  )}
+                  {activeTableTraffic === "salesconversion" && (
+                    <AgentSalesConversion
+                      ReferenceID={userDetails.ReferenceID}
+                      Role={userDetails.Role}
+                      month={Number(selectedMonth)}
+                      year={Number(selectedYear)}
+                    />
+                  )}
+                  {activeTableTraffic === "salesweekly" && (
+                    <AgentSalesConversionWeekly
+                      ReferenceID={userDetails.ReferenceID}
+                      Role={userDetails.Role}
+                      month={Number(selectedMonth)}
+                      year={Number(selectedYear)}
+                    />
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Card 5: TSA Sales Conversion */}
-          <div className="flex gap-4 mt-4 mb-4">
-            <div className="bg-white shadow-md rounded-lg p-4 w-full">
-              <h3 className="text-sm font-bold mb-2">TSA Traffic to Sales Conversion</h3>
-              <div className="p-4">
+            <div className="bg-white shadow-md rounded-lg p-4">
+              <div className="flex flex-col justify-between h-full">
+                <h3 className="text-sm font-bold mb-2">
+                  TSA Traffic to Sales Conversion
+                </h3>
                 <TSASalesConversion
                   ReferenceID={userDetails.ReferenceID}
                   Role={userDetails.Role}

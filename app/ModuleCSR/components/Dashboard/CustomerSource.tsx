@@ -107,6 +107,8 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({ ReferenceID, Role, mont
   const barChartOptions: any = {
     indexAxis: "y", // Horizontal bar chart
     responsive: true,
+    maintainAspectRatio: true, // ✅ Allow custom height
+    aspectRatio: 1,
     plugins: {
       legend: {
         display: true,

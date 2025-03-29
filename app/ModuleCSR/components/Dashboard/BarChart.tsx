@@ -139,6 +139,8 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
   // ✅ Chart options with data labels
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: true, // ✅ Allow custom height
+    aspectRatio: 1, // ✅ Increase height (default is 2, adjust if needed)
     plugins: {
       datalabels: {
         color: "black",
@@ -156,6 +158,17 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
         anchor: "center" as const,
       },
     },
+    layout: {
+      padding: {
+        top: 20,
+        bottom: 20,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
   };
 
   return (
@@ -163,7 +176,7 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : (
-        <div>
+        <div className="w-full">
           <Bar data={chartData} options={chartOptions} />
         </div>
       )}
