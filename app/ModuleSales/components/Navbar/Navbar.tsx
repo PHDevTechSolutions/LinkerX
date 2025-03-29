@@ -378,7 +378,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           <CiMenuBurger />
         </button>
 
-        <span className="flex items-center border shadow-md text-xs font-medium px-3 py-1 rounded-full md:block hidden">
+        <span className="flex items-center border shadow-md text-xs font-medium px-3 py-1 rounded-full">
           <CiClock2 size={15} className="mr-1" /> {currentTime}
         </span>
 
