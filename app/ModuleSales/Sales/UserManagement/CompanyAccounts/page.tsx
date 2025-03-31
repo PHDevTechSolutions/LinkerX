@@ -319,10 +319,10 @@ const ListofUser: React.FC = () => {
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
         ? posts.filter((post) => {
-            // ✅ Check if the company name matches the search term
-            const matchesSearchTerm = post?.companyname
-                ?.toLowerCase()
-                .includes(searchTerm.toLowerCase());
+            // ✅ Check if the company name or status matches the search term
+            const matchesSearchTerm =
+                post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                post?.status?.toLowerCase().includes(searchTerm.toLowerCase());
 
             // ✅ Parse the date_created field
             const postDate = post.date_created ? new Date(post.date_created) : null;
@@ -353,8 +353,6 @@ const ListofUser: React.FC = () => {
             );
         })
         : [];
-
-
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
