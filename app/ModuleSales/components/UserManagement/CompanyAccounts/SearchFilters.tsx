@@ -67,9 +67,11 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         <option value="Top 50">Top 50</option>
         <option value="Next 30">Next 30</option>
         <option value="Balance 20">Balance 20</option>
-        <option value="New Account - Client Development">
-          New Account - Client Development
-        </option>
+        <option value="New Account - Client Development">New Account - Client Development</option>
+        <option value="Revived Account - Resigned Agent">Revived Account - Resigned Agent</option>
+        <option value="Revived Account - Existing">Revived Account - Existing</option>
+        <option value="CSR Inquiries">CSR Inquiries</option>
+        <option value="Transferred Account">Transferred Account</option>
       </select>
 
       {/* ✅ Status Filter */}
