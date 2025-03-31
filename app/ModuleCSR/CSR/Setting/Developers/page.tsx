@@ -83,7 +83,7 @@ const ProfilePage: React.FC = () => {
             <ParentLayout>
 
                 <div className="container mx-auto p-4">
-                    <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                         <h1 className="text-lg font-bold mb-4">Developers Team</h1>
                         {error && <div className="text-red-500 mb-4">{error}</div>}
                         {/* Use ProfileForm component here */}

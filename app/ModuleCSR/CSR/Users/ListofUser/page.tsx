@@ -112,7 +112,7 @@ const ListofUser: React.FC = () => {
 
                         return (
                             <div className="container mx-auto p-4 text-gray-900">
-                                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+                                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                                     {showForm ? (
                                         <AddPostForm
                                             onCancel={() => {
