@@ -90,12 +90,17 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         className="shadow-sm border px-3 py-2 rounded text-xs w-full md:w-auto"
       >
         <option value="">All TSAs</option>
-        {tsaList.map((tsa: TSA) => (
-          <option key={tsa.ReferenceID} value={tsa.ReferenceID}>
-            {tsa.Firstname} {tsa.Lastname}
-          </option>
-        ))}
+        {tsaList
+          .sort((a, b) =>
+            a.Lastname.localeCompare(b.Lastname)
+          )
+          .map((tsa: TSA) => (
+            <option key={tsa.ReferenceID} value={tsa.ReferenceID}>
+              {`${tsa.Lastname.toUpperCase()}, ${tsa.Firstname.toUpperCase()}`}
+            </option>
+          ))}
       </select>
+
 
       {/* ✅ Date Range Filters */}
       <div className="flex gap-2">
