@@ -45,6 +45,7 @@ const ListofUser: React.FC = () => {
     const [manager, setmanager] = useState("");
     const [status, setstatus] = useState("");
     const [file, setFile] = useState<File | null>(null);
+    const [jsonData, setJsonData] = useState<any[]>([]);
 
     const [managerOptions, setManagerOptions] = useState<{ value: string; label: string }[]>([]);
     const [selectedManager, setSelectedManager] = useState<{ value: string; label: string } | null>(null);
@@ -53,6 +54,44 @@ const ListofUser: React.FC = () => {
     const [selectedTSM, setSelectedTSM] = useState<{ value: string; label: string } | null>(null);
     const [TSAOptions, setTSAOptions] = useState<{ value: string; label: string }[]>([]);
     const [selectedReferenceID, setSelectedReferenceID] = useState<{ value: string; label: string } | null>(null);
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = e.target.files?.[0];
+        if (!selectedFile) return;
+
+        setFile(selectedFile);
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            const data = event.target?.result as ArrayBuffer;
+            const workbook = new ExcelJS.Workbook();
+            await workbook.xlsx.load(data);
+            const worksheet = workbook.worksheets[0];
+
+            const parsedData: any[] = [];
+            worksheet.eachRow((row, rowNumber) => {
+                if (rowNumber === 1) return; // Skip header row
+
+                parsedData.push({
+                    referenceid,
+                    tsm,
+                    manager,
+                    status,
+                    companyname: row.getCell(1).value || "",
+                    contactperson: row.getCell(2).value || "",
+                    contactnumber: row.getCell(3).value || "",
+                    emailaddress: row.getCell(4).value || "",
+                    typeclient: row.getCell(5).value || "",
+                    address: row.getCell(6).value || "",
+                    area: row.getCell(7).value || "",
+                });
+            });
+
+            console.log("Parsed Excel Data:", parsedData);
+            setJsonData(parsedData);
+        };
+        reader.readAsArrayBuffer(selectedFile);
+    };
+
 
     const handleFileUpload = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -343,7 +382,9 @@ const ListofUser: React.FC = () => {
                                     />
                                 ) : showImportForm ? (
                                     <div className="bg-white p-4 shadow-md rounded-md">
+
                                         <h2 className="text-lg font-bold mb-2">Import Accounts</h2>
+
                                         <form onSubmit={handleFileUpload}>
                                             <div className="flex flex-wrap -mx-4">
                                                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
@@ -388,7 +429,7 @@ const ListofUser: React.FC = () => {
                                                     </select>
                                                 </div>
                                                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                                                    <input type="file" className="w-full px-3 py-2 border rounded text-xs capitalize" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+                                                    <input type="file" className="w-full px-3 py-2 border rounded text-xs" onChange={handleFileChange} />
                                                 </div>
                                             </div>
                                             <div className="flex gap-2">
@@ -396,6 +437,42 @@ const ListofUser: React.FC = () => {
                                                 <button type="button" className="bg-gray-500 text-xs text-white px-4 py-2 rounded" onClick={() => setShowImportForm(false)}>Cancel</button>
                                             </div>
                                         </form>
+
+                                        {/* Display Table if Data is Loaded */}
+                                        {jsonData.length > 0 && (
+                                            <div className="mt-4">
+                                                <h3 className="text-sm font-bold mb-2">Preview Data ({jsonData.length} records)</h3>
+                                                <div className="overflow-auto max-h-64 border rounded-md">
+                                                    <table className="w-full border-collapse text-left">
+                                                        <thead>
+                                                            <tr className="bg-gray-200 text-xs">
+                                                                <th className="border px-2 py-1">Company Name</th>
+                                                                <th className="border px-2 py-1">Contact Person</th>
+                                                                <th className="border px-2 py-1">Contact Number</th>
+                                                                <th className="border px-2 py-1">Email Address</th>
+                                                                <th className="border px-2 py-1">Type of Client</th>
+                                                                <th className="border px-2 py-1">Address</th>
+                                                                <th className="border px-2 py-1">Area</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {jsonData.map((item, index) => (
+                                                                <tr key={index} className="text-xs border">
+                                                                    <td className="border px-2 py-1">{item.companyname}</td>
+                                                                    <td className="border px-2 py-1">{item.contactperson}</td>
+                                                                    <td className="border px-2 py-1">{item.contactnumber}</td>
+                                                                    <td className="border px-2 py-1">{item.emailaddress}</td>
+                                                                    <td className="border px-2 py-1">{item.typeclient}</td>
+                                                                    <td className="border px-2 py-1">{item.address}</td>
+                                                                    <td className="border px-2 py-1">{item.area}</td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        )}
+
                                     </div>
                                 ) : (
                                     <>
