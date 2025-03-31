@@ -60,6 +60,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
   const [ItemDescription, setItemDescription] = useState(editPost ? editPost.ItemDescription : "");
 
   const [SONumber, setSONumber] = useState(editPost ? editPost.SONumber : "");
+  const [SOAmount, setSOAmount] = useState(editPost ? editPost.SOAmount : "");
   const [PONumber, setPONumber] = useState(editPost ? editPost.PONumber : "");
   const [SODate, setSODate] = useState(editPost ? editPost.SODate : "");
   const [PaymentTerms, setPaymentTerms] = useState(editPost ? editPost.PaymentTerms : "");
@@ -121,6 +122,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
           ItemCode,
           ItemDescription,
           SONumber,
+          SOAmount,
           PONumber,
           SODate,
           PaymentTerms,
@@ -272,6 +274,8 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
 
           SONumber={SONumber}
           setSONumber={setSONumber}
+          SOAmount={SOAmount}
+          setSOAmount={setSOAmount}
           PONumber={PONumber}
           setPONumber={setPONumber}
           SODate={SODate}

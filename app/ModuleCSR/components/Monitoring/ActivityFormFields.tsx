@@ -45,6 +45,7 @@ interface FormFieldsProps {
     SONumber: string; setSONumber: (value: string) => void;
     PONumber: string; setPONumber: (value: string) => void;
     SODate: string; setSODate: (value: string) => void;
+    SOAmount: string; setSOAmount: (value: string) => void;
     PaymentTerms: string; setPaymentTerms: (value: string) => void;
     PaymentDate: string; setPaymentDate: (value: string) => void;
     DeliveryDate: string; setDeliveryDate: (value: string) => void;
@@ -80,6 +81,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     TsmHandlingTime, setTsmHandlingTime, TsaHandlingTime, setTsaHandlingTime, Remarks, setRemarks,
     ItemCode, setItemCode, ItemDescription, setItemDescription,
     Traffic, setTraffic, Inquiries, setInquiries, Department, setDepartment,
+    SOAmount, setSOAmount,
 
     SONumber, setSONumber, PONumber, setPONumber, SODate, setSODate, PaymentTerms, setPaymentTerms,
     PaymentDate, setPaymentDate, DeliveryDate, setDeliveryDate, POStatus, setPOStatus, POSource, setPOSource,
@@ -406,6 +408,14 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-2" htmlFor="SODate">SO Date</label>
                             <input type="datetime-local" id="SODate" value={SODate || ""} onChange={(e) => setSODate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                        </div>
+                        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                            <label className="block text-xs font-bold mb-2" htmlFor="SONumber">SO Number</label>
+                            <input type="text" id="SONumber" value={SONumber || ""} onChange={(e) => setSONumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                        </div>
+                        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                            <label className="block text-xs font-bold mb-2" htmlFor="SODate">SO Amount</label>
+                            <input type="text" id="SOAmount" value={SOAmount || ""} onChange={(e) => setSOAmount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                         </div>
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-2" htmlFor="PaymentTerms">Payment Terms</label>
