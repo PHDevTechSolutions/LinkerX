@@ -46,6 +46,7 @@ const ListofUser: React.FC = () => {
     const [status, setstatus] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const [jsonData, setJsonData] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [managerOptions, setManagerOptions] = useState<{ value: string; label: string }[]>([]);
     const [selectedManager, setSelectedManager] = useState<{ value: string; label: string } | null>(null);
@@ -95,74 +96,82 @@ const ListofUser: React.FC = () => {
 
     const handleFileUpload = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsLoading(true); // Start loading
 
         if (!file) {
             toast.error("Please upload a file.");
+            setIsLoading(false); // Stop loading if no file
             return;
         }
 
         const reader = new FileReader();
         reader.onload = async (event) => {
-            const data = event.target?.result as ArrayBuffer;
-            const workbook = new ExcelJS.Workbook();
-
-            await workbook.xlsx.load(data);
-            const worksheet = workbook.worksheets[0];
-
-            const jsonData: any[] = [];
-
-            worksheet.eachRow((row, rowNumber) => {
-                if (rowNumber === 1) return; // Skip header row
-
-                jsonData.push({
-                    referenceid,
-                    tsm,
-                    manager,
-                    status,
-                    companyname: row.getCell(1).value || "",
-                    contactperson: row.getCell(2).value || "",
-                    contactnumber: row.getCell(3).value || "",
-                    emailaddress: row.getCell(4).value || "",
-                    typeclient: row.getCell(5).value || "",
-                    address: row.getCell(6).value || "",
-                    area: row.getCell(7).value || "",
-                });
-            });
-
-            // Debug log to check parsed data
-            console.log("Parsed Excel Data:", jsonData);
-
             try {
+                const data = event.target?.result as ArrayBuffer;
+                const workbook = new ExcelJS.Workbook();
+                await workbook.xlsx.load(data);
+                const worksheet = workbook.worksheets[0];
+
+                const jsonData: any[] = [];
+
+                worksheet.eachRow((row, rowNumber) => {
+                    if (rowNumber === 1) return; // Skip header row
+
+                    jsonData.push({
+                        referenceid,
+                        tsm,
+                        manager,
+                        status,
+                        companyname: row.getCell(1).value || "",
+                        contactperson: row.getCell(2).value || "",
+                        contactnumber: row.getCell(3).value || "",
+                        emailaddress: row.getCell(4).value || "",
+                        typeclient: row.getCell(5).value || "",
+                        address: row.getCell(6).value || "",
+                        area: row.getCell(7).value || "",
+                    });
+                });
+
+                // Debug log to check parsed data
+                console.log("Parsed Excel Data:", jsonData);
+
                 const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/ImportAccounts", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json",  // Set correct header for JSON
+                        "Content-Type": "application/json", // Set correct header for JSON
                     },
                     body: JSON.stringify({
                         referenceid,
                         tsm,
                         manager,
                         status,
-                        data: jsonData,  // Send parsed data as JSON
+                        data: jsonData, // Send parsed data as JSON
                     }),
                 });
 
                 const result = await response.json();
                 if (result.success) {
                     toast.success(`${result.insertedCount} records imported successfully!`);
-                    setreferenceid(""); // Reset input fields
+                    // Reset fields after success
+                    setreferenceid("");
                     settsm("");
+                    setmanager("");
+                    setstatus("");
                     setFile(null);
                 } else {
                     toast.error(result.message || "Import failed.");
                 }
             } catch (error) {
+                console.error("Error processing file:", error);
                 toast.error("Error uploading file.");
+            } finally {
+                setIsLoading(false); // Stop loading after processing
             }
         };
 
         reader.readAsArrayBuffer(file);
     };
+
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -433,7 +442,21 @@ const ListofUser: React.FC = () => {
                                                 </div>
                                             </div>
                                             <div className="flex gap-2">
-                                                <button type="submit" className="bg-blue-600 text-xs text-white px-4 py-2 rounded">Upload</button>
+                                                <button
+                                                    type="submit"
+                                                    className={`bg-blue-600 text-xs text-white px-4 py-2 rounded flex items-center gap-2 ${isLoading ? "opacity-70 cursor-not-allowed" : ""
+                                                        }`}
+                                                    disabled={isLoading}
+                                                >
+                                                    {isLoading ? (
+                                                        <>
+                                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                                            Uploading...
+                                                        </>
+                                                    ) : (
+                                                        "Upload"
+                                                    )}
+                                                </button>
                                                 <button type="button" className="bg-gray-500 text-xs text-white px-4 py-2 rounded" onClick={() => setShowImportForm(false)}>Cancel</button>
                                             </div>
                                         </form>
