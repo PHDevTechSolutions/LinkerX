@@ -233,7 +233,7 @@ const ReceivedPO: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-1">
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                                 {showForm ? (
                                     <AddReceivedPO
                                         onCancel={() => {

@@ -211,7 +211,7 @@ const OutboundCallPage: React.FC = () => {
                 <UserFetcher>
                     {(userName) => (
                         <div className="container mx-auto p-4 relative">
-                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                             <h2 className="text-lg font-bold mb-2">Daily CSR Transaction</h2>
                                 <p className="text-xs mb-2">The Daily CSR Transaction section displays essential details of customer service interactions, including the Ticket Number, Account Name, Contact, Email, Wrap Up, Inquiry/Concern, Remarks, Agent, TSM, and Time Consumed. This helps track and manage customer inquiries efficiently while monitoring agent performance and resolution times.</p>
 

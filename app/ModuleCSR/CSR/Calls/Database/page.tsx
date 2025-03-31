@@ -126,7 +126,7 @@ const OutboundCallPage: React.FC = () => {
         <UserFetcher>
           {(userName) => (
             <div className="container mx-auto p-4">
-              <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+              <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                 <h2 className="text-lg font-bold mb-2">Account Records Management</h2>
                 <p className="text-xs mb-2">
                   This section displays the Account Management Database, which serves as a central hub for storing and managing account-related records. It provides an organized way to track and update account details efficiently.
