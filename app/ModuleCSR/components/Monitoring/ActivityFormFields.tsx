@@ -555,6 +555,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <option value="PO Received">PO Received</option>
                         <option value="Not Converted to Sales">Not Converted to Sales</option>
                         <option value="For Occular Inspection">For Occular Inspection</option>
+                        <option value="Sold">Sold</option>
                     </select>
                 </div>
             </div>
