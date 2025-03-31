@@ -6,7 +6,7 @@ import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
 import AddPostForm from "../../../components/UserManagement/CompanyAccounts/AddUserForm";
-import SearchFilters from "../../../components/Companies/DeletionCompanies/SearchFilters";
+import SearchFilters from "../../../components/UserManagement/CompanyAccounts/SearchFilters";
 import UsersTable from "../../../components/UserManagement/CompanyAccounts/UsersTable";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
 
@@ -56,6 +56,12 @@ const ListofUser: React.FC = () => {
     const [TSAOptions, setTSAOptions] = useState<{ value: string; label: string }[]>([]);
     const [selectedReferenceID, setSelectedReferenceID] = useState<{ value: string; label: string } | null>(null);
 
+    const [filterTSA, setFilterTSA] = useState<string>(""); // ✅ Fixed TSA Filter
+    const [tsaList, setTsaList] = useState<any[]>([]); // ✅ Fixed TSA List
+
+    const [selectedStatus, setSelectedStatus] = useState<string>(""); // Status filter ✅ Corrected
+
+
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
         if (!selectedFile) return;
@@ -92,7 +98,6 @@ const ListofUser: React.FC = () => {
         };
         reader.readAsArrayBuffer(selectedFile);
     };
-
 
     const handleFileUpload = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -171,7 +176,6 @@ const ListofUser: React.FC = () => {
 
         reader.readAsArrayBuffer(file);
     };
-
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -297,30 +301,60 @@ const ListofUser: React.FC = () => {
         fetchAccount();
     }, []);
 
+    useEffect(() => {
+        fetch("/api/tsa?Role=Territory Sales Associate")
+            .then((res) => res.json())
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    setTsaList(data);
+                } else {
+                    console.error("Invalid TSA list format:", data);
+                    setTsaList([]);
+                }
+            })
+            .catch((err) => console.error("Error fetching TSA list:", err));
+    }, []);
+
+
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
         ? posts.filter((post) => {
-            // Check if the company name matches the search term
-            const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+            // ✅ Check if the company name matches the search term
+            const matchesSearchTerm = post?.companyname
+                ?.toLowerCase()
+                .includes(searchTerm.toLowerCase());
 
-            // Parse the date_created field
+            // ✅ Parse the date_created field
             const postDate = post.date_created ? new Date(post.date_created) : null;
 
-            // Check if the post's date is within the selected date range
-            const isWithinDateRange = (
+            // ✅ Check if the post's date is within the selected date range
+            const isWithinDateRange =
                 (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                (!endDate || (postDate && postDate <= new Date(endDate)))
-            );
+                (!endDate || (postDate && postDate <= new Date(endDate)));
 
-            // Check if the post matches the selected client type
+            // ✅ Check if the post matches the selected client type
             const matchesClientType = selectedClientType
                 ? post?.typeclient === selectedClientType
                 : true;
 
-            // Return the filtered result
-            return matchesSearchTerm && isWithinDateRange && matchesClientType;
+            // ✅ Check if the post matches the selected status
+            const matchesStatus = selectedStatus ? post?.status === selectedStatus : true;
+
+            // ✅ Check if the post matches the selected TSA
+            const matchesTSA = filterTSA ? post?.referenceid === filterTSA : true;
+
+            // ✅ Return the filtered result
+            return (
+                matchesSearchTerm &&
+                isWithinDateRange &&
+                matchesClientType &&
+                matchesStatus &&
+                matchesTSA
+            );
         })
         : [];
+
+
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -391,9 +425,7 @@ const ListofUser: React.FC = () => {
                                     />
                                 ) : showImportForm ? (
                                     <div className="bg-white p-4 shadow-md rounded-md">
-
                                         <h2 className="text-lg font-bold mb-2">Import Accounts</h2>
-
                                         <form onSubmit={handleFileUpload}>
                                             <div className="flex flex-wrap -mx-4">
                                                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
@@ -522,11 +554,20 @@ const ListofUser: React.FC = () => {
                                                 setPostsPerPage={setPostsPerPage}
                                                 selectedClientType={selectedClientType}
                                                 setSelectedClientType={setSelectedClientType}
+                                                selectedStatus={selectedStatus} // ✅ Corrected
+                                                setSelectedStatus={setSelectedStatus} // ✅ Corrected
                                                 startDate={startDate}
                                                 setStartDate={setStartDate}
                                                 endDate={endDate}
                                                 setEndDate={setEndDate}
+                                                filterTSA={filterTSA} // ✅ Added
+                                                setFilterTSA={setFilterTSA} // ✅ Added
+                                                tsaList={tsaList} // ✅ Added
                                             />
+
+
+
+
                                             <UsersTable
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}
