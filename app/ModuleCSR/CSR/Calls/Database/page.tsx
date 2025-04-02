@@ -138,7 +138,7 @@ const OutboundCallPage: React.FC = () => {
       });
     
       // Dito mo muna i-edit ang filename bago i-save
-      const fileName = prompt("Enter file name:", "database.xlsx");
+      const fileName = prompt("Enter file name:", "Company Accounts - .xlsx");
     
       if (fileName) {
         saveAs(blob, fileName);
