@@ -37,6 +37,7 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
                             <th className="p-3 border">Email</th>
                             <th className="p-3 border">Address</th>
                             <th className="p-3 border">Type of Client</th>
+                            <th className="p-3 border">Status</th>
                             <th className="p-3 border">Assigned To</th>
                         </tr>
                     </thead>
@@ -49,6 +50,7 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
                                 <td className="p-3 border">{post.email}</td>
                                 <td className="p-3 border">{post.address}</td>
                                 <td className="p-3 border font-bold">{post.type_of_client}</td>
+                                <td className="p-3 border">{post.status}</td>
                                 <td className="p-3 border italic capitalize">{post.fullname}</td>
                             </tr>
                         ))}

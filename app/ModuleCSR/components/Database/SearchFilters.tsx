@@ -9,6 +9,8 @@ interface SearchFiltersProps {
     setselectedTSA: (fullname: string) => void;
     selectedClientType: string;
     setSelectedClientType: (clientType: string) => void;
+    selectedStatus: string;
+    setSelectedStatus: (status: string) => void;
     postsPerPage: number;
     setPostsPerPage: (num: number) => void;
     startDate: string;
@@ -24,6 +26,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   setselectedTSA,
   selectedClientType,
   setSelectedClientType,
+  selectedStatus,
+  setSelectedStatus,
   postsPerPage,
   setPostsPerPage,
   startDate,
@@ -39,6 +43,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       <select value={selectedTSA} onChange={(e) => setselectedTSA(e.target.value)} className="border px-3 py-2 rounded text-xs w-full md:w-auto">
         <option value="">Select TSA</option>
         <option value="airish echanes">Airish Echanes</option>
+        <option value="AGNES ANGELI PANOPIO">Agnes Angeli Panopio</option>
         <option value="ANDREW BANAGLORIOSO">Andrew Banaglorosio</option>
         <option value="ANNIE ROSE MABILANGA">Annie Mabilanga</option>
         <option value="Ansley Patelo">Ansley Patelo</option>
@@ -93,6 +98,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         <option value="Below 20">Below 20</option>
         <option value="New Account - Client Development">New Account - Client Development</option>
         <option value="CSR Inquiries">CSR Inquiries</option>
+      </select>
+
+      <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="border px-3 py-2 rounded text-xs w-full md:w-auto">
+        <option value="">Select Status</option>
+        <option value="null">Undefined Status</option>
+        <option value="active">Active</option>
+        <option value="used">Used</option>
+        <option value="inactive">Inactive</option>
+        <option value="active and inactive">Active and Inactive</option>
       </select>
 
       <select value={postsPerPage} onChange={(e) => setPostsPerPage(parseInt(e.target.value))} className="border px-3 py-2 rounded text-xs w-full md:w-auto">

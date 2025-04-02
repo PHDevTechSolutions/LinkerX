@@ -13,6 +13,7 @@ import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import ExcelJS from 'exceljs';
 import { CiExport } from "react-icons/ci";
+import { saveAs } from "file-saver";
 
 // Main Page Component
 const OutboundCallPage: React.FC = () => {
@@ -20,6 +21,7 @@ const OutboundCallPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTSA, setselectedTSA] = useState("");
   const [selectedClientType, setSelectedClientType] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage, setPostsPerPage] = useState(10);
   const [startDate, setStartDate] = useState("");
@@ -57,24 +59,41 @@ const OutboundCallPage: React.FC = () => {
 
   // Filter posts based on search and selected client type
   const filteredPosts = posts.filter((post) => {
-    const accountName = post.account_name ? post.account_name.toLowerCase() : '';
-    const fullname = post.fullname ? post.fullname.toLowerCase() : '';
-
-    const matchesSearch = accountName.includes(searchTerm.toLowerCase()) ||
+    const accountName = post.account_name?.toLowerCase() || '';
+    const fullname = post.fullname?.toLowerCase() || '';
+    
+    const matchesSearch =
+      accountName.includes(searchTerm.toLowerCase()) ||
       fullname.includes(searchTerm.toLowerCase());
-
-    const matchesClientType = selectedClientType ? post.type_of_client === selectedClientType : true;
+  
+    const matchesClientType = selectedClientType
+      ? post.type_of_client === selectedClientType
+      : true;
+  
+    let matchesStatus = true;
+    if (selectedStatus) {
+      const postStatus = post.status?.toLowerCase() || '';
+  
+      if (selectedStatus === 'null') {
+        matchesStatus = !post.status || post.status.trim() === '';
+      } else if (selectedStatus === 'active and inactive') {
+        matchesStatus = postStatus === 'active' || postStatus === 'inactive';
+      } else {
+        matchesStatus = postStatus === selectedStatus.toLowerCase();
+      }
+    }
+  
     const matchesTsa = selectedTSA ? post.fullname === selectedTSA : true;
-
+  
     // Date range filtering
     const postStartDate = post.start_date ? new Date(post.start_date) : null;
     const postEndDate = post.end_date ? new Date(post.end_date) : null;
-    const isWithinDateRange = (!startDate || (postStartDate && postStartDate >= new Date(startDate))) &&
+    const isWithinDateRange =
+      (!startDate || (postStartDate && postStartDate >= new Date(startDate))) &&
       (!endDate || (postEndDate && postEndDate <= new Date(endDate)));
-
-    return matchesSearch && matchesClientType && matchesTsa && isWithinDateRange;
+  
+    return matchesSearch && matchesClientType && matchesStatus && matchesTsa && isWithinDateRange;
   });
-
 
   // Pagination logic
   const indexOfLastPost = currentPage * postsPerPage;
@@ -84,7 +103,7 @@ const OutboundCallPage: React.FC = () => {
 
   const exportToExcel = () => {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Outbound Calls");
+    const worksheet = workbook.addWorksheet("Database Account");
 
     // Set column headers
     worksheet.columns = [
@@ -95,6 +114,7 @@ const OutboundCallPage: React.FC = () => {
       { header: 'Email.', key: 'email', width: 20 },
       { header: 'Type of Client', key: 'type_of_client', width: 20 },
       { header: 'Address', key: 'address', width: 20 },
+      { header: 'Status', key: 'status', width: 20 },
     ];
 
     // Loop through all filtered posts to ensure the full set of data is exported
@@ -107,16 +127,22 @@ const OutboundCallPage: React.FC = () => {
         email: post.email,
         type_of_client: post.type_of_client,
         address: post.address,
+        status: post.status,
       });
     });
 
     // Save to file
     workbook.xlsx.writeBuffer().then((buffer) => {
-      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "database.xlsx";
-      link.click();
+      const blob = new Blob([buffer], { 
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      });
+    
+      // Dito mo muna i-edit ang filename bago i-save
+      const fileName = prompt("Enter file name:", "database.xlsx");
+    
+      if (fileName) {
+        saveAs(blob, fileName);
+      }
     });
   };
 
@@ -145,6 +171,8 @@ const OutboundCallPage: React.FC = () => {
                     setselectedTSA={setselectedTSA}
                     selectedClientType={selectedClientType}
                     setSelectedClientType={setSelectedClientType}
+                    selectedStatus={selectedStatus}
+                    setSelectedStatus={setSelectedStatus}
                     postsPerPage={postsPerPage}
                     setPostsPerPage={setPostsPerPage}
                     startDate={startDate}

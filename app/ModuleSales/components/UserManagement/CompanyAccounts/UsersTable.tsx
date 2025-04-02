@@ -274,7 +274,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                   <option value="">Select Type of Client</option>
                   <option value="Top 50">Top 50</option>
                   <option value="Next 30">Next 30</option>
-                  <option value="Below 20">Below 20</option>
+                  <option value="Balance 20">Balance 20</option>
                   <option value="Revive Account - Existing">Revive Account - Existing</option>
                   <option value="Revive Account - Resigned Agent">Revive Account - Resigned Agent</option>
                   <option value="New Account - CSR">New Account - CSR</option>
