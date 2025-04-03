@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa";
-import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiCalendarDate, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone } from "react-icons/ci";
+import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiCalendarDate, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo } from "react-icons/ci";
 import { RiDonutChartLine, } from "react-icons/ri";
 
 import { BsBuildings } from "react-icons/bs";
@@ -258,6 +258,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         { title: 'Developers', href: `/ModuleSales/Sales/Profile/Developers${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
+    {
+      title: 'What is Taskflow?',
+      icon: CiCircleInfo,
+      subItems: [
+        { title: 'View Information', href: `/ModuleSales/Sales/Information${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
   ];
 
   // Filter menu items based on the user's role
@@ -270,7 +277,8 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "My Team",
         "Client Activity Board",
         "Announcements",
-        "Profile"
+        "Profile",
+        "What is Taskflow?"
       ].includes(item.title);
     }
     if (userDetails.Role === "Territory Sales Manager") {
@@ -280,7 +288,8 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "My Team",
         "Client Activity Board",
         "Announcements",
-        "Profile"
+        "Profile",
+        "What is Taskflow?"
       ].includes(item.title);
     }
     if (userDetails.Role === "Territory Sales Associate") {
@@ -289,7 +298,8 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "Task",
         "Boards",
         "Announcements",
-        "Profile"
+        "Profile",
+        "What is Taskflow?"
       ].includes(item.title);
     }
     return false; // Default: walang access
