@@ -8,8 +8,8 @@ const TaskFlow = () => {
             {/* Large Image at the Top */}
             <div className="w-full flex justify-center mb-6">
                 <img
-                    src="/ecodesk-full.png"
-                    alt="TaskFlow Banner"
+                    src="/Ecodesk-Full.png"
+                    alt="Ecodesk Banner"
                     className="w-full max-w-2xl h-auto rounded-lg md:max-w-xl sm:max-w-md"
                 />
             </div>
