@@ -225,17 +225,17 @@ const ActivityPage: React.FC = () => {
         }
     };
 
-    const isRestrictedUser =
-        userDetails?.Role !== "Super Admin" && userDetails?.Role !== "Admin" && userDetails?.ReferenceID !== "LR-CSR-849432";
+    //const isRestrictedUser =
+        //userDetails?.Role !== "Super Admin" && userDetails?.Role !== "Admin" && userDetails?.ReferenceID !== "LR-CSR-849432";
 
     // Automatically show modal if the user is restricted
-    useEffect(() => {
-        if (isRestrictedUser) {
-            setShowAccessModal(true);
-        } else {
-            setShowAccessModal(false);
-        }
-    }, [isRestrictedUser]);
+    //useEffect(() => {
+        //if (isRestrictedUser) {
+            //setShowAccessModal(true);
+        //} else {
+            //setShowAccessModal(false);
+        //}
+    //}, [isRestrictedUser]);
 
     return (
         <SessionChecker>
