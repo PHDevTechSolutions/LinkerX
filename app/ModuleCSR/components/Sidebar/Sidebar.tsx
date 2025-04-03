@@ -152,7 +152,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       {/* Logo Section */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center">
-          <img src="/ecodesk.png" alt="Logo" className="h-8 mr-2 bg-gray-50 shadow-lg rounded-full" />
+          <img src="/ecodesk.png" alt="Logo" className="h-8 mr-2" />
           <Link href={`/ModuleCSR/CSR/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}>
             <h1 className={`text-md font-bold transition-opacity ${collapsed ? "opacity-0" : "opacity-100"}`}>
               ECODESK
