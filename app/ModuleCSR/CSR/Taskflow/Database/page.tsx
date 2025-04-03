@@ -233,7 +233,7 @@ const OutboundCallPage: React.FC = () => {
                                 {showAccessModal && (
                                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 rounded-md">
                                         <div className="bg-white p-6 rounded shadow-lg w-96">
-                                            <h2 className="text-lg font-bold text-red-600 mb-4">⚠️ Access Denied</h2>
+                                            <h2 className="text-lg font-bold text-red-600 mb-4">⚠️ On Migration</h2>
                                             <p className="text-sm text-gray-700 mb-4">
                                                 You do not have the necessary permissions to perform this action.
                                                 Only <strong>Super Admin</strong> or <strong>Leroux Y Xchire</strong> can access this section.
