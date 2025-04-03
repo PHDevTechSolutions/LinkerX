@@ -315,7 +315,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         {/* Logo Section */}
         <div className="flex items-center justify-between p-5 border-b">
           <div className="flex items-center">
-            <img src="/Taskflow.png" alt="Logo" className="h-8 mr-2" />
+            <img src="/taskflow.png" alt="Logo" className="h-8 mr-2" />
             <Link href={`/ModuleSales/Sales/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}>
               <h1 className={`text-md font-bold transition-opacity ${collapsed ? "opacity-0" : "opacity-100"}`}>
                 TASKFLOW
