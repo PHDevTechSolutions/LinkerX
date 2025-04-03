@@ -89,7 +89,7 @@ const TaskFlow = () => {
             {/* Copyright */}
             <h2 className="text-lg font-semibold mt-6">Copyright and Intellectual Property Protection</h2>
             <p className="text-gray-700 text-sm mb-4">
-                TaskFlow is an exclusive proprietary system developed under EcoShift, and its replication, modification, or distribution by unauthorized individuals is strictly prohibited. Only members of the IT Department are authorized to manage, modify, or implement changes to the system.
+            EcoDesk is an exclusive proprietary system developed under EcoShift, and its replication, modification, or distribution by unauthorized individuals is strictly prohibited. Only members of the IT Department are authorized to manage, modify, or implement changes to the system.
                 Any attempt to replicate, copy, or use Ecodesk without permission will be considered a violation of Copyright Infringement laws, leading to legal consequences. The software is protected under intellectual property rights, ensuring that its technology, framework, and operational methodologies remain exclusive to EcoShift and its authorized personnel.
             </p>
 
