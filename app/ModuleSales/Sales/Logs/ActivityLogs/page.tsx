@@ -57,10 +57,8 @@ const OutboundCallPage: React.FC = () => {
   // Filter posts based on search and selected client type
   const filteredPosts = posts.filter((post) => {
     const accountName = post.account_name ? post.account_name.toLowerCase() : '';
-    const agentFullname = post.agent_fullname ? post.agent_fullname.toLowerCase() : '';
 
-    const matchesSearch = accountName.includes(searchTerm.toLowerCase()) ||
-      agentFullname.includes(searchTerm.toLowerCase());
+    const matchesSearch = accountName.includes(searchTerm.toLowerCase()) 
 
     const matchesClientType = selectedClientType ? post.type_of_client === selectedClientType : true;
 
