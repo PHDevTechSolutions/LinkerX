@@ -20,6 +20,7 @@ const OutboundCallPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedTSA, setselectedTSA] = useState("");
     const [selectedClientType, setSelectedClientType] = useState("");
+    const [selectedStatus, setSelectedStatus] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(10);
     const [startDate, setStartDate] = useState("");
@@ -213,6 +214,8 @@ const OutboundCallPage: React.FC = () => {
                                         setselectedTSA={setselectedTSA}
                                         selectedClientType={selectedClientType}
                                         setSelectedClientType={setSelectedClientType}
+                                        selectedStatus={selectedStatus}
+                                        setSelectedStatus={setSelectedStatus}
                                         postsPerPage={postsPerPage}
                                         setPostsPerPage={setPostsPerPage}
                                         startDate={startDate}
@@ -235,7 +238,7 @@ const OutboundCallPage: React.FC = () => {
                                         <div className="bg-white p-6 rounded shadow-lg w-96">
                                             <h2 className="text-lg font-bold text-red-600 mb-4">⚠️ On Migration</h2>
                                             <p className="text-sm text-gray-700 mb-4">
-                                                You do not have the necessary permissions to perform this action.
+                                                You do not have the  necessary permissions to perform this action.
                                                 Only <strong>Super Admin</strong> or <strong>Leroux Y Xchire</strong> can access this section.
                                             </p>
                                         </div>
