@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { FaBuildingUser, FaPlus, FaMinus } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa";
 import TaskflowIcon from './TaskflowIcon';
-import { CiGrid42, CiInboxIn, CiWavePulse1, CiUser, CiCircleQuestion, CiSettings } from "react-icons/ci";
+import { CiGrid42, CiInboxIn, CiWavePulse1, CiUser, CiCircleQuestion, CiSettings, CiCircleInfo } from "react-icons/ci";
 
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
@@ -13,7 +13,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
-  const [userDetails, setUserDetails] = useState({ ReferenceID: "", Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "",});
+  const [userDetails, setUserDetails] = useState({ ReferenceID: "", Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", });
   const router = useRouter();
 
   // Retrieve the selected avatar from localStorage or default if not set
@@ -129,6 +129,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         { title: 'Data Logs', href: `/ModuleCSR/CSR/Setting/DataLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
+    {
+      title: 'What is Ecodesk?',
+      icon: CiCircleInfo,
+      subItems: [
+        { title: 'View Information', href: `/ModuleCSR/CSR/Information${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
   ];
 
 
@@ -136,7 +143,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const filteredMenuItems = menuItems.filter((item) => {
     if (userDetails.Role === "Staff") {
       // Staff can only see Containers and Settings
-      return item.title === "CSR Inquiries" || item.title === "Customer Database" || item.title === "Reports" || item.title === "Eco Help" || item.title === "Settings";
+      return item.title === "CSR Inquiries" || item.title === "Customer Database" || item.title === "Reports" || item.title === "Eco Help" || item.title === "Settings" || item.title === "What is Ecodesk?";
     }
     // Admin and Super Admin can see all items
     return true;
@@ -164,28 +171,28 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       {/* User Details Section */}
       {!collapsed && (
         <div className="p-8 text-xs text-left border-b">
-          <img src={selectedAvatar} alt="Avatar" className="w-12 h-12 object-cover rounded-full mb-2"/>
+          <img src={selectedAvatar} alt="Avatar" className="w-12 h-12 object-cover rounded-full mb-2" />
           <p className="font-bold uppercase">
             {userDetails.Firstname}, {userDetails.Lastname}
           </p>
           <p>{userDetails.Company}</p>
           <p className="italic">( {userDetails.Role} )</p>
           <span
-              className={`text-white text-[8px] font-semibold px-3 py-1 rounded-full inline-block mt-2 ${userDetails.Status === "Active"
-                ? "bg-green-900"
-                : userDetails.Status === "Inactive"
-                  ? "bg-red-700"
-                  : userDetails.Status === "Locked"
-                    ? "bg-gray-500"
-                    : userDetails.Status === "Busy"
-                      ? "bg-yellow-500"
-                      : userDetails.Status === "Do not Disturb"
-                        ? "bg-gray-800"
-                        : "bg-blue-500"
-                }`}
-            >
-              {userDetails.Status}
-            </span>
+            className={`text-white text-[8px] font-semibold px-3 py-1 rounded-full inline-block mt-2 ${userDetails.Status === "Active"
+              ? "bg-green-900"
+              : userDetails.Status === "Inactive"
+                ? "bg-red-700"
+                : userDetails.Status === "Locked"
+                  ? "bg-gray-500"
+                  : userDetails.Status === "Busy"
+                    ? "bg-yellow-500"
+                    : userDetails.Status === "Do not Disturb"
+                      ? "bg-gray-800"
+                      : "bg-blue-500"
+              }`}
+          >
+            {userDetails.Status}
+          </span>
         </div>
       )}
 
