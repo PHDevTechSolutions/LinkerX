@@ -56,27 +56,19 @@ const OutboundCallPage: React.FC = () => {
 
   // Filter posts based on search and selected client type
   const filteredPosts = posts.filter((post) => {
-    const accountName = post.account_name ? post.account_name.toLowerCase() : '';
-
-    const matchesSearch = accountName.includes(searchTerm.toLowerCase()) 
-
-    const matchesClientType = selectedClientType ? post.type_of_client === selectedClientType : true;
+    const accountName = post.account_name?.toLowerCase() || '';
+    const matchesSearch = accountName.includes(searchTerm.toLowerCase());
+    const matchesClientType = !selectedClientType || post.type_of_client === selectedClientType;
 
     // Date range filtering
     const postStartDate = post.start_date ? new Date(post.start_date) : null;
     const postEndDate = post.end_date ? new Date(post.end_date) : null;
-    const isWithinDateRange = (!startDate || (postStartDate && postStartDate >= new Date(startDate))) &&
-      (!endDate || (postEndDate && postEndDate <= new Date(endDate)));
+    const isWithinDateRange = 
+        (!startDate || (postStartDate && postStartDate >= new Date(startDate))) &&
+        (!endDate || (postEndDate && postEndDate <= new Date(endDate)));
 
     return matchesSearch && matchesClientType && isWithinDateRange;
-  });
-
-
-  // Pagination logic
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+});
 
   return (
     <SessionChecker>
@@ -109,11 +101,6 @@ const OutboundCallPage: React.FC = () => {
                     setEndDate={setEndDate}
                   />
                   <OutboundTable posts={filteredPosts} />
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    setCurrentPage={setCurrentPage}
-                  />
                 </div>
                 <ToastContainer />
               </div>

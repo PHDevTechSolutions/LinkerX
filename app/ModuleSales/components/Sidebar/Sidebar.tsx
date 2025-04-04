@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa";
 import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiCalendarDate, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo } from "react-icons/ci";
-import { RiDonutChartLine, } from "react-icons/ri";
+import { RxCaretLeft, RxCaretDown  } from "react-icons/rx";
+
 
 import { BsBuildings } from "react-icons/bs";
 
@@ -393,7 +394,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
                 )}
                 {!collapsed && (
                   <span className="ml-auto">
-                    {openSections[item.title] ? <FaMinus size={10} /> : <FaPlus size={10} />}
+                    {openSections[item.title] ? <RxCaretDown size={15} /> : <RxCaretLeft size={15} />}
                   </span>
                 )}
               </button>
