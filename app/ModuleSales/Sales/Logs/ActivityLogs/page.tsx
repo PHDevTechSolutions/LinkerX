@@ -87,7 +87,7 @@ const OutboundCallPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                 <h2 className="text-lg font-bold mb-2">Activity Logs</h2>
                 <p className="text-xs mb-2">
-                  This section displays details about outbound call made to clients. It includes a search and filter functionality to refine call records based on client type, date range, and other criteria. The total number of entries is shown to provide an overview of recorded outbound calls.
+                  This section displays details about outbound calls made to clients. It includes a search and filter functionality to refine call records based on client type, date range, and other criteria. The total number of entries is shown to provide an overview of recorded outbound calls.
                 </p>
 
                 {/* Display total entries */}
