@@ -7,13 +7,14 @@ import UserFetcher from "../../../components/User/UserFetcher";
 // Components
 import AddPostForm from "../../../components/UserManagement/CompanyAccounts/AddUserForm";
 import SearchFilters from "../../../components/Taskflow/ActivityLogs/SearchFilters";
-import UsersTable from "../../../components/Taskflow/ActivityLogs/ActivityTable";
+import UsersTable from "../../../components/Taskflow/ProgressLogs/ProgressTable";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import ExcelJS from "exceljs";
+
 
 // Icons
 import { CiSquarePlus, CiImport, CiExport } from "react-icons/ci";
@@ -63,7 +64,7 @@ const ListofUser: React.FC = () => {
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
         if (!selectedFile) return;
-
+    
         setFile(selectedFile);
         const reader = new FileReader();
         reader.onload = async (event) => {
@@ -71,49 +72,61 @@ const ListofUser: React.FC = () => {
             const workbook = new ExcelJS.Workbook();
             await workbook.xlsx.load(data);
             const worksheet = workbook.worksheets[0];
-
+    
             const parsedData: any[] = [];
             worksheet.eachRow((row, rowNumber) => {
                 if (rowNumber === 1) return; // Skip header row
-
+    
                 parsedData.push({
                     referenceid,
                     tsm,
                     manager,
                     targetquota,
-                    companyname: row.getCell(1).value || "",
-                    contactperson: row.getCell(2).value || "",
-                    contactnumber: row.getCell(3).value || "",
-                    emailaddress: row.getCell(4).value || "",
-                    typeclient: row.getCell(5).value || "",
-                    address: row.getCell(6).value || "",
-                    area: row.getCell(7).value || "",
-                    projectname: row.getCell(8).value || "",
-                    projectcategory: row.getCell(9).value || "",
-                    projecttype: row.getCell(10).value || "",
-                    source: row.getCell(11).value || "",
-                    date_created: row.getCell(12).value || "",
-                    activitystatus: row.getCell(13).value || "",
-                    activitynumber: row.getCell(14).value || "",
+                    activitynumber: row.getCell(1).value || "",
+                    companyname: row.getCell(2).value || "",
+                    contactperson: row.getCell(3).value || "",
+                    contactnumber: row.getCell(4).value || "",
+                    emailaddress: row.getCell(5).value || "",
+                    typeclient: row.getCell(6).value || "",
+                    address: row.getCell(7).value || "",
+                    area: row.getCell(8).value || "",
+                    projectname: row.getCell(9).value || "",
+                    projectcategory: row.getCell(10).value || "",
+                    projecttype: row.getCell(11).value || "",
+                    source: row.getCell(12).value || "",
+                    typeactivity: row.getCell(13).value || "",
+                    callback: row.getCell(14).value || "",
+                    callstatus: row.getCell(15).value || "",
+                    typecall: row.getCell(16).value || "",
+                    remarks: row.getCell(17).value || "",
+                    quotationnumber: row.getCell(18).value || "",
+                    quotationamount: row.getCell(19).value || "",
+                    sonumber: row.getCell(20).value || "",
+                    soamount: row.getCell(21).value || "",
+                    startdate: row.getCell(22).value || "",
+                    enddate: row.getCell(23).value || "",
+                    activitystatus: row.getCell(24).value || "",
+                    actualsales: row.getCell(25).value || "",
                 });
             });
-
+    
             console.log("Parsed Excel Data:", parsedData);
             setJsonData(parsedData);
         };
         reader.readAsArrayBuffer(selectedFile);
     };
+    
 
     const handleFileUpload = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true); // Start loading
-
+        setIsLoading(true);
+    
         if (!file) {
             toast.error("Please upload a file.");
-            setIsLoading(false); // Stop loading if no file
+            setIsLoading(false);
             return;
         }
-
+    
         const reader = new FileReader();
         reader.onload = async (event) => {
             try {
@@ -121,55 +134,65 @@ const ListofUser: React.FC = () => {
                 const workbook = new ExcelJS.Workbook();
                 await workbook.xlsx.load(data);
                 const worksheet = workbook.worksheets[0];
-
+    
                 const jsonData: any[] = [];
-
                 worksheet.eachRow((row, rowNumber) => {
                     if (rowNumber === 1) return; // Skip header row
-
+    
                     jsonData.push({
                         referenceid,
                         tsm,
                         manager,
                         targetquota,
-                        companyname: row.getCell(1).value || "",
-                        contactperson: row.getCell(2).value || "",
-                        contactnumber: row.getCell(3).value || "",
-                        emailaddress: row.getCell(4).value || "",
-                        typeclient: row.getCell(5).value || "",
-                        address: row.getCell(6).value || "",
-                        area: row.getCell(7).value || "",
-                        projectname: row.getCell(8).value || "",
-                        projectcategory: row.getCell(9).value || "",
-                        projecttype: row.getCell(10).value || "",
-                        source: row.getCell(11).value || "",
-                        date_created: row.getCell(12).value || "",
-                        activitystatus: row.getCell(13).value || "",
-                        activitynumber: row.getCell(14).value || "",
+                        activitynumber: row.getCell(1).value || "",
+                        companyname: row.getCell(2).value || "",
+                        contactperson: row.getCell(3).value || "",
+                        contactnumber: row.getCell(4).value || "",
+                        emailaddress: row.getCell(5).value || "",
+                        typeclient: row.getCell(6).value || "",
+                        address: row.getCell(7).value || "",
+                        area: row.getCell(8).value || "",
+                        projectname: row.getCell(9).value || "",
+                        projectcategory: row.getCell(10).value || "",
+                        projecttype: row.getCell(11).value || "",
+                        source: row.getCell(12).value || "",
+                        typeactivity: row.getCell(13).value || "",
+                        callback: row.getCell(14).value || "",
+                        callstatus: row.getCell(15).value || "",
+                        typecall: row.getCell(16).value || "",
+                        remarks: row.getCell(17).value || "",
+                        quotationnumber: row.getCell(18).value || "",
+                        quotationamount: row.getCell(19).value || "",
+                        sonumber: row.getCell(20).value || "",
+                        soamount: row.getCell(21).value || "",
+                        startdate: row.getCell(22).value || "",
+                        enddate: row.getCell(23).value || "",
+                        activitystatus: row.getCell(24).value || "",
+                        actualsales: row.getCell(25).value || "",
                     });
                 });
-
-                // Debug log to check parsed data
-                console.log("Parsed Excel Data:", jsonData);
-
-                const response = await fetch("/api/ModuleSales/UserManagement/ActivityLogs/ImportActivities", {
+    
+                console.log("Sending Data to Backend:", jsonData);
+    
+                const response = await fetch("/api/ModuleSales/UserManagement/ProgressLogs/ImportProgress", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json", // Set correct header for JSON
+                        "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
                         referenceid,
                         tsm,
                         manager,
                         targetquota,
-                        data: jsonData, // Send parsed data as JSON
+                        data: jsonData,
                     }),
                 });
-
+    
                 const result = await response.json();
+                console.log("Response from server:", result);
+    
                 if (result.success) {
                     toast.success(`${result.insertedCount} records imported successfully!`);
-                    // Reset fields after success
                     setreferenceid("");
                     settsm("");
                     setmanager("");
@@ -182,10 +205,9 @@ const ListofUser: React.FC = () => {
                 console.error("Error processing file:", error);
                 toast.error("Error uploading file.");
             } finally {
-                setIsLoading(false); // Stop loading after processing
+                setIsLoading(false);
             }
         };
-
         reader.readAsArrayBuffer(file);
     };
 
@@ -299,7 +321,7 @@ const ListofUser: React.FC = () => {
     // Fetch all users from the API
     const fetchAccount = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/UserManagement/ActivityLogs/FetchAccount");
+            const response = await fetch("/api/ModuleSales/UserManagement/ProgressLogs/FetchAccount");
             const data = await response.json();
             console.log("Fetched data:", data); // Debugging line
             setPosts(data.data); // Make sure you're setting `data.data` if API response has `{ success: true, data: [...] }`
@@ -369,7 +391,6 @@ const ListofUser: React.FC = () => {
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
     const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
-
 
     // Handle editing a post
     const handleEdit = (post: any) => {
@@ -470,6 +491,7 @@ const ListofUser: React.FC = () => {
                                                     <table className="w-full border-collapse text-left">
                                                         <thead>
                                                             <tr className="bg-gray-200 text-xs">
+                                                                <th className="border px-2 py-1">Activity Number</th>
                                                                 <th className="border px-2 py-1">Company Name</th>
                                                                 <th className="border px-2 py-1">Contact Person</th>
                                                                 <th className="border px-2 py-1">Contact Number</th>
@@ -481,14 +503,25 @@ const ListofUser: React.FC = () => {
                                                                 <th className="border px-2 py-1">Project Category</th>
                                                                 <th className="border px-2 py-1">Project Type</th>
                                                                 <th className="border px-2 py-1">Source</th>
-                                                                <th className="border px-2 py-1">Date Created</th>
+                                                                <th className="border px-2 py-1">Type Activity</th>
+                                                                <th className="border px-2 py-1">Callback</th>
+                                                                <th className="border px-2 py-1">Call Status</th>
+                                                                <th className="border px-2 py-1">Type Call</th>
+                                                                <th className="border px-2 py-1">Remarks</th>
+                                                                <th className="border px-2 py-1">Quotation Number</th>
+                                                                <th className="border px-2 py-1">Quotation Amount</th>
+                                                                <th className="border px-2 py-1">SO Number</th>
+                                                                <th className="border px-2 py-1">SO Amount</th>
+                                                                <th className="border px-2 py-1">Start Date</th>
+                                                                <th className="border px-2 py-1">End Date</th>
                                                                 <th className="border px-2 py-1">Activity Status</th>
-                                                                <th className="border px-2 py-1">Activity Number</th>
+                                                                <th className="border px-2 py-1">Actual Sales</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             {jsonData.map((item, index) => (
                                                                 <tr key={index} className="text-xs border">
+                                                                    <td className="border px-2 py-1">{item.activitynumber}</td>
                                                                     <td className="border px-2 py-1">{item.companyname}</td>
                                                                     <td className="border px-2 py-1">{item.contactperson}</td>
                                                                     <td className="border px-2 py-1">{item.contactnumber}</td>
@@ -500,9 +533,19 @@ const ListofUser: React.FC = () => {
                                                                     <td className="border px-2 py-1">{item.projectcategory}</td>
                                                                     <td className="border px-2 py-1">{item.projecttype}</td>
                                                                     <td className="border px-2 py-1">{item.source}</td>
-                                                                    <td className="border px-2 py-1">{item.date_created}</td>
+                                                                    <td className="border px-2 py-1">{item.typeactivity}</td>
+                                                                    <td className="border px-2 py-1">{item.callback}</td>
+                                                                    <td className="border px-2 py-1">{item.callstatus}</td>
+                                                                    <td className="border px-2 py-1">{item.typecall}</td>
+                                                                    <td className="border px-2 py-1">{item.remarks}</td>
+                                                                    <td className="border px-2 py-1">{item.quotationnumber}</td>
+                                                                    <td className="border px-2 py-1">{item.quotationamount}</td>
+                                                                    <td className="border px-2 py-1">{item.sonumber}</td>
+                                                                    <td className="border px-2 py-1">{item.soamount}</td>
+                                                                    <td className="border px-2 py-1">{item.startDate}</td>
+                                                                    <td className="border px-2 py-1">{item.enddate}</td>
                                                                     <td className="border px-2 py-1">{item.activitystatus}</td>
-                                                                    <td className="border px-2 py-1">{item.activitynumber}</td>
+                                                                    <td className="border px-2 py-1">{item.actualsales}</td>
                                                                 </tr>
                                                             ))}
                                                         </tbody>
@@ -523,7 +566,7 @@ const ListofUser: React.FC = () => {
                                         </div>
 
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">Activity Logs</h2>
+                                            <h2 className="text-lg font-bold mb-2">Progress Logs</h2>
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}

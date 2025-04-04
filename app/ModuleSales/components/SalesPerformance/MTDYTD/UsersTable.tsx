@@ -52,9 +52,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
 
         const filteredPosts = posts.filter(post => {
             const postDate = new Date(post.date_created);
-            return activeTab === "MTD"
-                ? postDate.getMonth() === today.getMonth() && postDate.getFullYear() === today.getFullYear()
-                : postDate.getFullYear() === currentYear;
+            // For MTD, ensure it's the current month of the current year
+            if (activeTab === "MTD") {
+                return postDate.getFullYear() === currentYear && postDate.getMonth() === currentMonth - 1;
+            }
+            // For YTD, ensure the date is in the current year
+            return postDate.getFullYear() === currentYear;
         });
 
         const grouped = filteredPosts.reduce((acc: { [key: string]: GroupedData }, post: Post) => {

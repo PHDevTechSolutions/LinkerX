@@ -17,11 +17,11 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
     const [postsPerPage, setPostsPerPage] = useState<number>(10); // Default to 10 posts per page
 
     const agentNumbers = useMemo(
-        () => Array.from(new Set(posts.map((post) => post.agent_number))),
+        () => Array.from(new Set(posts.map((post) => post.agent_fullname))),
         [posts]
     );
     const idNumbers = useMemo(
-        () => Array.from(new Set(posts.map((post) => post.id_number))),
+        () => Array.from(new Set(posts.map((post) => post.tsm_fullname))),
         [posts]
     );
     const statuses = useMemo(
@@ -31,7 +31,7 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
 
     const filteredPosts = useMemo(() => {
         return posts.filter((post) => {
-            const dateFinished = new Date(post.date_finished);
+            const dateFinished = new Date(post.start_date);
             const startDate = startDateFilter ? new Date(startDateFilter) : null;
             const endDate = endDateFilter ? new Date(endDateFilter) : null;
 
@@ -40,8 +40,8 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
                 (!endDate || dateFinished <= endDate);
 
             return (
-                (agentFilter ? post.agent_number === agentFilter : true) &&
-                (idNumberFilter ? post.id_number === idNumberFilter : true) &&
+                (agentFilter ? post.agent_fullname === agentFilter : true) &&
+                (idNumberFilter ? post.tsm_fullname === idNumberFilter : true) &&
                 (statusFilter ? post.status === statusFilter : true) &&
                 isDateInRange
             );
@@ -50,8 +50,8 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
 
     const sortedPosts = useMemo(() => {
         return [...filteredPosts].sort((a, b) => {
-            const dateA = a.date_finished ? new Date(a.date_finished) : new Date(0);
-            const dateB = b.date_finished ? new Date(b.date_finished) : new Date(0);
+            const dateA = a.start_date ? new Date(a.start_date) : new Date(0);
+            const dateB = b.start_date ? new Date(b.start_date) : new Date(0);
             return dateB.getTime() - dateA.getTime(); // Sorting in descending order
         });
     }, [filteredPosts]);
@@ -67,31 +67,43 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
 
     const exportToExcel = () => {
         const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet("Activities");
+        const worksheet = workbook.addWorksheet("Progress");
 
         worksheet.columns = [
-            { header: "Reference ID", key: "agent_number", width: 20 },
-            { header: "TSM ID", key: "id_number", width: 20 },
+            { header: "Reference Number", key: "activity_id", width: 20 },
+            { header: "Agent Name", key: "agent_fullname", width: 20 },
+            { header: "TSM Name", key: "tsm_fullname", width: 20 },
             { header: "Company Name", key: "account_name", width: 20 },
             { header: "Contact Person", key: "contact_person", width: 20 },
             { header: "Contact Number", key: "contact_number", width: 20 },
             { header: "Email Address", key: "email", width: 20 },
-            { header: "Type Client", key: "type_of_client", width: 20 },
-            { header: "Address.", key: "address", width: 20 },
+            { header: "Type Client.", key: "type_of_client", width: 20 },
+            { header: "Address", key: "address", width: 20 },
             { header: "Area", key: "area", width: 20 },
-            { header: "Project Name", key: "project_name", width: 20 },
-            { header: "Project Category", key: "product_category", width: 30 },
+            { header: "Project Name", key: "project_name", width: 30 },
+            { header: "Project Category", key: "project_category", width: 20 },
             { header: "Project Type", key: "project_type", width: 20 },
             { header: "Source", key: "source", width: 20 },
-            { header: "Date Created", key: "date_finished", width: 20 },
+            { header: "Type Activity", key: "type_of_activity", width: 20 },
+            { header: "Callback", key: "callback", width: 20 },
+            { header: "Call Status", key: "call_status", width: 20 },
+            { header: "Type Call", key: "type_of_call", width: 20 },
+            { header: "Remarks", key: "remarks", width: 20 },
+            { header: "Quotation Number", key: "quotation_number", width: 20 },
+            { header: "Quotation Amount", key: "project_estimate", width: 20 },
+            { header: "SO Number", key: "sales_order_number", width: 20 },
+            { header: "SO Amount", key: "sales_order_amount", width: 20 },
+            { header: "Start Date", key: "start_date", width: 20 },
+            { header: "End Date", key: "end_date", width: 20 },
             { header: "Activity Status", key: "status", width: 20 },
-            { header: "Activity Number", key: "activity_id", width: 20 },
+            { header: "Actual Sales", key: "actual_sales", width: 20 },
         ];
 
         sortedPosts.forEach((post) => {
             worksheet.addRow({
-                agent_number: post.agent_number,
-                id_number: post.id_number,
+                activity_id: post.activity_id,
+                agent_fullname: post.agent_fullname,
+                tsm_fullname: post.tsm_fullname,
                 account_name: post.account_name,
                 contact_person: post.contact_person,
                 contact_number: post.contact_number,
@@ -100,12 +112,22 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
                 address: post.address,
                 area: post.area,
                 project_name: post.project_name,
-                product_category: post.product_category,
+                project_category: post.project_category,
                 project_type: post.project_type,
                 source: post.source,
-                date_finished: post.date_finished,
+                type_of_activity: post.type_of_activity,
+                callback: post.callback,
+                call_status: post.call_status,
+                type_of_call: post.type_of_call,
+                remarks: post.remarks,
+                quotation_number: post.quotation_number,
+                project_estimate: post.project_estimate,
+                sales_order_number: post.sales_order_number,
+                sales_order_amount: post.sales_order_amount,
+                start_date: post.start_date,
+                end_date: post.end_date,
                 status: post.status,
-                activity_id: post.activity_id,
+                actual_sales: post.actual_sales,
             });
         });
 
@@ -115,7 +137,7 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
             });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = "Activities.xlsx";
+            link.download = "Progress.xlsx";
             link.click();
         });
     };
@@ -149,7 +171,7 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
                 >
                     <option value="">Filter by Agent Number</option>
                     {agentNumbers.map((agentNumber) => (
-                        <option key={agentNumber} value={agentNumber}>
+                        <option key={agentNumber} value={agentNumber} className="uppercase">
                             {agentNumber}
                         </option>
                     ))}
@@ -276,19 +298,27 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
                         <th className="p-3 border">Call Status</th>
                         <th className="p-3 border">Type Call</th>
                         <th className="p-3 border">Remarks</th>
+                        <th className="p-3 border">Quotation Number</th>
+                        <th className="p-3 border">Quotation Amount</th>
+                        <th className="p-3 border">SO Number</th>
+                        <th className="p-3 border">SO Amount</th>
+                        <th className="p-3 border">Start Date</th>
+                        <th className="p-3 border">End Date</th>
+                        <th className="p-3 border">Activity Status</th>
+                        <th className="p-3 border">Actual Sales</th>
                     </tr>
                 </thead>
                 <tbody>
                     {currentPosts.map((post, index) => (
                         <tr key={post._id || index} className={`border-b hover:bg-gray-50`}>
                             <td className="p-3 border whitespace-nowrap">{post.activity_id}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.agent_fullname}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.tsm_fullname}</td>
+                            <td className="p-3 border whitespace-nowrap capitalize">{post.agent_fullname}</td>
+                            <td className="p-3 border whitespace-nowrap capitalize">{post.tsm_fullname}</td>
                             <td className="p-3 border whitespace-nowrap">{post.account_name}</td>
                             <td className="p-3 border whitespace-nowrap"></td>
                             <td className="p-3 border whitespace-nowrap"></td>
                             <td className="p-3 border whitespace-nowrap"></td>
-                            <td className="p-3 border whitespace-nowrap">{post.type_of_client}</td>
+                            <td className="p-3 border whitespace-nowrap capitalize">{post.type_of_client}</td>
                             <td className="p-3 border whitespace-nowrap"></td>
                             <td className="p-3 border whitespace-nowrap"></td>
                             <td className="p-3 border whitespace-nowrap"></td>
@@ -299,7 +329,15 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
                             <td className="p-3 border whitespace-nowrap">{post.callback}</td>
                             <td className="p-3 border whitespace-nowrap">{post.call_status}</td>
                             <td className="p-3 border whitespace-nowrap">{post.type_of_call}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.remarks}</td>
+                            <td className="p-3 border whitespace-nowrap capitalize">{post.remarks}</td>
+                            <td className="p-3 border whitespace-nowrap">{post.quotation_number}</td>
+                            <td className="p-3 border whitespace-nowrap">{post.project_estimate}</td>
+                            <td className="p-3 border whitespace-nowrap">{post.sales_order_number}</td>
+                            <td className="p-3 border whitespace-nowrap">{post.sales_order_amount}</td>
+                            <td className="p-3 border whitespace-nowrap">{post.start_date}</td>
+                            <td className="p-3 border whitespace-nowrap">{post.end_date}</td>
+                            <td className="p-3 border whitespace-nowrap">{post.status}</td>
+                            <td className="p-3 border whitespace-nowrap">{post.actual_sales}</td>
                         </tr>
                     ))}
                 </tbody>

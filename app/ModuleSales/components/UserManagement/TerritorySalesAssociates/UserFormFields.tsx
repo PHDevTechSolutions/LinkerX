@@ -128,7 +128,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Manager">Manager Code</label>
           {isEditing ? (
-            <input type="text" id="Manager" value={Manager} onChange={(e) => setManager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+            <input type="text" id="Manager" value={Manager} onChange={(e) => setManager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
           ) : (
             <Select id="Manager" options={managerOptions} value={selectedManager} onChange={(option) => {
               setSelectedManager(option);
@@ -139,7 +139,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="TSM">TSM Code</label>
           {isEditing ? (
-            <input type="text" id="TSM" value={TSM} onChange={(e) => setTSM(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+            <input type="text" id="TSM" value={TSM} onChange={(e) => setTSM(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
           ) : (
             <Select id="TSM" options={TSMOptions} value={selectedTSM} onChange={(option) => {
               setSelectedTSM(option);
