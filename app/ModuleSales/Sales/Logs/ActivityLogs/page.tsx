@@ -1,4 +1,4 @@
-"use client"; // This should be at the top if you're using Next.js 13 or later with the app directory.
+"use client";
 
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
@@ -10,13 +10,11 @@ import OutboundTable from "../../../components/Logs/ActivityLogs/ActivityTable";
 import Pagination from "../../../components/Logs/ActivityLogs/Pagination";
 
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
-import ExcelJS from 'exceljs';
-import { CiExport } from "react-icons/ci";
+import "react-toastify/dist/ReactToastify.css";
 
-// Main Page Component
 const OutboundCallPage: React.FC = () => {
   const [posts, setPosts] = useState<any[]>([]);
+  const [totalRecords, setTotalRecords] = useState(0); // Total count from API
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClientType, setSelectedClientType] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,7 +25,11 @@ const OutboundCallPage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("https://ecoshiftcorp.com.ph/activity_api.php");
+        const offset = (currentPage - 1) * postsPerPage;
+        const response = await fetch(
+          `https://ecoshiftcorp.com.ph/activity_api.php?limit=${postsPerPage}&offset=${offset}`
+        );
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -35,40 +37,25 @@ const OutboundCallPage: React.FC = () => {
         const text = await response.text();
         if (!text) {
           setPosts([]);
+          setTotalRecords(0);
           return;
         }
 
         const data = JSON.parse(text);
-        const postsWithId = data.map((post: any) => ({
-          ...post,
-          _id: post.progr_id || post.id || `_${Math.random().toString(36).substr(2, 9)}`,
-        }));
-
-        setPosts(postsWithId);
+        setPosts(data.records || []);
+        setTotalRecords(data.totalRecords || 0); // Ensure total records count updates
       } catch (error) {
         console.error("Error fetching data:", error);
         setPosts([]);
+        setTotalRecords(0);
       }
     };
 
     fetchData();
-  }, []);
+  }, [currentPage, postsPerPage]);
 
-  // Filter posts based on search and selected client type
-  const filteredPosts = posts.filter((post) => {
-    const accountName = post.account_name?.toLowerCase() || '';
-    const matchesSearch = accountName.includes(searchTerm.toLowerCase());
-    const matchesClientType = !selectedClientType || post.type_of_client === selectedClientType;
-
-    // Date range filtering
-    const postStartDate = post.start_date ? new Date(post.start_date) : null;
-    const postEndDate = post.end_date ? new Date(post.end_date) : null;
-    const isWithinDateRange = 
-        (!startDate || (postStartDate && postStartDate >= new Date(startDate))) &&
-        (!endDate || (postEndDate && postEndDate <= new Date(endDate)));
-
-    return matchesSearch && matchesClientType && isWithinDateRange;
-});
+  // Pagination logic
+  const totalPages = Math.ceil(totalRecords / postsPerPage);
 
   return (
     <SessionChecker>
@@ -76,34 +63,37 @@ const OutboundCallPage: React.FC = () => {
         <UserFetcher>
           {(userName) => (
             <div className="container mx-auto p-4">
-              <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
-                <h2 className="text-lg font-bold mb-2">Activity Logs</h2>
-                <p className="text-xs mb-2">
-                  This section displays details about outbound calls made to clients. It includes a search and filter functionality to refine call records based on client type, date range, and other criteria. The total number of entries is shown to provide an overview of recorded outbound calls.
-                </p>
+              <h2 className="text-lg font-bold mb-2">Activity Logs</h2>
+              <p className="text-xs mb-2">
+                This section displays details about outbound calls made to clients. It includes a search and filter functionality to refine call records based on client type, date range, and other criteria.
+              </p>
 
-                {/* Display total entries */}
-                <div className="mb-4 text-xs">
-                  Total Entries: {filteredPosts.length}
-                </div>
-
-                <div className="mb-4 p-4 bg-white shadow-md rounded-md text-gray-900">
-                  <SearchFilters
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    selectedClientType={selectedClientType}
-                    setSelectedClientType={setSelectedClientType}
-                    postsPerPage={postsPerPage}
-                    setPostsPerPage={setPostsPerPage}
-                    startDate={startDate}
-                    setStartDate={setStartDate}
-                    endDate={endDate}
-                    setEndDate={setEndDate}
-                  />
-                  <OutboundTable posts={filteredPosts} />
-                </div>
-                <ToastContainer />
+              {/* Display total entries */}
+              <div className="mb-4 text-xs">
+                Total Entries: {totalRecords}
               </div>
+
+              <div className="mb-4 p-4 bg-white shadow-md rounded-md text-gray-900">
+                <SearchFilters
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  selectedClientType={selectedClientType}
+                  setSelectedClientType={setSelectedClientType}
+                  postsPerPage={postsPerPage}
+                  setPostsPerPage={setPostsPerPage}
+                  startDate={startDate}
+                  setStartDate={setStartDate}
+                  endDate={endDate}
+                  setEndDate={setEndDate}
+                />
+                <OutboundTable posts={posts} />
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  setCurrentPage={setCurrentPage}
+                />
+              </div>
+              <ToastContainer />
             </div>
           )}
         </UserFetcher>

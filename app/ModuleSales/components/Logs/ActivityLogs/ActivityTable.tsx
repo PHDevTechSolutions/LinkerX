@@ -32,17 +32,9 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
     const [idNumberFilter, setIdNumberFilter] = useState<string>('');
     const [statusFilter, setStatusFilter] = useState<string>('');
 
-    const agentNumbers = useMemo(() => {
-        return Array.from(new Set(posts.map(post => post.agent_number)));
-    }, [posts]);
-
-    const idNumbers = useMemo(() => {
-        return Array.from(new Set(posts.map(post => post.id_number)));
-    }, [posts]);
-
-    const statuses = useMemo(() => {
-        return Array.from(new Set(posts.map(post => post.status)));
-    }, [posts]);
+    const agentNumbers = useMemo(() => Array.from(new Set(posts.map(post => post.agent_number))), [posts]);
+    const idNumbers = useMemo(() => Array.from(new Set(posts.map(post => post.id_number))), [posts]);
+    const statuses = useMemo(() => Array.from(new Set(posts.map(post => post.status))), [posts]);
 
     const filteredPosts = useMemo(() => {
         return posts.filter((post) => {
@@ -81,7 +73,7 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
             { header: 'Time Consumed', key: 'time_consumed', width: 20 }
         ];
 
-        filteredPosts.forEach((post) => {
+        sortedPosts.forEach((post) => {
             worksheet.addRow({
                 account_name: post.account_name,
                 agent_fullname: post.agent_fullname,
@@ -111,102 +103,48 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
         <div className="overflow-x-auto">
             {/* Filters */}
             <div className="flex gap-4 pb-2">
-                <select
-                    value={agentFilter}
-                    onChange={(e) => setAgentFilter(e.target.value)}
-                    className="px-3 py-2 border rounded text-xs"
-                >
+                <select value={agentFilter} onChange={(e) => setAgentFilter(e.target.value)} className="px-3 py-2 border rounded text-xs">
                     <option value="">Filter by Agent Number</option>
-                    {agentNumbers.map((agentNumber) => (
-                        <option key={agentNumber} value={agentNumber}>
-                            {agentNumber}
-                        </option>
-                    ))}
+                    {agentNumbers.map(agentNumber => <option key={agentNumber} value={agentNumber}>{agentNumber}</option>)}
                 </select>
 
-                <select
-                    value={idNumberFilter}
-                    onChange={(e) => setIdNumberFilter(e.target.value)}
-                    className="px-3 py-2 border rounded text-xs"
-                >
+                <select value={idNumberFilter} onChange={(e) => setIdNumberFilter(e.target.value)} className="px-3 py-2 border rounded text-xs">
                     <option value="">Filter by ID Number</option>
-                    {idNumbers.map((idNumber) => (
-                        <option key={idNumber} value={idNumber}>
-                            {idNumber}
-                        </option>
-                    ))}
+                    {idNumbers.map(idNumber => <option key={idNumber} value={idNumber}>{idNumber}</option>)}
                 </select>
 
-                <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-3 py-2 border rounded text-xs"
-                >
+                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 border rounded text-xs">
                     <option value="">Filter by Status</option>
-                    {statuses.map((status) => (
-                        <option key={status} value={status} className="capitalize">
-                            {status}
-                        </option>
-                    ))}
+                    {statuses.map(status => <option key={status} value={status}>{status}</option>)}
                 </select>
             </div>
 
             {/* Export Button */}
-            <button 
-                onClick={exportToExcel} 
-                className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"
-            >
+            <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded">
                 <CiExport size={20} /> Export to Excel
             </button>
 
             {/* Table */}
-            {sortedPosts.length > 0 ? (
-                <table className="min-w-full bg-white border border-gray-300 text-xs">
-                    <thead>
-                        <tr className="bg-gray-100 text-left uppercase font-bold border-b">
-                            <th className="p-3 border">Agent Number</th>
-                            <th className="p-3 border">ID Number</th>
-                            <th className="p-3 border">Account Name</th>
-                            <th className="p-3 border">Contact Person</th>
-                            <th className="p-3 border">Contact Number</th>
-                            <th className="p-3 border">Email</th>
-                            <th className="p-3 border">Type of Client</th>
-                            <th className="p-3 border">Product Category</th>
-                            <th className="p-3 border">Project Name</th>
-                            <th className="p-3 border">Project Estimate</th>
-                            <th className="p-3 border">Call Duration</th>
-                            <th className="p-3 border">Status</th>
-                            <th className="p-3 border">Date Finished</th>
+            <table className="min-w-full bg-white border border-gray-300 text-xs">
+                <thead>
+                    <tr className="bg-gray-100 text-left uppercase font-bold border-b">
+                        <th className="p-3 border">Agent Number</th>
+                        <th className="p-3 border">ID Number</th>
+                        <th className="p-3 border">Account Name</th>
+                        <th className="p-3 border">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {sortedPosts.map(post => (
+                        <tr key={post._id} className={`border-b hover:bg-gray-50 ${getTypeOfClientColor(post.call_status)}`}>
+                            <td className="p-3 border">{post.agent_number}</td>
+                            <td className="p-3 border">{post.id_number}</td>
+                            <td className="p-3 border">{post.account_name}</td>
+                            <td className="p-3 border">{post.status}</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {sortedPosts.map((post) => {
-                            return (
-                                <tr key={post._id} className={`border-b hover:bg-gray-50 ${getTypeOfClientColor(post.call_status)}`}>
-                                    <td className="p-3 border whitespace-nowrap">{post.agent_number}</td>
-                                    <td className="p-3 border whitespace-nowrap">{post.id_number}</td>
-                                    <td className="p-3 border whitespace-nowrap uppercase">{post.account_name}</td>
-                                    <td className="p-3 border whitespace-nowrap capitalize">{post.contact_person}</td>
-                                    <td className="p-3 border whitespace-nowrap">{post.contact_number}</td>
-                                    <td className="p-3 border whitespace-nowrap">{post.email}</td>
-                                    <td className="p-3 border whitespace-nowrap capitalize">{post.type_of_client}</td>
-                                    <td className="p-3 border whitespace-nowrap capitalize">{post.product_category}</td>
-                                    <td className="p-3 border whitespace-nowrap capitalize">{post.project_name}</td>
-                                    <td className="p-3 border whitespace-nowrap">{post.project_estimated}</td>
-                                    <td className="p-3 border flex items-center gap-2">
-                                        <CiClock2 size={13} className="text-gray-900" />
-                                        <span className="italic">{post.start_date} - {post.end_date}</span>
-                                    </td>
-                                    <td className="p-3 border whitespace-nowrap">{post.status}</td>
-                                    <td className="p-3 border whitespace-nowrap">{post.date_finished}</td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            ) : (
-                <div className="text-center py-4 text-sm">No accounts available</div>
-            )}
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };
