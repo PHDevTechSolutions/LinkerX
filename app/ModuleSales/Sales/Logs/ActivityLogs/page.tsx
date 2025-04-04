@@ -25,25 +25,17 @@ const OutboundCallPage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const offset = (currentPage - 1) * postsPerPage;
         const response = await fetch(
-          `https://ecoshiftcorp.com.ph/activity_api.php?limit=${postsPerPage}&offset=${offset}`
+          `https://ecoshiftcorp.com.ph/activity_api.php` // No limit here
         );
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const text = await response.text();
-        if (!text) {
-          setPosts([]);
-          setTotalRecords(0);
-          return;
-        }
-
-        const data = JSON.parse(text);
-        setPosts(data.records || []);
-        setTotalRecords(data.totalRecords || 0); // Ensure total records count updates
+        const data = await response.json();
+        setPosts(data || []);  // Set posts data
+        setTotalRecords(data.length); // Total records (adjust as needed)
       } catch (error) {
         console.error("Error fetching data:", error);
         setPosts([]);
@@ -52,10 +44,7 @@ const OutboundCallPage: React.FC = () => {
     };
 
     fetchData();
-  }, [currentPage, postsPerPage]);
-
-  // Pagination logic
-  const totalPages = Math.ceil(totalRecords / postsPerPage);
+  }, []);
 
   return (
     <SessionChecker>
@@ -87,11 +76,6 @@ const OutboundCallPage: React.FC = () => {
                   setEndDate={setEndDate}
                 />
                 <OutboundTable posts={posts} />
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  setCurrentPage={setCurrentPage}
-                />
               </div>
               <ToastContainer />
             </div>
