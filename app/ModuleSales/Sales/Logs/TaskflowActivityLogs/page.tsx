@@ -437,6 +437,7 @@ const ListofUser: React.FC = () => {
                                                         <option value="">Select Quota</option>
                                                         <option value="1750000">1,750,000</option>
                                                         <option value="1000000">1,000,000</option>
+                                                        <option value="950000">950,000</option>
                                                         <option value="700000">700,000</option>
                                                         <option value="300000">300,000</option>
                                                         <option value="0">0</option>
