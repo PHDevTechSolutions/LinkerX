@@ -95,7 +95,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
         const confirmDelete = window.confirm("Are you sure you want to delete the selected users?");
         if (!confirmDelete) return;
         try {
-            const response = await fetch(`/api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Delete`, {
+            const response = await fetch(`/api/ModuleSales/UserManagement/ActivityLogs/Bulk-Delete`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userIds: Array.from(selectedUsers) }),
