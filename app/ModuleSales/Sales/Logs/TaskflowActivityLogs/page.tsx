@@ -435,8 +435,9 @@ const ListofUser: React.FC = () => {
                                                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                                                     <select value={targetquota} onChange={(e) => settargetquota(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                                         <option value="">Select Quota</option>
-                                                        <option value="1750000">1,750,000.00</option>
-                                                        <option value="300000">300000</option>
+                                                        <option value="1750000">1,750,000</option>
+                                                        <option value="700000">700,000</option>
+                                                        <option value="300000">300,000</option>
                                                         <option value="0">0</option>
                                                     </select>
                                                 </div>
