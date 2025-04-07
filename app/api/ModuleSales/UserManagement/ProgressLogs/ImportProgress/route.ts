@@ -68,7 +68,7 @@ async function addUser(
             ${emailaddress}, ${typeclient}, ${address}, ${area}, ${projectname}, ${projectcategory}, ${projecttype}, 
             ${source}, ${typeactivity}, ${callback}, ${callstatus}, ${typecall}, ${remarks}, 
             ${quotationnumber}, ${parsedQuotationAmount}, ${sonumber}, ${parsedSoAmount}, ${startdate}, ${enddate}, 
-            ${activitystatus}, ${parsedActualSales}, ${targetquota}, ${startdate})  -- Set date_created to startdate
+            ${activitystatus}, ${parsedActualSales}, ${targetquota}, ${startdate})
             RETURNING *;
         `;
 
