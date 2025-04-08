@@ -177,12 +177,17 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
       const currentYear = new Date().getFullYear();
 
       filteredData.forEach((item: any) => {
-        totalActualSales += item.actualsales || 0;
+        // Convert 'actualsales' to number safely using a helper function
+        const actualSales = isNaN(Number(item.actualsales)) ? 0 : Number(item.actualsales);
+
+        totalActualSales += actualSales;
+
         if (new Date(item.date_created).getMonth() + 1 === currentMonth) {
-          monthToDateSales += item.actualsales || 0;
+          monthToDateSales += actualSales;
         }
+
         if (new Date(item.date_created).getFullYear() === currentYear) {
-          yearToDateSales += item.actualsales || 0;
+          yearToDateSales += actualSales;
         }
       });
 
@@ -196,6 +201,9 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     }
   };
 
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
 
   // Count Quote Productivity
   const countActivities = (data: any[]) =>
@@ -615,15 +623,15 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
               <tbody>
                 <tr className="bg-white">
                   <td className="border border-gray-300 px-2 py-1">Month to Date</td>
-                  <td className="border border-gray-300 px-2 py-1">{countsales["MonthToDateSales"] || 0}</td>
+                  <td className="border border-gray-300 px-2 py-1">{formatCurrency(countsales["MonthToDateSales"] || 0)}</td>
                 </tr>
                 <tr className="bg-gray-100">
                   <td className="border border-gray-300 px-2 py-1">Year to Date</td>
-                  <td className="border border-gray-300 px-2 py-1">{countsales["YearToDateSales"] || 0}</td>
+                  <td className="border border-gray-300 px-2 py-1">{formatCurrency(countsales["YearToDateSales"] || 0)}</td>
                 </tr>
                 <tr className="bg-white font-semibold">
                   <td className="border border-gray-300 px-2 py-1">Total Actual Sales</td>
-                  <td className="border border-gray-300 px-2 py-1">{countsales["TotalActualSales"] || 0}</td>
+                  <td className="border border-gray-300 px-2 py-1">{formatCurrency(countsales["TotalActualSales"] || 0)}</td>
                 </tr>
               </tbody>
             </table>
