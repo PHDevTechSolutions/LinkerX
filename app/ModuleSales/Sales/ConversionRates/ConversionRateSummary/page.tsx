@@ -177,10 +177,6 @@ const ListofUser: React.FC = () => {
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
-                                                startDate={startDate}
-                                                setStartDate={setStartDate}
-                                                endDate={endDate}
-                                                setEndDate={setEndDate}
                                             />
                                             <UsersTable
                                                 posts={filteredAccounts}

@@ -120,11 +120,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                     <button onClick={() => setActiveTab("YTD")} className={`py-2 px-4 text-xs font-medium ${activeTab === "YTD" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"}`}>YTD</button>
                 </nav>
                 {/* Month and Year Selector */}
-                <div className="flex space-x-4 mt-2">
+                <div className="mb-4 mt-4 flex items-center gap-4">
                     <select
                         value={selectedMonth || ""}
                         onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                        className="py-2 px-4 text-xs border"
+                        className="py-2 px-4 text-xs border shadow-md"
                     >
                         <option value="">Select Month</option>
                         {Array.from({ length: 12 }, (_, i) => (
@@ -134,7 +134,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                     <select
                         value={selectedYear || ""}
                         onChange={(e) => setSelectedYear(Number(e.target.value))}
-                        className="py-2 px-4 text-xs border"
+                        className="py-2 px-4 text-xs border shadow-md"
                     >
                         <option value="">Select Year</option>
                         {Array.from({ length: 10 }, (_, i) => currentYear - 9 + i).map(year => (

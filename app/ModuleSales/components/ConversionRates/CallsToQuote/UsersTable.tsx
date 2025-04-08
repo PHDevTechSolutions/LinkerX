@@ -40,6 +40,14 @@ const formatCurrency = (amount: number) => {
 const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
     const [groupedData, setGroupedData] = useState<{ [key: string]: GroupedData }>({});
     const [activeTab, setActiveTab] = useState("MTD");
+    const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1); // Default to current month
+    const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear()); // Default to current year
+
+    const months = [
+        "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+    ];
+
+    const years = Array.from(new Array(10), (_, index) => new Date().getFullYear() - index); // Last 10 years
 
     useEffect(() => {
         const fixedDays = 26;
@@ -54,9 +62,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
 
         const filteredPosts = posts.filter(post => {
             const postDate = new Date(post.date_created);
-            return activeTab === "MTD"
-                ? postDate.getMonth() === today.getMonth() && postDate.getFullYear() === today.getFullYear()
-                : postDate.getFullYear() === currentYear;
+            return (
+                (selectedMonth === postDate.getMonth() + 1 && selectedYear === postDate.getFullYear()) ||
+                (activeTab === "YTD" && postDate.getFullYear() === selectedYear)
+            );
         });
 
         const grouped = filteredPosts.reduce((acc: { [key: string]: GroupedData }, post: Post) => {
@@ -97,10 +106,37 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
         }, {});
 
         setGroupedData(grouped);
-    }, [posts, activeTab]);
+    }, [posts, activeTab, selectedMonth, selectedYear]);
 
     return (
         <div className="overflow-x-auto">
+            {/* Filter by Month and Year */}
+            <div className="mb-4 flex items-center gap-4">
+                <select
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                    className="py-2 px-4 text-xs border shadow-md"
+                >
+                    {months.map((month, index) => (
+                        <option key={index} value={index + 1}>
+                            {month}
+                        </option>
+                    ))}
+                </select>
+
+                <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(Number(e.target.value))}
+                    className="py-2 px-4 text-xs border shadow-md"
+                >
+                    {years.map((year) => (
+                        <option key={year} value={year}>
+                            {year}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
             <div className="mb-4 border-b border-gray-200">
                 <nav className="flex space-x-4">
                     <button onClick={() => setActiveTab("MTD")} className={`py-2 px-4 text-xs font-medium ${activeTab === "MTD" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"}`}>MTD</button>
