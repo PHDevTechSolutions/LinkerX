@@ -5,6 +5,7 @@ import { FaBuildingUser, FaPlus, FaMinus } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa";
 import TaskflowIcon from './TaskflowIcon';
 import { CiGrid42, CiInboxIn, CiWavePulse1, CiUser, CiCircleQuestion, CiSettings, CiCircleInfo } from "react-icons/ci";
+import { RxCaretLeft, RxCaretDown  } from "react-icons/rx";
 
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
@@ -215,7 +216,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
               {!collapsed && <span className="ml-2">{item.title}</span>}
               {!collapsed && (
                 <span className="ml-auto">
-                  {openSections[item.title] ? <FaMinus size={10} /> : <FaPlus size={10} />}
+                  {openSections[item.title] ? <RxCaretDown size={15} /> : <RxCaretLeft size={15} />}
                 </span>
               )}
             </button>

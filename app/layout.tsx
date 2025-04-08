@@ -8,7 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // Import Inter with weight set to thin (100)
 const inter = Inter({
-  weight: "100", // Light weight (thin font)
+  weight: "100",
   subsets: ["latin"],
   variable: "--font-inter",
 });
