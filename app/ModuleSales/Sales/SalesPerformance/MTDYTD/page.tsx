@@ -109,11 +109,6 @@ const ListofUser: React.FC = () => {
         const matchesSearchTerm =
           agentFirstname.includes(searchLower) || agentLastname.includes(searchLower);
 
-        const postDate = post.date_created ? new Date(post.date_created) : null;
-        const isWithinDateRange =
-          (!startDate || (postDate && postDate >= new Date(startDate))) &&
-          (!endDate || (postDate && postDate <= new Date(endDate)));
-
         const matchesClientType = selectedClientType
           ? post?.typeclient === selectedClientType
           : true;
@@ -129,7 +124,7 @@ const ListofUser: React.FC = () => {
             ? post?.tsm === referenceID
             : false;
 
-        return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
+        return matchesSearchTerm && matchesClientType && matchesRole;
       })
       .map((post) => {
         const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
@@ -177,10 +172,6 @@ const ListofUser: React.FC = () => {
                                         <SearchFilters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}
-                                            startDate={startDate}
-                                            setStartDate={setStartDate}
-                                            endDate={endDate}
-                                            setEndDate={setEndDate}
                                         />
                                         <UsersTable
                                             posts={filteredAccounts}

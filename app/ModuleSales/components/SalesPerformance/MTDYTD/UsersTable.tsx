@@ -7,8 +7,8 @@ interface Post {
     referenceid: string;
     date_created: string;
     targetquota: number;
-    soamount: string;  // Changed to string to represent text
-    actualsales: string; // Changed to string to represent text
+    soamount: string;
+    actualsales: string;
 }
 
 interface GroupedData {
@@ -42,12 +42,15 @@ const parseToNumber = (value: string) => {
 const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
     const [groupedData, setGroupedData] = useState<{ [key: string]: GroupedData }>({});
     const [activeTab, setActiveTab] = useState("MTD");
+    const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+    const [selectedYear, setSelectedYear] = useState<number | null>(null);
+
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
 
     useEffect(() => {
         const fixedDays = 26;
-        const today = new Date();
-        const currentYear = today.getFullYear();
-        const currentMonth = today.getMonth() + 1;
 
         const parPercentages: { [key: number]: number } = {
             1: 8.3, 2: 16.6, 3: 25.0, 4: 33.3, 5: 41.6, 6: 50.0, 
@@ -56,10 +59,19 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
 
         const filteredPosts = posts.filter(post => {
             const postDate = new Date(post.date_created);
-            if (activeTab === "MTD") {
-                return postDate.getFullYear() === currentYear && postDate.getMonth() === currentMonth - 1;
+            const postYear = postDate.getFullYear();
+            const postMonth = postDate.getMonth() + 1;
+
+            // Apply month and year filter based on selectedMonth and selectedYear
+            if (selectedMonth && selectedYear) {
+                return postYear === selectedYear && postMonth === selectedMonth;
             }
-            return postDate.getFullYear() === currentYear;
+
+            // If no specific filter is selected, fall back to activeTab
+            if (activeTab === "MTD") {
+                return postYear === currentYear && postMonth === currentMonth;
+            }
+            return postYear === currentYear;
         });
 
         const grouped = filteredPosts.reduce((acc: { [key: string]: GroupedData }, post: Post) => {
@@ -98,7 +110,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
         }, {});
 
         setGroupedData(grouped);
-    }, [posts, activeTab]);
+    }, [posts, activeTab, selectedMonth, selectedYear]);
 
     return (
         <div className="overflow-x-auto">
@@ -107,6 +119,29 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                     <button onClick={() => setActiveTab("MTD")} className={`py-2 px-4 text-xs font-medium ${activeTab === "MTD" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"}`}>MTD</button>
                     <button onClick={() => setActiveTab("YTD")} className={`py-2 px-4 text-xs font-medium ${activeTab === "YTD" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"}`}>YTD</button>
                 </nav>
+                {/* Month and Year Selector */}
+                <div className="flex space-x-4 mt-2">
+                    <select
+                        value={selectedMonth || ""}
+                        onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                        className="py-2 px-4 text-xs border"
+                    >
+                        <option value="">Select Month</option>
+                        {Array.from({ length: 12 }, (_, i) => (
+                            <option key={i} value={i + 1}>{new Date(0, i).toLocaleString('en-US', { month: 'long' })}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={selectedYear || ""}
+                        onChange={(e) => setSelectedYear(Number(e.target.value))}
+                        className="py-2 px-4 text-xs border"
+                    >
+                        <option value="">Select Year</option>
+                        {Array.from({ length: 10 }, (_, i) => currentYear - 9 + i).map(year => (
+                            <option key={year} value={year}>{year}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             <table className="min-w-full bg-white border border-gray-200 text-xs">
