@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect, useState } from "react";
 
 interface UsersCardProps {
@@ -38,12 +37,14 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                 };
             }
 
-            if (post.typeactivity === "Outbound Call") {
+            // Count based on typecall "touchbase"
+            if (post.typecall === "Touch Base") {
                 acc[key].TotalOutbound += 1;
                 acc[key].TotalCalls += 1;
                 totalOutbound += 1;
                 totalCalls += 1;
             }
+
             if (post.typeactivity === "Inbound Call") {
                 acc[key].InboundCall += 1;
                 totalInbound += 1;

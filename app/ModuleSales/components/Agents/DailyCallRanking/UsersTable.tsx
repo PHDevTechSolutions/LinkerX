@@ -38,7 +38,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                 };
             }
 
-            if (post.typeactivity === "Outbound Call") {
+            // Only consider "TouchBase" type calls for outbound
+            if (post.typecall === "Touch Base" && post.typeactivity === "Outbound Call") {
                 acc[key].TotalOutbound += 1;
                 acc[key].TotalCalls += 1;
                 totalOutbound += 1;
@@ -77,7 +78,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
         <div className="overflow-x-auto px-2">
             {/* Cards for Summary */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                {[
+                {[ 
                     { title: "Total Outbound", value: totals.totalOutbound, bg: "bg-blue-900" },
                     { title: "Successful Calls", value: totals.totalSuccessful, bg: "bg-red-700" },
                     { title: "Inbound Calls", value: totals.totalInbound, bg: "bg-green-900" },
@@ -146,6 +147,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                     </tbody>
                 </table>
             </div>
+
             {/* Pagination */}
             {totalPages > 1 && (
                 <div className="flex justify-center items-center gap-2 mt-4 text-xs">
