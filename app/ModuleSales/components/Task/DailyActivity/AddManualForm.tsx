@@ -33,6 +33,7 @@ interface Activity {
   typecall: string;
   quotationnumber: string;
   quotationamount: string;
+  actualsales: string;
   remarks: string;
   date_created: string; // Ensure this is a valid date string
 }
@@ -45,27 +46,13 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [tsm, setTsm] = useState(userDetails.tsm || "");
   const [targetquota, setTargetQuota] = useState(userDetails.targetquota || "");
 
-  const [companyname, setcompanyname] = useState(
-    editUser ? editUser.companyname : companyData?.companyname || ""
-  );
-  const [typeclient, settypeclient] = useState(
-    editUser ? editUser.typeclient : companyData?.typeclient || ""
-  );
-  const [contactperson, setcontactperson] = useState(
-    editUser ? editUser.contactperson : companyData?.contactperson || ""
-  );
-  const [contactnumber, setcontactnumber] = useState(
-    editUser ? editUser.contactnumber : companyData?.contactnumber || ""
-  );
-  const [emailaddress, setemailaddress] = useState(
-    editUser ? editUser.emailaddress : companyData?.emailaddress || ""
-  );
-  const [address, setaddress] = useState(
-    editUser ? editUser.address : companyData?.address || ""
-  );
-  const [area, setarea] = useState(
-    editUser ? editUser.area : companyData?.area || ""
-  );
+  const [companyname, setcompanyname] = useState(editUser ? editUser.companyname : companyData?.companyname || "");
+  const [typeclient, settypeclient] = useState (editUser ? editUser.typeclient : companyData?.typeclient || "");
+  const [contactperson, setcontactperson] = useState(editUser ? editUser.contactperson : companyData?.contactperson || "");
+  const [contactnumber, setcontactnumber] = useState(editUser ? editUser.contactnumber : companyData?.contactnumber || "");
+  const [emailaddress, setemailaddress] = useState(editUser ? editUser.emailaddress : companyData?.emailaddress || "");
+  const [address, setaddress] = useState(editUser ? editUser.address : companyData?.address || "");
+  const [area, setarea] = useState(editUser ? editUser.area : companyData?.area || "");
 
   const [projectname, setprojectname] = useState(editUser ? editUser.projectname : "");
   const [projectcategory, setprojectcategory] = useState(editUser ? editUser.projectcategory : "");
@@ -101,7 +88,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [showModal, setShowModal] = useState(false);
   const [modalRemarks, setModalRemarks] = useState("");
 
-
   // 🔥 FIX: Ensure activityList is always an array
   const [activityList, setActivityList] = useState<{
     id: number;
@@ -114,6 +100,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     quotationamount: string;
     sonumber: string;
     soamount: string;
+    actualsales: string;
     activitystatus: string;
     date_created: string;
   }[]>([]);
@@ -292,6 +279,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                   <th className="text-left px-4 py-2 border">Q-Amount</th>
                   <th className="text-left px-4 py-2 border">SO-Amount</th>
                   <th className="text-left px-4 py-2 border">SO-Number</th>
+                  <th className="text-left px-4 py-2 border">Actual Sales (Final Amount)</th>
                   <th className="text-left px-4 py-2 border">Remarks</th>
                   <th className="text-left px-4 py-2 border">Status</th>
                   <th className="text-left px-4 py-2 border">Actions</th>
@@ -317,10 +305,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
                       <td className="px-4 py-2 border">{activity.callstatus}</td>
                       <td className="px-4 py-2 border">{activity.typecall}</td>
-                      <td className="px-4 py-2 border">{activity.quotationnumber}</td>
+                      <td className="px-4 py-2 border uppercase">{activity.quotationnumber}</td>
                       <td className="px-4 py-2 border">{activity.quotationamount}</td>
                       <td className="px-4 py-2 border">{activity.soamount}</td>
-                      <td className="px-4 py-2 border">{activity.sonumber}</td>
+                      <td className="px-4 py-2 border uppercase">{activity.sonumber}</td>
+                      <td className="px-4 py-2 border">{activity.actualsales}</td>
                       <td className="px-4 py-2 border break-words truncate max-w-xs cursor-pointer" onClick={() => handleShowRemarks(activity.remarks)}>
                         {activity.remarks}
                       </td>

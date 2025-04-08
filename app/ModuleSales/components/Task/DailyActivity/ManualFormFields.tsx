@@ -213,16 +213,16 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     if (data.success) {
                         // Filter companies with status 'Active' or 'Used', and exclude certain 'typeclient' values
                         const filteredCompanies = data.data.filter((company: any) =>
-                            (company.status === 'Active' || company.status === 'Used') && 
+                            (company.status === 'Active' || company.status === 'Used') &&
                             ![
-                                'CSR Inquiries', 
-                                'Balance 20', 
-                                'Top 50', 
-                                'Next 30', 
+                                'CSR Inquiries',
+                                'Balance 20',
+                                'Top 50',
+                                'Next 30',
                                 'New Account - Client Development'
                             ].includes(company.typeclient)
-                        );                        
-    
+                        );
+
                         setCompanies(filteredCompanies.map((company: any) => ({
                             value: company.companyname,
                             label: company.companyname,
@@ -240,7 +240,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 .catch((error) => console.error("Error fetching companies:", error));
         }
     }, [referenceid]);
-    
+
 
     useEffect(() => {
         setContactPersons(contactperson ? contactperson.split(", ") : [""]);
@@ -321,7 +321,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             .catch((error) => {
             });
     };
-    
+
     const handleContactPersonChange = (index: number, value: string) => {
         const newContactPersons = [...contactPersons];
         newContactPersons[index] = value;
@@ -628,7 +628,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 {/* Project Name */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Project Name ( Optional )</label>
-                                    <input type="text" id="projectname" value={projectname ?? ""} onChange={(e) => setprojectname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required/>
+                                    <input type="text" id="projectname" value={projectname ?? ""} onChange={(e) => setprojectname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
                                 </div>
 
                                 {/* Project Category */}
@@ -814,12 +814,25 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Quotation Number</label>
-                                <input type="text" value={quotationnumber ?? ""} onChange={(e) => setquotationnumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required/>
+                                <input type="text" value={quotationnumber ?? ""} onChange={(e) => setquotationnumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required />
                             </div>
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Quotation Amount</label>
-                                <input type="number" value={quotationamount ?? ""} onChange={(e) => setquotationamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required/>
+                                <input
+                                    type="text"
+                                    value={quotationamount ?? ""}
+                                    onInput={(e) => {
+                                        const inputValue = (e.target as HTMLInputElement).value;
+                                        const formattedValue = inputValue
+                                            .replace(/,/g, '')
+                                            .replace(/(\..*)\./g, '$1');
+                            
+                                        setquotationamount(formattedValue);
+                                    }}
+                                    className="w-full px-3 py-2 border rounded text-xs"
+                                    required
+                                />
                             </div>
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -848,11 +861,24 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Number</label>
-                                <input type="text" value={sonumber ?? ""} onChange={(e) => setsonumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required/>
+                                <input type="text" value={sonumber ?? ""} onChange={(e) => setsonumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required />
                             </div>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Amount</label>
-                                <input type="number" value={soamount ?? ""} onChange={(e) => setsoamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required/>
+                                <input
+                                    type="text"
+                                    value={soamount ?? ""}
+                                    onInput={(e) => {
+                                        const inputValue = (e.target as HTMLInputElement).value;
+                                        const formattedValue = inputValue
+                                            .replace(/,/g, '')
+                                            .replace(/(\..*)\./g, '$1');
+                            
+                                            setsoamount(formattedValue);
+                                    }}
+                                    className="w-full px-3 py-2 border rounded text-xs"
+                                    required
+                                />
                             </div>
                         </>
                     )}
@@ -862,10 +888,18 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO to DR Amount (Actual Sales)</label>
                                 <input
-                                    type="number"
+                                    type="text"
                                     value={actualsales ?? ""}
-                                    onChange={(e) => setactualsales(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded text-xs uppercase" required
+                                    onInput={(e) => {
+                                        const inputValue = (e.target as HTMLInputElement).value;
+                                        const formattedValue = inputValue
+                                            .replace(/,/g, '')
+                                            .replace(/(\..*)\./g, '$1');
+                            
+                                            setactualsales(formattedValue);
+                                    }}
+                                    className="w-full px-3 py-2 border rounded text-xs"
+                                    required
                                 />
                             </div>
 
