@@ -7,8 +7,8 @@ interface Post {
     referenceid: string;
     date_created: string;
     targetquota: number;
-    soamount: number;
-    actualsales: number;
+    soamount: string;  // Changed to string to represent text
+    actualsales: string; // Changed to string to represent text
 }
 
 interface GroupedData {
@@ -35,6 +35,10 @@ const formatCurrency = (amount: number) => {
     return amount.toLocaleString("en-US", { minimumFractionDigits: 0 });
 };
 
+const parseToNumber = (value: string) => {
+    return isNaN(Number(value)) ? 0 : Number(value); // Safely convert string to number, return 0 if invalid
+};
+
 const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
     const [groupedData, setGroupedData] = useState<{ [key: string]: GroupedData }>({});
     const [activeTab, setActiveTab] = useState("MTD");
@@ -52,11 +56,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
 
         const filteredPosts = posts.filter(post => {
             const postDate = new Date(post.date_created);
-            // For MTD, ensure it's the current month of the current year
             if (activeTab === "MTD") {
                 return postDate.getFullYear() === currentYear && postDate.getMonth() === currentMonth - 1;
             }
-            // For YTD, ensure the date is in the current year
             return postDate.getFullYear() === currentYear;
         });
 
@@ -88,8 +90,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
             }
 
             acc[key].records.push(post);
-            acc[key].totalSOAmount += post.soamount;
-            acc[key].totalActualSales += post.actualsales;
+            acc[key].totalSOAmount += parseToNumber(post.soamount); // Convert string to number before summing
+            acc[key].totalActualSales += parseToNumber(post.actualsales); // Convert string to number before summing
             acc[key].mtdVariance = acc[key].targetQuota - acc[key].totalActualSales;
 
             return acc;
