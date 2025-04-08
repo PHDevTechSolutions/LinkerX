@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Inter } from "next/font/google"; // Importing Inter font for thin sans-serif
+import { ToastContainer } from "react-toastify"; // Import ToastContainer
+import "react-toastify/dist/ReactToastify.css"; // Import the CSS for react-toastify
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -19,17 +19,6 @@ export const metadata: Metadata = {
   icons: {
     icon: "/ecoico.png", // Corrected: This should be an object, not an array
   },
-  openGraph: {
-    siteName: "Link preview site name", // og:site_name
-    images: [
-      {
-        url: "Link preview image URL", // og:image
-        width: 1200, // You can specify the width of the image
-        height: 630, // You can specify the height of the image
-        alt: "Ecoshift Corporation Image", // Alt text for the image
-      },
-    ],
-  },
 };
 
 export default function RootLayout({
@@ -39,21 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <meta property="og:site_name" content="Link preview site name" />
-        <meta property="og:image" content="Link preview image URL" />
-        <meta
-          property="og:title"
-          content="Ecoshift Corporation"
-        />
-        <meta
-          property="og:description"
-          content="Created in NextJs Developed By Leroux Y Xchire"
-        />
-        {/* Add any other Open Graph or SEO meta tags here */}
-      </head>
-      <body className={`${inter.variable} antialiased`}>
-        <ToastContainer />
+      <body
+        className={`${inter.variable} antialiased`} // Apply the thin font here
+      >
+        <ToastContainer /> {/* This makes sure toasts show up */}
         {children}
         <Analytics />
         <SpeedInsights />
