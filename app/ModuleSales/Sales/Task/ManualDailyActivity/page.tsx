@@ -5,7 +5,7 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../components/Task/DailyActivity/AddUserForm";
+import AddManualForm from "../../../components/Task/DailyActivity/AddManualForm";
 import SearchFilters from "../../../components/Task/DailyActivity/SearchFilters";
 import UsersTable from "../../../components/Task/DailyActivity/UsersTable";
 
@@ -490,11 +490,6 @@ const ListofUser: React.FC = () => {
         };
     }, []);
 
-    // Shuffle array and get random 5 companies
-    const getRandomCompanies = (companies: Company[]) => {
-        const shuffled = [...companies].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, 2);
-    };
 
     // Fetch companies from API with ReferenceID as query param
     const fetchCompanies = async () => {
@@ -842,8 +837,8 @@ const ListofUser: React.FC = () => {
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
                             <div className="grid grid-cols-1 md:grid-cols-1">
-                            {showForm && selectedCompany ? (
-                                <AddPostForm
+                            {showForm ? (
+                                <AddManualForm
                                     onCancel={() => {
                                         setShowForm(false);
                                         setEditUser(null);
@@ -858,15 +853,6 @@ const ListofUser: React.FC = () => {
                                         targetquota: editUser ? editUser.targetquota : userDetails.TargetQuota,
                                     }}
                                     editUser={editUser} // ✅ Properly pass editUser for editing
-                                    companyData={{
-                                        companyname: selectedCompany?.companyname || "",
-                                        typeclient: selectedCompany?.typeclient || "",
-                                        contactperson: selectedCompany?.contactperson || "",
-                                        contactnumber: selectedCompany?.contactnumber || "",
-                                        emailaddress: selectedCompany?.emailaddress || "",
-                                        address: selectedCompany?.address || "",
-                                        area: selectedCompany?.area || "",
-                                    }}
                                 />
                             ) : (
                                 <>
@@ -878,6 +864,9 @@ const ListofUser: React.FC = () => {
                                             >
                                                 <PiHandTapThin size={20} /> Tap
                                             </button>
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
+                                                                                            <CiSquarePlus size={20} /> Add
+                                                                    </button>
                                         </div>
 
                                         {showPersonalForm && (
@@ -961,8 +950,8 @@ const ListofUser: React.FC = () => {
 
                                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
                                         {/* Task */}
-                                        <div className="col-span-1 lg:col-span-3 bg-white shadow-md rounded-lg p-4">
-                                            <h2 className="text-lg font-bold mb-2">Automated Task</h2>
+                                        <div className="col-span-1 lg:col-span-4 bg-white shadow-md rounded-lg p-4">
+                                            <h2 className="text-lg font-bold mb-2">Manual Creation Task</h2>
                                             <p className="text-xs text-gray-600 mb-4">
                                                 This section displays your <strong>tasks</strong> in a <strong>card layout</strong>. Each task is represented as a card, offering a visually appealing and more flexible design compared to traditional tables. You can filter tasks based on various criteria like <strong>client type</strong>, <strong>date range</strong>, and other parameters using the search filters.
                                             </p>
@@ -988,188 +977,6 @@ const ListofUser: React.FC = () => {
                                                 handleStatusUpdate={handleStatusUpdate}
                                                 handleDelete={confirmDelete}
                                             />
-                                        </div>
-
-                                        {/* Automated Task */}
-                                        <div className="col-span-1 bg-white shadow-md rounded-lg p-4">
-                                            <div className="flex mb-4 border-b">
-                                                <button
-                                                    onClick={() => handleTabChange("Automated Task")}
-                                                    className={`text-xs px-4 py-2 border-b-2 w-full ${activeTab === "Automated Task" ? "border-blue-500 font-semibold" : "text-gray-600"
-                                                        }`}
-                                                >
-                                                    Automated Task
-                                                </button>
-                                                <button
-                                                    onClick={() => handleTabChange("List Accounts")}
-                                                    className={`text-xs px-4 py-2 border-b-2 w-full ${activeTab === "List Accounts" ? "border-blue-500 font-semibold" : "text-gray-600"
-                                                        }`}
-                                                >
-                                                    List Accounts
-                                                </button>
-                                            </div>
-
-                                            {activeTab === "Automated Task" ? (
-                                                <>
-                                                    <h3 className="text-sm font-semibold mb-2">Automated Task</h3>
-                                                    <p className="text-xs text-gray-600 mb-4">
-                                                        Below are some company names fetched from the system.
-                                                    </p>
-
-                                                    {/* Display 5 random company names */}
-                                                    <div className="space-y-2">
-                                                        {todayCompanies.length > 0 ? (
-                                                            todayCompanies.map((company, index) => (
-                                                                <div
-                                                                    key={index}
-                                                                    className={`p-2 bg-gray-100 rounded flex justify-between items-center text-[10px] transition-all duration-200 ease-in-out transform hover:scale-[1.02] uppercase font-medium text-gray-800 ${company.typeclient === "New Account - Client Development" ? "bg-yellow-200" : ""
-                                                                        }`}
-                                                                >
-                                                                    <span>
-                                                                        {company.companyname}
-                                                                        <br />
-                                                                        <span className="text-gray-500">{company.typeclient}</span>
-                                                                    </span>
-                                                                    <button
-                                                                        onClick={() => handleAccept(company)}
-                                                                        className="px-3 py-1 text-[10px] bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                                                                    >
-                                                                        Accept
-                                                                    </button>
-                                                                </div>
-                                                            ))
-                                                        ) : (
-                                                            <div className="text-xs text-gray-500 text-center p-2">
-                                                                {remainingBalance === 0
-                                                                    ? "✅ All 35 companies have been used today. Come back tomorrow!"
-                                                                    : "No available companies today."}
-                                                            </div>
-                                                        )}
-
-                                                        {/* Modal for Proceed/Cancel */}
-                                                        {showModal && (
-                                                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[1000]">
-                                                                <div className="bg-white rounded-lg p-5 w-72 text-center shadow-lg">
-                                                                    <p className="text-xs font-semibold mb-4">
-                                                                        Are you sure you want to proceed?
-                                                                    </p>
-                                                                    <div className="flex justify-between text-xs">
-                                                                        <button
-                                                                            onClick={handleCancel}
-                                                                            className="px-3 py-1 bg-gray-300 text-black rounded hover:bg-gray-400 transition"
-                                                                        >
-                                                                            Cancel
-                                                                        </button>
-                                                                        <button
-                                                                            onClick={handleProceed}
-                                                                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                                                                        >
-                                                                            Proceed
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                </>
-                                            ) : (
-                                                <>
-                                                    {/* List Accounts Tab Content */}
-                                                    <h3 className="text-sm font-semibold mb-2">List Accounts</h3>
-                                                    <p className="text-xs text-gray-600 mb-4">
-                                                        View and manage your list of company accounts.
-                                                    </p>
-                                                    <div className="p-0 rounded text-[10px] text-gray-700 uppercase">
-                                                        <ul className="space-y-2 h-90 overflow-y-auto max-h-[500px] w-full pr-2">
-                                                            {[
-                                                                // Order Top 50 first
-                                                                ...post
-                                                                    .filter((company) => company.status === "Active" && company.typeclient === "Top 50")
-                                                                    .map((company, index) => ({
-                                                                        ...company,
-                                                                        order: index + 1,
-                                                                    })),
-                                                                // Next 30
-                                                                ...post
-                                                                    .filter((company) => company.status === "Active" && company.typeclient === "Next 30")
-                                                                    .map((company, index, array) => ({
-                                                                        ...company,
-                                                                        order: post.filter((c) => c.status === "Active" && c.typeclient === "Top 50").length + index + 1,
-                                                                    })),
-                                                                // Below 20
-                                                                ...post
-                                                                    .filter((company) => company.status === "Active" && company.typeclient === "Balance 20")
-                                                                    .map((company, index, array) => ({
-                                                                        ...company,
-                                                                        order:
-                                                                            post.filter((c) => c.status === "Active" && (c.typeclient === "Top 50" || c.typeclient === "Next 30")).length +
-                                                                            index +
-                                                                            1,
-                                                                    })),
-                                                                // New Account - Client Development
-                                                                ...post
-                                                                    .filter((company) => company.status === "Active" && company.typeclient === "New Account - Client Development")
-                                                                    .map((company, index, array) => ({
-                                                                        ...company,
-                                                                        order:
-                                                                            post.filter(
-                                                                                (c) =>
-                                                                                    c.status === "Active" &&
-                                                                                    (c.typeclient === "Top 50" || c.typeclient === "Next 30" || c.typeclient === "Balance 20")
-                                                                            ).length +
-                                                                            index +
-                                                                            1,
-                                                                    })),
-                                                                // Append Used status at the end
-                                                                ...post
-                                                                    .filter((company) => company.status === "Used")
-                                                                    .map((company, index, usedArray) => ({
-                                                                        ...company,
-                                                                        order:
-                                                                            post.filter((c) => c.status === "Active").length +
-                                                                            index +
-                                                                            1,
-                                                                    })),
-                                                            ]
-                                                                .sort((a, b) => a.order - b.order)
-                                                                .map((company) => (
-                                                                    <li
-                                                                        key={company.order}
-                                                                        className={`p-2 bg-gray-100 rounded-sm shadow flex justify-between items-center border-l-4 transition-all duration-200 ease-in-out transform hover:scale-[1.02]
-                                                                            ${company.status === "Active" ? "border-green-700" : company.status === "Used" ? "border-blue-500" : "border-gray-300"}
-                                                                        `}>
-
-                                                                        {/* Numbering with Company Info */}
-                                                                        <span>
-                                                                            {company.order}. {company.companyname}
-                                                                            <br />
-                                                                            <span
-                                                                                className={`${company.status === "Active"
-                                                                                    ? "text-green-700"
-                                                                                    : "text-red-600"
-                                                                                    }`}
-                                                                            >
-                                                                                {company.typeclient}
-                                                                            </span>
-                                                                        </span>
-                                                                    </li>
-
-                                                                ))}
-
-                                                            {/* Show message if no company matches the filter */}
-                                                            {post.filter(
-                                                                (company) => company.status === "Active" || company.status === "Used"
-                                                            ).length === 0 && (
-                                                                    <li className="p-2 bg-white rounded shadow text-center text-gray-500">
-                                                                        No matching companies found.
-                                                                    </li>
-                                                                )}
-                                                        </ul>
-                                                    </div>
-                                                </>
-                                            )}
-
                                         </div>
                                     </div>
                                 </>

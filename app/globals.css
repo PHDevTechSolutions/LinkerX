@@ -64,3 +64,18 @@ body {
     white-space: nowrap;
   }
 }
+
+/* Add this CSS for animation */
+@keyframes fadeOut {
+  0% {
+      opacity: 1;
+  }
+  100% {
+      opacity: 0;
+      transform: translateX(-100%);
+  }
+}
+
+.fade-out {
+  animation: fadeOut 1s forwards;
+}
