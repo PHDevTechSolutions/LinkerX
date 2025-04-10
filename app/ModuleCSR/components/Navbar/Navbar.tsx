@@ -713,6 +713,15 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   );
 
   useEffect(() => {
+      const interval = setInterval(() => {
+        setCurrentTime(
+          new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true })
+        );
+      }, 1000);
+      return () => clearInterval(interval);
+    }, []);
+
+  useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
@@ -910,7 +919,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
             </span>
           )}
         </button>
-
 
         {showSidebar && (
           <motion.div
