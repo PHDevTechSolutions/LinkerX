@@ -82,6 +82,45 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
   const allNotifications = [...notifications, ...trackingNotifications];
 
+  const [shake, setShake] = useState(false);
+  
+  const soundPlayed = localStorage.getItem("soundPlayed");
+
+  // Play sound only once
+  const playSound = () => {
+    const audio = new Audio("/simple_notification.mp3");
+    audio.play();
+  };
+
+  const hasNotifications = [
+    trackingNotifications.filter((notif) => notif.type === "Taskflow Notification" && notif.status === "pending").length,
+    trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.TrackingStatus === "Open" && notif.status !== "Read").length,
+    wrapUpNotifications.filter((notif) => notif.type === "WrapUp Notification" && notif.Status === "Endorsed" && notif.NotificationStatus !== "Read").length
+  ].some(count => count > 0);
+
+  useEffect(() => {
+    if (hasNotifications) {
+      setShake(true); // Start shaking
+    } else {
+      setShake(false); // Stop shaking when no notifications
+    }
+  }, [hasNotifications]);
+
+  useEffect(() => {
+    if (hasNotifications && !soundPlayed) {
+      playSound();
+      localStorage.setItem("soundPlayed", "true"); // Mark sound as played
+    }
+  }, [hasNotifications, soundPlayed]);
+
+  useEffect(() => {
+    if (hasNotifications) {
+      setShake(true); // Start shaking
+    } else {
+      setShake(false); // Stop shaking when no notifications
+    }
+  }, [hasNotifications]);
+
   // Fetch user data
   useEffect(() => {
     const fetchUserData = async () => {
@@ -534,7 +573,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   }, [userReferenceId]);
 
-
   const fetchWrapUpData = async () => {
     try {
       if (!userReferenceId) {
@@ -657,7 +695,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
               };
             }
           }
-          
+
           return null; // No notification if status is not "Open" or conditions are not met
         });
 
@@ -687,7 +725,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   }, [userReferenceId]);
 
-
   // ✅ Handle click outside to close notifications
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -713,13 +750,13 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   );
 
   useEffect(() => {
-      const interval = setInterval(() => {
-        setCurrentTime(
-          new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true })
-        );
-      }, 1000);
-      return () => clearInterval(interval);
-    }, []);
+    const interval = setInterval(() => {
+      setCurrentTime(
+        new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true })
+      );
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -897,7 +934,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
         {/* Notification Icon */}
         <button onClick={() => setShowSidebar((prev) => !prev)} className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full">
-          <CiBellOn size={20} />
+          <CiBellOn size={20} className={`${shake ? "animate-shake" : ""}`} />
 
           {/* Count for CSR Notifications */}
           {trackingNotifications.filter((notif) => notif.type === "Taskflow Notification" && notif.status === "pending").length > 0 && (
@@ -912,7 +949,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
               {trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.TrackingStatus === "Open" && notif.status !== "Read").length}
             </span>
           )}
-          
+
           {wrapUpNotifications.filter((notif) => notif.type === "WrapUp Notification" && notif.Status === "Endorsed" && notif.NotificationStatus !== "Read").length > 0 && (
             <span className="absolute top-0 right-0 bg-green-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
               {wrapUpNotifications.filter((notif) => notif.type === "WrapUp Notification" && notif.Status === "Endorsed" && notif.NotificationStatus !== "Read").length}
