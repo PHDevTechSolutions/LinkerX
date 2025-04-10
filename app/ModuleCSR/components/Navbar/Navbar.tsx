@@ -22,6 +22,7 @@ interface Notification {
   typeactivity: string;
   typecall: string;
   agentfullname: string;
+  _id: string;
 }
 
 interface NavbarProps {
@@ -33,6 +34,7 @@ interface NavbarProps {
 type TrackingItem = {
   _id: string; // MongoDB ObjectId (stored as a string)
   message: string;
+  id: number;
   userName: string | null;  // Changed from agentfullname to userName
   type: string;
   status: string;
@@ -60,7 +62,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const [showSidebar, setShowSidebar] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const [activeTab, setActiveTab] = useState<"notifications" | "messages">("notifications");
-  const [loadingId, setLoadingId] = useState<number | null>(null);
+  const [loadingId, setLoadingId] = useState<string | number | null>(null);
 
   const [trackingNotifications, setTrackingNotifications] = useState<TrackingItem[]>([]); // Delivery / Pickup Notifications
 
@@ -135,7 +137,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           })
           .filter((notif: any) => {
             switch (notif.type) {
-              case "CSR Notification":
+              case "Taskflow Notification":
                 if (notif.date_created) {
                   const inquiryDate = new Date(notif.date_created).setHours(0, 0, 0, 0);
 
@@ -225,10 +227,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `The 'Delivery/Pickup' ticket is still unresolved after ${daysDifference} days.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
 
@@ -239,10 +242,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `You have an active 'Quotation' ticket that has been open for over 4 hours. Please review the status.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
 
@@ -253,10 +257,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `You have an active 'Documents' ticket that is still open after 1 day.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
 
@@ -267,10 +272,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `You currently have an active 'Return Call' ticket that is still open and awaiting further action. Please take the necessary steps to address it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
 
@@ -282,13 +288,14 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `Your 'Payment Terms' ticket is still open and requires your attention. Kindly take the appropriate steps to resolve it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
-            
+
             // Notification logic for "Refund" - notify every 2 days until status becomes Closed
             if (item.TicketConcern === "Refund" && daysDifference >= 2 && daysDifference % 2 === 0) {
               return {
@@ -296,13 +303,14 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `Your 'Refund' ticket is still open and requires your attention. Kindly take the appropriate steps to resolve it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
-            
+
             // Notification logic for "Replacement" - notify every 3 days until status becomes Closed
             if (item.TicketConcern === "Replacement" && daysDifference >= 3 && daysDifference % 3 === 0) {
               return {
@@ -310,13 +318,14 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `Your 'Replacement' ticket remains open and requires your follow-up. Kindly take the necessary steps to resolve it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
-            
+
             // Notification logic for "Site Visit" - notify every 2 days until status becomes Closed
             if (item.TicketConcern === "Site Visit" && daysDifference >= 2 && daysDifference % 2 === 0) {
               return {
@@ -324,12 +333,13 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `Your 'Site Visit' ticket is still open and awaiting your follow-up. Please take the necessary steps to resolve it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
-            } 
+            }
 
             // Notification logic for "TDS" - notify after 1 day until status becomes Closed
             if (item.TicketConcern === "TDS" && timeDifference >= 24 * 60 * 60 * 1000) {
@@ -338,10 +348,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `Your 'TDS' ticket is still open and awaiting your follow-up. Please take the necessary steps to resolve it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
 
@@ -352,10 +363,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `Your 'Shop Drawing' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
 
@@ -366,10 +378,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `Your 'Dialux' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
 
@@ -380,10 +393,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `Your 'Product Testing' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
 
@@ -394,10 +408,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `Your 'SPF' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
 
@@ -408,10 +423,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `Your 'Accreditation Request' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
 
@@ -422,10 +438,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `Your 'Job Request' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
 
@@ -436,10 +453,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `Your 'Product Recommendation' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
 
@@ -450,12 +468,27 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 message: `Your 'Product Certificate' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
                 userName: item.userName || "System",
                 type: "DTracking Notification",
-                status: "Open",
+                TrackingStatus: "Open",
                 createdAt: createdAt.toISOString(),
                 TicketConcern: item.TicketConcern,
                 CompanyName: item.CompanyName,
+                status: item.status,
               };
             }
+
+            //if (item.TicketConcern === "Product Certificate" && timeDifference >= 60 * 1000) {
+            //return {
+            //_id: item._id,
+            //message: `Your 'Product Certificate' ticket is still open and requires your attention. Kindly take the appropriate steps to resolve it.`,
+            //userName: item.userName || "System",
+            //type: "DTracking Notification",
+            //TrackingStatus: "Open",
+            //createdAt: createdAt.toISOString(),
+            //TicketConcern: item.TicketConcern,
+            //CompanyName: item.CompanyName,
+            //status: item.status,
+            //};
+            //}
           }
 
           return null; // No notification if status is not "Open" or conditions are not met
@@ -577,6 +610,46 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   };
 
+  const handleMarkAsStatusRead = async (notifId: string) => {
+    try {
+      setLoadingId(notifId); // Start loading with the string ID
+
+      const response = await fetch("/api/ModuleCSR/DTracking/UpdateNotifications", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ notifId, status: "Read" }),
+      });
+
+      if (response.ok) {
+        // ✅ Update status to "Read"
+        const updatedNotifications = notifications.map((notif) =>
+          notif._id === notifId ? { ...notif, status: "Read" } : notif
+        );
+        setNotifications(updatedNotifications);
+
+        // ✅ Remove after 1 minute
+        setTimeout(() => {
+          setNotifications((prev) =>
+            prev.filter((notif) => notif._id !== notifId)
+          );
+        }, 60000); // 1 minute (60,000 ms)
+      } else {
+        const errorDetails = await response.json();
+        console.error("Error updating notification status:", {
+          status: response.status,
+          message: errorDetails.message || "Unknown error",
+          details: errorDetails,
+        });
+      }
+    } catch (error) {
+      console.error("Error marking as read:", error);
+    } finally {
+      setLoadingId(null); // Stop loading
+    }
+  };
+
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center">
@@ -611,16 +684,16 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           <CiBellOn size={20} />
 
           {/* Count for CSR Notifications */}
-          {trackingNotifications.filter((notif) => notif.type === "CSR Notification" && notif.status === "pending").length > 0 && (
+          {trackingNotifications.filter((notif) => notif.type === "Taskflow Notification" && notif.status === "pending").length > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {trackingNotifications.filter((notif) => notif.type === "CSR Notification" && notif.status === "pending").length}
+              {trackingNotifications.filter((notif) => notif.type === "Taskflow Notification" && notif.status === "pending").length}
             </span>
           )}
 
-          {/* Count for DTracking Notifications */}
-          {trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.status === "Open").length > 0 && (
+          {/* Count for DTracking Notifications, excluding "Read" */}
+          {trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.TrackingStatus === "Open" && notif.status !== "Read").length > 0 && (
             <span className="absolute top-0 right-0 bg-green-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.status === "Open").length}
+              {trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.TrackingStatus === "Open" && notif.status !== "Read").length}
             </span>
           )}
         </button>
@@ -674,7 +747,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                             <p className="text-[10px] mt-5">{notif.message} Processed By {notif.agentfullname}</p>
 
                             {/* Timestamp for Callback Notification */}
-                            {notif.date_created && notif.type === "CSR Notification" && (
+                            {notif.date_created && notif.type === "Taskflow Notification" && (
                               <span className="text-[8px] mt-1 block">
                                 {new Date(notif.date_created).toLocaleString()}
                               </span>
@@ -682,16 +755,54 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
                             {/* ✅ Mark as Read Button */}
                             <button
-                              onClick={() => handleMarkAsRead(notif.id)}
-                              disabled={loadingId === notif.id}
+                              onClick={() => handleMarkAsStatusRead(notif._id)} // Pass string _id
+                              disabled={loadingId === notif._id} // Disable if loadingId matches _id
                               className={`text-[9px] mb-2 cursor-pointer absolute top-2 right-2 ${notif.status === "Read"
                                 ? "text-green-600 font-bold"
-                                : loadingId === notif.id
+                                : loadingId === notif._id
                                   ? "text-gray-500 cursor-not-allowed"
                                   : "text-blue-600 hover:text-blue-800"
                                 }`}
                             >
-                              {loadingId === notif.id
+                              {loadingId === notif._id
+                                ? "Loading..."
+                                : notif.status === "Read"
+                                  ? "Read"
+                                  : "Mark as Read"}
+                            </button>
+
+                          </li>
+                        ))}
+                    </ul>
+                  ) : (
+                    <></>
+                  )}
+
+                  {trackingNotifications.filter((notif) => notif.TrackingStatus === "Open" && notif.status !== "Read").length > 0 ? (
+                    <ul className="space-y-2">
+                      {trackingNotifications
+                        .filter((notif) => notif.TrackingStatus === "Open" && notif.status !== "Read")
+                        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                        .map((notif, index) => (
+                          <li
+                            key={notif._id || index}
+                            className={`p-3 mb-2 hover:bg-green-200 text-xs text-gray-900 capitalize text-left rounded-md relative ${notif.type === "DTracking Notification" ? "bg-green-100" : "bg-green-500"}`}
+                          >
+                            <p className="text-[12px] mt-5 font-bold uppercase italic">{notif.CompanyName} </p>
+                            <p className="text-[10px] mt-1 font-semibold">{notif.message}</p>
+                            <p className="text-[10px] mt-1 font-semibold">{notif.status}</p>
+                            <span className="text-[8px] mt-1 block">{new Date(notif.createdAt).toLocaleString()}</span>
+                            <button
+                              onClick={() => handleMarkAsStatusRead(notif._id)} // Make sure this is a string ID
+                              disabled={loadingId === notif._id} // Disabled based on _id
+                              className={`text-[9px] mb-2 cursor-pointer absolute top-2 right-2 ${notif.status === "Read"
+                                ? "text-green-600 font-bold"
+                                : loadingId === notif._id
+                                  ? "text-gray-500 cursor-not-allowed"
+                                  : "text-blue-600 hover:text-blue-800"
+                                }`}
+                            >
+                              {loadingId === notif._id
                                 ? "Loading..."
                                 : notif.status === "Read"
                                   ? "Read"
@@ -703,28 +814,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                   ) : (
                     <></>
                   )}
-
-                  {trackingNotifications.filter((notif) => notif.status === "Open").length > 0 ? (
-                    <>
-                      <ul className="space-y-2">
-                        {trackingNotifications
-                          .filter((notif) => notif.status === "Open")
-                          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                          .map((notif, index) => (
-                            <li
-                              key={notif._id || index}
-                              className={`p-3 mb-2 hover:bg-green-200 text-xs text-gray-900 capitalize text-left rounded-md relative ${notif.type === "DTracking Notification" ? "bg-green-100" : "bg-green-500"}`}
-                            >
-                              <p className="text-[12px] mt-5 font-bold uppercase italic">{notif.CompanyName} </p>
-                              <p className="text-[10px] mt-1 font-semibold">{notif.message}</p>
-                              <span className="text-[8px] mt-1 block">{new Date(notif.createdAt).toLocaleString()}</span>
-                            </li>
-                          ))}
-                      </ul>
-                    </>
-                  ) : (
-                    <></>
-                  )}
                 </>
               ) : (
                 <div className="p-4 text-center text-xs text-gray-500">No messages available</div>
@@ -732,7 +821,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
             </div>
           </motion.div>
         )}
-
 
         {/* User Dropdown */}
         <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-2 focus:outline-none hover:bg-gray-200 p-2 hover:rounded-full">
