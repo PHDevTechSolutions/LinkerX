@@ -4,6 +4,7 @@ import { IoIosMenu } from "react-icons/io";
 import { CiClock2, CiMenuBurger, CiUser, CiSettings, CiBellOn, CiCircleRemove, CiDark, CiSun, CiSearch } from "react-icons/ci";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { motion } from "framer-motion";
+import axios from "axios";
 
 interface Notification {
   id: number;
@@ -29,6 +30,18 @@ interface NavbarProps {
   isDarkMode: boolean;
 }
 
+type TrackingItem = {
+  _id: string; // MongoDB ObjectId (stored as a string)
+  message: string;
+  userName: string | null;  // Changed from agentfullname to userName
+  type: string;
+  status: string;
+  createdAt: string;
+  TrackingStatus: string;
+  TicketConcern: string;
+  CompanyName: string;
+};
+
 const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkMode }) => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
@@ -48,6 +61,10 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const [activeTab, setActiveTab] = useState<"notifications" | "messages">("notifications");
   const [loadingId, setLoadingId] = useState<number | null>(null);
+
+  const [trackingNotifications, setTrackingNotifications] = useState<TrackingItem[]>([]); // Delivery / Pickup Notifications
+
+  const allNotifications = [...notifications, ...trackingNotifications];
 
   // Fetch user data
   useEffect(() => {
@@ -152,6 +169,324 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
   }, [userReferenceId, usersList]);
+
+  const fetchTrackingData = async () => {
+    try {
+      if (!userReferenceId) {
+        console.error("userReferenceId is missing.");
+        return;
+      }
+
+      const res = await fetch(`/api/ModuleCSR/DTracking/FetchTrackingNotification?referenceId=${userReferenceId}`);
+
+      if (!res.ok) {
+        throw new Error(`Request failed with status ${res.status}`);
+      }
+
+      const data: TrackingItem[] = await res.json();
+
+      // Filter by "Delivery / Pickup" and "Quotation" TicketConcern types
+      const filtered = data.filter((item: TrackingItem) =>
+        item.TicketConcern === "Delivery / Pickup" ||
+        item.TicketConcern === "Quotation" ||
+        item.TicketConcern === "Documents" ||
+        item.TicketConcern === "Return Call" ||
+        item.TicketConcern === "Payment Terms" ||
+        item.TicketConcern === "Refund" ||
+        item.TicketConcern === "Replacement" ||
+        item.TicketConcern === "Site Visit" ||
+        item.TicketConcern === "TDS" ||
+        item.TicketConcern === "Shop Drawing" ||
+        item.TicketConcern === "Dialux" ||
+        item.TicketConcern === "Product Testing" ||
+        item.TicketConcern === "SPF" ||
+        item.TicketConcern === "Accreditation Request" ||
+        item.TicketConcern === "Job Request" ||
+        item.TicketConcern === "Product Recommendation" ||
+        item.TicketConcern === "Product Certificate"
+      );
+
+      if (filtered.length > 0) {
+        const mapped = filtered.map((item: TrackingItem) => {
+          const createdAt = new Date(item.createdAt || new Date().toISOString()); // Parse createdAt
+          const currentTime = new Date(); // Get current time
+
+          // Get the time difference in milliseconds
+          const timeDifference = currentTime.getTime() - createdAt.getTime();
+          const daysDifference = Math.floor(timeDifference / (1000 * 3600 * 24));
+          const hoursDifference = timeDifference / (1000 * 3600);
+
+          // Check if the status is still "Open"
+          if (item.TrackingStatus === "Open") {
+            // Notification logic for "Delivery / Pickup Notify Every 3 Days until status becomes Closed
+            if (item.TicketConcern === "Delivery / Pickup" && daysDifference >= 3 && daysDifference % 3 === 0) {
+              return {
+                _id: item._id,
+                message: `The 'Delivery/Pickup' ticket is still unresolved after ${daysDifference} days.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+
+            // Notification logic for "Quotation" - after 4 hours
+            if (item.TicketConcern === "Quotation" && hoursDifference >= 4 && hoursDifference < 8) {
+              return {
+                _id: item._id,
+                message: `You have an active 'Quotation' ticket that has been open for over 4 hours. Please review the status.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+
+            // Notification logic for "Documents" notify after 1 day
+            if (item.TicketConcern === "Documents" && timeDifference >= 24 * 60 * 60 * 1000) {
+              return {
+                _id: item._id,
+                message: `You have an active 'Documents' ticket that is still open after 1 day.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+
+            // Notification logic for "Return Call" - notify once after 4 hours if status is still "Open"
+            if (item.TicketConcern === "Return Call" && hoursDifference >= 4 && hoursDifference < 8) {
+              return {
+                _id: item._id,
+                message: `You currently have an active 'Return Call' ticket that is still open and awaiting further action. Please take the necessary steps to address it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+
+
+            // Notification logic for "Payment Terms" - notify every 2 days until status becomes Closed
+            if (item.TicketConcern === "Payment Terms" && daysDifference >= 2 && daysDifference % 2 === 0) {
+              return {
+                _id: item._id,
+                message: `Your 'Payment Terms' ticket is still open and requires your attention. Kindly take the appropriate steps to resolve it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+            
+            // Notification logic for "Refund" - notify every 2 days until status becomes Closed
+            if (item.TicketConcern === "Refund" && daysDifference >= 2 && daysDifference % 2 === 0) {
+              return {
+                _id: item._id,
+                message: `Your 'Refund' ticket is still open and requires your attention. Kindly take the appropriate steps to resolve it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+            
+            // Notification logic for "Replacement" - notify every 3 days until status becomes Closed
+            if (item.TicketConcern === "Replacement" && daysDifference >= 3 && daysDifference % 3 === 0) {
+              return {
+                _id: item._id,
+                message: `Your 'Replacement' ticket remains open and requires your follow-up. Kindly take the necessary steps to resolve it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+            
+            // Notification logic for "Site Visit" - notify every 2 days until status becomes Closed
+            if (item.TicketConcern === "Site Visit" && daysDifference >= 2 && daysDifference % 2 === 0) {
+              return {
+                _id: item._id,
+                message: `Your 'Site Visit' ticket is still open and awaiting your follow-up. Please take the necessary steps to resolve it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            } 
+
+            // Notification logic for "TDS" - notify after 1 day until status becomes Closed
+            if (item.TicketConcern === "TDS" && timeDifference >= 24 * 60 * 60 * 1000) {
+              return {
+                _id: item._id,
+                message: `Your 'TDS' ticket is still open and awaiting your follow-up. Please take the necessary steps to resolve it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+
+            // Notification logic for "Shop Drawing" - notify after 1 day until status becomes Closed
+            if (item.TicketConcern === "Shop Drawing" && timeDifference >= 24 * 60 * 60 * 1000) {
+              return {
+                _id: item._id,
+                message: `Your 'Shop Drawing' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+
+            // Notification logic for "Dialux" - notify every 3 days until status becomes Closed
+            if (item.TicketConcern === "Dialux" && daysDifference >= 3 && daysDifference % 3 === 0) {
+              return {
+                _id: item._id,
+                message: `Your 'Dialux' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+
+            // Notification logic for "Product Testing" - notify every 2 days until status becomes Closed
+            if (item.TicketConcern === "Product Testing" && daysDifference >= 2 && daysDifference % 2 === 0) {
+              return {
+                _id: item._id,
+                message: `Your 'Product Testing' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+
+            // Notification logic for "SPF" - notify every 3 days until status becomes Closed
+            if (item.TicketConcern === "SPF" && daysDifference >= 3 && daysDifference % 3 === 0) {
+              return {
+                _id: item._id,
+                message: `Your 'SPF' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+
+            // Notification logic for "Accreditation Request" - notify after 1 day until status becomes Closed
+            if (item.TicketConcern === "Accreditation Request" && timeDifference >= 24 * 60 * 60 * 1000) {
+              return {
+                _id: item._id,
+                message: `Your 'Accreditation Request' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+
+            // Notification logic for "Job Request" - notify every 3 days until status becomes Closed
+            if (item.TicketConcern === "Job Request" && daysDifference >= 3 && daysDifference % 3 === 0) {
+              return {
+                _id: item._id,
+                message: `Your 'Job Request' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+
+            // Notification logic for "Product Recommendation" - notify after 1 day until status becomes Closed
+            if (item.TicketConcern === "Product Recommendation" && timeDifference >= 24 * 60 * 60 * 1000) {
+              return {
+                _id: item._id,
+                message: `Your 'Product Recommendation' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+
+            // Notification logic for "Product Certificate" - notify after 1 day until status becomes Closed
+            if (item.TicketConcern === "Product Certificate" && timeDifference >= 24 * 60 * 60 * 1000) {
+              return {
+                _id: item._id,
+                message: `Your 'Product Certificate' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
+                userName: item.userName || "System",
+                type: "DTracking Notification",
+                status: "Open",
+                createdAt: createdAt.toISOString(),
+                TicketConcern: item.TicketConcern,
+                CompanyName: item.CompanyName,
+              };
+            }
+          }
+
+          return null; // No notification if status is not "Open" or conditions are not met
+        });
+
+        // Filter out null values before setting the state
+        const validMapped = mapped.filter(item => item !== null) as TrackingItem[];
+
+        if (validMapped.length > 0) {
+          setTrackingNotifications(validMapped); // Set notifications in state
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching tracking data:", error);
+    }
+  };
+
+  // Trigger the fetch when userReferenceId changes
+  useEffect(() => {
+    if (userReferenceId) {
+      fetchTrackingData(); // Initial fetch
+
+      const interval = setInterval(() => {
+        fetchTrackingData(); // Fetch every 30 seconds
+      }, 30000); // 30 seconds
+
+      // Clean up interval on component unmount
+      return () => clearInterval(interval);
+    }
+  }, [userReferenceId]);
+
 
   // ✅ Handle click outside to close notifications
   useEffect(() => {
@@ -274,20 +609,36 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         {/* Notification Icon */}
         <button onClick={() => setShowSidebar((prev) => !prev)} className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full">
           <CiBellOn size={20} />
-          {notifications.filter((notif) => notif.status === "pending").length > 0 && (
+
+          {/* Count for CSR Notifications */}
+          {trackingNotifications.filter((notif) => notif.type === "CSR Notification" && notif.status === "pending").length > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {notifications.filter((notif) => notif.status === "pending").length}
+              {trackingNotifications.filter((notif) => notif.type === "CSR Notification" && notif.status === "pending").length}
+            </span>
+          )}
+
+          {/* Count for DTracking Notifications */}
+          {trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.status === "Open").length > 0 && (
+            <span className="absolute top-0 right-0 bg-green-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
+              {trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.status === "Open").length}
             </span>
           )}
         </button>
 
-        {showSidebar && (
-          <motion.div ref={sidebarRef} initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ duration: 0.3, ease: "easeInOut" }} className="fixed top-0 right-0 w-80 h-full bg-white border-l border-gray-300 shadow-lg z-[1000] flex flex-col">
 
+        {showSidebar && (
+          <motion.div
+            ref={sidebarRef}
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="fixed top-0 right-0 w-80 h-full bg-white border-l border-gray-300 shadow-lg z-[1000] flex flex-col"
+          >
             {/* 🔧 Header */}
             <div className="flex items-center justify-between p-3 border-b">
               <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
-              <button onClick={() => setShowSidebar(false)} >
+              <button onClick={() => setShowSidebar(false)}>
                 <IoIosCloseCircleOutline size={20} />
               </button>
             </div>
@@ -297,22 +648,19 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
               <div className="flex border-b mb-2">
                 <button
                   onClick={() => setActiveTab("notifications")}
-                  className={`flex-1 text-center py-2 text-xs font-semibold ${activeTab === "notifications" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"
-                    }`}
+                  className={`flex-1 text-center py-2 text-xs font-semibold ${activeTab === "notifications" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"}`}
                 >
                   Notifications
                 </button>
                 <button
                   onClick={() => setActiveTab("messages")}
-                  className={`flex-1 text-center py-2 text-xs font-semibold ${activeTab === "messages" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"
-                    }`}
+                  className={`flex-1 text-center py-2 text-xs font-semibold ${activeTab === "messages" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"}`}
                 >
                   Messages
                 </button>
               </div>
 
               {activeTab === "notifications" ? (
-                // ✅ Notifications Tab
                 <>
                   {notifications.filter((notif) => notif.status === "pending").length > 0 ? (
                     <ul className="space-y-2">
@@ -321,8 +669,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                         .map((notif, index) => (
                           <li
                             key={notif.id || index}
-                            className={`p-3 border-b hover:bg-gray-200 text-xs text-gray-900 capitalize text-left rounded-md relative ${notif.type === "Inquiry Notification" ? "bg-yellow-200" : "bg-gray-100"
-                              }`}
+                            className={`p-3 border-b hover:bg-gray-200 text-xs text-gray-900 capitalize text-left rounded-md relative ${notif.type === "Inquiry Notification" ? "bg-yellow-200" : "bg-gray-100"}`}
                           >
                             <p className="text-[10px] mt-5">{notif.message} Processed By {notif.agentfullname}</p>
 
@@ -351,20 +698,41 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                                   : "Mark as Read"}
                             </button>
                           </li>
-
                         ))}
                     </ul>
                   ) : (
-                    <p className="text-xs p-4 text-gray-500 text-center">No new notifications</p>
+                    <></>
+                  )}
+
+                  {trackingNotifications.filter((notif) => notif.status === "Open").length > 0 ? (
+                    <>
+                      <ul className="space-y-2">
+                        {trackingNotifications
+                          .filter((notif) => notif.status === "Open")
+                          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                          .map((notif, index) => (
+                            <li
+                              key={notif._id || index}
+                              className={`p-3 mb-2 hover:bg-green-200 text-xs text-gray-900 capitalize text-left rounded-md relative ${notif.type === "DTracking Notification" ? "bg-green-100" : "bg-green-500"}`}
+                            >
+                              <p className="text-[12px] mt-5 font-bold uppercase italic">{notif.CompanyName} </p>
+                              <p className="text-[10px] mt-1 font-semibold">{notif.message}</p>
+                              <span className="text-[8px] mt-1 block">{new Date(notif.createdAt).toLocaleString()}</span>
+                            </li>
+                          ))}
+                      </ul>
+                    </>
+                  ) : (
+                    <></>
                   )}
                 </>
               ) : (
-                // ❌ Empty Messages Tab
                 <div className="p-4 text-center text-xs text-gray-500">No messages available</div>
               )}
             </div>
           </motion.div>
         )}
+
 
         {/* User Dropdown */}
         <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-2 focus:outline-none hover:bg-gray-200 p-2 hover:rounded-full">
