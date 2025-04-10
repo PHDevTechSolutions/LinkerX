@@ -44,6 +44,19 @@ type TrackingItem = {
   CompanyName: string;
 };
 
+type Inquiries = {
+  _id: string; // MongoDB ObjectId (stored as a string)
+  message: string;
+  id: number;
+  userName: string | null;  // Changed from agentfullname to userName
+  type: string;
+  Status: string;
+  createdAt: string;
+  WrapUp: string;
+  CompanyName: string;
+  NotificationStatus: string;
+};
+
 const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkMode }) => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
@@ -64,7 +77,8 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const [activeTab, setActiveTab] = useState<"notifications" | "messages">("notifications");
   const [loadingId, setLoadingId] = useState<string | number | null>(null);
 
-  const [trackingNotifications, setTrackingNotifications] = useState<TrackingItem[]>([]); // Delivery / Pickup Notifications
+  const [trackingNotifications, setTrackingNotifications] = useState<TrackingItem[]>([]);
+  const [wrapUpNotifications, setWrapUpNotifications] = useState<Inquiries[]>([]);
 
   const allNotifications = [...notifications, ...trackingNotifications];
 
@@ -521,6 +535,159 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   }, [userReferenceId]);
 
 
+  const fetchWrapUpData = async () => {
+    try {
+      if (!userReferenceId) {
+        console.error("userReferenceId is missing.");
+        return;
+      }
+
+      const res = await fetch(`/api/ModuleCSR/WrapUp/FetchWrapUpNotification?referenceId=${userReferenceId}`);
+
+      if (!res.ok) {
+        throw new Error(`Request failed with status ${res.status}`);
+      }
+
+      const data: Inquiries[] = await res.json();
+
+      // Filter by "Delivery / Pickup" and "Quotation" TicketConcern types
+      const filtered = data.filter((item: Inquiries) =>
+        item.WrapUp === "Customer Inquiry Sales" ||
+        item.WrapUp === "Customer Inquiry Non-Sales" ||
+        item.WrapUp === "Follow Up Sales" ||
+        item.WrapUp === "After Sales" ||
+        item.WrapUp === "Customer Complaint" ||
+        item.WrapUp === "Follow Up Non-Sales"
+      );
+
+      if (filtered.length > 0) {
+        const mapped = filtered.map((item: Inquiries) => {
+          const createdAt = new Date(item.createdAt || new Date().toISOString()); // Parse createdAt
+          const currentTime = new Date(); // Get current time
+
+          // Get the time difference in milliseconds
+          const timeDifference = currentTime.getTime() - createdAt.getTime();
+          const daysDifference = Math.floor(timeDifference / (1000 * 3600 * 24));
+          const hoursDifference = timeDifference / (1000 * 3600);
+
+          // Check if the status is still "Open"
+          if (item.Status === "Endorsed") {
+            // Notification logic for "Customer Inquiry Sales
+            if (item.WrapUp === "Customer Inquiry Sales" && hoursDifference >= 4 && hoursDifference < 8) {
+              return {
+                _id: item._id,
+                message: `The 'Customer Inquiry Sales' ticket is still unresolved.`,
+                userName: item.userName || "System",
+                type: "WrapUp Notification",
+                Status: "Endorsed",
+                createdAt: createdAt.toISOString(),
+                WrapUp: item.WrapUp,
+                CompanyName: item.CompanyName,
+                NotificationStatus: item.NotificationStatus,
+              };
+            }
+
+            if (item.WrapUp === "Customer Inquiry Non-Sales" && hoursDifference >= 4 && hoursDifference < 4) {
+              return {
+                _id: item._id,
+                message: `The 'Customer Inquiry Non-Sales' ticket is still unresolved.`,
+                userName: item.userName || "System",
+                type: "WrapUp Notification",
+                Status: "Endorsed",
+                createdAt: createdAt.toISOString(),
+                WrapUp: item.WrapUp,
+                CompanyName: item.CompanyName,
+                NotificationStatus: item.NotificationStatus,
+              };
+            }
+
+            if (item.WrapUp === "Follow Up Sales" && hoursDifference >= 4 && hoursDifference < 8) {
+              return {
+                _id: item._id,
+                message: `The 'Follow Up Sales' ticket is still unresolved.`,
+                userName: item.userName || "System",
+                type: "WrapUp Notification",
+                Status: "Endorsed",
+                createdAt: createdAt.toISOString(),
+                WrapUp: item.WrapUp,
+                CompanyName: item.CompanyName,
+                NotificationStatus: item.NotificationStatus,
+              };
+            }
+
+            if (item.WrapUp === "After Sales" && daysDifference >= 3 && daysDifference % 3 === 0) {
+              return {
+                _id: item._id,
+                message: `The 'After Sales' ticket is still unresolved.`,
+                userName: item.userName || "System",
+                type: "WrapUp Notification",
+                Status: "Endorsed",
+                createdAt: createdAt.toISOString(),
+                WrapUp: item.WrapUp,
+                CompanyName: item.CompanyName,
+                NotificationStatus: item.NotificationStatus,
+              };
+            }
+
+            if (item.WrapUp === "Customer Complaint" && timeDifference >= 24 * 60 * 60 * 1000) {
+              return {
+                _id: item._id,
+                message: `The 'Customer Complaint' ticket is still unresolved.`,
+                userName: item.userName || "System",
+                type: "WrapUp Notification",
+                Status: "Endorsed",
+                createdAt: createdAt.toISOString(),
+                WrapUp: item.WrapUp,
+                CompanyName: item.CompanyName,
+                NotificationStatus: item.NotificationStatus,
+              };
+            }
+
+            if (item.WrapUp === "Follow Up Non-Sales" && timeDifference >= 60 * 1000) {
+              return {
+                _id: item._id,
+                message: `The 'Follow Up Non-Sales' ticket is still unresolved.`,
+                userName: item.userName || "System",
+                type: "WrapUp Notification",
+                Status: "Endorsed",
+                createdAt: createdAt.toISOString(),
+                WrapUp: item.WrapUp,
+                CompanyName: item.CompanyName,
+                NotificationStatus: item.NotificationStatus,
+              };
+            }
+          }
+          
+          return null; // No notification if status is not "Open" or conditions are not met
+        });
+
+        // Filter out null values before setting the state
+        const validMapped = mapped.filter(item => item !== null) as Inquiries[];
+
+        if (validMapped.length > 0) {
+          setWrapUpNotifications(validMapped); // Set notifications in state
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching tracking data:", error);
+    }
+  };
+
+  // Trigger the fetch when userReferenceId changes
+  useEffect(() => {
+    if (userReferenceId) {
+      fetchWrapUpData(); // Initial fetch
+
+      const interval = setInterval(() => {
+        fetchWrapUpData(); // Fetch every 30 seconds
+      }, 30000); // 30 seconds
+
+      // Clean up interval on component unmount
+      return () => clearInterval(interval);
+    }
+  }, [userReferenceId]);
+
+
   // ✅ Handle click outside to close notifications
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -650,6 +817,46 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   };
 
+  const handleMarkAsNotifStatusRead = async (notifId: string) => {
+    try {
+      setLoadingId(notifId); // Start loading with the string ID
+
+      const response = await fetch("/api/ModuleCSR/WrapUp/UpdateNotifications", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ notifId, NotificationStatus: "Read" }),
+      });
+
+      if (response.ok) {
+        // ✅ Update status to "Read"
+        const updatedNotifications = notifications.map((notif) =>
+          notif._id === notifId ? { ...notif, NotificationStatus: "Read" } : notif
+        );
+        setNotifications(updatedNotifications);
+
+        // ✅ Remove after 1 minute
+        setTimeout(() => {
+          setNotifications((prev) =>
+            prev.filter((notif) => notif._id !== notifId)
+          );
+        }, 60000); // 1 minute (60,000 ms)
+      } else {
+        const errorDetails = await response.json();
+        console.error("Error updating notification status:", {
+          status: response.status,
+          message: errorDetails.message || "Unknown error",
+          details: errorDetails,
+        });
+      }
+    } catch (error) {
+      console.error("Error marking as read:", error);
+    } finally {
+      setLoadingId(null); // Stop loading
+    }
+  };
+
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center">
@@ -694,6 +901,12 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           {trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.TrackingStatus === "Open" && notif.status !== "Read").length > 0 && (
             <span className="absolute top-0 right-0 bg-green-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
               {trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.TrackingStatus === "Open" && notif.status !== "Read").length}
+            </span>
+          )}
+          
+          {wrapUpNotifications.filter((notif) => notif.type === "WrapUp Notification" && notif.Status === "Endorsed" && notif.NotificationStatus !== "Read").length > 0 && (
+            <span className="absolute top-0 right-0 bg-green-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
+              {wrapUpNotifications.filter((notif) => notif.type === "WrapUp Notification" && notif.Status === "Endorsed" && notif.NotificationStatus !== "Read").length}
             </span>
           )}
         </button>
@@ -805,6 +1018,42 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                               {loadingId === notif._id
                                 ? "Loading..."
                                 : notif.status === "Read"
+                                  ? "Read"
+                                  : "Mark as Read"}
+                            </button>
+                          </li>
+                        ))}
+                    </ul>
+                  ) : (
+                    <></>
+                  )}
+
+                  {wrapUpNotifications.filter((notif) => notif.Status === "Endorsed" && notif.NotificationStatus !== "Read").length > 0 ? (
+                    <ul className="space-y-2">
+                      {wrapUpNotifications
+                        .filter((notif) => notif.Status === "Endorsed")
+                        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                        .map((notif, index) => (
+                          <li
+                            key={notif._id || index}
+                            className={`p-3 mb-2 hover:bg-orange-200 text-xs text-gray-900 capitalize text-left rounded-md relative ${notif.type === "WrapUp Notification" ? "bg-orange-100" : "bg-green-500"}`}
+                          >
+                            <p className="text-[12px] mt-5 font-bold uppercase italic">{notif.CompanyName} </p>
+                            <p className="text-[10px] mt-1 font-semibold">{notif.message}</p>
+                            <span className="text-[8px] mt-1 block">{new Date(notif.createdAt).toLocaleString()}</span>
+                            <button
+                              onClick={() => handleMarkAsNotifStatusRead(notif._id)} // Make sure this is a string ID
+                              disabled={loadingId === notif._id} // Disabled based on _id
+                              className={`text-[9px] mb-2 cursor-pointer absolute top-2 right-2 ${notif.NotificationStatus === "Read"
+                                ? "text-green-600 font-bold"
+                                : loadingId === notif._id
+                                  ? "text-gray-500 cursor-not-allowed"
+                                  : "text-blue-600 hover:text-blue-800"
+                                }`}
+                            >
+                              {loadingId === notif._id
+                                ? "Loading..."
+                                : notif.NotificationStatus === "Read"
                                   ? "Read"
                                   : "Mark as Read"}
                             </button>
