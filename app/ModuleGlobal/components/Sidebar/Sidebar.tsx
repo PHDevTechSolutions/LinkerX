@@ -232,11 +232,11 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
         {/* Logo Section */}
-        <div className="flex items-center justify-between p-5 border-b-4 border-r-4 border-gray-900">
+        <div className="flex items-center justify-between p-5 bg-gray-900">
           <div className="flex items-center">
             <img src="/taskflow.png" alt="Logo" className="h-8 mr-2" />
             <Link href={`/ModuleSales/Sales/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}>
-              <h1 className={`text-md font-bold transition-opacity ${collapsed ? "opacity-0" : "opacity-100"}`}>
+              <h1 className={`text-md text-white font-bold transition-opacity ${collapsed ? "opacity-0" : "opacity-100"}`}>
                 TASKFLOW
               </h1>
             </Link>
