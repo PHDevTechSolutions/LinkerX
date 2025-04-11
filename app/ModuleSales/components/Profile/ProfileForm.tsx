@@ -159,20 +159,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
                         />
                     </div>
                     <div>
-                        <label htmlFor="Role" className="block text-xs font-medium text-gray-700">Role</label>
-                        <select
-                            id="Role"
-                            name="Role"
-                            value={userDetails.Role}
-                            onChange={handleSelectChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
-                        >
-                            <option value="">Select Role</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Super Admin">Super Admin</option>
-                        </select>
-                    </div>
-                    <div>
                         <label htmlFor="Department" className="block text-xs font-medium text-gray-700">Department</label>
                         <select
                             id="Department"

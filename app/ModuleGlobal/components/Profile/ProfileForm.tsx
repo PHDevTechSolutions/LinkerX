@@ -12,7 +12,6 @@ type ProfileFormProps = {
         Role: string;
         Department: string;
         Status: string;
-        Company: string;
     };
     handleSubmit: (e: React.FormEvent) => void;
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -66,7 +65,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
     }, []);
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6 p-6 text-xs">
             <div className="bg-white shadow-md rounded-lg p-6">
                 <button
                     className={`py-2 px-4 ${activeTab === 'profile' ? 'border-b-2 border-blue-500' : 'text-gray-500'}`}
@@ -160,6 +159,19 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
                         />
                     </div>
                     <div>
+                        <label htmlFor="Role" className="block text-xs font-medium text-gray-700">Role</label>
+                        <select
+                            id="Role"
+                            name="Role"
+                            value={userDetails.Role}
+                            onChange={handleSelectChange}
+                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
+                        >
+                            <option value="">Select Role</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                    <div>
                         <label htmlFor="Department" className="block text-xs font-medium text-gray-700">Department</label>
                         <select
                             id="Department"
@@ -169,20 +181,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
                         >
                             <option value="">Select Department</option>
-                            <option value="CSR">CSR</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label htmlFor="Company" className="block text-xs font-medium text-gray-700">Company</label>
-                        <select
-                            id="Company"
-                            name="Company"
-                            value={userDetails.Company}
-                            onChange={handleSelectChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
-                        >
-                            <option value="">Select Company</option>
-                            <option value="Ecoshift Corporation">Ecoshift Corporation</option>
+                            <option value="IT Department">IT Department</option>
                         </select>
                     </div>
                     <div>

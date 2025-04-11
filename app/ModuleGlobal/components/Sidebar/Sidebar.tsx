@@ -15,7 +15,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
-  const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", ReferenceID: "" });
+  const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", ReferenceID: "" , Department: "",});
   const router = useRouter();
   const [userNotifications, setUserNotifications] = useState<any>(null);
   const [inactiveAccount, setInactiveAccount] = useState<any>(null);
@@ -47,6 +47,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
           Location: data.Location || "Philippines",
           Role: data.Role || "Admin",
           Company: data.Company || "Ecoshift Corporation",
+          Department: data.Department || "IT Department",
           Status: data.Status || "None",
           ReferenceID: data.ReferenceID,
         });
@@ -146,34 +147,8 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       title: 'Taskflow',
       icon: TaskflowIcon,
       subItems: [
-        { title: 'List of Company Accounts', href: `/ModuleGlobal/ERP/Companies/CompanyAccounts${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Inactive Companies', href: `/ModuleGlobal/ERP/Companies/InactiveCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Group of Companies', href: `/ModuleGlobal/ERP/Companies/GroupCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'For Deletion', href: `/ModuleGlobal/ERP/Companies/DeletionCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Automated Daily Task', href: `/ModuleGlobal/ERP/Task/DailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: '( Manual ) Daily Task', href: `/ModuleGlobal/ERP/Task/ManualDailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Callbacks', href: `/ModuleGlobal/ERP/Task/Callback${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Client Coverage Guide', href: `/ModuleGlobal/ERP/Task/ClientCoverageGuide${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'CSR Inquiries', href: `/ModuleGlobal/ERP/Task/CSRInquiries${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Quotation', href: `/ModuleGlobal/ERP/Task/Quotation${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Notes', href: `/ModuleGlobal/ERP/Boards/Notes${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'MTD and YTD', href: `/ModuleGlobal/ERP/SalesPerformance/MTDYTD${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Daily Call Ranking', href: `/ModuleGlobal/ERP/National/NationalDailyRanking${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Daily Call Ranking', href: `/ModuleGlobal/ERP/Agents/DailyCallRanking${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'List of Sales Associate', href: `/ModuleGlobal/ERP/Agents/ListSalesAssociate${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Sales Associate Activity', href: `/ModuleGlobal/ERP/Agents/SalesAssociateActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'For Deletion', href: `/ModuleGlobal/ERP/Agents/DeletionCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Calls to Quote', href: `/ModuleGlobal/ERP/ConversionRates/CallsToQuote${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Quote to SO', href: `/ModuleGlobal/ERP/ConversionRates/QuoteToSO${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'SO to SI', href: `/ModuleGlobal/ERP/ConversionRates/SOToSI${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Conversion Rate Summary', href: `/ModuleGlobal/ERP/ConversionRates/ConversionRateSummary${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Account Records', href: `/ModuleGlobal/ERP/ClientActivityBoard/AccountRecords${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'List of Companies', href: `/ModuleGlobal/ERP/ClientActivityBoard/ListofCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Activity Logs', href: `/ModuleGlobal/ERP/Logs/TaskflowActivityLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Progress Logs', href: `/ModuleGlobal/ERP/Logs/TaskflowProgressLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Approvals', href: `/ModuleGlobal/ERP/Logs/Approvals${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Historical Records', href: `/ModuleGlobal/ERP/Logs/HistoricalRecords${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'System Updates', href: `/ModuleGlobal/ERP/Announcements/SystemUpdates${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Company Accounts', href: `/ModuleGlobal/ERP/UserManagement/CompanyAccounts${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Territory Sales Associates', href: `/ModuleGlobal/ERP/UserManagement/TSA${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Territory Sales Manager', href: `/ModuleGlobal/ERP/UserManagement/TSM${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
@@ -184,46 +159,34 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       title: 'Ecodesk',
       icon: Ecodesk,
       subItems: [
-        { title: 'Tickets', href: `/ModuleCSR/CSR/Monitoring/Activities${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Automated Tickets', href: `/ModuleCSR/CSR/AutomatedTickets/Tickets${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Website Portal ( Inquiries )', href: `/ModuleCSR/CSR/WebsiteInquiry${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'List of Accounts', href: `/ModuleCSR/CSR/Accounts/AccountList${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Daily CSR Transaction', href: `/ModuleCSR/CSR/Reports/DailyTransaction${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Daily CSR Transaction (Automated)', href: `/ModuleCSR/CSR/Reports/DailyTaskflowTransaction${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'SKU Listing', href: `/ModuleCSR/CSR/Reports/SKUListing${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Received P.O', href: `/ModuleCSR/CSR/Reports/ReceivedPO${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'D-Tracking', href: `/ModuleCSR/CSR/Reports/DTracking${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Outbound Calls', href: `/ModuleCSR/CSR/Calls/OutboundCall${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Database', href: `/ModuleCSR/CSR/Calls/Database${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Outbound Calls', href: `/ModuleCSR/CSR/Taskflow/OutboundCall${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Database', href: `/ModuleCSR/CSR/Taskflow/Database${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'List of Users', href: `/ModuleCSR/CSR/Users/ListofUser${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'CSR Faqs', href: `/ModuleCSR/CSR/Help${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'List of Accounts', href: `/ModuleGlobal/ERP/Accounts/AccountList${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Outbound Calls', href: `/ModuleGlobal/ERP/Taskflow/OutboundCall${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Database', href: `/ModuleGlobal/ERP/Taskflow/Database${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'List of Users', href: `/ModuleGlobal/ERP/Users/ListofUser${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
       title: 'Taskflow Beta',
       icon: XchireIcon,
       subItems: [
-        { title: 'Activity Logs', href: `/ModuleSales/Sales/Logs/ActivityLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Progress Logs', href: `/ModuleSales/Sales/Logs/ProgressLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Activity Logs', href: `/ModuleGlobal/ERP/Logs/ActivityLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Progress Logs', href: `/ModuleGlobal/ERP/Logs/ProgressLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Database', href: `/ModuleGlobal/ERP/Calls/Database${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
       title: 'Settings',
       icon: CiSettings,
       subItems: [
-        { title: 'Maintenance', href: `/ModuleSales/Sales/Settings/Maintenance${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'API Keys', href: `/ModuleSales/Sales/Settings/APIKeys${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Maintenance', href: `/ModuleGlobal/ERP/Settings/Maintenance${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'API Keys', href: `/ModuleGlobal/ERP/Settings/APIKeys${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
       title: 'Profile',
       icon: CiUser,
       subItems: [
-        { title: 'Update Profile', href: `/ModuleSales/Sales/Profile${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Notifications', href: `/ModuleSales/Sales/Notifications${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Developers', href: `/ModuleSales/Sales/Profile/Developers${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Update Profile', href: `/ModuleGlobal/ERP/Profile/UpdateProfile${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
   ];
@@ -257,7 +220,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       {/* Sidebar Container */}
       <div
         className={`fixed inset-y-0 left-0 z-50 h-screen transition-all duration-300 flex flex-col shadow-lg 
-      ${isDarkMode ? "bg-gray-900 text-white" : "bg-gradient-to-r from-gray-900 via-gray-700 to-gray-500 text-gray-50"} 
+      ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"} 
       ${collapsed ? "w-16" : "w-64"} 
       ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
@@ -280,7 +243,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
             <p className="font-bold uppercase text-sm">
               {userDetails.Firstname}, {userDetails.Lastname}
             </p>
-            <p>{userDetails.Company}</p>
+            <p>{userDetails.Department}</p>
             <p className="italic">( {userDetails.Role} )</p>
             <span
               className={`text-white text-[8px] font-semibold px-3 py-1 rounded-full inline-block mt-2 ${userDetails.Status === "Active"

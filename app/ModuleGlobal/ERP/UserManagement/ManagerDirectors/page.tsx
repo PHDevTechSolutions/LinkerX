@@ -5,31 +5,27 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../../ModuleSales/components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../../ModuleSales/components/ClientActivityBoard/ListofCompanies/AddUserForm";
-import SearchFilters from "../../../../ModuleSales/components/ClientActivityBoard/ListofCompanies/SearchFilters";
-import UsersTable from "../../../../ModuleSales/components/Companies/GroupCompanies/UsersTable";
-import Pagination from "../../../../ModuleSales/components/ClientActivityBoard/ListofCompanies/Pagination";
+import AddPostForm from "../../../../ModuleSales/components/UserManagement/ManagerDirectors/AddUserForm";
+import SearchFilters from "../../../../ModuleSales/components/UserManagement/ManagerDirectors/SearchFilters";
+import UsersTable from "../../../../ModuleSales/components/UserManagement/ManagerDirectors/UsersTable";
+import Pagination from "../../../../ModuleSales/components/UserManagement/ManagerDirectors/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import ExcelJS from "exceljs";
-
 
 // Icons
-import { CiExport } from "react-icons/ci";
+import { CiSquarePlus } from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
-    const [showImportForm, setShowImportForm] = useState(false);
     const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(12);
-    const [selectedClientType, setSelectedClientType] = useState("");
-    const [startDate, setStartDate] = useState(""); // Default to null
-    const [endDate, setEndDate] = useState(""); // Default to null
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
     const [userDetails, setUserDetails] = useState({
         UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
@@ -50,7 +46,7 @@ const ListofUser: React.FC = () => {
                     const data = await response.json();
                     setUserDetails({
                         UserId: data._id, // Set the user's id here
-                        ReferenceID: data.ReferenceID || "",
+                        ReferenceID: data.ReferenceID,
                         Firstname: data.Firstname || "",
                         Lastname: data.Lastname || "",
                         Email: data.Email || "",
@@ -74,66 +70,84 @@ const ListofUser: React.FC = () => {
     }, []);
 
     // Fetch all users from the API
-    const fetchAccount = async () => {
+    const fetchUsers = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
+            const response = await fetch("/api/ModuleSales/UserManagement/ManagerDirector/FetchUser");
             const data = await response.json();
-            console.log("Fetched data:", data); // Debugging line
-            setPosts(data.data); // Make sure you're setting `data.data` if API response has `{ success: true, data: [...] }`
+            setPosts(data);
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
         }
     };
 
-    useEffect(() => {
-        fetchAccount();
-    }, []);
-
     // Filter users by search term (firstname, lastname)
-    const filteredAccounts = Array.isArray(posts)
-        ? posts.filter((post) => {
-            // Check if the company name matches the search term
-            const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+    const filteredAccounts = posts.filter((post) => {
+        // Check if the user's name matches the search term
+        const matchesSearchTerm = [post?.Firstname, post?.Lastname]
+            .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
 
-            // Parse the date_created field
-            const postDate = post.date_created ? new Date(post.date_created) : null;
+        // Get the reference ID from userDetails
+        const referenceID = userDetails.ReferenceID; // TSM's ReferenceID from MongoDB
 
-            // Check if the post's date is within the selected date range
-            const isWithinDateRange = (
-                (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                (!endDate || (postDate && postDate <= new Date(endDate)))
-            );
+        // Check role-based filtering
+        const matchesRole = (
+            (userDetails.Role === "Super Admin" || userDetails.Role === "Admin") &&
+            (post?.Role === "Manager" || post?.Role === "Admin") &&
+            post?.Department === "Sales" &&
+            (userDetails.Role !== "Admin" || post?.Role !== "Super Admin")
+        );
 
-            // Check if the post matches the selected client type
-            const matchesClientType = selectedClientType
-                ? post?.typeclient === selectedClientType
-                : true;
-
-            // Get the reference ID from userDetails
-            const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
-
-            // Check the user's role for filtering
-            const matchesRole = userDetails.Role === "Super Admin" || userDetails.Role === "Territory Sales Associate"
-                ? true // Both Super Admin and TSA can see the posts
-                : false; // Default false if no match
-
-            // Return the filtered result
-            return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
-        })
-        : [];
-
+        // Return the filtered result
+        return matchesSearchTerm && matchesRole;
+    });
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
     const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
 
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
     // Handle editing a post
     const handleEdit = (post: any) => {
         setEditUser(post);
         setShowForm(true);
+    };
+
+    // Show delete modal
+    const confirmDelete = (postId: string) => {
+        setPostToDelete(postId);
+        setShowDeleteModal(true);
+    };
+
+    // Handle deleting a post
+    const handleDelete = async () => {
+        if (!postToDelete) return;
+        try {
+            const response = await fetch(`/api/ModuleSales/UserManagement/ManagerDirector/DeleteUser`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id: postToDelete }),
+            });
+
+            if (response.ok) {
+                setPosts(posts.filter((post) => post._id !== postToDelete));
+                toast.success("Post deleted successfully.");
+            } else {
+                toast.error("Failed to delete post.");
+            }
+        } catch (error) {
+            console.error("Error deleting post:", error);
+            toast.error("Failed to delete post.");
+        } finally {
+            setShowDeleteModal(false);
+            setPostToDelete(null);
+        }
     };
 
     return (
@@ -142,41 +156,41 @@ const ListofUser: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            <div className="grid grid-cols-1 md:grid-cols-1">
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                                 {showForm ? (
                                     <AddPostForm
                                         onCancel={() => {
                                             setShowForm(false);
                                             setEditUser(null);
                                         }}
-                                        refreshPosts={fetchAccount}  // Pass the refreshPosts callback
-                                        userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
+                                        refreshPosts={fetchUsers}  // Pass the refreshPosts callback
+                                        userName={user ? user.userName : ""}  // Ensure userName is passed properly
+                                        userDetails={{ id: editUser ? editUser._id : userDetails.UserId }}  // Ensure id is passed correctly
                                         editUser={editUser}
                                     />
+
                                 ) : (
                                     <>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
+                                                <CiSquarePlus size={20} />Add Account
+                                            </button>
+                                        </div>
+
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">Company Groups</h2>
-                                            <p className="text-xs text-gray-600 mb-4">
-                                                This section allows you to filter and search through different company groups.
-                                                You can use the search bar to search for company names and apply various filters based on client type and the date range.
-                                                The filter options help you narrow down your results efficiently, making it easier to manage and track company groups.
-                                            </p>
+                                            <h2 className="text-lg font-bold mb-2">Admin and Managers</h2>
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
                                                 postsPerPage={postsPerPage}
                                                 setPostsPerPage={setPostsPerPage}
-                                                selectedClientType={selectedClientType}
-                                                setSelectedClientType={setSelectedClientType}
-                                                startDate={startDate}
-                                                setStartDate={setStartDate}
-                                                endDate={endDate}
-                                                setEndDate={setEndDate}
                                             />
                                             <UsersTable
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}
+                                                handleDelete={confirmDelete}
+                                                Role={user ? user.Role : ""}
+                                                Department={user ? user.Department : ""}
                                             />
                                             <Pagination
                                                 currentPage={currentPage}
@@ -191,6 +205,29 @@ const ListofUser: React.FC = () => {
                                             </div>
                                         </div>
                                     </>
+                                )}
+
+                                {showDeleteModal && (
+                                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                        <div className="bg-white p-4 rounded shadow-lg">
+                                            <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
+                                            <p className="text-xs">Are you sure you want to delete this post?</p>
+                                            <div className="mt-4 flex justify-end">
+                                                <button
+                                                    className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2"
+                                                    onClick={handleDelete}
+                                                >
+                                                    Delete
+                                                </button>
+                                                <button
+                                                    className="bg-gray-300 text-xs px-4 py-2 rounded"
+                                                    onClick={() => setShowDeleteModal(false)}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 )}
 
                                 <ToastContainer className="text-xs" autoClose={1000} />
