@@ -1301,7 +1301,7 @@ const DashboardPage: React.FC = () => {
             </>
           )}
 
-          <div className="bg-white text-white shadow-md rounded-lg p-2 flex items-center w-full" style={{ height: "80vh" }}>
+          <div className="bg-white text-white shadow-md border-4 border-gray-900 rounded-lg p-2 flex items-center w-full" style={{ height: "80vh" }}>
             {location ? (
               <MapContainer center={[location.lat, location.lng]} zoom={13} className="w-full h-full rounded-lg">
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
