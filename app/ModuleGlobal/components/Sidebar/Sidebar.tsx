@@ -1,15 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FaPlus, FaMinus } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa";
-import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiCalendarDate, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo } from "react-icons/ci";
+import { CiUser, CiGrid42, CiSettings } from "react-icons/ci";
 import { RxCaretLeft, RxCaretDown } from "react-icons/rx";
 import TaskflowIcon from './TaskflowIcon';
 import XchireIcon from './XchireIcon';
 import Ecodesk from './EcodeskIcon';
-
-import { BsBuildings } from "react-icons/bs";
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
