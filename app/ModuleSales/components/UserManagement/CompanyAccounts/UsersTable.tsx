@@ -196,7 +196,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
   return (
     <div className="mb-4">
       {/* Bulk Action Buttons */}
-      <div className="flex gap-2 mb-3">
+      <div className="flex grid grid-cols-2 md:grid-cols-1 lg:grid-cols-5 gap-2 mb-3">
         <button onClick={toggleBulkDeleteMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-red-700 hover:text-white">
           <CiTrash size={16} />
           {bulkDeleteMode ? "Cancel Bulk Delete" : "Bulk Delete"}

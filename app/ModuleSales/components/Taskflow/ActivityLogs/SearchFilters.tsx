@@ -48,6 +48,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   return (
     <div className="flex flex-wrap gap-2 mb-4 items-center">
       {/* ✅ Search Input */}
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-6 gap-2">
       <input
         type="text"
         placeholder="Search..."
@@ -106,26 +107,19 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             </option>
           ))}
       </select>
-
-
-      {/* ✅ Date Range Filters */}
-      <div className="flex gap-2">
-        <input
+      <input
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
-          className="border px-3 py-2 rounded text-xs"
+          className="w-full px-3 py-2 border rounded text-xs"
         />
         <input
           type="date"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
-          className="border px-3 py-2 rounded text-xs"
+          className="w-full px-3 py-2 border rounded text-xs"
         />
-      </div>
-
-      {/* ✅ Pagination Options */}
-      <select
+        <select
         value={postsPerPage}
         onChange={(e) => setPostsPerPage(parseInt(e.target.value))}
         className="shadow-sm border px-3 py-2 rounded text-xs w-full md:w-auto"
@@ -141,6 +135,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         <option value={5000}>5000</option>
         <option value={10000}>10000</option>
       </select>
+      </div>
     </div>
   );
 };
