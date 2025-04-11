@@ -66,7 +66,7 @@ export async function registerUser({ userName, Email, Password, }: { userName: s
 }
 
 // Validate user credentials
-export async function validateUser({ Email, Password, Department,}: { Email: string; Password: string; Department: string;}) {
+export async function validateUser({ Email, Password,}: { Email: string; Password: string;}) {
   const db = await connectToDatabase();
   const usersCollection = db.collection("users");
 

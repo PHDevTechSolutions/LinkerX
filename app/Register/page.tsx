@@ -12,7 +12,6 @@ const Register: React.FC = () => {
     const [userName, setUserName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [department, setDepartment] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
@@ -20,7 +19,7 @@ const Register: React.FC = () => {
         e.preventDefault();
     
         // Check if all fields are filled
-        if (!userName || !email || !password || !department) {
+        if (!userName || !email || !password) {
             toast.error("All fields are required!");
             return;
         }
@@ -36,8 +35,7 @@ const Register: React.FC = () => {
                 body: JSON.stringify({ 
                     userName, 
                     Email: email, 
-                    Password: password, 
-                    Department: department 
+                    Password: password
                 }), 
             });
     
@@ -80,14 +78,6 @@ const Register: React.FC = () => {
                     <div className="mb-4">
                         <label className="block text-xs font-medium text-white mb-1">Password</label>
                         <input type="password" placeholder="6+ Characters, 1 Capital letter" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full text-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-xs font-medium text-white mb-1">Department</label>
-                        <select value={department} onChange={(e) => setDepartment(e.target.value)} className="w-full text-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Select Department</option>
-                            <option value="CSR">CSR</option>
-                            <option value="Sales">Sales</option>
-                        </select>
                     </div>
                     <div className="mb-4">
                         <button type="submit" className="w-full text-xs py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 shadow-lg" disabled={loading}>

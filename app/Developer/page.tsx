@@ -10,14 +10,13 @@ import 'react-toastify/dist/ReactToastify.css';
 const Login: React.FC = () => {
     const [Email, setEmail] = useState('');
     const [Password, setPassword] = useState('');
-    const [Department, setDepartment] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!Email || !Password || !Department) {
+        if (!Email || !Password) {
             toast.error("All fields are required!");
             return;
         }
@@ -25,32 +24,21 @@ const Login: React.FC = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("/api/login", {
+            const response = await fetch("/api/developerLogin", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ Email, Password, Department }),
+                body: JSON.stringify({ Email, Password }),
             });
 
             const result = await response.json();
 
             if (response.ok) {
-                if (result.Department && result.Department !== Department) {
-                    toast.error("Department mismatch! Please check your selection.");
-                    setLoading(false);
-                    return;
-                }
-
                 toast.success("Login successful!");
                 setTimeout(() => {
-                    if (result.Department === "CSR") {
-                        router.push(`/ModuleCSR/CSR/Dashboard?id=${encodeURIComponent(result.userId)}`);
-                    } else if (result.Department === "Sales") {
-                        router.push(`/ModuleSales/Sales/Dashboard?id=${encodeURIComponent(result.userId)}`);
-                    } else {
-                        toast.error("Invalid department selection");
-                    }
+                    router.push(`/ModuleGlobal/ERP/Dashboard?id=${encodeURIComponent(result.userId)}`);
                 }, 1500);
             } else {
+                toast.error(result.message || "Login failed!");
             }
         } catch (error) {
             console.error("Login error:", error);
@@ -89,18 +77,6 @@ const Login: React.FC = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full text-xs px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-700"
                         />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-xs font-medium text-dark mb-1">Department</label>
-                        <select
-                            value={Department}
-                            onChange={(e) => setDepartment(e.target.value)}
-                            className="w-full text-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-700"
-                        >
-                            <option value="">Select Department</option>
-                            <option value="CSR">CSR</option>
-                            <option value="Sales">Sales</option>
-                        </select>
                     </div>
 
                     <div className="mb-4">
