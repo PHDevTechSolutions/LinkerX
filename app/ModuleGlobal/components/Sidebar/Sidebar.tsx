@@ -183,6 +183,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ],
     },
     {
+      title: 'Global Employees',
+      icon: CiUser,
+      subItems: [
+        { title: 'Ecoshift Employees', href: `/ModuleGlobal/ERP/Ecoshift/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
+    {
       title: 'Profile',
       icon: CiUser,
       subItems: [

@@ -5,7 +5,7 @@ import { FaBuildingUser, FaPlus, FaMinus } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa";
 import TaskflowIcon from './TaskflowIcon';
 import { CiGrid42, CiInboxIn, CiWavePulse1, CiUser, CiCircleQuestion, CiSettings, CiCircleInfo } from "react-icons/ci";
-import { RxCaretLeft, RxCaretDown  } from "react-icons/rx";
+import { RxCaretLeft, RxCaretDown } from "react-icons/rx";
 
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
@@ -122,6 +122,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ],
     },
     {
+      title: 'Global Employees',
+      icon: CiUser,
+      subItems: [
+        { title: 'Ecoshift Employees', href: `/ModuleCSR/CSR/Ecoshift/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
+    {
       title: 'Settings',
       icon: CiSettings,
       subItems: [
@@ -143,8 +150,14 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   // Filter menu items based on the user's role
   const filteredMenuItems = menuItems.filter((item) => {
     if (userDetails.Role === "Staff") {
-      // Staff can only see Containers and Settings
-      return item.title === "CSR Inquiries" || item.title === "Customer Database" || item.title === "Reports" || item.title === "Eco Help" || item.title === "Settings" || item.title === "What is Ecodesk?";
+      // Staff can only see
+      return item.title === "CSR Inquiries" || 
+      item.title === "Customer Database" || 
+      item.title === "Reports" || 
+      item.title === "Eco Help" ||
+      item.title === "Global Employees" ||  
+      item.title === "Settings" || 
+      item.title === "What is Ecodesk?";
     }
     // Admin and Super Admin can see all items
     return true;

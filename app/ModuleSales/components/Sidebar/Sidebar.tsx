@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa";
 import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiCalendarDate, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo } from "react-icons/ci";
-import { RxCaretLeft, RxCaretDown  } from "react-icons/rx";
+import { RxCaretLeft, RxCaretDown } from "react-icons/rx";
 
 
 import { BsBuildings } from "react-icons/bs";
@@ -113,24 +113,24 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       try {
         // Fetch accounts and pass ReferenceID from MongoDB
         const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchInactiveCount?referenceId=${userDetails.ReferenceID}`);
-  
+
         if (!response.ok) throw new Error("Failed to fetch inactive accounts");
-  
+
         const result = await response.json();
-  
+
         if (!result.success) {
           console.error(result.error);
           return;
         }
-  
+
         const data = result.data; // Access the accounts array
         setInactiveAccount(data); // Set the fetched data to state
-  
+
         // Count "Inactive" accounts
         const inactiveCount = data.filter(
           (account: any) => account.status?.toLowerCase() === "inactive"
         ).length;
-  
+
         setPendingInactiveCount(inactiveCount); // Update state with the count
       } catch (error) {
         console.error("Error fetching inactive accounts:", error);
@@ -138,10 +138,10 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         setLoading(false);
       }
     };
-  
+
     if (userDetails.ReferenceID) fetchAccountInactive();
   }, [userDetails.ReferenceID]);
-  
+
 
 
   const menuItems = [
@@ -246,6 +246,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ],
     },
     {
+      title: 'Global Employees',
+      icon: CiUser,
+      subItems: [
+        { title: 'Ecoshift Employees', href: `/ModuleSales/Sales/Ecoshift/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
+    {
       title: 'Settings',
       icon: CiSettings,
       subItems: [
@@ -281,6 +288,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "My Team",
         "Client Activity Board",
         "Announcements",
+        "Global Employees",
         "Profile",
         "What is Taskflow?"
       ].includes(item.title);
@@ -292,6 +300,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "My Team",
         "Client Activity Board",
         "Announcements",
+        "Global Employees",
         "Profile",
         "What is Taskflow?"
       ].includes(item.title);
@@ -302,6 +311,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "Task",
         "Boards",
         "Announcements",
+        "Global Employees",
         "Profile",
         "What is Taskflow?"
       ].includes(item.title);
