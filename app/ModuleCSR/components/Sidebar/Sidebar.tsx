@@ -91,16 +91,16 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         { title: 'D-Tracking', href: `/ModuleCSR/CSR/Reports/DTracking${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
+    //{
+      //title: 'OLD Taskflow',
+      //icon: TaskflowIcon,
+      //subItems: [
+        //{ title: 'Outbound Calls', href: `/ModuleCSR/CSR/Calls/OutboundCall${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'Database', href: `/ModuleCSR/CSR/Calls/Database${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      //],
+    //},
     {
-      title: 'OLD Taskflow',
-      icon: TaskflowIcon,
-      subItems: [
-        { title: 'Outbound Calls', href: `/ModuleCSR/CSR/Calls/OutboundCall${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Database', href: `/ModuleCSR/CSR/Calls/Database${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
-    {
-      title: 'New Taskflow (Automated)',
+      title: 'Taskflow 2025 (React)',
       icon: TaskflowIcon,
       subItems: [
         { title: 'Outbound Calls', href: `/ModuleCSR/CSR/Taskflow/OutboundCall${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
