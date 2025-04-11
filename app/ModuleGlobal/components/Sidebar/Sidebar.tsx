@@ -15,7 +15,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
-  const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", ReferenceID: "" , Department: "",});
+  const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", ReferenceID: "", Department: "", });
   const router = useRouter();
   const [userNotifications, setUserNotifications] = useState<any>(null);
   const [inactiveAccount, setInactiveAccount] = useState<any>(null);
@@ -237,8 +237,10 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
             <img src="/taskflow.png" alt="Logo" className="h-8 mr-2" />
             <Link href={`/ModuleSales/Sales/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}>
               <h1 className={`text-md text-white font-bold transition-opacity ${collapsed ? "opacity-0" : "opacity-100"}`}>
-                TASKFLOW
+                <span>TASK - </span>
+                <span className="inline-block transform scale-x-[-1]">FLOW</span>
               </h1>
+
             </Link>
           </div>
         </div>
