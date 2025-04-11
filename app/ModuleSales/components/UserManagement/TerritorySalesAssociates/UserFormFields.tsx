@@ -10,6 +10,7 @@ interface FormFieldsProps {
   userName: string; setuserName: (value: string) => void;
   Password: string; setPassword: (value: string) => void;
   Role: string; setRole: (value: string) => void;
+  TargetQuota: string; setTargetQuota: (value: string) => void;
   Department: string; setDepartment: (value: string) => void;
   Location: string; setLocation: (value: string) => void;
   Company: string; setCompany: (value: string) => void;
@@ -32,6 +33,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   userName, setuserName,
   Password, setPassword,
   Role, setRole,
+  TargetQuota, setTargetQuota,
   Department, setDepartment,
   Location, setLocation,
   Company, setCompany,
@@ -209,7 +211,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="Ecoshift Corporation">Ecoshift Corporation</option>
           </select>
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/6 px-4 mb-4">
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+          <label className="block text-xs font-bold mb-2" htmlFor="TargetQuota">Target Quota</label>
+          <input type="text" value={TargetQuota} onChange={(e) => setTargetQuota(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+        </div>
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Status">Status</label>
           <select
             id="Status"

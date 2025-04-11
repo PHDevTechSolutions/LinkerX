@@ -83,7 +83,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const allNotifications = [...notifications, ...trackingNotifications];
 
   const [shake, setShake] = useState(false);
-  
+
   const soundPlayed = localStorage.getItem("soundPlayed");
 
   // Play sound only once
@@ -263,289 +263,147 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
       if (filtered.length > 0) {
         const mapped = filtered.map((item: TrackingItem) => {
-          const createdAt = new Date(item.createdAt || new Date().toISOString()); // Parse createdAt
-          const currentTime = new Date(); // Get current time
+          const createdAt = new Date(item.createdAt || new Date().toISOString());
+          const currentTime = new Date();
 
-          // Get the time difference in milliseconds
           const timeDifference = currentTime.getTime() - createdAt.getTime();
           const daysDifference = Math.floor(timeDifference / (1000 * 3600 * 24));
           const hoursDifference = timeDifference / (1000 * 3600);
 
-          // Check if the status is still "Open"
           if (item.TrackingStatus === "Open") {
-            // Notification logic for "Delivery / Pickup Notify Every 3 Days until status becomes Closed
-            if (item.TicketConcern === "Delivery / Pickup" && daysDifference >= 3 && daysDifference % 3 === 0) {
+            const baseNotification = {
+              _id: item._id,
+              userName: item.userName || "System",
+              type: "DTracking Notification",
+              TrackingStatus: "Open",
+              createdAt: createdAt.toISOString(),
+              TicketConcern: item.TicketConcern,
+              CompanyName: item.CompanyName,
+              status: item.status,
+            };
+
+            if (item.TicketConcern === "Delivery / Pickup" && daysDifference >= 3) {
               return {
-                _id: item._id,
+                ...baseNotification,
                 message: `The 'Delivery/Pickup' ticket is still unresolved after ${daysDifference} days.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
               };
             }
 
-            // Notification logic for "Quotation" - after 4 hours
-            if (item.TicketConcern === "Quotation" && hoursDifference >= 4 && hoursDifference < 8) {
+            if (item.TicketConcern === "Quotation" && hoursDifference >= 4) {
               return {
-                _id: item._id,
-                message: `You have an active 'Quotation' ticket that has been open for over 4 hours. Please review the status.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `You have an active 'Quotation' ticket that has been open for over 4 hours.`,
               };
             }
 
-            // Notification logic for "Documents" notify after 1 day
-            if (item.TicketConcern === "Documents" && timeDifference >= 24 * 60 * 60 * 1000) {
+            if (item.TicketConcern === "Documents" && daysDifference >= 1) {
               return {
-                _id: item._id,
+                ...baseNotification,
                 message: `You have an active 'Documents' ticket that is still open after 1 day.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
               };
             }
 
-            // Notification logic for "Return Call" - notify once after 4 hours if status is still "Open"
-            if (item.TicketConcern === "Return Call" && hoursDifference >= 4 && hoursDifference < 8) {
+            if (item.TicketConcern === "Return Call" && hoursDifference >= 4) {
               return {
-                _id: item._id,
-                message: `You currently have an active 'Return Call' ticket that is still open and awaiting further action. Please take the necessary steps to address it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `You currently have an active 'Return Call' ticket. Please take the necessary action.`,
               };
             }
 
-
-            // Notification logic for "Payment Terms" - notify every 2 days until status becomes Closed
-            if (item.TicketConcern === "Payment Terms" && daysDifference >= 2 && daysDifference % 2 === 0) {
+            if (item.TicketConcern === "Payment Terms" && daysDifference >= 2) {
               return {
-                _id: item._id,
-                message: `Your 'Payment Terms' ticket is still open and requires your attention. Kindly take the appropriate steps to resolve it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `Your 'Payment Terms' ticket is still open and needs your attention.`,
               };
             }
 
-            // Notification logic for "Refund" - notify every 2 days until status becomes Closed
-            if (item.TicketConcern === "Refund" && daysDifference >= 2 && daysDifference % 2 === 0) {
+            if (item.TicketConcern === "Refund" && daysDifference >= 2) {
               return {
-                _id: item._id,
-                message: `Your 'Refund' ticket is still open and requires your attention. Kindly take the appropriate steps to resolve it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `Your 'Refund' ticket is still open and requires your attention.`,
               };
             }
 
-            // Notification logic for "Replacement" - notify every 3 days until status becomes Closed
-            if (item.TicketConcern === "Replacement" && daysDifference >= 3 && daysDifference % 3 === 0) {
+            if (item.TicketConcern === "Replacement" && daysDifference >= 3) {
               return {
-                _id: item._id,
-                message: `Your 'Replacement' ticket remains open and requires your follow-up. Kindly take the necessary steps to resolve it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `Your 'Replacement' ticket remains open. Please follow up.`,
               };
             }
 
-            // Notification logic for "Site Visit" - notify every 2 days until status becomes Closed
-            if (item.TicketConcern === "Site Visit" && daysDifference >= 2 && daysDifference % 2 === 0) {
+            if (item.TicketConcern === "Site Visit" && daysDifference >= 2) {
               return {
-                _id: item._id,
-                message: `Your 'Site Visit' ticket is still open and awaiting your follow-up. Please take the necessary steps to resolve it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `Your 'Site Visit' ticket is still open and awaiting your follow-up.`,
               };
             }
 
-            // Notification logic for "TDS" - notify after 1 day until status becomes Closed
-            if (item.TicketConcern === "TDS" && timeDifference >= 24 * 60 * 60 * 1000) {
+            if (item.TicketConcern === "TDS" && daysDifference >= 1) {
               return {
-                _id: item._id,
-                message: `Your 'TDS' ticket is still open and awaiting your follow-up. Please take the necessary steps to resolve it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `Your 'TDS' ticket is still open. Please take action.`,
               };
             }
 
-            // Notification logic for "Shop Drawing" - notify after 1 day until status becomes Closed
-            if (item.TicketConcern === "Shop Drawing" && timeDifference >= 24 * 60 * 60 * 1000) {
+            if (item.TicketConcern === "Shop Drawing" && daysDifference >= 1) {
               return {
-                _id: item._id,
-                message: `Your 'Shop Drawing' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `Your 'Shop Drawing' ticket is still open. Kindly address it.`,
               };
             }
 
-            // Notification logic for "Dialux" - notify every 3 days until status becomes Closed
-            if (item.TicketConcern === "Dialux" && daysDifference >= 3 && daysDifference % 3 === 0) {
+            if (item.TicketConcern === "Dialux" && daysDifference >= 3) {
               return {
-                _id: item._id,
-                message: `Your 'Dialux' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `Your 'Dialux' ticket remains open. Please follow up.`,
               };
             }
 
-            // Notification logic for "Product Testing" - notify every 2 days until status becomes Closed
-            if (item.TicketConcern === "Product Testing" && daysDifference >= 2 && daysDifference % 2 === 0) {
+            if (item.TicketConcern === "Product Testing" && daysDifference >= 2) {
               return {
-                _id: item._id,
-                message: `Your 'Product Testing' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `Your 'Product Testing' ticket remains open. Kindly resolve it.`,
               };
             }
 
-            // Notification logic for "SPF" - notify every 3 days until status becomes Closed
-            if (item.TicketConcern === "SPF" && daysDifference >= 3 && daysDifference % 3 === 0) {
+            if (item.TicketConcern === "SPF" && daysDifference >= 3) {
               return {
-                _id: item._id,
-                message: `Your 'SPF' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `Your 'SPF' ticket remains open. Kindly resolve it.`,
               };
             }
 
-            // Notification logic for "Accreditation Request" - notify after 1 day until status becomes Closed
-            if (item.TicketConcern === "Accreditation Request" && timeDifference >= 24 * 60 * 60 * 1000) {
+            if (item.TicketConcern === "Accreditation Request" && daysDifference >= 1) {
               return {
-                _id: item._id,
-                message: `Your 'Accreditation Request' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `Your 'Accreditation Request' ticket is still open. Kindly resolve it.`,
               };
             }
 
-            // Notification logic for "Job Request" - notify every 3 days until status becomes Closed
-            if (item.TicketConcern === "Job Request" && daysDifference >= 3 && daysDifference % 3 === 0) {
+            if (item.TicketConcern === "Job Request" && daysDifference >= 1) {
               return {
-                _id: item._id,
-                message: `Your 'Job Request' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `Your 'Job Request' ticket is still open. Kindly resolve it.`,
               };
             }
 
-            // Notification logic for "Product Recommendation" - notify after 1 day until status becomes Closed
-            if (item.TicketConcern === "Product Recommendation" && timeDifference >= 24 * 60 * 60 * 1000) {
+            if (item.TicketConcern === "Product Recommendation" && daysDifference >= 1) {
               return {
-                _id: item._id,
-                message: `Your 'Product Recommendation' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `Your 'Product Recommendation' ticket is still open. Kindly resolve it.`,
               };
             }
 
-            // Notification logic for "Product Certificate" - notify after 1 day until status becomes Closed
-            if (item.TicketConcern === "Product Certificate" && timeDifference >= 24 * 60 * 60 * 1000) {
+            if (item.TicketConcern === "Product Certificate" && daysDifference >= 1) {
               return {
-                _id: item._id,
-                message: `Your 'Product Certificate' ticket remains open and is awaiting your attention. Kindly proceed with the necessary steps to resolve it.`,
-                userName: item.userName || "System",
-                type: "DTracking Notification",
-                TrackingStatus: "Open",
-                createdAt: createdAt.toISOString(),
-                TicketConcern: item.TicketConcern,
-                CompanyName: item.CompanyName,
-                status: item.status,
+                ...baseNotification,
+                message: `Your 'Product Certificate' ticket is still open. Kindly resolve it.`,
               };
             }
-
-            //if (item.TicketConcern === "Product Certificate" && timeDifference >= 60 * 1000) {
-            //return {
-            //_id: item._id,
-            //message: `Your 'Product Certificate' ticket is still open and requires your attention. Kindly take the appropriate steps to resolve it.`,
-            //userName: item.userName || "System",
-            //type: "DTracking Notification",
-            //TrackingStatus: "Open",
-            //createdAt: createdAt.toISOString(),
-            //TicketConcern: item.TicketConcern,
-            //CompanyName: item.CompanyName,
-            //status: item.status,
-            //};
-            //}
           }
 
-          return null; // No notification if status is not "Open" or conditions are not met
-        });
+          return null;
+        }).filter(Boolean); // Remove nulls
 
         // Filter out null values before setting the state
         const validMapped = mapped.filter(item => item !== null) as TrackingItem[];
@@ -588,128 +446,85 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
       const data: Inquiries[] = await res.json();
 
-      // Filter by "Delivery / Pickup" and "Quotation" TicketConcern types
-      const filtered = data.filter((item: Inquiries) =>
-        item.WrapUp === "Customer Inquiry Sales" ||
-        item.WrapUp === "Customer Inquiry Non-Sales" ||
-        item.WrapUp === "Follow Up Sales" ||
-        item.WrapUp === "After Sales" ||
-        item.WrapUp === "Customer Complaint" ||
-        item.WrapUp === "Follow Up Non-Sales"
+      const validWrapUps = [
+        "Customer Inquiry Sales",
+        "Customer Inquiry Non-Sales",
+        "Follow Up Sales",
+        "After Sales",
+        "Customer Complaint",
+        "Follow Up Non-Sales",
+      ];
+
+      const filtered = data.filter(
+        (item) =>
+          validWrapUps.includes(item.WrapUp) &&
+          item.Status === "Endorsed" &&
+          item.NotificationStatus !== "Read"
       );
 
-      if (filtered.length > 0) {
-        const mapped = filtered.map((item: Inquiries) => {
-          const createdAt = new Date(item.createdAt || new Date().toISOString()); // Parse createdAt
-          const currentTime = new Date(); // Get current time
+      const notifications = filtered
+        .map((item) => {
+          const createdAt = new Date(item.createdAt || new Date().toISOString());
+          const currentTime = new Date();
+          const timeDiff = currentTime.getTime() - createdAt.getTime();
 
-          // Get the time difference in milliseconds
-          const timeDifference = currentTime.getTime() - createdAt.getTime();
-          const daysDifference = Math.floor(timeDifference / (1000 * 3600 * 24));
-          const hoursDifference = timeDifference / (1000 * 3600);
+          const hours = timeDiff / (1000 * 3600);
+          const days = Math.floor(timeDiff / (1000 * 3600 * 24));
 
-          // Check if the status is still "Open"
-          if (item.Status === "Endorsed") {
-            // Notification logic for "Customer Inquiry Sales
-            if (item.WrapUp === "Customer Inquiry Sales" && hoursDifference >= 4 && hoursDifference < 8) {
-              return {
-                _id: item._id,
-                message: `The 'Customer Inquiry Sales' ticket is still unresolved.`,
-                userName: item.userName || "System",
-                type: "WrapUp Notification",
-                Status: "Endorsed",
-                createdAt: createdAt.toISOString(),
-                WrapUp: item.WrapUp,
-                CompanyName: item.CompanyName,
-                NotificationStatus: item.NotificationStatus,
-              };
-            }
+          let shouldNotify = false;
 
-            if (item.WrapUp === "Customer Inquiry Non-Sales" && hoursDifference >= 4 && hoursDifference < 4) {
-              return {
-                _id: item._id,
-                message: `The 'Customer Inquiry Non-Sales' ticket is still unresolved.`,
-                userName: item.userName || "System",
-                type: "WrapUp Notification",
-                Status: "Endorsed",
-                createdAt: createdAt.toISOString(),
-                WrapUp: item.WrapUp,
-                CompanyName: item.CompanyName,
-                NotificationStatus: item.NotificationStatus,
-              };
-            }
+          switch (item.WrapUp) {
+            case "Customer Inquiry Sales":
+            case "Follow Up Sales":
+              shouldNotify = hours >= 4;
+              break;
 
-            if (item.WrapUp === "Follow Up Sales" && hoursDifference >= 4 && hoursDifference < 8) {
-              return {
-                _id: item._id,
-                message: `The 'Follow Up Sales' ticket is still unresolved.`,
-                userName: item.userName || "System",
-                type: "WrapUp Notification",
-                Status: "Endorsed",
-                createdAt: createdAt.toISOString(),
-                WrapUp: item.WrapUp,
-                CompanyName: item.CompanyName,
-                NotificationStatus: item.NotificationStatus,
-              };
-            }
+            case "Customer Inquiry Non-Sales":
+              shouldNotify = hours >= 4;
+              break;
 
-            if (item.WrapUp === "After Sales" && daysDifference >= 3 && daysDifference % 3 === 0) {
-              return {
-                _id: item._id,
-                message: `The 'After Sales' ticket is still unresolved.`,
-                userName: item.userName || "System",
-                type: "WrapUp Notification",
-                Status: "Endorsed",
-                createdAt: createdAt.toISOString(),
-                WrapUp: item.WrapUp,
-                CompanyName: item.CompanyName,
-                NotificationStatus: item.NotificationStatus,
-              };
-            }
+            case "After Sales":
+              shouldNotify = days >= 3;
+              break;
 
-            if (item.WrapUp === "Customer Complaint" && timeDifference >= 24 * 60 * 60 * 1000) {
-              return {
-                _id: item._id,
-                message: `The 'Customer Complaint' ticket is still unresolved.`,
-                userName: item.userName || "System",
-                type: "WrapUp Notification",
-                Status: "Endorsed",
-                createdAt: createdAt.toISOString(),
-                WrapUp: item.WrapUp,
-                CompanyName: item.CompanyName,
-                NotificationStatus: item.NotificationStatus,
-              };
-            }
+            case "Customer Complaint":
+              shouldNotify = timeDiff >= 24 * 60 * 60 * 1000;
+              break;
 
-            if (item.WrapUp === "Follow Up Non-Sales" && timeDifference >= 60 * 1000) {
-              return {
-                _id: item._id,
-                message: `The 'Follow Up Non-Sales' ticket is still unresolved.`,
-                userName: item.userName || "System",
-                type: "WrapUp Notification",
-                Status: "Endorsed",
-                createdAt: createdAt.toISOString(),
-                WrapUp: item.WrapUp,
-                CompanyName: item.CompanyName,
-                NotificationStatus: item.NotificationStatus,
-              };
-            }
+            case "Follow Up Non-Sales":
+              shouldNotify = timeDiff >= 60 * 1000;
+              break;
+
+            default:
+              shouldNotify = false;
           }
 
-          return null; // No notification if status is not "Open" or conditions are not met
-        });
+          if (shouldNotify) {
+            return {
+              _id: item._id,
+              message: `The '${item.WrapUp}' ticket is still unresolved.`,
+              userName: item.userName || "System",
+              type: "WrapUp Notification",
+              Status: item.Status,
+              createdAt: createdAt.toISOString(),
+              WrapUp: item.WrapUp,
+              CompanyName: item.CompanyName,
+              NotificationStatus: item.NotificationStatus,
+            };
+          }
 
-        // Filter out null values before setting the state
-        const validMapped = mapped.filter(item => item !== null) as Inquiries[];
+          return null;
+        })
+        .filter(Boolean) as Inquiries[];
 
-        if (validMapped.length > 0) {
-          setWrapUpNotifications(validMapped); // Set notifications in state
-        }
+      if (notifications.length > 0) {
+        setWrapUpNotifications(notifications);
       }
     } catch (error) {
-      console.error("Error fetching tracking data:", error);
+      console.error("Error fetching wrap-up data:", error);
     }
   };
+
 
   // Trigger the fetch when userReferenceId changes
   useEffect(() => {
@@ -936,26 +751,34 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         <button onClick={() => setShowSidebar((prev) => !prev)} className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full">
           <CiBellOn size={20} className={`${shake ? "animate-shake" : ""}`} />
 
-          {/* Count for CSR Notifications */}
-          {trackingNotifications.filter((notif) => notif.type === "Taskflow Notification" && notif.status === "pending").length > 0 && (
-            <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {trackingNotifications.filter((notif) => notif.type === "Taskflow Notification" && notif.status === "pending").length}
-            </span>
-          )}
+          {/* Combined Count for All Unread or Pending Notifications */}
+          {(() => {
+            const taskflowCount = trackingNotifications.filter(
+              (notif) => notif.type === "Taskflow Notification" && notif.status === "pending"
+            ).length;
 
-          {/* Count for DTracking Notifications, excluding "Read" */}
-          {trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.TrackingStatus === "Open" && notif.status !== "Read").length > 0 && (
-            <span className="absolute top-0 right-0 bg-green-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.TrackingStatus === "Open" && notif.status !== "Read").length}
-            </span>
-          )}
+            const dTrackingCount = trackingNotifications.filter(
+              (notif) => notif.type === "DTracking Notification" &&
+                notif.TrackingStatus === "Open" &&
+                notif.status !== "Read"
+            ).length;
 
-          {wrapUpNotifications.filter((notif) => notif.type === "WrapUp Notification" && notif.Status === "Endorsed" && notif.NotificationStatus !== "Read").length > 0 && (
-            <span className="absolute top-0 right-0 bg-green-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {wrapUpNotifications.filter((notif) => notif.type === "WrapUp Notification" && notif.Status === "Endorsed" && notif.NotificationStatus !== "Read").length}
-            </span>
-          )}
+            const wrapUpCount = wrapUpNotifications.filter(
+              (notif) => notif.type === "WrapUp Notification" &&
+                notif.Status === "Endorsed" &&
+                notif.NotificationStatus !== "Read"
+            ).length;
+
+            const totalCount = taskflowCount + dTrackingCount + wrapUpCount;
+
+            return totalCount > 0 ? (
+              <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
+                {totalCount}
+              </span>
+            ) : null;
+          })()}
         </button>
+
 
         {showSidebar && (
           <motion.div
