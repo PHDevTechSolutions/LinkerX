@@ -372,20 +372,20 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   }, [notifications]);
 
   return (
-    <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
+    <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 border-b-4 border-gray-900 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center space-x-4">
         <button onClick={onToggleSidebar} className="p-2">
           <CiMenuBurger />
         </button>
 
-        <span className="flex items-center border shadow-md text-xs font-medium px-3 py-1 rounded-full">
+        <span className="flex items-center border-2 border-gray-900 bg-white text-black shadow-md text-xs font-medium px-3 py-1 rounded-full">
           <CiClock2 size={15} className="mr-1" /> {currentTime}
         </span>
 
         {/* Search Bar */}
         <form onSubmit={handleSearch} className="relative md:block hidden">
-          <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-          <input type="text" placeholder="Search directories.." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 pr-3 py-1 text-xs text-gray-900 border rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 capitalize" />
+          <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-900" size={16} />
+          <input type="text" placeholder="Search directories.." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 pr-3 py-1 border-2 border-gray-900 text-xs text-gray-900 border rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 capitalize" />
           {isSearching && (
             <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">
               Loading...
@@ -397,17 +397,17 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
       <div className="relative flex items-center text-center text-xs gap-2 z-[1000]" ref={dropdownRef}>
         <button
           onClick={onToggleTheme}
-          className="relative flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-16 h-8 p-1 transition-all duration-300"
+          className="relative border-2 border-gray-900 flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-16 h-8 p-1 transition-all duration-300"
         >
           {/* Toggle Knob with Icon Centered */}
           <div
-            className={`w-6 h-6 bg-white dark:bg-yellow-400 rounded-full shadow-md flex justify-center items-center transform transition-transform duration-300 ${isDarkMode ? "translate-x-8" : "translate-x-0"
+            className={`w-6 h-6 bg-white border-2 border-gray-900 dark:bg-yellow-400 rounded-full shadow-md flex justify-center items-center transform transition-transform duration-300 ${isDarkMode ? "translate-x-8" : "translate-x-0"
               }`}
           >
             {isDarkMode ? (
               <CiDark size={16} className="text-gray-900 dark:text-gray-300" />
             ) : (
-              <CiSun size={16} className="text-yellow-500" />
+              <CiSun size={16} className="text-gray-900" />
             )}
           </div>
         </button>

@@ -422,7 +422,7 @@ const ListofUser: React.FC = () => {
                                         editUser={editUser}
                                     />
                                 ) : showImportForm ? (
-                                    <div className="bg-white p-4 shadow-md rounded-md">
+                                    <div className="bg-white p-4 border-4 border-gray-900 shadow-md rounded-md">
                                         <h2 className="text-lg font-bold mb-2">Import Accounts</h2>
                                         <form onSubmit={handleFileUpload}>
                                             <div className="flex flex-wrap -mx-4">
@@ -530,20 +530,20 @@ const ListofUser: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
-                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
+                                            <button className="flex items-center gap-1 border border-2 border-gray-900 bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
                                                 <CiSquarePlus size={16} /> Add Companies
                                             </button>
                                             <div className="flex gap-2">
-                                                <button onClick={exportToExcel} className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
+                                                <button onClick={exportToExcel} className="flex items-center gap-1 border border-2 border-gray-900 bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
                                                     <CiExport size={16} /> Export
                                                 </button>
-                                                <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-800 hover:text-white transition" onClick={() => setShowImportForm(true)}>
+                                                <button className="flex items-center gap-1 border border-2 border-gray-900 bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-800 hover:text-white transition" onClick={() => setShowImportForm(true)}>
                                                     <CiImport size={16} /> Import Account
                                                 </button>
                                             </div>
                                         </div>
 
-                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                        <div className="mb-4 p-4 bg-white border-4 border-gray-900 shadow-md rounded-lg">
                                             <h2 className="text-lg font-bold mb-2">Company Accounts</h2>
                                             <SearchFilters
                                                 searchTerm={searchTerm}

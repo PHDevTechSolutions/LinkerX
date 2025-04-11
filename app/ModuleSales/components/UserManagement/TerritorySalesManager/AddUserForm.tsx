@@ -65,7 +65,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
+      <form onSubmit={handleSubmit} className="bg-white border-4 border-gray-900 shadow-md rounded-lg p-4 text-xs">
         <h2 className="text-xs font-bold mb-4">{editUser ? "Edit User Information" : "Add New User"}</h2>
         <FormFields
           ReferenceID={ReferenceID} setReferenceID={setReferenceID}

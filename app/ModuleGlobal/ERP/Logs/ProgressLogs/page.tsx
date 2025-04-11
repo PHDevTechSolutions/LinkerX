@@ -61,7 +61,7 @@ const OutboundCallPage: React.FC = () => {
                 Total Entries: {totalRecords}
               </div>
 
-              <div className="mb-4 p-4 bg-white shadow-md rounded-md text-gray-900">
+              <div className="mb-4 p-4 bg-white border-4 border-gray-900 shadow-md rounded-lg text-gray-900">
                 <SearchFilters
                   searchTerm={searchTerm}
                   setSearchTerm={setSearchTerm}

@@ -172,12 +172,12 @@ const ListofUser: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
-                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
+                                            <button className="flex items-center gap-1 border border-2 border-gray-900 bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
                                                 <CiSquarePlus size={20} />Add Account
                                             </button>
                                         </div>
 
-                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                        <div className="mb-4 p-4 bg-white border-4 border-gray-900 shadow-md rounded-lg">
                                             <h2 className="text-lg font-bold mb-2">Admin and Managers</h2>
                                             <SearchFilters
                                                 searchTerm={searchTerm}

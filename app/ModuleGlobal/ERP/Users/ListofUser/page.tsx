@@ -127,12 +127,12 @@ const ListofUser: React.FC = () => {
                                     ) : (
                                         <>
                                             <div className="flex justify-between items-center mb-4">
-                                                <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded flex items-center gap-1" onClick={() => setShowForm(true)}>
+                                                <button className="bg-blue-800 border-2 border-gray-900 text-white px-4 text-xs py-2 rounded flex items-center gap-1" onClick={() => setShowForm(true)}>
                                                     <CiCirclePlus size={20} />Add Ticket
                                                 </button>
                                             </div>
 
-                                            <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                            <div className="mb-4 p-4 border-4 border-gray-900 bg-white shadow-md rounded-lg">
                                                 <h2 className="text-lg font-bold mb-2">List of Users</h2>
                                                 <SearchFilters
                                                     searchTerm={searchTerm}

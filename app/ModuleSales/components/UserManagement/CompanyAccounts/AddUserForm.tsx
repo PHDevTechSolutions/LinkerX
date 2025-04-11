@@ -69,7 +69,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
+      <form onSubmit={handleSubmit} className="bg-white shadow-md border-4 border-gray-900 rounded-lg p-4 text-xs">
         <h2 className="text-xs font-bold mb-4">
           {editUser ? "Edit Account Information" : "Add New Account"}
         </h2>

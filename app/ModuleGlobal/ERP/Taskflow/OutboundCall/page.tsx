@@ -214,7 +214,7 @@ const OutboundCallPage: React.FC = () => {
                                     This section displays details about outbound calls made to clients. It includes a search and filter functionality to refine call records based on client type, date range, and other criteria. The total number of entries is shown to provide an overview of recorded outbound calls.
                                 </p>
 
-                                <div className="mb-4 p-4 bg-white shadow-md rounded-md text-gray-900">
+                                <div className="mb-4 p-4 border-4 border-gray-900 bg-white shadow-md rounded-lg text-gray-900">
                                     <SearchFilters
                                         searchTerm={searchTerm}
                                         setSearchTerm={setSearchTerm}
