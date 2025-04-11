@@ -132,7 +132,7 @@ const UsersCard: React.FC<UsersCardProps> = ({
                     </p>
                   )}
                   <p>
-                    <strong>Role:</strong> {post.Role === "Super Admin" ? "Zeta Admin" : post.Role}
+                    <strong>Role:</strong> {post.Role}
                   </p>
                   <p className="mt-2">
                     <span
