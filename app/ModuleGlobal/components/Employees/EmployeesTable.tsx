@@ -65,8 +65,8 @@ const UsersCard: React.FC<UsersCardProps> = ({
             className="w-full px-3 py-2 border rounded text-xs capitalize"
           >
             <option value="All">All</option>
-            <option value="CSR">CSR</option>
-            <option value="Sales">Sales</option>
+            <option value="CSR">CSR Department</option>
+            <option value="Sales">Sales Department</option>
             <option value="IT Department">IT Department</option>
           </select>
         </div>
