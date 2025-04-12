@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
 // Ensure the database URL is set in environment variables
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl = process.env.TASKFLOW_DB_URL;
 if (!databaseUrl) {
-  throw new Error("DATABASE_URL is not set in the environment variables.");
+  throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
 // Initialize the neon database client
