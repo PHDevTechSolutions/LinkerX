@@ -153,7 +153,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
                     </div>
                     <div className="relative">
                         <label htmlFor="Password" className="block text-xs font-medium text-gray-700">
-                            Current Password
+                            Current Password / Change Password
                         </label>
                         <input
                             type={showPassword ? "text" : "password"}
