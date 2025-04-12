@@ -459,6 +459,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                         <th className="border p-2">Remarks</th>
                                         <th className="border p-2">Inquiry / Concern</th>
                                         <th className="border p-2">Date Created</th>
+                                        <th className="border p-2">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -491,6 +492,10 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                                     : post.Inquiries}
                                             </td>
                                             <td className="border p-2">{new Date(post.createdAt).toLocaleString()}</td>
+                                            <td className="border p-2">
+                                                <button onClick={() => handleEdit(post)}>Edit</button>
+                                            </td>
+
                                         </tr>
                                     ))}
                                 </tbody>
