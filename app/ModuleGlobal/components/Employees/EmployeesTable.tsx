@@ -118,7 +118,7 @@ const UsersCard: React.FC<UsersCardProps> = ({
                     <strong>Email:</strong> {post.Email}
                   </p>
                   <p className="capitalize">
-                    <strong>Contact Number:</strong>
+                    <strong>Contact Number: </strong> {post.ContactNumber}
                   </p>
                   <p className="capitalize">
                     <strong>Nickname:</strong> {post.userName}

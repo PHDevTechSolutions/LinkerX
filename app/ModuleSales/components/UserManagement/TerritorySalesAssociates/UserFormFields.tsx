@@ -7,6 +7,7 @@ interface FormFieldsProps {
   Firstname: string; setFirstname: (value: string) => void;
   Lastname: string; setLastname: (value: string) => void;
   Email: string; setEmail: (value: string) => void;
+  ContactNumber: string; setContactNumber: (value: string) => void;
   userName: string; setuserName: (value: string) => void;
   Password: string; setPassword: (value: string) => void;
   Role: string; setRole: (value: string) => void;
@@ -30,6 +31,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   Firstname, setFirstname,
   Lastname, setLastname,
   Email, setEmail,
+  ContactNumber, setContactNumber,
   userName, setuserName,
   Password, setPassword,
   Role, setRole,
@@ -165,6 +167,10 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Email">Email</label>
           <input type="text" id="Email" value={Email} onChange={(e) => setEmail(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+        </div>
+        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+          <label className="block text-xs font-bold mb-2" htmlFor="ContactNumber">Contact Number</label>
+          <input type="text" id="ContactNumber" value={ContactNumber} onChange={(e) => setContactNumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
         </div>
         <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="userName">Username</label>

@@ -16,6 +16,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
   const [Firstname, setFirstname] = useState(editUser ? editUser.Firstname : "");
   const [Lastname, setLastname] = useState(editUser ? editUser.Lastname : "");
   const [Email, setEmail] = useState(editUser ? editUser.Email : "");
+  const [ContactNumber, setContactNumber] = useState(editUser ? editUser.ContactNumber : "");
   const [userName, setuserName] = useState(editUser ? editUser.userName : "");
   const [Password, setPassword] = useState(editUser ? editUser.Password : "");
   const [Role, setRole] = useState(editUser ? editUser.Role : "");
@@ -45,7 +46,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, TargetQuota, Department, Location, Company, Manager, TSM, UserId, Status, LoginAttempts, LockUntil,
+        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, ContactNumber, TargetQuota, Department, Location, Company, Manager, TSM, UserId, Status, LoginAttempts, LockUntil,
         id: editUser ? editUser._id : undefined, // Send post ID if editing
       }),
     });
@@ -75,6 +76,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
           Firstname={Firstname} setFirstname={setFirstname}
           Lastname={Lastname} setLastname={setLastname}
           Email={Email} setEmail={setEmail}
+          ContactNumber={ContactNumber} setContactNumber={setContactNumber}
           userName={userName} setuserName={setuserName}
           Password={Password} setPassword={setPassword}
           Role={Role} setRole={setRole}
