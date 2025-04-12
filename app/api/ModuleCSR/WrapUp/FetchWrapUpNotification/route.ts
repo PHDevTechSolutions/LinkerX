@@ -13,17 +13,20 @@ export async function GET(req: NextRequest) {
     const db = await connectToDatabase();
     const collection = db.collection("monitoring");
 
-    // Adjusted to fetch all TicketConcern types (Delivery / Pickup and Quotation)
+    // Fetch only tickets with Status "Endorsed"
     const tickets = await collection
-      .find({ ReferenceID: referenceId, 
-              $or: [
-                { WrapUp: "Customer Inquiry Sales" },
-                { WrapUp: "Customer Inquiry Non-Sales" },
-                { WrapUp: "Follow Up Sales" },
-                { WrapUp: "After Sales" },
-                { WrapUp: "Customer Complaint" },
-                { WrapUp: "Follow Up Non-Sales" }
-              ]})
+      .find({
+        ReferenceID: referenceId,
+        Status: "Endorsed", // Only fetch if Status is Endorsed
+        $or: [
+          { WrapUp: "Customer Inquiry Sales" },
+          { WrapUp: "Customer Inquiry Non-Sales" },
+          { WrapUp: "Follow Up Sales" },
+          { WrapUp: "After Sales" },
+          { WrapUp: "Customer Complaint" },
+          { WrapUp: "Follow Up Non-Sales" }
+        ]
+      })
       .toArray();
 
     return NextResponse.json(tickets);
