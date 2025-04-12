@@ -2,13 +2,16 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import QRCode from 'qrcode';
+import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 
 type ProfileFormProps = {
     userDetails: {
         id: string;
         Firstname: string;
         Lastname: string;
+        Password: string;
         Email: string;
+        ContactNumber: string;
         Role: string;
         Department: string;
         Status: string;
@@ -20,6 +23,7 @@ type ProfileFormProps = {
 
 const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, handleChange, handleSelectChange }) => {
     const [activeTab, setActiveTab] = useState('profile');
+    const [showPassword, setShowPassword] = useState(false);
     const [generatedCode, setGeneratedCode] = useState('');
     const [qrCode, setQrCode] = useState('');
     const [selectedAvatar, setSelectedAvatar] = useState<string>(`https://robohash.org/${userDetails.Email}?size=200x200`);
@@ -50,7 +54,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
 
     const generateQRCode = async (text: string) => {
         try {
-            const qrData = `Taskflow System Ecoshift Corporation,\nAgentName: ${userDetails.Firstname} ${userDetails.Lastname}\nPosition: ${userDetails.Role}\nEmail: ${userDetails.Email}\nLink: https://ecoshiftcorp.com`;
+            const qrData = `Taskflow System | ERP Module - Ecoshift Corporation,\nAgentName: ${userDetails.Firstname} ${userDetails.Lastname}\nPosition: ${userDetails.Role}\nContactNumber: ${userDetails.ContactNumber}\nEmail: ${userDetails.Email}\nLink: https://ecoshiftcorp.com`;
             const qr = await QRCode.toDataURL(qrData);
             setQrCode(qr);
         } catch (err) {
@@ -147,8 +151,27 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
                         />
                     </div>
+                    <div className="relative">
+                        <label htmlFor="Password" className="block text-xs font-medium text-gray-700">
+                            Current Password / Change Password
+                        </label>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            id="Password"
+                            name="Password"
+                            value={userDetails.Password}
+                            onChange={handleChange}
+                            className="mt-1 block w-full px-4 py-2 pr-10 border border-gray-300 rounded-md text-xs"
+                        />
+                        <div
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            className="absolute inset-y-0 right-3 top-[20px] flex items-center cursor-pointer text-gray-500"
+                        >
+                            {showPassword ? <IoIosEyeOff size={18} /> : <IoIosEye size={18} />}
+                        </div>
+                    </div>
                     <div>
-                        <label htmlFor="Email" className="block text-xs font-medium text-gray-700">Email</label>
+                        <label htmlFor="Email" className="block text-xs font-medium text-gray-700">Email Address</label>
                         <input
                             type="email"
                             id="Email"
@@ -159,17 +182,15 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
                         />
                     </div>
                     <div>
-                        <label htmlFor="Role" className="block text-xs font-medium text-gray-700">Role</label>
-                        <select
-                            id="Role"
-                            name="Role"
-                            value={userDetails.Role}
-                            onChange={handleSelectChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
-                        >
-                            <option value="">Select Role</option>
-                            <option value="Admin">Admin</option>
-                        </select>
+                        <label htmlFor="ContactNumber" className="block text-xs font-medium text-gray-700">Contact Number</label>
+                        <input
+                            type="text"
+                            id="ContactNumber"
+                            name="ContactNumber"
+                            value={userDetails.ContactNumber}
+                            onChange={handleChange}
+                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs"
+                        />
                     </div>
                     <div>
                         <label htmlFor="Department" className="block text-xs font-medium text-gray-700">Department</label>
