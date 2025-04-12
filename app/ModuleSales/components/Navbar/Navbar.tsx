@@ -360,7 +360,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   useEffect(() => {
     // ✅ Find the first pending Inquiry Notification and show modal if found
     const inquiryNotif = notifications.find(
-      (notif) => notif.status === "pending" && notif.type === "Inquiry Notification"
+      (notif) => notif.status === "Unread" && notif.type === "Inquiry Notification"
     );
 
     if (inquiryNotif) {
@@ -415,9 +415,9 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         {/* Notifications */}
         <button onClick={() => setShowSidebar((prev) => !prev)} className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full">
           <CiBellOn size={20} />
-          {notifications.filter((notif) => notif.status === "pending").length > 0 && (
+          {notifications.filter((notif) => notif.status === "Unread").length > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {notifications.filter((notif) => notif.status === "pending").length}
+              {notifications.filter((notif) => notif.status === "Unread").length}
             </span>
           )}
         </button>
@@ -456,10 +456,10 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
               {activeTab === "notifications" ? (
                 // ✅ Notifications Tab
                 <>
-                  {notifications.filter((notif) => notif.status === "pending").length > 0 ? (
+                  {notifications.filter((notif) => notif.status === "Unread").length > 0 ? (
                     <ul className="space-y-2">
                       {notifications
-                        .filter((notif) => notif.status === "pending")
+                        .filter((notif) => notif.status === "Unread")
                         .map((notif, index) => (
                           <li
                             key={notif.id || index}

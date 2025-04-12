@@ -33,6 +33,7 @@ interface Activity {
   typecall: string;
   quotationnumber: string;
   quotationamount: string;
+  actualsales: string;
   remarks: string;
   date_created: string; // Ensure this is a valid date string
 }
@@ -104,19 +105,21 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
   // 🔥 FIX: Ensure activityList is always an array
   const [activityList, setActivityList] = useState<{
-    id: number;
-    typeactivity: string;
-    callback: string;
-    callstatus: string;
-    typecall: string;
-    remarks: string;
-    quotationnumber: string;
-    quotationamount: string;
-    sonumber: string;
-    soamount: string;
-    activitystatus: string;
-    date_created: string;
-  }[]>([]);
+      id: number;
+      typeactivity: string;
+      callback: string;
+      callstatus: string;
+      typecall: string;
+      remarks: string;
+      quotationnumber: string;
+      quotationamount: string;
+      sonumber: string;
+      soamount: string;
+      actualsales: string;
+      activitystatus: string;
+      date_created: string;
+    }[]>([]);
+  
 
   // Fetch progress data when activitynumber change
   useEffect(() => {
@@ -292,6 +295,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                   <th className="text-left px-4 py-2 border">Q-Amount</th>
                   <th className="text-left px-4 py-2 border">SO-Amount</th>
                   <th className="text-left px-4 py-2 border">SO-Number</th>
+                  <th className="text-left px-4 py-2 border">Actual Sales</th>
                   <th className="text-left px-4 py-2 border">Remarks</th>
                   <th className="text-left px-4 py-2 border">Status</th>
                   <th className="text-left px-4 py-2 border">Actions</th>
@@ -321,6 +325,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                       <td className="px-4 py-2 border">{activity.quotationamount}</td>
                       <td className="px-4 py-2 border">{activity.soamount}</td>
                       <td className="px-4 py-2 border">{activity.sonumber}</td>
+                      <td className="px-4 py-2 border">{activity.actualsales}</td>
                       <td className="px-4 py-2 border break-words truncate max-w-xs cursor-pointer" onClick={() => handleShowRemarks(activity.remarks)}>
                         {activity.remarks}
                       </td>

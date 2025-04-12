@@ -752,12 +752,12 @@ const ListofUser: React.FC = () => {
             });
 
             if (!response.ok) {
-                console.error("❌ Failed to save assigned companies.");
+                
             } else {
                 console.log("✅ Assigned companies saved successfully.");
             }
         } catch (error) {
-            console.error("❌ Error saving assigned companies:", error);
+            
         }
     };
 

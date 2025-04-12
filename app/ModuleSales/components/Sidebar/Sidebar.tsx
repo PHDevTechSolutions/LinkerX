@@ -93,13 +93,12 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         // Count "Pending" status with type "Inquiry Notification"
         const pendingCount = data.filter(
           (notification: any) =>
-            notification.status?.toLowerCase() === "pending" &&
+            notification.status?.toLowerCase() === "unread" &&
             notification.type?.toLowerCase() === "inquiry notification"
         ).length;
 
         setPendingInquiryCount(pendingCount); // Update state with the count
       } catch (error) {
-        console.error("Error fetching user notifications:", error);
       } finally {
         setLoading(false);
       }
