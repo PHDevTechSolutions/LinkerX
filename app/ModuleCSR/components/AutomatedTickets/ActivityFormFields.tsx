@@ -218,7 +218,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 }));
                 setSalesAgents(options);
             } catch (error) {
-                console.error("Error fetching agents:", error);
+                console.error("Error fetch agents:", error);
             }
         };
 
