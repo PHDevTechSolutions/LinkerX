@@ -13,28 +13,31 @@ export async function GET(req: NextRequest) {
     const db = await connectToDatabase();
     const collection = db.collection("Tracking");
 
-    // Adjusted to fetch all TicketConcern types (Delivery / Pickup and Quotation)
+    // Only fetch where TrackingStatus is Open
     const tickets = await collection
-      .find({ ReferenceID: referenceId, 
-              $or: [
-                { TicketConcern: "Delivery / Pickup" },
-                { TicketConcern: "Quotation" },
-                { TicketConcern: "Documents" },
-                { TicketConcern: "Return Call" },
-                { TicketConcern: "Payment Terms" },
-                { TicketConcern: "Refund" },
-                { TicketConcern: "Replacement" },
-                { TicketConcern: "Site Visit" },
-                { TicketConcern: "TDS" },
-                { TicketConcern: "Shop Drawing" },
-                { TicketConcern: "Dialux" },
-                { TicketConcern: "Product Testing" },
-                { TicketConcern: "SPF" },
-                { TicketConcern: "Accreditation Request" },
-                { TicketConcern: "Job Request" },
-                { TicketConcern: "Product Recommendation" },
-                { TicketConcern: "Product Certificate" }
-              ]})
+      .find({
+        ReferenceID: referenceId,
+        TrackingStatus: "Open", // exclude Closed
+        $or: [
+          { TicketConcern: "Delivery / Pickup" },
+          { TicketConcern: "Quotation" },
+          { TicketConcern: "Documents" },
+          { TicketConcern: "Return Call" },
+          { TicketConcern: "Payment Terms" },
+          { TicketConcern: "Refund" },
+          { TicketConcern: "Replacement" },
+          { TicketConcern: "Site Visit" },
+          { TicketConcern: "TDS" },
+          { TicketConcern: "Shop Drawing" },
+          { TicketConcern: "Dialux" },
+          { TicketConcern: "Product Testing" },
+          { TicketConcern: "SPF" },
+          { TicketConcern: "Accreditation Request" },
+          { TicketConcern: "Job Request" },
+          { TicketConcern: "Product Recommendation" },
+          { TicketConcern: "Product Certificate" }
+        ]
+      })
       .toArray();
 
     return NextResponse.json(tickets);
