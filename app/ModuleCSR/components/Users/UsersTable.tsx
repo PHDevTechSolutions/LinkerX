@@ -54,12 +54,12 @@ const UsersTable: React.FC<UsersTableProps> = ({
           <div
             key={post._id}
             className={`relative rounded-lg shadow-md p-4 border ${
-              post.ReferenceID === "LR-CSR-849432"
+              post.ReferenceID === "LR-CSR-654001"
                 ? "bg-black pointer-events-none"
                 : "bg-white hover:shadow-lg transition duration-300"
             }`}
           >
-            {post.ReferenceID === "LR-CSR-849432" && (
+            {post.ReferenceID === "LR-CSR-654001" && (
               <span className="absolute top-2 right-2 bg-yellow-500 text-black text-[8px] font-bold px-2 py-1 rounded">
                 Master VIP
               </span>
@@ -69,7 +69,7 @@ const UsersTable: React.FC<UsersTableProps> = ({
               <div>
                 <h3
                   className={`text-xs font-semibold capitalize ${
-                    post.ReferenceID === "LR-CSR-849432"
+                    post.ReferenceID === "LR-CSR-654001"
                       ? "text-white"
                       : "text-gray-800"
                   }`}
@@ -78,7 +78,7 @@ const UsersTable: React.FC<UsersTableProps> = ({
                 </h3>
                 <div
                   className={`mt-4 mb-4 text-xs ${
-                    post.ReferenceID === "LR-CSR-849432"
+                    post.ReferenceID === "LR-CSR-654001"
                       ? "text-gray-300"
                       : "text-gray-700"
                   }`}
@@ -93,18 +93,18 @@ const UsersTable: React.FC<UsersTableProps> = ({
                 <p className="mt-2">
                   <span
                     className={`badge text-white text-[8px] px-2 py-1 mr-2 rounded-xl ${
-                      post.ReferenceID === "LR-CSR-849432"
+                      post.ReferenceID === "LR-CSR-654001"
                         ? "bg-yellow-500"
                         : statusColors[post.Status] || "bg-gray-400"
                     }`}
                   >
-                    {post.ReferenceID === "LR-CSR-849432" ? "Master VIP" : post.Status}
+                    {post.ReferenceID === "LR-CSR-654001" ? "Master VIP" : post.Status}
                   </span>
                 </p>
               </div>
 
               {/* Disable buttons if ReferenceID is VIP */}
-              {post.ReferenceID !== "LR-CSR-849432" && (
+              {post.ReferenceID !== "LR-CSR-654001" && (
                 <Menu as="div" className="relative inline-block">
                   <Menu.Button className="text-gray-500 hover:text-gray-800">
                     <BsThreeDotsVertical size={16} />
