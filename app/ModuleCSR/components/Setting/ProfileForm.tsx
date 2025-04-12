@@ -2,17 +2,20 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import QRCode from 'qrcode';
+import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 
 type ProfileFormProps = {
     userDetails: {
         id: string;
         Firstname: string;
+        Company: string;
         Lastname: string;
+        Password: string;
         Email: string;
+        ContactNumber: string;
         Role: string;
         Department: string;
         Status: string;
-        Company: string;
     };
     handleSubmit: (e: React.FormEvent) => void;
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -21,6 +24,7 @@ type ProfileFormProps = {
 
 const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, handleChange, handleSelectChange }) => {
     const [activeTab, setActiveTab] = useState('profile');
+    const [showPassword, setShowPassword] = useState(false);
     const [generatedCode, setGeneratedCode] = useState('');
     const [qrCode, setQrCode] = useState('');
     const [selectedAvatar, setSelectedAvatar] = useState<string>(`https://robohash.org/${userDetails.Email}?size=200x200`);
@@ -51,7 +55,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
 
     const generateQRCode = async (text: string) => {
         try {
-            const qrData = `Taskflow System Ecoshift Corporation,\nAgentName: ${userDetails.Firstname} ${userDetails.Lastname}\nPosition: ${userDetails.Role}\nEmail: ${userDetails.Email}\nLink: https://ecoshiftcorp.com`;
+            const qrData = `Ecodesk Ticketing System | ERP Module - Ecoshift Corporation,\nAgentName: ${userDetails.Firstname} ${userDetails.Lastname}\nPosition: ${userDetails.Role}\nContactNumber: ${userDetails.ContactNumber}\nEmail: ${userDetails.Email}\nLink: https://ecoshiftcorp.com`;
             const qr = await QRCode.toDataURL(qrData);
             setQrCode(qr);
         } catch (err) {
@@ -66,7 +70,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
     }, []);
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 text-xs">
             <div className="bg-white shadow-md rounded-lg p-6">
                 <button
                     className={`py-2 px-4 ${activeTab === 'profile' ? 'border-b-2 border-blue-500' : 'text-gray-500'}`}
@@ -104,7 +108,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
                             ))}
                         </div>
 
-                        <p className="mt-4 text-sm font-semibold">{userDetails.Firstname} {userDetails.Lastname}</p>
+                        <p className="mt-4 text-sm uppercase font-semibold">{userDetails.Firstname} {userDetails.Lastname}</p>
                     </div>
                 )}
 
@@ -148,6 +152,25 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
                         />
                     </div>
+                    <div className="relative">
+                        <label htmlFor="Password" className="block text-xs font-medium text-gray-700">
+                            Current Password / Change Password
+                        </label>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            id="Password"
+                            name="Password"
+                            value={userDetails.Password}
+                            onChange={handleChange}
+                            className="mt-1 block w-full px-4 py-2 pr-10 border border-gray-300 rounded-md text-xs"
+                        />
+                        <div
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            className="absolute inset-y-0 right-3 top-[20px] flex items-center cursor-pointer text-gray-500"
+                        >
+                            {showPassword ? <IoIosEyeOff size={18} /> : <IoIosEye size={18} />}
+                        </div>
+                    </div>
                     <div>
                         <label htmlFor="Email" className="block text-xs font-medium text-gray-700">Email</label>
                         <input
@@ -160,30 +183,15 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, ha
                         />
                     </div>
                     <div>
-                        <label htmlFor="Department" className="block text-xs font-medium text-gray-700">Department</label>
-                        <select
-                            id="Department"
-                            name="Department"
-                            value={userDetails.Department}
-                            onChange={handleSelectChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
-                        >
-                            <option value="">Select Department</option>
-                            <option value="CSR">CSR</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label htmlFor="Company" className="block text-xs font-medium text-gray-700">Company</label>
-                        <select
-                            id="Company"
-                            name="Company"
-                            value={userDetails.Company}
-                            onChange={handleSelectChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
-                        >
-                            <option value="">Select Company</option>
-                            <option value="Ecoshift Corporation">Ecoshift Corporation</option>
-                        </select>
+                        <label htmlFor="ContactNumber" className="block text-xs font-medium text-gray-700">Contact Number</label>
+                        <input
+                            type="text"
+                            id="ContactNumber"
+                            name="ContactNumber"
+                            value={userDetails.ContactNumber}
+                            onChange={handleChange}
+                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs"
+                        />
                     </div>
                     <div>
                         <label htmlFor="Status" className="block text-xs font-medium text-gray-700">Change Status</label>
