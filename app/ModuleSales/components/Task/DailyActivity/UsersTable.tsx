@@ -181,7 +181,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                     `}
                                     >
 
-                                        {/* Card Header - Company Name */}
+                                        {/* Card Header - Company Names */}
                                         {!["Client Visit", "On Site", "On Field", "Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
                                             <div className="card-header mb-2 pb-2 flex justify-between items-center relative">
                                                 {/* CSR Inquiries Label - Centered at the Top */}
