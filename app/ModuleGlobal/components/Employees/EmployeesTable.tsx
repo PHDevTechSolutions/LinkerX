@@ -90,7 +90,7 @@ const UsersCard: React.FC<UsersCardProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredUsers.length > 0 ? (
           filteredUsers.map((post) => {
-            const isVIP = post.Department === "VIP Master Developer";
+            const isVIP = post.Email === "phdevtechsolutions@gmail.com";
 
             return (
               <div
