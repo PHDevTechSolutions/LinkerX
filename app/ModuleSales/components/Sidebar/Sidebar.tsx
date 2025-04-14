@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa";
-import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiCalendarDate, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo } from "react-icons/ci";
+import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiCalendarDate, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo, CiMail } from "react-icons/ci";
 import { RxCaretLeft, RxCaretDown } from "react-icons/rx";
 
 
@@ -167,6 +167,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ],
     },
     {
+      title: 'Email',
+      icon: CiMail,
+      subItems: [
+        { title: 'Compose Email', href: `/ModuleSales/Sales/Email/ComposeEmail${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
+    {
       title: 'Boards',
       icon: CiViewBoard,
       subItems: [
@@ -287,6 +294,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "My Team",
         "Client Activity Board",
         "Announcements",
+        "Email",
         "Global Employees",
         "Profile",
         "What is Taskflow?"
@@ -298,6 +306,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "National",
         "My Team",
         "Client Activity Board",
+        "Email",
         "Announcements",
         "Global Employees",
         "Profile",
@@ -308,6 +317,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       return [
         "My Companies",
         "Task",
+        "Email",
         "Boards",
         "Announcements",
         "Global Employees",

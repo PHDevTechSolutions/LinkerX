@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { FaBuildingUser, FaPlus, FaMinus } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa";
 import TaskflowIcon from './TaskflowIcon';
-import { CiGrid42, CiInboxIn, CiWavePulse1, CiUser, CiCircleQuestion, CiSettings, CiCircleInfo } from "react-icons/ci";
+import { CiGrid42, CiInboxIn, CiWavePulse1, CiUser, CiCircleQuestion, CiSettings, CiCircleInfo, CiMail } from "react-icons/ci";
 import { RxCaretLeft, RxCaretDown } from "react-icons/rx";
 
 import Link from 'next/link';
@@ -81,6 +81,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ],
     },
     {
+      title: 'Email',
+      icon: CiMail,
+      subItems: [
+        { title: 'Compose Email', href: `/ModuleCSR/CSR/Email/ComposeEmail${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
+    {
       title: 'Reports',
       icon: CiWavePulse1,
       subItems: [
@@ -154,6 +161,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       return item.title === "CSR Inquiries" || 
       item.title === "Customer Database" || 
       item.title === "Reports" || 
+      item.title === "Email" || 
       item.title === "Eco Help" ||
       item.title === "Global Employees" ||  
       item.title === "Settings" || 
