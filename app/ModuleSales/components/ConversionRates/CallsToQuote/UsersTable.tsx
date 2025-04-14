@@ -193,4 +193,4 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
     );
 };
 
-export default UsersCard;
+export default React.memo(UsersCard);
