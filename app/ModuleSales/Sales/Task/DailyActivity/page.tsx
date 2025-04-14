@@ -499,22 +499,21 @@ const ListofUser: React.FC = () => {
     // Fetch companies from API with ReferenceID as query param
     const fetchCompanies = async () => {
         try {
-            const response = await fetch(
-                `/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${userDetails.ReferenceID}`
-            );
+            const referenceid = encodeURIComponent(userDetails.ReferenceID); // Encode the reference ID
+            const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`);
             const data = await response.json();
-
+    
             if (data.success && Array.isArray(data.data)) {
-                // Apply type to company parameter
                 const activeCompanies = data.data.filter((company: Company) => company.status === "Active" || company.status === "Used");
                 setPost(activeCompanies);
             } else {
-                
                 setPost([]);
             }
         } catch (error) {
+            console.error("Error fetching companies:", error);
         }
     };
+    
 
     function calculateDate(selectedDuration: string, selectedTime: string) {
         // Get current date in Manila timezone

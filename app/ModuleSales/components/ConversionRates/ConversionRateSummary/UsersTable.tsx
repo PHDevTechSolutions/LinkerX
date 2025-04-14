@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 interface Post {
     id: string;
@@ -41,10 +41,9 @@ const formatCurrency = (amount: number) => {
     return amount.toLocaleString("en-US", { minimumFractionDigits: 0 });
 };
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
+const UsersCard: React.FC<UsersCardProps> = React.memo(({ posts }) => {
     const [groupedData, setGroupedData] = useState<{ [key: string]: GroupedData }>({});
     const [activeTab, setActiveTab] = useState("MTD");
-
     const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1); // Default to current month
     const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear()); // Default to current year
 
@@ -54,7 +53,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
 
     const years = Array.from(new Array(10), (_, index) => new Date().getFullYear() - index); // Last 10 years
 
-    useEffect(() => {
+    // Memoize the grouped data calculation to avoid recalculating on each render
+    const grouped = useMemo(() => {
         const fixedDays = 26;
         const today = new Date();
         const currentYear = today.getFullYear();
@@ -73,7 +73,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
             );
         });
 
-        const grouped = filteredPosts.reduce((acc: { [key: string]: GroupedData }, post: Post) => {
+        return filteredPosts.reduce((acc: { [key: string]: GroupedData }, post: Post) => {
             const date = new Date(post.date_created);
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
@@ -118,9 +118,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
 
             return acc;
         }, {});
-
-        setGroupedData(grouped);
     }, [posts, activeTab, selectedMonth, selectedYear]);
+
+    useEffect(() => {
+        setGroupedData(grouped);
+    }, [grouped]);
 
     return (
         <div className="overflow-x-auto">
@@ -205,6 +207,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
             </table>
         </div>
     );
-};
+});
 
 export default UsersCard;

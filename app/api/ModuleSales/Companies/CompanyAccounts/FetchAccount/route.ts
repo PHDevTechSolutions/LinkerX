@@ -10,9 +10,10 @@ const sql = neon(databaseUrl);
 
 export async function GET(req: Request) {
     try {
-        // Extract query parameters from the request URL
         const url = new URL(req.url);
         const referenceid = url.searchParams.get("referenceid");
+
+        console.log("Received referenceid:", referenceid); // Log the referenceid
 
         if (!referenceid) {
             return NextResponse.json(
@@ -21,10 +22,14 @@ export async function GET(req: Request) {
             );
         }
 
-        // Fetch accounts filtered by referenceid
         const accounts = await sql`SELECT * FROM accounts WHERE referenceid = ${referenceid};`;
 
-        console.log("Fetched accounts:", accounts); // Debugging line
+        if (accounts.length === 0) {
+            return NextResponse.json(
+                { success: false, error: "No accounts found with the provided reference ID." },
+                { status: 404 }
+            );
+        }
 
         return NextResponse.json({ success: true, data: accounts }, { status: 200 });
     } catch (error: any) {
@@ -35,5 +40,6 @@ export async function GET(req: Request) {
         );
     }
 }
+
 
 export const dynamic = "force-dynamic"; // Ensure fresh data fetch
