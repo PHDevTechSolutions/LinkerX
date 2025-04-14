@@ -393,4 +393,4 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
     );
 };
 
-export default UsersCard;
+export default React.memo(UsersCard);
