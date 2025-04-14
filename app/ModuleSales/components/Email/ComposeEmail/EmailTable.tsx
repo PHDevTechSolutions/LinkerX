@@ -43,23 +43,48 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
     // Handle Reply action in Inbox
     const handleReply = (email: EmailData) => {
         setReplyToEmail(email);
-        setReplyMessage("");
-        setShowReplyModal(true);
+        setReplyMessage("");  // Clear the previous reply message
+        setShowReplyModal(true);  // Show the modal for replying
     };
 
-    const handleSendReply = () => {
+    const handleSendReply = async () => {
+        if (!replyToEmail) return; // Make sure there is an email to reply to
+
+        // Create the new email reply
         const newEmail = {
             sender: userDetails.Email,
-            recepient: replyToEmail?.sender || "",
-            subject: `RE: ${replyToEmail?.subject}`,
+            recepient: replyToEmail.sender || "",  // Replying to the sender
+            subject: `RE: ${replyToEmail.subject}`,
             message: replyMessage,
             date_created: new Date().toISOString(),
-            referenceid: replyToEmail?.referenceid || "",
+            referenceid: replyToEmail.referenceid || "",
             status: "Pending",
-            id: crypto.randomUUID(),
+            id: crypto.randomUUID(), // Generate a unique ID for the reply
         };
+
         console.log("Sending reply:", newEmail);
-        setShowReplyModal(false);
+
+        try {
+            // Sending the new reply to the backend API
+            const response = await fetch("/api/ModuleSales/Email/ComposeEmail/ReplyEmail", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newEmail),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log("Reply sent successfully:", data);
+                setShowReplyModal(false); // Close the modal on success
+            } else {
+                console.error("Failed to send reply:", data.error);
+            }
+        } catch (error) {
+            console.error("Error sending reply:", error);
+        }
     };
 
     return (
