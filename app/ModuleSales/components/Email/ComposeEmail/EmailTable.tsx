@@ -27,7 +27,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
     const [replyToEmail, setReplyToEmail] = useState<EmailData | null>(null);
     const [replyMessage, setReplyMessage] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [emailsPerPage] = useState(5); // Adjust this value for number of emails per page
+    const [emailsPerPage] = useState(50);
 
     const removeHtmlTagsAndSignature = (html: string) => {
         const cleanedText = html.replace(/<[^>]*>/g, "");
@@ -57,7 +57,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
 
     const groupedEmails = activeTab === "recipient" ? groupBySender(filteredPosts) : null;
 
-    // Pagination Logic
     const indexOfLastEmail = currentPage * emailsPerPage;
     const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
     const currentEmails = filteredPosts.slice(indexOfFirstEmail, indexOfLastEmail);
@@ -73,7 +72,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
         setSelectedEmails(updatedSelection);
     };
 
-    // Handle Select All checkbox
     const handleSelectAll = () => {
         if (selectedEmails.size === currentEmails.length) {
             setSelectedEmails(new Set());
@@ -142,7 +140,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
         }
     };
 
-    // Pagination Handler
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     // Pagination Component
@@ -189,7 +186,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
                 <table className="min-w-full table-auto border-collapse text-xs">
                     <thead>
                         <tr className="bg-gray-200">
-                            <th className="px-4 py-2 text-left">
+                        <th className="px-4 py-2 text-left">
                                 <input
                                     type="checkbox"
                                     checked={selectedEmails.size === currentEmails.length}
@@ -206,28 +203,62 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
                     </thead>
 
                     <tbody>
-                        {currentEmails.map((email) => (
-                            <tr key={email.id} className="border-b hover:bg-gray-100">
-                                <td className="px-4 py-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedEmails.has(email.id)}
-                                        onChange={() => handleCheckboxChange(email.id)}
-                                    />
-                                </td>
-                                <td className="px-4 py-2 uppercase font-semibold">{email.subject}</td>
-                                <td className="px-4 py-2 capitalize">{removeHtmlTagsAndSignature(email.message)}</td>
-                                <td className="px-4 py-2">{format(parseISO(email.date_created), "MMM dd, yyyy - h:mm:ss a")}</td>
-                                <td className="px-4 py-2">
-                                    <button
-                                        onClick={() => handleReply(email)}
-                                        className="text-blue-600 hover:underline"
-                                    >
-                                        Reply
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {activeTab === "recipient" ? (
+                            Object.keys(groupedEmails || {}).map((sender) => (
+                                <React.Fragment key={sender}>
+                                    <tr className="bg-gray-300">
+                                        <td colSpan={5} className="px-4 py-2 font-semibold">
+                                            {sender}
+                                        </td>
+                                    </tr>
+                                    {groupedEmails![sender].map((email) => (
+                                        <tr key={email.id} className="border-b hover:bg-gray-100">
+                                            <td className="px-4 py-2">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedEmails.has(email.id)}
+                                                    onChange={() => handleCheckboxChange(email.id)}
+                                                />
+                                            </td>
+                                            <td className="px-4 py-2 uppercase font-semibold">{email.subject}</td>
+                                            <td className="px-4 py-2 capitalize">{removeHtmlTagsAndSignature(email.message)}</td>
+                                            <td className="px-4 py-2">{format(parseISO(email.date_created), "MMM dd, yyyy - h:mm:ss a")}</td>
+                                            <td className="px-4 py-2">
+                                                <button
+                                                    onClick={() => handleReply(email)}
+                                                    className="text-blue-600 hover:underline"
+                                                >
+                                                    Reply
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </React.Fragment>
+                            ))
+                        ) : (
+                            filteredPosts.map((email) => (
+                                <tr key={email.id} className="border-b hover:bg-gray-100">
+                                    <td className="px-4 py-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedEmails.has(email.id)}
+                                            onChange={() => handleCheckboxChange(email.id)}
+                                        />
+                                    </td>
+                                    <td className="px-4 py-2 uppercase font-semibold">{email.subject}</td>
+                                    <td className="px-4 py-2 capitalize">{removeHtmlTagsAndSignature(email.message)}</td>
+                                    <td className="px-4 py-2">{format(parseISO(email.date_created), "MMM dd, yyyy - h:mm:ss a")}</td>
+                                    <td className="px-4 py-2">
+                                        <button
+                                            onClick={() => handleEdit(email)} // Use handleEdit in the Sent tab
+                                            className="text-blue-600 hover:underline"
+                                        >
+                                            Edit
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
 
@@ -246,6 +277,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
                         ))}
                     </ul>
                 </div>
+
             </div>
 
             {/* Reply Modal */}
@@ -299,9 +331,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
                                 </button>
                                 <button
                                     onClick={handleSendReply}
-                                    className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                                    className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
                                 >
-                                    Send Reply
+                                    Send
                                 </button>
                             </div>
                         </div>
