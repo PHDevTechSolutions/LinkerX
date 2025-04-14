@@ -144,6 +144,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
 
   const menuItems = [
     {
+      title: 'Email',
+      icon: CiUser,
+      subItems: [
+        { title: 'Compose Email', href: `/ModuleGlobal/ERP/Email/ComposeEmail${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
+    {
       title: 'Taskflow',
       icon: TaskflowIcon,
       subItems: [
