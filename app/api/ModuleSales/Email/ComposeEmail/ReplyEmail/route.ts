@@ -12,20 +12,19 @@ const sql = neon(databaseUrl);
 
 // Function to insert user data into the database
 async function addUser(
-    referenceid: string,
     sender: string,
     recepient: string,
     subject: string,
     message: string
 ) {
     try {
-        if (!referenceid || !sender || !recepient || !subject || !message) {
+        if (!sender || !recepient || !subject || !message) {
             throw new Error("All fields are required.");
         }
 
         const result = await sql`
-            INSERT INTO email (referenceid, sender, recepient, subject, message, date_created) 
-            VALUES (${referenceid}, ${sender}, ${recepient}, ${subject}, ${message}, NOW()) 
+            INSERT INTO email (sender, recepient, subject, message, date_created) 
+            VALUES (${sender}, ${recepient}, ${subject}, ${message}, NOW()) 
             RETURNING *;
         `;
 
@@ -42,9 +41,9 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         console.log("Received body:", body); // Log the body received from the frontend
 
-        const { referenceid, sender, recepient, subject, message } = body;
+        const { sender, recepient, subject, message } = body;
 
-        const result = await addUser(referenceid, sender, recepient, subject, message);
+        const result = await addUser(sender, recepient, subject, message);
         return NextResponse.json(result);
     } catch (error: any) {
         console.error("Error in POST /api/addTask:", error);

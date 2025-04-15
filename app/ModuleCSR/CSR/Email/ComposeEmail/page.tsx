@@ -175,9 +175,9 @@ const ListofUser: React.FC = () => {
                                         </div>
 
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">Taskflow - Email</h2>
+                                            <h2 className="text-lg font-bold mb-2">XendMail</h2>
                                             <p className="text-xs text-gray-600 mb-4">
-                                                The <strong>Email</strong> feature allows users to compose new emails and efficiently manage their status updates. It simplifies the workflow by providing a clear visual representation of the email’s current status. Users can categorize emails into stages such as "Draft," "Sent," "Pending," and "Archived," enabling easy tracking and progress monitoring. This system enhances team collaboration by allowing users to quickly update the status of each email, improving communication efficiency and ensuring smooth coordination across the team.
+                                                The <strong>XendMail</strong> feature allows users to compose new emails and efficiently manage their status updates. It simplifies the workflow by providing a clear visual representation of the email’s current status. Users can categorize emails into stages such as "Draft," "Sent," "Pending," and "Archived," enabling easy tracking and progress monitoring. This system enhances team collaboration by allowing users to quickly update the status of each email, improving communication efficiency and ensuring smooth coordination across the team.
                                             </p>
 
                                             <UsersCard

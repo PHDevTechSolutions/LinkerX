@@ -641,7 +641,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                                   <p className="text-[10px] mt-1 font-semibold">
                                     Message: {email.message.length > 100 ? `${email.message.substring(0, 100)}...` : email.message}
                                   </p>
-                                  <span className="text-[8px] mt-1 block">{new Date(email.date_created).toLocaleString()}</span>
+                                  <span className="text-[8px] mt-1 block">{new Date(email.date_created).toLocaleString()} / Via XendMail</span>
                                   <button
                                     onClick={() => UpdateEmailStatus(email.id.toString())} // Convert email.id to string
                                     disabled={loadingId === email.id.toString()} // Convert email.id to string for comparison

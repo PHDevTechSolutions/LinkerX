@@ -592,11 +592,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
     if (userReferenceId && userEmail) {
       fetchEmailData(); // Initial fetch
-  
+
       const interval = setInterval(() => {
         fetchEmailData(); // Fetch every 30 seconds
       }, 30000); // 30 seconds
-  
+
       // Clean up interval on component unmount
       return () => clearInterval(interval);
     }
@@ -1054,37 +1054,44 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                     {emailNotifications.length > 0 ? (
                       <ul className="space-y-2">
                         {emailNotifications
-                          .filter((notif) => notif.status === "Pending") // Filter only "Pending" status emails
-                          .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by latest date
-                          .map((email, index) => (
-                            <li
-                              key={index}
-                              className="p-3 mb-2 hover:bg-blue-200 hover:text-black text-xs text-gray-900 bg-blue-900 text-white capitalize text-left rounded-md relative"
-                            >
-                              <p className="text-[10px] mt-5 font-bold uppercase italic">Sender: {email.sender}</p>
-                              <p className="text-[10px] mt-5 font-bold uppercase italic">Subject: {email.subject}</p>
-                              <p className="text-[10px] mt-1 font-semibold">
-                                Message: {email.message.length > 100 ? `${email.message.substring(0, 100)}...` : email.message}
-                              </p>
-                              <span className="text-[8px] mt-1 block">{new Date(email.date_created).toLocaleString()}</span>
-                              <button
-                                onClick={() => UpdateEmailStatus(email.id.toString())} // Convert email.id to string
-                                disabled={loadingId === email.id.toString()} // Convert email.id to string for comparison
-                                className={`text-[9px] mb-2 cursor-pointer absolute top-2 right-2 ${email.status === "Read"
-                                  ? "text-green-600 font-bold"
-                                  : loadingId === email.id.toString()
-                                    ? "text-gray-500 cursor-not-allowed"
-                                    : "text-white hover:text-blue-800"
+                          .filter((notif) => notif.status === "Pending")
+                          .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime())
+                          .map((email, index) => {
+                            const isFromPhDev = email.sender === "phdevtechsolutions@gmail.com";
+                            return (
+                              <li
+                                key={index}
+                                className={`p-3 mb-2 hover:bg-blue-200 hover:text-black text-xs capitalize text-left rounded-md relative
+                                ${isFromPhDev
+                                    ? "bg-black text-green-700"
+                                    : "bg-blue-900 text-white"
                                   }`}
                               >
-                                {loadingId === email.id.toString()
-                                  ? "Loading..."
-                                  : email.status === "Read"
-                                    ? "Read"
-                                    : "Mark as Read"}
-                              </button>
-                            </li>
-                          ))}
+                                <p className="text-[10px] mt-5 font-bold uppercase italic">Sender: {email.sender}</p>
+                                <p className="text-[10px] mt-5 font-bold uppercase italic">Subject: {email.subject}</p>
+                                <p className="text-[10px] mt-1 font-semibold">
+                                  Message: {email.message.length > 100 ? `${email.message.substring(0, 100)}...` : email.message}
+                                </p>
+                                <span className="text-[8px] mt-1 block">{new Date(email.date_created).toLocaleString()} / Via XendMail</span>
+                                <button
+                                  onClick={() => UpdateEmailStatus(email.id.toString())}
+                                  disabled={loadingId === email.id.toString()}
+                                  className={`text-[9px] mb-2 cursor-pointer absolute top-2 right-2 ${email.status === "Read"
+                                      ? "text-green-600 font-bold"
+                                      : loadingId === email.id.toString()
+                                        ? "text-gray-500 cursor-not-allowed"
+                                        : "text-white hover:text-blue-800"
+                                    }`}
+                                >
+                                  {loadingId === email.id.toString()
+                                    ? "Loading..."
+                                    : email.status === "Read"
+                                      ? "Read"
+                                      : "Mark as Read"}
+                                </button>
+                              </li>
+                            );
+                          })}
                       </ul>
                     ) : (
                       <div>No pending notifications</div> // Placeholder for when there are no pending emails
