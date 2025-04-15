@@ -558,18 +558,18 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   useEffect(() => {
     const fetchEmailData = async () => {
       try {
-        if (!userReferenceId) {
+        if (!userEmail) {
           console.error("userReferenceId is missing.");
           return;
         }
 
-        const res = await fetch(`/api/ModuleCSR/Email/FetchEmail?referenceId=${userReferenceId}`);
+        const res = await fetch(`/api/ModuleCSR/Email/FetchEmail?recepient=${userEmail}`);
         if (!res.ok) {
           throw new Error(`Request failed with status ${res.status}`);
         }
 
         const jsonResponse = await res.json();
-        console.log("API Response:", jsonResponse);  // Log to inspect the response
+        console.log("API Response:", jsonResponse); // Log to inspect the response
 
         // Ensure that data is an array
         const data: Email[] = Array.isArray(jsonResponse.data) ? jsonResponse.data : [];
@@ -592,11 +592,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
     if (userReferenceId && userEmail) {
       fetchEmailData(); // Initial fetch
-
+  
       const interval = setInterval(() => {
         fetchEmailData(); // Fetch every 30 seconds
       }, 30000); // 30 seconds
-
+  
       // Clean up interval on component unmount
       return () => clearInterval(interval);
     }
@@ -827,6 +827,8 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   };
 
+
+
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center">
@@ -892,6 +894,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
             ) : null;
           })()}
         </button>
+
 
         {showSidebar && (
           <motion.div
@@ -1080,7 +1083,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                                     ? "Read"
                                     : "Mark as Read"}
                               </button>
-
                             </li>
                           ))}
                       </ul>

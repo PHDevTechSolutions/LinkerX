@@ -17,9 +17,12 @@ interface Notification {
   typecall: string;
   message: string;
   type: string;
-  status: string;
+  csragent: string;
+  agentfullname: string;
+  _id: string;
   recepient: string;
   sender: string;
+  status: string;
 }
 
 interface SidebarSubLink {
@@ -70,6 +73,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const [allNotifications, setAllNotifications] = useState<Notification[]>([]); // 🔹 All notifications
   const notificationRef = useRef<HTMLDivElement>(null);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [usersList, setUsersList] = useState<any[]>([]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -297,6 +301,20 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     fetchUserData();
   }, []);
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("/api/getUsers"); // API endpoint mo
+        const data = await response.json();
+        setUsersList(data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -390,29 +408,32 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   useEffect(() => {
     const fetchEmailData = async () => {
       try {
-        if (!userReferenceId) {
-          console.error("userReferenceId is missing.");
+        if (!userEmail) {
+          console.error("userEmail is missing.");
           return;
         }
 
-        const res = await fetch(`/api/ModuleSales/Email/ComposeEmail/FetchEmailNotification?referenceId=${userReferenceId}`);
+        const res = await fetch(`/api/ModuleSales/Email/ComposeEmail/FetchEmailNotification?recepient=${userEmail}`);
         if (!res.ok) {
           throw new Error(`Request failed with status ${res.status}`);
         }
 
         const jsonResponse = await res.json();
-        console.log("API Response:", jsonResponse); 
+        console.log("API Response:", jsonResponse);  // Log to inspect the response
 
+        // Ensure that data is an array
         const data: Email[] = Array.isArray(jsonResponse.data) ? jsonResponse.data : [];
 
+        // Filter emails with status 'Pending' and NotificationStatus not 'Read', 
+        // and check if the recipient email matches the user's email
         const filteredEmails = data.filter(
-          (item: Email) =>
+          (item: Email) => // Specify the type for 'item'
             item.status === "Pending" &&
-            item.recepient === userEmail
+            item.recepient === userEmail // Match recipient's email to your email
         );
 
         if (filteredEmails.length > 0) {
-          setEmailNotifications(filteredEmails);
+          setEmailNotifications(filteredEmails); // Update state with filtered emails
         }
       } catch (error) {
         console.error("Error fetching email data:", error);
@@ -420,12 +441,13 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     };
 
     if (userReferenceId && userEmail) {
-      fetchEmailData(); 
+      fetchEmailData(); // Initial fetch
 
       const interval = setInterval(() => {
-        fetchEmailData(); 
-      }, 30000);
+        fetchEmailData(); // Fetch every 30 seconds
+      }, 30000); // 30 seconds
 
+      // Clean up interval on component unmount
       return () => clearInterval(interval);
     }
   }, [userReferenceId, userEmail]);
@@ -478,6 +500,13 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   };
 
+  const emailCount = emailNotifications.filter(
+    (notif) => notif.status === "Pending" && notif.recepient === userEmail
+  ).length;
+
+  const totalNotifCount = notifications.filter((notif) => notif.status === "Unread").length + emailCount;
+
+
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center space-x-4">
@@ -522,12 +551,13 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         {/* Notifications */}
         <button onClick={() => setShowSidebar((prev) => !prev)} className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full">
           <CiBellOn size={20} />
-          {notifications.filter((notif) => notif.status === "Unread").length > 0 && (
+          {totalNotifCount > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {notifications.filter((notif) => notif.status === "Unread").length}
+              {totalNotifCount}
             </span>
           )}
         </button>
+
 
         {/* Notification Dropdown */}
         {showSidebar && (
@@ -621,8 +651,8 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                     {emailNotifications.length > 0 ? (
                       <ul className="space-y-2">
                         {emailNotifications
-                          .filter((notif) => notif.status === "Pending")
-                          .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime())
+                          .filter((notif) => notif.status === "Pending") // Filter only "Pending" status emails
+                          .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by latest date
                           .map((email, index) => (
                             <li
                               key={index}
@@ -635,8 +665,8 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                               </p>
                               <span className="text-[8px] mt-1 block">{new Date(email.date_created).toLocaleString()}</span>
                               <button
-                                onClick={() => UpdateEmailStatus(email.id.toString())}
-                                disabled={loadingId === email.id.toString()}
+                                onClick={() => UpdateEmailStatus(email.id.toString())} // Convert email.id to string
+                                disabled={loadingId === email.id.toString()} // Convert email.id to string for comparison
                                 className={`text-[9px] mb-2 cursor-pointer absolute top-2 right-2 ${email.status === "Read"
                                   ? "text-green-600 font-bold"
                                   : loadingId === email.id.toString()

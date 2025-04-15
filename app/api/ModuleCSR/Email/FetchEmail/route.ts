@@ -11,16 +11,17 @@ const sql = neon(databaseUrl);
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const referenceid = searchParams.get("referenceId"); // Use 'referenceId' for PostgreSQL query.
+    const userEmail = searchParams.get("recepient"); // Use 'referenceId' for PostgreSQL query.
 
-    if (!referenceid) {
-      return NextResponse.json({ success: false, error: "is required" }, { status: 400 });
+    if (!userEmail) {
+      return NextResponse.json({ success: false, error: "'referenceId' and 'userEmail' are required" }, { status: 400 });
     }
 
+    // Modified query: Remove 'sender' condition and only match 'recipient'
     const inquiries = await sql`
       SELECT * 
       FROM email 
-      WHERE referenceid = ${referenceid};
+      WHERE recepient = ${userEmail} 
     `;
 
     return NextResponse.json({ success: true, data: inquiries }, { status: 200 });
