@@ -18,14 +18,13 @@ interface EmailData {
 interface UsersCardProps {
     posts: EmailData[];
     handleEdit: (post: EmailData) => void;
-    handleDelete: (postId: string) => void;
     userDetails: {
         Email: string;
     };
     fetchAccount: () => Promise<void>;
 }
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete, userDetails, fetchAccount }) => {
+const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails, fetchAccount }) => {
     const [activeTab, setActiveTab] = useState<"sender" | "recipient">("sender");
     const [selectedEmails, setSelectedEmails] = useState<Set<string>>(new Set());
     const [showReplyModal, setShowReplyModal] = useState(false);
@@ -247,16 +246,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete, 
                                     <td className="px-4 py-2">
                                         <button
                                             onClick={() => handleEdit(email)} // Use handleEdit in the Sent tab
-                                            className="text-blue-600 hover:underline mr-2"
+                                            className="text-blue-600 hover:underline"
                                         >
                                             Edit
                                         </button>
-                                        <button
-                                            onClick={() => handleDelete(email.id)} // Use handleEdit in the Sent tab
-                                            className="text-red-600 hover:underline"
-                                        >
-                                            Delete
-                                        </button>
+                                        
                                     </td>
                                 </tr>
                             ))

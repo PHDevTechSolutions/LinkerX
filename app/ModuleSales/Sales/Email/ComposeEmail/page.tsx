@@ -142,37 +142,6 @@ const ListofUser: React.FC = () => {
         setShowForm(true);
     };
 
-    const confirmDelete = (postId: string) => {
-        setPostToDelete(postId);
-        setShowDeleteModal(true);
-    };
-
-    const handleDelete = async () => {
-        if (!postToDelete) return;
-        try {
-            const response = await fetch(`/api/ModuleSales/Email/ComposeEmail/DeleteEmail`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ id: postToDelete }),
-            });
-
-            if (response.ok) {
-                setPosts(posts.filter((post) => post.id !== postToDelete));
-                toast.success("Post deleted successfully.");
-            } else {
-                toast.error("Failed to delete post.");
-            }
-        } catch (error) {
-            console.error("Error deleting post:", error);
-            toast.error("Failed to delete post.");
-        } finally {
-            setShowDeleteModal(false);
-            setPostToDelete(null);
-        }
-    };
-
     return (
         <SessionChecker>
             <ParentLayout>
@@ -214,25 +183,11 @@ const ListofUser: React.FC = () => {
                                             <UsersCard
                                                 posts={currentPosts}
                                                 handleEdit={(user) => handleEdit(user)}
-                                                handleDelete={confirmDelete}
                                                 userDetails={userDetails}
                                                 fetchAccount={fetchAccount}
                                             />
                                         </div>
                                     </>
-                                )}
-
-                                {showDeleteModal && (
-                                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1000]">
-                                        <div className="bg-white p-4 rounded shadow-lg">
-                                            <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
-                                            <p className="text-xs">Are you sure you want to delete this post?</p>
-                                            <div className="mt-4 flex justify-end">
-                                                <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2 flex items-center gap-1" onClick={handleDelete}><CiTrash size={20} />Delete</button>
-                                                <button className="bg-gray-300 text-xs px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowDeleteModal(false)}><CiCircleRemove size={20} /> Cancel</button>
-                                            </div>
-                                        </div>
-                                    </div>
                                 )}
 
                                 <ToastContainer className="text-xs" />
