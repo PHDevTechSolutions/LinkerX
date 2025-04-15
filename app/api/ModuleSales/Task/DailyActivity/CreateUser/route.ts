@@ -35,7 +35,7 @@ async function addUser(data: any) {
         ];
 
         const activityValues = [
-            referenceid, manager, tsm, companyname, contactperson,
+            referenceid || null, manager || null, tsm || companyname, contactperson,
             contactnumber, emailaddress, typeclient, address, area,
             projectname, projectcategory, projecttype, source,
             activitystatus || null, activitynumber || null, targetquota || null

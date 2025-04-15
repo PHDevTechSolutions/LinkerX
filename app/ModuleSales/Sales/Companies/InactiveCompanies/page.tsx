@@ -126,11 +126,12 @@ const ListofUser: React.FC = () => {
             // Get the reference ID from userDetails
             const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
 
-            const matchesRole = userDetails.Role === "Super Admin"
-                ? true // Super Admin sees all
-                : userDetails.Role === "Territory Sales Associate"
-                    ? post?.referenceid === referenceID // Manager sees only assigned companies
-                    : false; // Default false if no match
+            const matchesRole =
+                userDetails.Role === "Super Admin"
+                    ? true // Super Admin sees all data
+                    : userDetails.Role === "Territory Sales Associate" || userDetails.Role === "Territory Sales Manager"
+                        ? post?.referenceid === referenceID // TSA and TSM see only their assigned companies
+                        : false;// Default false if no match
 
             // Check if the status is 'Inactive' and if the filters match
             const matchesStatus = post?.status === "Inactive";

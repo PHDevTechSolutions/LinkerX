@@ -209,11 +209,12 @@ const ListofUser: React.FC = () => {
 
             // Check if the role matches based on the user's role
             const matchesRole =
-                userDetails.Role === "Super Admin" // Super Admin sees all data
-                    ? true
-                    : userDetails.Role === "Territory Sales Associate"
-                        ? post?.referenceid === referenceID // Managers see only their assigned companies
+                userDetails.Role === "Super Admin"
+                    ? true // Super Admin sees all data
+                    : userDetails.Role === "Territory Sales Associate" || userDetails.Role === "Territory Sales Manager"
+                        ? post?.referenceid === referenceID // TSA and TSM see only their assigned companies
                         : false; // Default to false if no role matches
+            // Default to false if no role matches
 
             // Check if the post's status is either 'Active' or 'Used'
             const isActiveOrUsed = post?.status === "Active" || post?.status === "Used";

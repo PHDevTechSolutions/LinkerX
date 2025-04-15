@@ -120,6 +120,12 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const [showInput, setShowInput] = useState(false);
     const [previousCompany, setPreviousCompany] = useState<any>(null);
 
+    useEffect(() => {
+        if (!tsm && referenceid) {
+            settsm(referenceid);  // Set `tsm` from `referenceid` if `tsm` is empty
+        }
+      }, [referenceid, tsm]);
+
     // Handle the email selection and send request to the API
     const handleEmailSubmit = async () => {
         if (!emailaddress) {  // Check if emailaddress is empty or not
@@ -505,6 +511,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
         setcallback(formattedDate);
     };
+    
 
     return (
         <>

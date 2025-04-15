@@ -114,9 +114,12 @@ const ListofUser: React.FC = () => {
             const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
 
             // Check the user's role for filtering
-            const matchesRole = userDetails.Role === "Super Admin" || userDetails.Role === "Territory Sales Associate"
-                ? true // Both Super Admin and TSA can see the posts
-                : false; // Default false if no match
+            const matchesRole =
+                userDetails.Role === "Super Admin"
+                    ? true // Super Admin sees all data
+                    : userDetails.Role === "Territory Sales Associate" || userDetails.Role === "Territory Sales Manager"
+                        ? post?.referenceid === referenceID // TSA and TSM see only their assigned companies
+                        : false; // Default false if no match
 
             // Return the filtered result
             return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
