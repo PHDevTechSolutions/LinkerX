@@ -17,6 +17,11 @@ interface Notification {
   typecall: string;
   message: string;
   type: string;
+  csragent: string;
+  agentfullname: string;
+  _id: string;
+  recepient: string;
+  sender: string;
   status: string;
 }
 
@@ -38,13 +43,26 @@ interface NavbarProps {
   sidebarLinks: SidebarLink[];
 }
 
+type Email = {
+  id: number;
+  message: string;
+  Email: string;
+  subject: string;
+  status: string;
+  recepient: string;
+  sender: string;
+  date_created: string;
+  NotificationStatus: string;
+  recipientEmail: string;
+};
+
 const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkMode, sidebarLinks
 }) => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [userReferenceId, setUserReferenceId] = useState("");
   const [TargetQuota, setUserTargetQuota] = useState("");
   const [Role, setUserRole] = useState("");
-  const [userReferenceId, setUserReferenceId] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -55,6 +73,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const [allNotifications, setAllNotifications] = useState<Notification[]>([]); // 🔹 All notifications
   const notificationRef = useRef<HTMLDivElement>(null);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [usersList, setUsersList] = useState<any[]>([]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,11 +82,13 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const [showSidebar, setShowSidebar] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const [activeTab, setActiveTab] = useState<"notifications" | "messages">("notifications");
-  const [loadingId, setLoadingId] = useState<number | null>(null);
+  const [loadingId, setLoadingId] = useState<string | number | null>(null);
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedNotif, setSelectedNotif] = useState<any>(null);
   const [loadingRead, setLoadingRead] = useState<boolean>(false);
+
+  const [emailNotifications, setEmailNotifications] = useState<Email[]>([]);
 
 
   useEffect(() => {
@@ -371,6 +392,105 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   }, [notifications]);
 
+  useEffect(() => {
+    const fetchEmailData = async () => {
+      try {
+        if (!userEmail) {
+          console.error("userEmail is missing.");
+          return;
+        }
+
+        const res = await fetch(`/api/ModuleSales/Email/ComposeEmail/FetchEmailNotification?recepient=${userEmail}`);
+        if (!res.ok) {
+          throw new Error(`Request failed with status ${res.status}`);
+        }
+
+        const jsonResponse = await res.json();
+        console.log("API Response:", jsonResponse);  // Log to inspect the response
+
+        // Ensure that data is an array
+        const data: Email[] = Array.isArray(jsonResponse.data) ? jsonResponse.data : [];
+
+        const filteredEmails = data.filter(
+          (item: Email) => // Specify the type for 'item'
+            item.status === "Pending" &&
+            item.recepient === userEmail // Match recipient's email to your email
+        );
+
+        if (filteredEmails.length > 0) {
+          setEmailNotifications(filteredEmails); // Update state with filtered emails
+        }
+      } catch (error) {
+        console.error("Error fetching email data:", error);
+      }
+    };
+
+    if (userReferenceId && userEmail) {
+      fetchEmailData(); // Initial fetch
+
+      const interval = setInterval(() => {
+        fetchEmailData(); // Fetch every 30 seconds
+      }, 30000); // 30 seconds
+
+      // Clean up interval on component unmount
+      return () => clearInterval(interval);
+    }
+  }, [userReferenceId, userEmail]);
+
+
+  const UpdateEmailStatus = async (emailId: string) => {
+    try {
+      setLoadingId(emailId); // Start loading with the string ID
+
+      const emailIdAsString = emailId.toString(); // Ensure it's always a string
+
+      const response = await fetch("/api/ModuleSales/Email/ComposeEmail/UpdateStatus", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ids: [emailIdAsString], // Send emailId as an array
+          status: "Read",
+        }),
+      });
+
+      if (response.ok) {
+        // ✅ Update status to "Read"
+        const updatedEmails = emailNotifications.map((email) =>
+          email.id.toString() === emailIdAsString // Convert email.id to string for comparison
+            ? { ...email, status: "Read" }
+            : email
+        );
+        setEmailNotifications(updatedEmails);
+
+        // ✅ Remove after 1 minute
+        setTimeout(() => {
+          setEmailNotifications((prev) =>
+            prev.filter((email) => email.id.toString() !== emailIdAsString) // Convert to string for comparison
+          );
+        }, 60000); // 1 minute (60,000 ms)
+      } else {
+        const errorDetails = await response.json();
+        console.error("Error updating email status:", {
+          status: response.status,
+          message: errorDetails.message || "Unknown error",
+          details: errorDetails,
+        });
+      }
+    } catch (error) {
+      console.error("Error marking email as read:", error);
+    } finally {
+      setLoadingId(null); // Stop loading
+    }
+  };
+
+  const emailCount = emailNotifications.filter(
+    (notif) => notif.status === "Pending" && notif.recepient === userEmail
+  ).length;
+
+  const totalNotifCount = notifications.filter((notif) => notif.status === "Unread").length + emailCount;
+
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 border-b-4 border-gray-900 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center space-x-4">
@@ -415,9 +535,9 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         {/* Notifications */}
         <button onClick={() => setShowSidebar((prev) => !prev)} className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full">
           <CiBellOn size={20} />
-          {notifications.filter((notif) => notif.status === "pending").length > 0 && (
+          {totalNotifCount > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-              {notifications.filter((notif) => notif.status === "pending").length}
+              {totalNotifCount}
             </span>
           )}
         </button>
@@ -505,7 +625,49 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                         ))}
                     </ul>
                   ) : (
-                    <p className="text-xs p-4 text-gray-500 text-center">No new notifications</p>
+                    <div className="p-4 text-center text-xs text-gray-500">
+                      <>
+                        {emailNotifications.length > 0 ? (
+                          <ul className="space-y-2">
+                            {emailNotifications
+                              .filter((notif) => notif.status === "Pending") // Filter only "Pending" status emails
+                              .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by latest date
+                              .map((email, index) => (
+                                <li
+                                  key={index}
+                                  className="p-3 mb-2 hover:bg-blue-200 hover:text-black text-xs text-gray-900 bg-blue-900 text-white capitalize text-left rounded-md relative"
+                                >
+                                  <p className="text-[10px] mt-5 font-bold uppercase italic">Sender: {email.sender}</p>
+                                  <p className="text-[10px] mt-5 font-bold uppercase italic">Subject: {email.subject}</p>
+                                  <p className="text-[10px] mt-1 font-semibold">
+                                    Message: {email.message.length > 100 ? `${email.message.substring(0, 100)}...` : email.message}
+                                  </p>
+                                  <span className="text-[8px] mt-1 block">{new Date(email.date_created).toLocaleString()}</span>
+                                  <button
+                                    onClick={() => UpdateEmailStatus(email.id.toString())} // Convert email.id to string
+                                    disabled={loadingId === email.id.toString()} // Convert email.id to string for comparison
+                                    className={`text-[9px] mb-2 cursor-pointer absolute top-2 right-2 ${email.status === "Read"
+                                      ? "text-green-600 font-bold"
+                                      : loadingId === email.id.toString()
+                                        ? "text-gray-500 cursor-not-allowed"
+                                        : "text-white hover:text-blue-800"
+                                      }`}
+                                  >
+                                    {loadingId === email.id.toString()
+                                      ? "Loading..."
+                                      : email.status === "Read"
+                                        ? "Read"
+                                        : "Mark as Read"}
+                                  </button>
+
+                                </li>
+                              ))}
+                          </ul>
+                        ) : (
+                          <div>No pending notifications</div> // Placeholder for when there are no pending emails
+                        )}
+                      </>
+                    </div>
                   )}
                 </>
               ) : (
