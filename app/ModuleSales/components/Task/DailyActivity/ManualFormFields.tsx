@@ -124,7 +124,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         if (!tsm && referenceid) {
             settsm(referenceid);  // Set `tsm` from `referenceid` if `tsm` is empty
         }
-      }, [referenceid, tsm]);
+    }, [referenceid, tsm]);
 
     // Handle the email selection and send request to the API
     const handleEmailSubmit = async () => {
@@ -511,7 +511,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
         setcallback(formattedDate);
     };
-    
+
 
     return (
         <>
@@ -834,7 +834,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                         const formattedValue = inputValue
                                             .replace(/,/g, '')
                                             .replace(/(\..*)\./g, '$1');
-                            
+
                                         setquotationamount(formattedValue);
                                     }}
                                     className="w-full px-3 py-2 border rounded text-xs"
@@ -880,8 +880,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                         const formattedValue = inputValue
                                             .replace(/,/g, '')
                                             .replace(/(\..*)\./g, '$1');
-                            
-                                            setsoamount(formattedValue);
+
+                                        setsoamount(formattedValue);
                                     }}
                                     className="w-full px-3 py-2 border rounded text-xs"
                                     required
@@ -902,8 +902,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                         const formattedValue = inputValue
                                             .replace(/,/g, '')
                                             .replace(/(\..*)\./g, '$1');
-                            
-                                            setactualsales(formattedValue);
+
+                                        setactualsales(formattedValue);
                                     }}
                                     className="w-full px-3 py-2 border rounded text-xs"
                                     required
