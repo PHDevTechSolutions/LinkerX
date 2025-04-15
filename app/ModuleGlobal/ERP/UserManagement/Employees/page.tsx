@@ -169,7 +169,7 @@ const ListofUser: React.FC = () => {
                                         </div>
 
                                         <div className="mb-4 p-4 bg-white border-4 border-gray-900 shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">Territory Sales Associates</h2>
+                                            <h2 className="text-lg font-bold mb-2">Ecoshift Employees</h2>
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}

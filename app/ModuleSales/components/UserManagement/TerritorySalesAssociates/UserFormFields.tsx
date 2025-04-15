@@ -185,16 +185,20 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <select id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50" required>
             <option>Select Role</option>
             <option value="Admin">Admin</option>
+            <option value="Super Admin">Super Admin</option>
             <option value="Manager">Manager</option>
             <option value="Territory Sales Manager">Territory Sales Manager</option>
             <option value="Territory Sales Associate">Territory Sales Associate</option>
+            <option value="Staff">CSR Staff</option>
           </select>
         </div>
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Role">Department</label>
           <select id="Department" value={Department || ""} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50" required>
             <option>Select Department</option>
-            <option value="Sales">Sales</option>
+            <option value="Sales">Sales Department</option>
+            <option value="CSR">CSR Department</option>
+            <option value="IT">IT Department</option>
           </select>
         </div>
       </div>
@@ -219,7 +223,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         </div>
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="TargetQuota">Target Quota</label>
-          <input type="text" value={TargetQuota} onChange={(e) => setTargetQuota(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+          <input type="text" value={TargetQuota} onChange={(e) => setTargetQuota(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
         </div>
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Status">Status</label>
