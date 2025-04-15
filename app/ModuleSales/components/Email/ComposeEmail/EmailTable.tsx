@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { format, parseISO } from "date-fns";
+import { CiInboxIn, CiPaperplane } from "react-icons/ci";
+import { FaPlus, FaMinus } from "react-icons/fa";
 
 interface EmailData {
     id: string;
@@ -21,13 +23,14 @@ interface UsersCardProps {
 }
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails }) => {
-    const [activeTab, setActiveTab] = useState<"sender" | "recipient">("sender");
+    const [activeTab, setActiveTab] = useState<"sender" | "recipient" | "archive" | "trash">("sender");
     const [selectedEmails, setSelectedEmails] = useState<Set<string>>(new Set());
     const [showReplyModal, setShowReplyModal] = useState(false);
     const [replyToEmail, setReplyToEmail] = useState<EmailData | null>(null);
     const [replyMessage, setReplyMessage] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [emailsPerPage] = useState(50);
+    const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
 
     const removeHtmlTagsAndSignature = (html: string) => {
         const cleanedText = html.replace(/<[^>]*>/g, "");
@@ -50,9 +53,18 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
     // Filter and group emails based on the active tab
     const filteredPosts = posts.filter((email) => {
         if (activeTab === "sender") {
-            return email.sender === userDetails.Email; // Sent tab
+            return email.sender === userDetails.Email && email.status !== "Archive" && email.status !== "Remove"; // Sent tab (exclude Archive and Remove)
         }
-        return email.recepient === userDetails.Email; // Inbox tab
+        if (activeTab === "recipient") {
+            return email.recepient === userDetails.Email && email.status !== "Archive" && email.status !== "Remove"; // Inbox tab (exclude Archive and Remove)
+        }
+        if (activeTab === "archive") {
+            return email.status === "Archive"; // Archive tab
+        }
+        if (activeTab === "trash") {
+            return email.status === "Remove"; // Trash tab
+        }
+        return true;
     });
 
     const groupedEmails = activeTab === "recipient" ? groupBySender(filteredPosts) : null;
@@ -82,16 +94,49 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
     };
 
     // Handle the batch update action (Archive or Remove)
-    const handleBatchAction = (action: "Archive" | "Remove") => {
-        const updatedPosts = posts.map((email) => {
-            if (selectedEmails.has(email.id)) {
-                return { ...email, status: action };
+    const handleBatchAction = async (action: "Archive" | "Remove") => {
+        const emailIdsToUpdate = Array.from(selectedEmails);
+
+        if (emailIdsToUpdate.length === 0) {
+            alert("Please select at least one email.");
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/ModuleSales/Email/ComposeEmail/UpdateStatus", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    ids: emailIdsToUpdate, // ✅ send array of email IDs
+                    status: action,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log(`Emails updated to ${action}:`, data);
+
+                // Update local state if needed
+                const updatedPosts = posts.map((email) =>
+                    emailIdsToUpdate.includes(email.id)
+                        ? { ...email, status: action }
+                        : email
+                );
+
+                setSelectedEmails(new Set()); // Clear selection
+
+                // Optional: Refresh posts in UI if you're using local state
+            } else {
+                console.error("Failed to update emails:", data.error);
             }
-            return email;
-        });
-        console.log("Updated posts:", updatedPosts);
-        // Update the posts in the backend here
+        } catch (error) {
+            console.error("Error updating emails:", error);
+        }
     };
+
 
     // Handle Reply action in Inbox
     const handleReply = (email: EmailData) => {
@@ -140,6 +185,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
         }
     };
 
+
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     // Pagination Component
@@ -148,55 +194,43 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
         pageNumbers.push(i);
     }
 
+    const toggleGroup = (sender: string) => {
+        setOpenGroups(prev => {
+            const newOpenGroups = new Set(prev);
+            if (newOpenGroups.has(sender)) {
+                newOpenGroups.delete(sender);
+            } else {
+                newOpenGroups.add(sender);
+            }
+            return newOpenGroups;
+        });
+    };
+
     return (
-        <div className="bg-white shadow-md rounded overflow-hidden flex text-xs">
+        <div className="bg-white shadow-md rounded overflow-hidden text-xs">
             {/* Tabs */}
-            <div className="flex flex-col w-1/8 mt-4">
-                <button
-                    className={`px-4 py-2 text-left ${activeTab === "recipient" ? "bg-blue-500 text-white" : "bg-gray-100"}`}
-                    onClick={() => setActiveTab("recipient")}
-                >
-                    Inbox
-                </button>
-                <button
-                    className={`px-4 py-2 text-left ${activeTab === "sender" ? "bg-blue-500 text-white" : "bg-gray-100"}`}
-                    onClick={() => setActiveTab("sender")}
-                >
-                    Sent
-                </button>
+            <div className="flex border-b">
+                <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "recipient" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("recipient")}><CiInboxIn size={15} />Inbox</button>
+                <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "sender" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("sender")}><CiPaperplane size={15} />Sent</button>
+                <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "archive" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("archive")}>Archive</button>
+                <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "trash" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("trash")}>Trash</button>
             </div>
 
             {/* Email Table */}
             <div className="flex-1 p-4 overflow-auto">
                 {/* Batch Action */}
                 <div className="mb-2">
-                    <button
-                        onClick={() => handleBatchAction("Archive")}
-                        className="mr-2 px-3 py-1 bg-green-500 text-white rounded"
-                    >
-                        Archive
-                    </button>
-                    <button
-                        onClick={() => handleBatchAction("Remove")}
-                        className="px-3 py-1 bg-red-500 text-white rounded"
-                    >
-                        Remove
-                    </button>
+                    <button onClick={() => handleBatchAction("Archive")} className="mr-2 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition">Archive</button>
+                    <button onClick={() => handleBatchAction("Remove")} className="border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition">Remove</button>
                 </div>
                 <table className="min-w-full table-auto border-collapse text-xs">
                     <thead>
                         <tr className="bg-gray-200">
-                        <th className="px-4 py-2 text-left">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedEmails.size === currentEmails.length}
-                                    onChange={handleSelectAll}
-                                />
-                            </th>
+                            <th className="px-4 py-2 text-left flex gap-2"><input type="checkbox" checked={selectedEmails.size === currentEmails.length} onChange={handleSelectAll} />Select All</th>
                             <th className="px-4 py-2 text-left">Subject</th>
                             <th className="px-4 py-2 text-left">Message</th>
                             <th className="px-4 py-2 text-left">Date Created</th>
-                            {(activeTab === "recipient" || activeTab === "sender") && (
+                            {(activeTab === "recipient" || activeTab === "sender" || activeTab === "archive" || activeTab === "trash") && (
                                 <th className="px-4 py-2 text-left">Action</th>
                             )}
                         </tr>
@@ -206,12 +240,16 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
                         {activeTab === "recipient" ? (
                             Object.keys(groupedEmails || {}).map((sender) => (
                                 <React.Fragment key={sender}>
-                                    <tr className="bg-gray-300">
-                                        <td colSpan={5} className="px-4 py-2 font-semibold">
+                                    <tr className="bg-white">
+                                        <td colSpan={5} className="w-full border-b-2 px-4 py-2 font-semibold cursor-pointer flex items-center" onClick={() => toggleGroup(sender)}>
+                                            <span className="mr-2">
+                                                {openGroups.has(sender) ? <FaMinus /> : <FaPlus size={10} />}
+                                            </span>
                                             {sender}
                                         </td>
                                     </tr>
-                                    {groupedEmails![sender].map((email) => (
+
+                                    {openGroups.has(sender) && groupedEmails![sender].map((email) => (
                                         <tr key={email.id} className="border-b hover:bg-gray-100">
                                             <td className="px-4 py-2">
                                                 <input
@@ -228,7 +266,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
                                                     onClick={() => handleReply(email)}
                                                     className="text-blue-600 hover:underline"
                                                 >
-                                                    Reply
+                                                    Reply?
                                                 </button>
                                             </td>
                                         </tr>
@@ -263,13 +301,13 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
                 </table>
 
                 {/* Pagination */}
-                <div className="mt-4 flex justify-center">
+                <div className="mt-4 flex justify-end">
                     <ul className="flex space-x-2">
                         {pageNumbers.map((number) => (
                             <li key={number}>
                                 <button
                                     onClick={() => paginate(number)}
-                                    className={`px-3 py-1 rounded ${currentPage === number ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                                    className={`px-3 py-1 rounded ${currentPage === number ? "bg-blue-900 text-white" : "bg-gray-200"}`}
                                 >
                                     {number}
                                 </button>
@@ -288,50 +326,29 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
                         <div className="text-xs space-y-2">
                             <div>
                                 <label>From:</label>
-                                <input
-                                    type="text"
-                                    value={userDetails.Email}
-                                    readOnly
-                                    className="w-full border px-2 py-1 rounded text-xs"
-                                />
+                                <input type="text" value={userDetails.Email} readOnly className="w-full border px-2 py-2 rounded text-xs" />
                             </div>
                             <div>
                                 <label>To:</label>
-                                <input
-                                    type="text"
-                                    value={replyToEmail.sender}
-                                    readOnly
-                                    className="w-full border px-2 py-1 rounded text-xs"
-                                />
+                                <input type="text" value={replyToEmail.sender} readOnly className="w-full border px-2 py-2 rounded text-xs" />
                             </div>
                             <div>
                                 <label>Subject:</label>
-                                <input
-                                    type="text"
-                                    value={`RE: ${replyToEmail.subject}`}
-                                    readOnly
-                                    className="w-full border px-2 py-1 rounded text-xs"
-                                />
+                                <input type="text" value={`RE: ${replyToEmail.subject}`} readOnly className="w-full border px-2 py-2 rounded text-xs" />
                             </div>
                             <div>
                                 <label>Message:</label>
-                                <textarea
-                                    value={replyMessage}
-                                    onChange={(e) => setReplyMessage(e.target.value)}
-                                    placeholder="Type your reply..."
-                                    className="w-full border px-2 py-1 rounded text-xs min-h-[100px]"
-                                />
+                                <textarea value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} placeholder="Type your reply..." className="w-full border px-2 py-1 rounded text-xs min-h-[100px] capitalize" />
                             </div>
                             <div className="text-right mt-3">
-                                <button
-                                    onClick={() => setShowReplyModal(false)}
-                                    className="px-3 py-1 mr-2 text-xs bg-gray-200 rounded hover:bg-gray-300"
+                                <button onClick={() => setShowReplyModal(false)}
+                                    className="mr-2 bg-white text-black text-xs px-4 py-2 hover:rounded hover:bg-blue-900 hover:text-white transition"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleSendReply}
-                                    className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+                                    className="border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
                                 >
                                     Send
                                 </button>
