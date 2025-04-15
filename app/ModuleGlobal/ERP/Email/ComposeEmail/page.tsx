@@ -183,6 +183,7 @@ const ListofUser: React.FC = () => {
                                                 posts={currentPosts}
                                                 handleEdit={(user) => handleEdit(user)}
                                                 userDetails={userDetails}
+                                                fetchAccount={fetchAccount}
                                             />
                                         </div>
                                     </>

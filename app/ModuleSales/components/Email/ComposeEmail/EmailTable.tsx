@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { format, parseISO } from "date-fns";
-import { CiInboxIn, CiPaperplane } from "react-icons/ci";
+import { CiInboxIn, CiPaperplane, CiTrash } from "react-icons/ci";
 import { FaPlus, FaMinus } from "react-icons/fa";
+import { GoInbox } from "react-icons/go";
 
 interface EmailData {
     id: string;
@@ -20,9 +21,10 @@ interface UsersCardProps {
     userDetails: {
         Email: string;
     };
+    fetchAccount: () => Promise<void>;
 }
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails }) => {
+const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails, fetchAccount }) => {
     const [activeTab, setActiveTab] = useState<"sender" | "recipient" | "archive" | "trash">("sender");
     const [selectedEmails, setSelectedEmails] = useState<Set<string>>(new Set());
     const [showReplyModal, setShowReplyModal] = useState(false);
@@ -31,6 +33,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
     const [currentPage, setCurrentPage] = useState(1);
     const [emailsPerPage] = useState(50);
     const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
+    const [isLoadingAction, setIsLoadingAction] = useState<"Archive" | "Remove" | null>(null);
 
     const removeHtmlTagsAndSignature = (html: string) => {
         const cleanedText = html.replace(/<[^>]*>/g, "");
@@ -102,6 +105,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
             return;
         }
 
+        setIsLoadingAction(action); // Set the action as loading
+
         try {
             const response = await fetch("/api/ModuleSales/Email/ComposeEmail/UpdateStatus", {
                 method: "PUT",
@@ -109,7 +114,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    ids: emailIdsToUpdate, // ✅ send array of email IDs
+                    ids: emailIdsToUpdate,
                     status: action,
                 }),
             });
@@ -119,21 +124,21 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
             if (data.success) {
                 console.log(`Emails updated to ${action}:`, data);
 
-                // Update local state if needed
                 const updatedPosts = posts.map((email) =>
-                    emailIdsToUpdate.includes(email.id)
-                        ? { ...email, status: action }
-                        : email
+                    emailIdsToUpdate.includes(email.id) ? { ...email, status: action } : email
                 );
 
                 setSelectedEmails(new Set()); // Clear selection
 
-                // Optional: Refresh posts in UI if you're using local state
+                // Fetch account data again to refresh the table
+                await fetchAccount(); // This will refresh the table interface
             } else {
                 console.error("Failed to update emails:", data.error);
             }
         } catch (error) {
             console.error("Error updating emails:", error);
+        } finally {
+            setIsLoadingAction(null); // Reset loading state once done
         }
     };
 
@@ -212,17 +217,31 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
             <div className="flex border-b">
                 <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "recipient" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("recipient")}><CiInboxIn size={15} />Inbox</button>
                 <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "sender" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("sender")}><CiPaperplane size={15} />Sent</button>
-                <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "archive" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("archive")}>Archive</button>
-                <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "trash" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("trash")}>Trash</button>
+                <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "archive" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("archive")}><GoInbox size={15} />Archive</button>
+                <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "trash" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("trash")}><CiTrash size={15} /> Trash</button>
             </div>
 
             {/* Email Table */}
             <div className="flex-1 p-4 overflow-auto">
                 {/* Batch Action */}
                 <div className="mb-2">
-                    <button onClick={() => handleBatchAction("Archive")} className="mr-2 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition">Archive</button>
-                    <button onClick={() => handleBatchAction("Remove")} className="border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition">Remove</button>
+                    <button
+                        onClick={() => handleBatchAction("Archive")}
+                        className={`mr-2 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition ${isLoadingAction === "Archive" ? "opacity-50 cursor-not-allowed" : ""}`}
+                        disabled={isLoadingAction === "Archive"} // Disable only Archive button when it's loading
+                    >
+                        {isLoadingAction === "Archive" ? "Loading..." : "Archive"}
+                    </button>
+                    <button
+                        onClick={() => handleBatchAction("Remove")}
+                        className={`border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition ${isLoadingAction === "Remove" ? "opacity-50 cursor-not-allowed" : ""}`}
+                        disabled={isLoadingAction === "Remove"} // Disable only Remove button when it's loading
+                    >
+                        {isLoadingAction === "Remove" ? "Loading..." : "Remove"}
+                    </button>
                 </div>
+
+
                 <table className="min-w-full table-auto border-collapse text-xs">
                     <thead>
                         <tr className="bg-gray-200">
