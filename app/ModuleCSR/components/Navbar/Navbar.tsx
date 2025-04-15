@@ -23,6 +23,8 @@ interface Notification {
   typecall: string;
   agentfullname: string;
   _id: string;
+  recepient: string;
+  sender: string;
 }
 
 interface NavbarProps {
@@ -57,6 +59,19 @@ type Inquiries = {
   NotificationStatus: string;
 };
 
+type Email = {
+  id: number;
+  message: string;
+  Email: string;
+  subject: string;
+  status: string;
+  recepient: string;
+  sender: string;
+  date_created: string;
+  NotificationStatus: string;
+  recipientEmail: string;
+};
+
 const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkMode }) => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
@@ -79,6 +94,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
   const [trackingNotifications, setTrackingNotifications] = useState<TrackingItem[]>([]);
   const [wrapUpNotifications, setWrapUpNotifications] = useState<Inquiries[]>([]);
+  const [emailNotifications, setEmailNotifications] = useState<Email[]>([]);
 
   const allNotifications = [...notifications, ...trackingNotifications];
 
@@ -525,7 +541,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   };
 
-
   // Trigger the fetch when userReferenceId changes
   useEffect(() => {
     if (userReferenceId) {
@@ -539,6 +554,53 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
       return () => clearInterval(interval);
     }
   }, [userReferenceId]);
+
+  useEffect(() => {
+    const fetchEmailData = async () => {
+      try {
+        if (!userReferenceId) {
+          console.error("userReferenceId is missing.");
+          return;
+        }
+
+        const res = await fetch(`/api/ModuleSales/Email/FetchEmail?referenceId=${userReferenceId}`);
+        if (!res.ok) {
+          throw new Error(`Request failed with status ${res.status}`);
+        }
+
+        const jsonResponse = await res.json();
+        console.log("API Response:", jsonResponse);  // Log to inspect the response
+
+        // Ensure that data is an array
+        const data: Email[] = Array.isArray(jsonResponse.data) ? jsonResponse.data : [];
+
+        // Filter emails with status 'Pending' and NotificationStatus not 'Read', 
+        // and check if the recipient email matches the user's email
+        const filteredEmails = data.filter(
+          (item: Email) => // Specify the type for 'item'
+            item.status === "Pending" &&
+            item.recepient === userEmail // Match recipient's email to your email
+        );
+
+        if (filteredEmails.length > 0) {
+          setEmailNotifications(filteredEmails); // Update state with filtered emails
+        }
+      } catch (error) {
+        console.error("Error fetching email data:", error);
+      }
+    };
+
+    if (userReferenceId && userEmail) {
+      fetchEmailData(); // Initial fetch
+
+      const interval = setInterval(() => {
+        fetchEmailData(); // Fetch every 30 seconds
+      }, 30000); // 30 seconds
+
+      // Clean up interval on component unmount
+      return () => clearInterval(interval);
+    }
+  }, [userReferenceId, userEmail]);
 
   // ✅ Handle click outside to close notifications
   useEffect(() => {
@@ -718,6 +780,53 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   };
 
+  const UpdateEmailStatus = async (emailId: string) => {
+    try {
+      setLoadingId(emailId); // Start loading with the string ID
+
+      const emailIdAsString = emailId.toString(); // Ensure it's always a string
+
+      const response = await fetch("/api/ModuleSales/Email/ComposeEmail/UpdateStatus", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ids: [emailIdAsString], // Send emailId as an array
+          status: "Read",
+        }),
+      });
+
+      if (response.ok) {
+        // ✅ Update status to "Read"
+        const updatedEmails = emailNotifications.map((email) =>
+          email.id.toString() === emailIdAsString // Convert email.id to string for comparison
+            ? { ...email, status: "Read" }
+            : email
+        );
+        setEmailNotifications(updatedEmails);
+
+        // ✅ Remove after 1 minute
+        setTimeout(() => {
+          setEmailNotifications((prev) =>
+            prev.filter((email) => email.id.toString() !== emailIdAsString) // Convert to string for comparison
+          );
+        }, 60000); // 1 minute (60,000 ms)
+      } else {
+        const errorDetails = await response.json();
+        console.error("Error updating email status:", {
+          status: response.status,
+          message: errorDetails.message || "Unknown error",
+          details: errorDetails,
+        });
+      }
+    } catch (error) {
+      console.error("Error marking email as read:", error);
+    } finally {
+      setLoadingId(null); // Stop loading
+    }
+  };
+
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center">
@@ -752,6 +861,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           <CiBellOn size={20} className={`${shake ? "animate-shake" : ""}`} />
 
           {/* Combined Count for All Unread or Pending Notifications */}
+
           {(() => {
             const taskflowCount = trackingNotifications.filter(
               (notif) => notif.type === "Taskflow Notification" && notif.status === "pending"
@@ -769,7 +879,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                 notif.NotificationStatus !== "Read"
             ).length;
 
-            const totalCount = taskflowCount + dTrackingCount + wrapUpCount;
+            const emailCount = emailNotifications.filter(
+              (notif) => notif.status === "Pending" && notif.recepient === userEmail
+            ).length;
+
+            const totalCount = taskflowCount + dTrackingCount + wrapUpCount + emailCount;
 
             return totalCount > 0 ? (
               <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
@@ -778,7 +892,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
             ) : null;
           })()}
         </button>
-
 
         {showSidebar && (
           <motion.div
@@ -933,7 +1046,50 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                   )}
                 </>
               ) : (
-                <div className="p-4 text-center text-xs text-gray-500">No messages available</div>
+                <div className="p-4 text-center text-xs text-gray-500">
+                  <>
+                    {emailNotifications.length > 0 ? (
+                      <ul className="space-y-2">
+                        {emailNotifications
+                          .filter((notif) => notif.status === "Pending") // Filter only "Pending" status emails
+                          .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by latest date
+                          .map((email, index) => (
+                            <li
+                              key={index}
+                              className="p-3 mb-2 hover:bg-blue-200 hover:text-black text-xs text-gray-900 bg-blue-900 text-white capitalize text-left rounded-md relative"
+                            >
+                              <p className="text-[10px] mt-5 font-bold uppercase italic">Sender: {email.sender}</p>
+                              <p className="text-[10px] mt-5 font-bold uppercase italic">Subject: {email.subject}</p>
+                              <p className="text-[10px] mt-1 font-semibold">
+                                Message: {email.message.length > 100 ? `${email.message.substring(0, 100)}...` : email.message}
+                              </p>
+                              <span className="text-[8px] mt-1 block">{new Date(email.date_created).toLocaleString()}</span>
+                              <button
+                                onClick={() => UpdateEmailStatus(email.id.toString())} // Convert email.id to string
+                                disabled={loadingId === email.id.toString()} // Convert email.id to string for comparison
+                                className={`text-[9px] mb-2 cursor-pointer absolute top-2 right-2 ${email.status === "Read"
+                                  ? "text-green-600 font-bold"
+                                  : loadingId === email.id.toString()
+                                    ? "text-gray-500 cursor-not-allowed"
+                                    : "text-white hover:text-blue-800"
+                                  }`}
+                              >
+                                {loadingId === email.id.toString()
+                                  ? "Loading..."
+                                  : email.status === "Read"
+                                    ? "Read"
+                                    : "Mark as Read"}
+                              </button>
+
+                            </li>
+                          ))}
+                      </ul>
+                    ) : (
+                      <div>No pending notifications</div> // Placeholder for when there are no pending emails
+                    )}
+                  </>
+                </div>
+
               )}
             </div>
           </motion.div>

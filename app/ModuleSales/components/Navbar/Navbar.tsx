@@ -18,6 +18,8 @@ interface Notification {
   message: string;
   type: string;
   status: string;
+  recepient: string;
+  sender: string;
 }
 
 interface SidebarSubLink {
@@ -38,13 +40,26 @@ interface NavbarProps {
   sidebarLinks: SidebarLink[];
 }
 
+type Email = {
+  id: number;
+  message: string;
+  Email: string;
+  subject: string;
+  status: string;
+  recepient: string;
+  sender: string;
+  date_created: string;
+  NotificationStatus: string;
+  recipientEmail: string;
+};
+
 const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkMode, sidebarLinks
 }) => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [userReferenceId, setUserReferenceId] = useState("");
   const [TargetQuota, setUserTargetQuota] = useState("");
   const [Role, setUserRole] = useState("");
-  const [userReferenceId, setUserReferenceId] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -63,12 +78,13 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const [showSidebar, setShowSidebar] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const [activeTab, setActiveTab] = useState<"notifications" | "messages">("notifications");
-  const [loadingId, setLoadingId] = useState<number | null>(null);
+  const [loadingId, setLoadingId] = useState<string | number | null>(null);
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedNotif, setSelectedNotif] = useState<any>(null);
   const [loadingRead, setLoadingRead] = useState<boolean>(false);
 
+  const [emailNotifications, setEmailNotifications] = useState<Email[]>([]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -371,6 +387,97 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   }, [notifications]);
 
+  useEffect(() => {
+    const fetchEmailData = async () => {
+      try {
+        if (!userReferenceId) {
+          console.error("userReferenceId is missing.");
+          return;
+        }
+
+        const res = await fetch(`/api/ModuleSales/Email/ComposeEmail/FetchEmailNotification?referenceId=${userReferenceId}`);
+        if (!res.ok) {
+          throw new Error(`Request failed with status ${res.status}`);
+        }
+
+        const jsonResponse = await res.json();
+        console.log("API Response:", jsonResponse); 
+
+        const data: Email[] = Array.isArray(jsonResponse.data) ? jsonResponse.data : [];
+
+        const filteredEmails = data.filter(
+          (item: Email) =>
+            item.status === "Pending" &&
+            item.recepient === userEmail
+        );
+
+        if (filteredEmails.length > 0) {
+          setEmailNotifications(filteredEmails);
+        }
+      } catch (error) {
+        console.error("Error fetching email data:", error);
+      }
+    };
+
+    if (userReferenceId && userEmail) {
+      fetchEmailData(); 
+
+      const interval = setInterval(() => {
+        fetchEmailData(); 
+      }, 30000);
+
+      return () => clearInterval(interval);
+    }
+  }, [userReferenceId, userEmail]);
+
+
+  const UpdateEmailStatus = async (emailId: string) => {
+    try {
+      setLoadingId(emailId); // Start loading with the string ID
+
+      const emailIdAsString = emailId.toString(); // Ensure it's always a string
+
+      const response = await fetch("/api/ModuleSales/Email/ComposeEmail/UpdateStatus", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ids: [emailIdAsString], // Send emailId as an array
+          status: "Read",
+        }),
+      });
+
+      if (response.ok) {
+        // ✅ Update status to "Read"
+        const updatedEmails = emailNotifications.map((email) =>
+          email.id.toString() === emailIdAsString // Convert email.id to string for comparison
+            ? { ...email, status: "Read" }
+            : email
+        );
+        setEmailNotifications(updatedEmails);
+
+        // ✅ Remove after 1 minute
+        setTimeout(() => {
+          setEmailNotifications((prev) =>
+            prev.filter((email) => email.id.toString() !== emailIdAsString) // Convert to string for comparison
+          );
+        }, 60000); // 1 minute (60,000 ms)
+      } else {
+        const errorDetails = await response.json();
+        console.error("Error updating email status:", {
+          status: response.status,
+          message: errorDetails.message || "Unknown error",
+          details: errorDetails,
+        });
+      }
+    } catch (error) {
+      console.error("Error marking email as read:", error);
+    } finally {
+      setLoadingId(null); // Stop loading
+    }
+  };
+
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center space-x-4">
@@ -509,8 +616,49 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                   )}
                 </>
               ) : (
-                // ❌ Empty Messages Tab
-                <div className="p-4 text-center text-xs text-gray-500">No messages available</div>
+                <div className="p-4 text-center text-xs text-gray-500">
+                  <>
+                    {emailNotifications.length > 0 ? (
+                      <ul className="space-y-2">
+                        {emailNotifications
+                          .filter((notif) => notif.status === "Pending")
+                          .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime())
+                          .map((email, index) => (
+                            <li
+                              key={index}
+                              className="p-3 mb-2 hover:bg-blue-200 hover:text-black text-xs text-gray-900 bg-blue-900 text-white capitalize text-left rounded-md relative"
+                            >
+                              <p className="text-[10px] mt-5 font-bold uppercase italic">Sender: {email.sender}</p>
+                              <p className="text-[10px] mt-5 font-bold uppercase italic">Subject: {email.subject}</p>
+                              <p className="text-[10px] mt-1 font-semibold">
+                                Message: {email.message.length > 100 ? `${email.message.substring(0, 100)}...` : email.message}
+                              </p>
+                              <span className="text-[8px] mt-1 block">{new Date(email.date_created).toLocaleString()}</span>
+                              <button
+                                onClick={() => UpdateEmailStatus(email.id.toString())}
+                                disabled={loadingId === email.id.toString()}
+                                className={`text-[9px] mb-2 cursor-pointer absolute top-2 right-2 ${email.status === "Read"
+                                  ? "text-green-600 font-bold"
+                                  : loadingId === email.id.toString()
+                                    ? "text-gray-500 cursor-not-allowed"
+                                    : "text-white hover:text-blue-800"
+                                  }`}
+                              >
+                                {loadingId === email.id.toString()
+                                  ? "Loading..."
+                                  : email.status === "Read"
+                                    ? "Read"
+                                    : "Mark as Read"}
+                              </button>
+
+                            </li>
+                          ))}
+                      </ul>
+                    ) : (
+                      <div>No pending notifications</div> // Placeholder for when there are no pending emails
+                    )}
+                  </>
+                </div>
               )}
             </div>
           </motion.div>

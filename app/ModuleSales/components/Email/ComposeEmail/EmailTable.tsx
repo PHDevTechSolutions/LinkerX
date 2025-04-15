@@ -10,7 +10,7 @@ interface EmailData {
     message: string;
     date_created: string;
     referenceid: string;
-    status: "Remove" | "Archive" | "Pending";
+    status: "Pending";
     recepient: string;
     sender: string;
 }
@@ -25,7 +25,7 @@ interface UsersCardProps {
 }
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails, fetchAccount }) => {
-    const [activeTab, setActiveTab] = useState<"sender" | "recipient" | "archive" | "trash">("sender");
+    const [activeTab, setActiveTab] = useState<"sender" | "recipient">("sender");
     const [selectedEmails, setSelectedEmails] = useState<Set<string>>(new Set());
     const [showReplyModal, setShowReplyModal] = useState(false);
     const [replyToEmail, setReplyToEmail] = useState<EmailData | null>(null);
@@ -205,7 +205,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails, f
                                                 />
                                             </td>
                                             <td className="px-4 py-2 uppercase font-semibold">{email.subject}</td>
-                                            <td className="px-4 py-2 capitalize">{removeHtmlTagsAndSignature(email.message)}</td>
+                                            <td className="px-4 py-2 capitalize">
+                                                {removeHtmlTagsAndSignature(email.message).length > 100
+                                                    ? removeHtmlTagsAndSignature(email.message).slice(0, 100) + "..."
+                                                    : removeHtmlTagsAndSignature(email.message)}
+                                            </td>
                                             <td className="px-4 py-2 uppercase font-semibold">{email.status}</td>
                                             <td className="px-4 py-2">{format(parseISO(email.date_created), "MMM dd, yyyy - h:mm:ss a")}</td>
                                             <td className="px-4 py-2">
@@ -231,7 +235,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails, f
                                         />
                                     </td>
                                     <td className="px-4 py-2 uppercase font-semibold">{email.subject}</td>
-                                    <td className="px-4 py-2 capitalize">{removeHtmlTagsAndSignature(email.message)}</td>
+                                    <td className="px-4 py-2 capitalize">
+                                        {removeHtmlTagsAndSignature(email.message).length > 150
+                                            ? removeHtmlTagsAndSignature(email.message).slice(0, 150) + "..."
+                                            : removeHtmlTagsAndSignature(email.message)}
+                                    </td>
+
                                     <td className="px-4 py-2 uppercase font-semibold">{email.status}</td>
                                     <td className="px-4 py-2">{format(parseISO(email.date_created), "MMM dd, yyyy - h:mm:ss a")}</td>
                                     <td className="px-4 py-2">
