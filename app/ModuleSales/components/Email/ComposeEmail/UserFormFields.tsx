@@ -109,7 +109,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <textarea
               value={message}
               onChange={handleMessageChange}
-              className="w-full min-h-[150px] border rounded px-3 py-2 text-xs"
+              className="w-full min-h-[150px] border rounded px-3 py-2 text-xs capitalize"
               placeholder="Type your message here"
               spellCheck
             />
