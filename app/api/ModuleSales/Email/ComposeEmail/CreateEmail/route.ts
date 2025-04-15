@@ -8,8 +8,8 @@ if (!databaseUrl) {
 
 const sql = neon(databaseUrl);
 
-// Function to insert user data into the database
-async function addUser(
+// Function to insert email data into both tables
+async function insertEmailAndSentEmail(
     referenceid: string,
     sender: string,
     recepient: string,
@@ -17,32 +17,44 @@ async function addUser(
     message: string
 ) {
     try {
-        if (!referenceid) {
-            throw new Error("Reference ID and Title are required.");
+        if (!referenceid || !sender || !recepient) {
+            throw new Error("Missing required fields.");
         }
 
-        const result = await sql`
-            INSERT INTO email (referenceid, sender, recepient, subject, message, date_created) 
-            VALUES (${referenceid}, ${sender}, ${recepient}, ${subject}, ${message}, NOW()) 
+        // Insert into email table
+        const emailInsert = await sql`
+            INSERT INTO email (referenceid, sender, recepient, subject, message, date_created)
+            VALUES (${referenceid}, ${sender}, ${recepient}, ${subject}, ${message}, NOW())
             RETURNING *;
         `;
 
-        console.log("Database insert result:", result); // Log result of the insert operation
-        return { success: true, data: result };
+        // Insert into sentemail table
+        const sentEmailInsert = await sql`
+            INSERT INTO sentemail (referenceid, sender, recepient, subject, message, date_sent)
+            VALUES (${referenceid}, ${sender}, ${recepient}, ${subject}, ${message}, NOW())
+            RETURNING *;
+        `;
+
+        return {
+            success: true,
+            email: emailInsert,
+            sentemail: sentEmailInsert,
+        };
     } catch (error: any) {
-        console.error("Error inserting task:", error);
-        return { success: false, error: error.message || "Failed to add task." };
+        console.error("Error inserting email/sentemail:", error);
+        return { success: false, error: error.message || "Database insertion failed." };
     }
 }
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        console.log("Received body:", body); // Log the body received from the frontend
+        console.log("Received body:", body);
 
         const { referenceid, sender, recepient, subject, message } = body;
 
-        const result = await addUser(referenceid, sender, recepient, subject, message);
+        const result = await insertEmailAndSentEmail(referenceid, sender, recepient, subject, message);
+
         return NextResponse.json(result);
     } catch (error: any) {
         console.error("Error in POST /api/addTask:", error);

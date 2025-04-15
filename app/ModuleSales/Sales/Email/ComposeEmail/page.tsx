@@ -2,11 +2,11 @@
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
-import UserFetcher from "../../../components/User/UserFetcher";
+import UserFetcher from "../../../../ModuleSales/components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../components/Email/ComposeEmail/AddUserForm";
-import UsersCard from "../../../components/Email/ComposeEmail/EmailTable"; // Assuming this is the component handling the Kanban-style cards
+import AddPostForm from "../../../../ModuleSales/components/Email/ComposeEmail/AddUserForm";
+import UsersCard from "../../../../ModuleSales/components/Email/ComposeEmail/EmailTable"; // Assuming this is the component handling the Kanban-style cards
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -175,10 +175,11 @@ const ListofUser: React.FC = () => {
                                         </div>
 
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">Taskflow - Email (Ongoing by Leroux Y Xchire | Master System Developer)</h2>
+                                            <h2 className="text-lg font-bold mb-2">Taskflow - Email</h2>
                                             <p className="text-xs text-gray-600 mb-4">
-                                                The <strong>Email</strong> here is used to manage and track the progress of various tasks or activities. It helps in organizing the workflow and provides a clear visual representation of task status. The board is divided into different columns such as "Backlogs," "Priority," "Important", and "Finished," allowing users to move tasks across these stages. This system enhances collaboration by allowing team members to easily update and track the status of each task, making it an effective tool for managing tasks, improving productivity, and ensuring smoother coordination within the team.
+                                                The <strong>Email</strong> feature allows users to compose new emails and efficiently manage their status updates. It simplifies the workflow by providing a clear visual representation of the email’s current status. Users can categorize emails into stages such as "Draft," "Sent," "Pending," and "Archived," enabling easy tracking and progress monitoring. This system enhances team collaboration by allowing users to quickly update the status of each email, improving communication efficiency and ensuring smooth coordination across the team.
                                             </p>
+
                                             <UsersCard
                                                 posts={currentPosts}
                                                 handleEdit={(user) => handleEdit(user)}

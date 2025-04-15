@@ -56,16 +56,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails, f
     // Filter and group emails based on the active tab
     const filteredPosts = posts.filter((email) => {
         if (activeTab === "sender") {
-            return email.sender === userDetails.Email && email.status !== "Archive" && email.status !== "Remove"; // Sent tab (exclude Archive and Remove)
+            return email.sender === userDetails.Email;
         }
         if (activeTab === "recipient") {
-            return email.recepient === userDetails.Email && email.status !== "Archive" && email.status !== "Remove"; // Inbox tab (exclude Archive and Remove)
-        }
-        if (activeTab === "archive") {
-            return email.status === "Archive"; // Archive tab
-        }
-        if (activeTab === "trash") {
-            return email.status === "Remove"; // Trash tab
+            return email.recepient === userDetails.Email;
         }
         return true;
     });
@@ -95,53 +89,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails, f
             setSelectedEmails(newSelection);
         }
     };
-
-    // Handle the batch update action (Archive or Remove)
-    const handleBatchAction = async (action: "Archive" | "Remove") => {
-        const emailIdsToUpdate = Array.from(selectedEmails);
-
-        if (emailIdsToUpdate.length === 0) {
-            alert("Please select at least one email.");
-            return;
-        }
-
-        setIsLoadingAction(action); // Set the action as loading
-
-        try {
-            const response = await fetch("/api/ModuleSales/Email/ComposeEmail/UpdateStatus", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    ids: emailIdsToUpdate,
-                    status: action,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                console.log(`Emails updated to ${action}:`, data);
-
-                const updatedPosts = posts.map((email) =>
-                    emailIdsToUpdate.includes(email.id) ? { ...email, status: action } : email
-                );
-
-                setSelectedEmails(new Set()); // Clear selection
-
-                // Fetch account data again to refresh the table
-                await fetchAccount(); // This will refresh the table interface
-            } else {
-                console.error("Failed to update emails:", data.error);
-            }
-        } catch (error) {
-            console.error("Error updating emails:", error);
-        } finally {
-            setIsLoadingAction(null); // Reset loading state once done
-        }
-    };
-
 
     // Handle Reply action in Inbox
     const handleReply = (email: EmailData) => {
@@ -217,39 +164,19 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails, f
             <div className="flex border-b">
                 <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "recipient" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("recipient")}><CiInboxIn size={15} />Inbox</button>
                 <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "sender" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("sender")}><CiPaperplane size={15} />Sent</button>
-                <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "archive" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("archive")}><GoInbox size={15} />Archive</button>
-                <button className={`px-4 py-2 text-left flex gap-1 ${activeTab === "trash" ? "bg-blue-900 text-white" : "bg-gray-100"}`} onClick={() => setActiveTab("trash")}><CiTrash size={15} /> Trash</button>
             </div>
 
             {/* Email Table */}
             <div className="flex-1 p-4 overflow-auto">
-                {/* Batch Action */}
-                <div className="mb-2">
-                    <button
-                        onClick={() => handleBatchAction("Archive")}
-                        className={`mr-2 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition ${isLoadingAction === "Archive" ? "opacity-50 cursor-not-allowed" : ""}`}
-                        disabled={isLoadingAction === "Archive"} // Disable only Archive button when it's loading
-                    >
-                        {isLoadingAction === "Archive" ? "Loading..." : "Archive"}
-                    </button>
-                    <button
-                        onClick={() => handleBatchAction("Remove")}
-                        className={`border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition ${isLoadingAction === "Remove" ? "opacity-50 cursor-not-allowed" : ""}`}
-                        disabled={isLoadingAction === "Remove"} // Disable only Remove button when it's loading
-                    >
-                        {isLoadingAction === "Remove" ? "Loading..." : "Remove"}
-                    </button>
-                </div>
-
-
                 <table className="min-w-full table-auto border-collapse text-xs">
                     <thead>
                         <tr className="bg-gray-200">
                             <th className="px-4 py-2 text-left flex gap-2"><input type="checkbox" checked={selectedEmails.size === currentEmails.length} onChange={handleSelectAll} />Select All</th>
                             <th className="px-4 py-2 text-left">Subject</th>
                             <th className="px-4 py-2 text-left">Message</th>
+                            <th className="px-4 py-2 text-left">Status</th>
                             <th className="px-4 py-2 text-left">Date Created</th>
-                            {(activeTab === "recipient" || activeTab === "sender" || activeTab === "archive" || activeTab === "trash") && (
+                            {(activeTab === "recipient" || activeTab === "sender") && (
                                 <th className="px-4 py-2 text-left">Action</th>
                             )}
                         </tr>
@@ -279,6 +206,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails, f
                                             </td>
                                             <td className="px-4 py-2 uppercase font-semibold">{email.subject}</td>
                                             <td className="px-4 py-2 capitalize">{removeHtmlTagsAndSignature(email.message)}</td>
+                                            <td className="px-4 py-2 uppercase font-semibold">{email.status}</td>
                                             <td className="px-4 py-2">{format(parseISO(email.date_created), "MMM dd, yyyy - h:mm:ss a")}</td>
                                             <td className="px-4 py-2">
                                                 <button
@@ -304,6 +232,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails, f
                                     </td>
                                     <td className="px-4 py-2 uppercase font-semibold">{email.subject}</td>
                                     <td className="px-4 py-2 capitalize">{removeHtmlTagsAndSignature(email.message)}</td>
+                                    <td className="px-4 py-2 uppercase font-semibold">{email.status}</td>
                                     <td className="px-4 py-2">{format(parseISO(email.date_created), "MMM dd, yyyy - h:mm:ss a")}</td>
                                     <td className="px-4 py-2">
                                         <button
