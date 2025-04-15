@@ -563,7 +563,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           return;
         }
 
-        const res = await fetch(`/api/ModuleSales/Email/FetchEmail?referenceId=${userReferenceId}`);
+        const res = await fetch(`/api/ModuleCSR/Email/FetchEmail?referenceId=${userReferenceId}`);
         if (!res.ok) {
           throw new Error(`Request failed with status ${res.status}`);
         }
