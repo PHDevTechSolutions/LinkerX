@@ -425,7 +425,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
       }
     };
 
-    if (userReferenceId && userEmail) {
+    if (userEmail) {
       fetchEmailData(); // Initial fetch
 
       const interval = setInterval(() => {
@@ -435,8 +435,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
       // Clean up interval on component unmount
       return () => clearInterval(interval);
     }
-  }, [userReferenceId, userEmail]);
-
+  }, [userEmail]);
 
   const UpdateEmailStatus = async (emailId: string) => {
     try {
