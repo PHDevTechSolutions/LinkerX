@@ -793,11 +793,93 @@ const DashboardPage: React.FC = () => {
     <SessionChecker>
       <ParentLayout>
         <div className="container mx-auto p-4">
+          {userDetails.Role === "Territory Sales Manager" && (
+            <>
+              <h3 className="text-xs font-semibold mb-2">My Team's Activity</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                {/* Total Inbound Calls */}
+                <div className="bg-green-900 text-white shadow-md rounded-lg p-6 flex items-center">
+                  <CiInboxIn className="text-4xl mr-4" />
+                  <div>
+                    <h3 className="text-xs font-bold mb-1">Total Inbound Calls</h3>
+                    <p className="text-sm font-semibold">{tsmtotalInbound}</p>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-600 text-white shadow-md rounded-lg p-6 flex items-center">
+                  <CiInboxOut className="text-4xl mr-4" />
+                  <div>
+                    <h3 className="text-xs font-bold mb-1">Total Outbound Calls / Touchbase</h3>
+                    <p className="text-sm font-semibold">{tsmtotalOutbound}</p>
+                  </div>
+                </div>
+
+                <div className="bg-red-700 text-white shadow-md rounded-lg p-6 flex items-center">
+                  <BsBuildings className="text-4xl mr-4" />
+                  <div>
+                    <h3 className="text-xs font-bold mb-1">Total Company Accounts</h3>
+                    <p className="text-sm font-semibold">{tsmtotalAccounts ?? 0}</p>
+                  </div>
+                </div>
+
+                <div className="bg-orange-500 text-white shadow-md rounded-lg p-6 flex items-center">
+                  <CiMoneyBill className="text-4xl mr-4" />
+                  <div>
+                    <h3 className="text-xs font-bold mb-1">Actual Sales</h3>
+                    <p className="text-sm font-semibold">{tsmtotalActualSales.toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Large Charts Below */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+                <div className="bg-white shadow-md rounded-lg p-4 flex flex-col lg:col-span-4">
+                  {/* Card Header */}
+                  <div className="mb-3">
+                    <h3 className="text-base font-semibold text-gray-800">Daily Sales Order to Delivery Summary</h3>
+                    <p className="text-xs text-gray-600">An overview of the daily sales orders successfully converted into deliveries.</p>
+                  </div>
+
+                  {/* Chart Container */}
+                  <div className="flex-grow">
+                    <div className="flex flex-wrap items-center justify-end gap-2 mb-4">
+                      <select
+                        className="px-3 py-2 border rounded text-xs text-gray-900 capitalize bg-gray-100 max-w-[150px]"
+                        value={selectedMonth}
+                        onChange={(e) => handleFilterChange(e.target.value, selectedYear)}
+                      >
+                        <option value="">Select Month</option>
+                        {[
+                          "January", "February", "March", "April", "May", "June",
+                          "July", "August", "September", "October", "November", "December"
+                        ].map((month, index) => (
+                          <option key={month} value={index + 1}>{month}</option>
+                        ))}
+                      </select>
+
+                      <select
+                        className="px-3 py-2 border rounded text-xs text-gray-900 capitalize bg-gray-100 max-w-[150px]"
+                        value={selectedYear}
+                        onChange={(e) => handleFilterChange(selectedMonth, e.target.value)}
+                      >
+                        <option value="">Select Year</option>
+                        {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map((year) => (
+                          <option key={year} value={year}>{year}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <Bar data={chartData} options={options} />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
           <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
             <h3 className="text-xs font-semibold whitespace-nowrap">My Activity Today</h3>
           </div>
 
-          {userDetails.Role === "Territory Sales Associate" && (
+          {(userDetails.Role === "Territory Sales Associate" || userDetails.Role === "Territory Sales Manager") && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                 {/* Total Work Hours */}
@@ -822,7 +904,7 @@ const DashboardPage: React.FC = () => {
                 <div className="bg-yellow-600 text-white shadow-md rounded-lg p-6 flex items-center">
                   <CiInboxOut className="text-4xl mr-4" />
                   <div>
-                    <h3 className="text-xs font-bold mb-1">Total Outbound Calls</h3>
+                    <h3 className="text-xs font-bold mb-1">Total Outbound Calls / Touchbase</h3>
                     <p className="text-sm font-semibold">{totalOutbound}</p>
                   </div>
                 </div>
@@ -1154,7 +1236,7 @@ const DashboardPage: React.FC = () => {
                 <div className="bg-yellow-600 text-white shadow-md rounded-lg p-6 flex items-center">
                   <CiInboxOut className="text-4xl mr-4" />
                   <div>
-                    <h3 className="text-xs font-bold mb-1">Total Outbound Calls</h3>
+                    <h3 className="text-xs font-bold mb-1">Total Outbound Calls / Touchbase</h3>
                     <p className="text-sm font-semibold">{managertotalOutbound}</p>
                   </div>
                 </div>
@@ -1214,87 +1296,6 @@ const DashboardPage: React.FC = () => {
                       </select>
                     </div>
                     <Bar data={chartManagerData} options={options} />
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-
-          {userDetails.Role === "Territory Sales Manager" && (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                {/* Total Inbound Calls */}
-                <div className="bg-green-900 text-white shadow-md rounded-lg p-6 flex items-center">
-                  <CiInboxIn className="text-4xl mr-4" />
-                  <div>
-                    <h3 className="text-xs font-bold mb-1">Total Inbound Calls</h3>
-                    <p className="text-sm font-semibold">{tsmtotalInbound}</p>
-                  </div>
-                </div>
-
-                <div className="bg-yellow-600 text-white shadow-md rounded-lg p-6 flex items-center">
-                  <CiInboxOut className="text-4xl mr-4" />
-                  <div>
-                    <h3 className="text-xs font-bold mb-1">Total Outbound Calls</h3>
-                    <p className="text-sm font-semibold">{tsmtotalOutbound}</p>
-                  </div>
-                </div>
-
-                <div className="bg-red-700 text-white shadow-md rounded-lg p-6 flex items-center">
-                  <BsBuildings className="text-4xl mr-4" />
-                  <div>
-                    <h3 className="text-xs font-bold mb-1">Total Company Accounts</h3>
-                    <p className="text-sm font-semibold">{tsmtotalAccounts ?? 0}</p>
-                  </div>
-                </div>
-
-                <div className="bg-orange-500 text-white shadow-md rounded-lg p-6 flex items-center">
-                  <CiMoneyBill className="text-4xl mr-4" />
-                  <div>
-                    <h3 className="text-xs font-bold mb-1">Actual Sales</h3>
-                    <p className="text-sm font-semibold">{tsmtotalActualSales.toLocaleString()}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Large Charts Below */}
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-                <div className="bg-white shadow-md rounded-lg p-4 flex flex-col lg:col-span-4">
-                  {/* Card Header */}
-                  <div className="mb-3">
-                    <h3 className="text-base font-semibold text-gray-800">Daily Sales Order to Delivery Summary</h3>
-                    <p className="text-xs text-gray-600">An overview of the daily sales orders successfully converted into deliveries.</p>
-                  </div>
-
-                  {/* Chart Container */}
-                  <div className="flex-grow">
-                    <div className="flex flex-wrap items-center justify-end gap-2 mb-4">
-                      <select
-                        className="px-3 py-2 border rounded text-xs text-gray-900 capitalize bg-gray-100 max-w-[150px]"
-                        value={selectedMonth}
-                        onChange={(e) => handleFilterChange(e.target.value, selectedYear)}
-                      >
-                        <option value="">Select Month</option>
-                        {[
-                          "January", "February", "March", "April", "May", "June",
-                          "July", "August", "September", "October", "November", "December"
-                        ].map((month, index) => (
-                          <option key={month} value={index + 1}>{month}</option>
-                        ))}
-                      </select>
-
-                      <select
-                        className="px-3 py-2 border rounded text-xs text-gray-900 capitalize bg-gray-100 max-w-[150px]"
-                        value={selectedYear}
-                        onChange={(e) => handleFilterChange(selectedMonth, e.target.value)}
-                      >
-                        <option value="">Select Year</option>
-                        {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map((year) => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <Bar data={chartData} options={options} />
                   </div>
                 </div>
               </div>
