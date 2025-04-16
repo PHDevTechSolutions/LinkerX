@@ -951,7 +951,7 @@ const DashboardPage: React.FC = () => {
                             </p>
                           </div>
                           <div className="overflow-x-auto">
-                            <table className="min-w-full bg-white table-auto text-xs">
+                            <table className="w-full bg-white table-auto text-xs overflow-x">
                               <thead>
                                 <tr>
                                   <th className="py-3 px-4 text-left">Date</th>
@@ -984,20 +984,20 @@ const DashboardPage: React.FC = () => {
                                     }
 
                                     return (
-                                      <tr key={index} className="border-t border-gray-100 capitalize">
-                                        <td className="py-4 px-6">
+                                      <tr key={index} className="border-t border-gray-100 capitalize whitespace-nowrap">
+                                        <td className="py-3 px-4 text-left">
                                           {new Date(activity.date_created).toLocaleDateString()}
                                         </td>
-                                        <td className="py-4 px-6">{activity.companyname}</td>
-                                        <td className="py-4 px-6">{activity.typeactivity}</td>
-                                        <td className="py-4 px-6">
+                                        <td className="py-3 px-4 text-left">{activity.companyname}</td>
+                                        <td className="py-3 px-4 text-left">{activity.typeactivity}</td>
+                                        <td className="py-3 px-4 text-left">
                                           <span
                                             className={`inline-block px-2 py-1 rounded-full text-[8px] ${statusBadgeColor}`}
                                           >
                                             {activity.activitystatus}
                                           </span>
                                         </td>
-                                        <td className="py-4 px-6">
+                                        <td className="py-3 px-4">
                                           {activity.remarks ? activity.remarks : activity.activityremarks}
                                         </td>
                                       </tr>
