@@ -105,10 +105,11 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit, fetchAccount,
       </div>
 
       {/* ✅ Table */}
-      <table className="min-w-full bg-white border border-gray-200 text-xs">
+      <table className="min-w-full bg-white border border-gray-200 text-xs overflow-x">
         <thead>
-          <tr className="bg-gray-100 border-b">
+          <tr className="bg-gray-100 border-b whitespace-nowrap">
             <th className="px-4 py-2 text-left">Ticket Reference Number</th>
+            <th className="px-4 py-2 text-left">Assigned Agents</th>
             <th className="px-4 py-2 text-left">Company Name</th>
             <th className="px-4 py-2 text-left">Contact Person</th>
             <th className="px-4 py-2 text-left">Contact Number</th>
@@ -124,8 +125,9 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit, fetchAccount,
         <tbody>
           {filteredPosts.length > 0 ? (
             filteredPosts.map((post) => (
-              <tr key={post.id} className="hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02]">
+              <tr key={post.id} className="hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02] whitespace-nowrap">
                 <td className="px-4 py-2 capitalize">{post.ticketreferencenumber}</td>
+                <td className="px-4 py-2 capitalize">{post.referenceid}</td>
                 <td className="px-4 py-2 capitalize">{post.companyname}</td>
                 <td className="px-4 py-2">{post.contactperson}</td>
                 <td className="px-4 py-2">{post.contactnumber}</td>
