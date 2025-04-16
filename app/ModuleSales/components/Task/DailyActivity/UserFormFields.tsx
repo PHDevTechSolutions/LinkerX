@@ -120,12 +120,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const [showInput, setShowInput] = useState(false);
     const [previousCompany, setPreviousCompany] = useState<any>(null);
 
-    useEffect(() => {
-        if (!tsm && referenceid) {
-            settsm(referenceid);  // Set `tsm` from `referenceid` if `tsm` is empty
-        }
-    }, [referenceid, tsm]);
-
     // Handle the email selection and send request to the API
     const handleEmailSubmit = async () => {
         if (!emailaddress) {  // Check if emailaddress is empty or not
@@ -512,7 +506,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     <input type="hidden" id="referenceid" value={referenceid ?? ""} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                     <input type="hidden" id="manager" value={manager ?? ""} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                     <input type="hidden" id="tsm" value={tsm ?? ""} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                    <input type="hidden" id="targetquota" value={targetquota ?? ""} onChange={(e) => settargetquota(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                    <input type="text" id="targetquota" value={targetquota ?? ""} onChange={(e) => settargetquota(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                     <input type="hidden" value={startdate ?? ""} onChange={(e) => setstartdate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
                     <input type="hidden" value={enddate ?? ""} onChange={(e) => setenddate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
 
