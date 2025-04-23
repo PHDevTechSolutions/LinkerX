@@ -217,6 +217,31 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     setShowModal(false);
   };
 
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+  
+    // Use UTC getters instead of local ones to prevent timezone shifting.
+    let hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    // Convert hours to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // if hour is 0, display as 12
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+  
+    // Use toLocaleDateString with timeZone 'UTC' to format the date portion
+    const formattedDateStr = date.toLocaleDateString('en-US', {
+      timeZone: 'UTC',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  
+    // Return combined date and time string
+    return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
@@ -306,18 +331,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                   currentRecords.map((activity, index) => (
                     <tr key={index} className="odd:bg-white even:bg-gray-100 capitalize">
                       <td className="px-4 py-2 border">{activity.typeactivity}</td>
-                      <td className="px-4 py-2 border">
-                        {activity.callback
-                          ? new Date(activity.callback).toLocaleString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "numeric",
-                            minute: "2-digit",
-                            hour12: true,
-                          })
-                          : ""}
-                      </td>
+                      <td className="px-4 py-2 border">{formatDate(new Date(activity.callback).getTime())}</td>
 
                       <td className="px-4 py-2 border">{activity.callstatus}</td>
                       <td className="px-4 py-2 border">{activity.typecall}</td>
