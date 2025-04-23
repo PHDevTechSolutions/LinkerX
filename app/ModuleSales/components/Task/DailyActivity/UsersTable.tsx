@@ -335,7 +335,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                         <p>{user.activitystatus}</p>
                                                     </div>
                                                 </div>
-                                                <p className="mt-2">Location: {user.activityremarks}</p>
+                                                <p className="mt-2 text-[10px]"><strong>Location:</strong>: {user.activityremarks}</p>
                                                 <p className="text-[10px]"><strong>Duration:</strong> {user.startdate} - {user.enddate}</p>
 
                                             </div>
