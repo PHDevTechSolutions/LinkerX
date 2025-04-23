@@ -109,7 +109,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   };
 
   const hasNotifications = [
-    trackingNotifications.filter((notif) => notif.type === "Taskflow Notification" && notif.status === "pending").length,
+    trackingNotifications.filter((notif) => notif.type === "Taskflow Notification" && notif.status === "Used").length,
     trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.TrackingStatus === "Open" && notif.status !== "Read").length,
     wrapUpNotifications.filter((notif) => notif.type === "WrapUp Notification" && notif.Status === "Endorsed" && notif.NotificationStatus !== "Read").length
   ].some(count => count > 0);
@@ -862,11 +862,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
         <button onClick={() => setShowSidebar((prev) => !prev)} className="p-2 relative flex items-center hover:bg-gray-200 hover:rounded-full">
           <CiBellOn size={20} className={`${shake ? "animate-shake" : ""}`} />
 
-          {/* Combined Count for All Unread or Pending Notifications */}
+          {/* Combined Count for All Unread or Used Notifications */}
 
           {(() => {
             const taskflowCount = trackingNotifications.filter(
-              (notif) => notif.type === "Taskflow Notification" && notif.status === "pending"
+              (notif) => notif.type === "Taskflow Notification" && notif.status === "Used"
             ).length;
 
             const dTrackingCount = trackingNotifications.filter(
@@ -932,10 +932,10 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
               {activeTab === "notifications" ? (
                 <>
-                  {notifications.filter((notif) => notif.status === "pending").length > 0 ? (
+                  {notifications.filter((notif) => notif.status === "Used").length > 0 ? (
                     <ul className="space-y-2">
                       {notifications
-                        .filter((notif) => notif.status === "pending")
+                        .filter((notif) => notif.status === "Used")
                         .map((notif, index) => (
                           <li
                             key={notif.id || index}
