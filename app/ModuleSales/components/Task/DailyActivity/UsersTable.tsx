@@ -132,14 +132,20 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
         setStatusMenuVisible({});
     };
 
-    const formatToManilaTime = (isoDate: string) => {
-        const date = new Date(isoDate);
-        return new Intl.DateTimeFormat("en-PH", {
+    const formatToManila = (isoDate: string) => {
+        const options: Intl.DateTimeFormatOptions = {
           timeZone: "Asia/Manila",
-          dateStyle: "medium",
-          timeStyle: "medium",
-        }).format(date);
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
+          hour: "numeric",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        };
+        return new Intl.DateTimeFormat("en-US", options).format(new Date(isoDate));
       };
+      
 
     return (
         <div className="mb-4">
@@ -356,7 +362,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                         {/* Status Badge */}
                                         {!["Client Visit", "On Site", "On Field", "Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
                                             <div className="card-footer text-xs flex justify-between items-center mt-2 pt-2">
-                                                <p className="text-[10px]"><strong>Date Created:</strong> {formatToManilaTime(user.date_created)}</p>
+                                                <p className="text-[10px]"><strong>Date Created:</strong> {formatToManila(user.date_created)}</p>
 
                                                 {/* Status Badge with Glow Effect */}
                                                 <span
