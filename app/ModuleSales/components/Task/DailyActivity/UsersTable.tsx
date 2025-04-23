@@ -5,7 +5,8 @@ import { FcAssistant, FcCollaboration, FcBullish, FcPaid, FcAddressBook, FcFullT
 import { FaMapLocationDot } from "react-icons/fa6";
 import { MdLocationCity } from "react-icons/md";
 import { RiUserLocationLine } from "react-icons/ri";
-import moment from 'moment-timezone';
+import moment from "moment";
+
 
 interface UsersCardProps {
     posts: any[];
@@ -133,10 +134,24 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
         setStatusMenuVisible({});
     };
 
-    const formatDate = (timestamp: string) => {
-        return timestamp 
-          ? moment(timestamp).format("MMM DD, YYYY hh:mm A") // This will automatically adjust to the local timezone
-          : "N/A";
+    const formatDate = (timestamp: number) => {
+        // Create a new Date object from the timestamp
+        const date = new Date(timestamp);
+        
+        // Extract hours, minutes, and AM/PM
+        let hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+      
+        // Convert to 12-hour format
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 0 becomes 12
+        const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+      
+        // Format the full date
+        const formattedDate = `${date.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} ${hours}:${minutesStr} ${ampm}`;
+      
+        return formattedDate;
       };
       
     return (
