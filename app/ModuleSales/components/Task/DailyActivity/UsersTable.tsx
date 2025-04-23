@@ -282,8 +282,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                     </div>
                                                 </div>
                                                 <p className="mt-2"><strong>Activity Remarks:</strong> {user.activityremarks}</p>
-                                                <p><strong>Duration:</strong> {format(parseISO(user.startdate), "MMM dd, yyyy - h:mm:ss a")} - {format(parseISO(user.enddate), "MMM dd, yyyy - h:mm:ss a")}</p>
-
+                                                <p className="text-[10px]"><strong>Duration:</strong> {user.startdate} - {user.enddate}</p>
                                             </div>
                                         )}
 
@@ -314,9 +313,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                         <FcFullTrash size={16} className="ml-2 cursor-pointer" onClick={() => handleDelete(user.id)} />
                                                     </div>
                                                 </div>
-
-                                                <p className="mt-2"><strong>Duration:</strong> {format(parseISO(user.startdate), "MMM dd, yyyy - h:mm:ss a")} - {format(parseISO(user.enddate), "MMM dd, yyyy - h:mm:ss a")}</p>
-
+                                                <p className="text-[10px]"><strong>Duration:</strong> {user.startdate} - {user.enddate}</p>
                                             </div>
                                         )}
 
@@ -339,7 +336,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                     </div>
                                                 </div>
                                                 <p className="mt-2">Location: {user.activityremarks}</p>
-                                                <p className="mt-2"><strong>Duration:</strong> {format(parseISO(user.startdate), "MMM dd, yyyy - h:mm:ss a")} - {format(parseISO(user.enddate), "MMM dd, yyyy - h:mm:ss a")}</p>
+                                                <p className="text-[10px]"><strong>Duration:</strong> {user.startdate} - {user.enddate}</p>
 
                                             </div>
                                         )}
