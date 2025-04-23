@@ -310,7 +310,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                     </div>
                                                 </div>
                                                 <p className="mt-2"><strong>Activity Remarks:</strong> {user.activityremarks}</p>
-                                                <p className="text-[10px]"><strong>Duration:</strong> {user.startdate} - {user.enddate}</p>
+                                                <p className="text-[10px]"><strong>Duration:</strong> {formatDate(user.startdate)} - {formatDate(user.enddate)}</p>
                                             </div>
                                         )}
 
@@ -341,7 +341,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                         <FcFullTrash size={16} className="ml-2 cursor-pointer" onClick={() => handleDelete(user.id)} />
                                                     </div>
                                                 </div>
-                                                <p className="text-[10px]"><strong>Duration:</strong> {user.startdate} - {user.enddate}</p>
+                                                <p className="text-[10px]"><strong>Duration:</strong> {formatDate(user.startdate)} - {formatDate(user.enddate)}</p>
                                             </div>
                                         )}
 
@@ -364,7 +364,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                     </div>
                                                 </div>
                                                 <p className="mt-2 text-[10px]"><strong>Location:</strong>: {user.activityremarks}</p>
-                                                <p className="text-[10px]"><strong>Duration:</strong> {user.startdate} - {user.enddate}</p>
+                                                <p className="text-[10px]"><strong>Duration:</strong> {formatDate(user.startdate)} - {formatDate(user.enddate)}</p>
 
                                             </div>
                                         )}
@@ -375,7 +375,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                
                                                 <p className="text-[10px]"><strong>Date Created:</strong> {formatDate(user.date_created)}</p>
                                              
-
                                                 {/* Status Badge with Glow Effect */}
                                                 <span
                                                     className={`relative px-2 py-1 rounded-full text-white text-[8px] 
