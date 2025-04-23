@@ -34,6 +34,31 @@ const calculateTimeConsumed = (startDate?: string, endDate?: string) => {
     return `${hours}h ${minutes}m ${seconds}s`;
 };
 
+const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+  
+    // Use UTC getters instead of local ones to prevent timezone shifting.
+    let hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    // Convert hours to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // if hour is 0, display as 12
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+  
+    // Use toLocaleDateString with timeZone 'UTC' to format the date portion
+    const formattedDateStr = date.toLocaleDateString('en-US', {
+      timeZone: 'UTC',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  
+    // Return combined date and time string
+    return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
+  };
+
 const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
     // Filter to include only "Outbound Call" type clients
     const filteredPosts = useMemo(() => {
@@ -56,6 +81,7 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
 
         const timeConsumed = calculateTimeConsumed(post?.startdate, post?.enddate);
         const uniqueKey = post?._id || `${post?.referenceid}-${index}`;
+        
 
         return (
             <div
@@ -77,8 +103,7 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
                 <div className="p-3 border flex items-center gap-2 min-w-[300px]">
                     <CiClock2 size={13} className="text-gray-900" />
                     <span className="italic">
-                        {post?.startdate ? new Date(post.startdate).toLocaleString() : "N/A"} -{" "}
-                        {post?.enddate ? new Date(post.enddate).toLocaleString() : "N/A"} ({timeConsumed})
+                        {formatDate(post.startdate)} - {formatDate(post.enddate)} / ({timeConsumed})
                     </span>
                 </div>
             </div>
