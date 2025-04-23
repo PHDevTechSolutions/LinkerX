@@ -5,7 +5,7 @@ import { FcAssistant, FcCollaboration, FcBullish, FcPaid, FcAddressBook, FcFullT
 import { FaMapLocationDot } from "react-icons/fa6";
 import { MdLocationCity } from "react-icons/md";
 import { RiUserLocationLine } from "react-icons/ri";
-import moment from "moment";
+import moment from 'moment-timezone';
 
 interface UsersCardProps {
     posts: any[];
@@ -134,7 +134,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
     };
 
     const formatDate = (timestamp: string) => {
-        return timestamp ? moment(timestamp).format("MMM DD, YYYY hh:mm A") : "N/A";
+        return timestamp 
+          ? moment(timestamp).tz("Asia/Manila", true).format("MMM DD, YYYY hh:mm A") 
+          : "N/A";
       };
       
 
