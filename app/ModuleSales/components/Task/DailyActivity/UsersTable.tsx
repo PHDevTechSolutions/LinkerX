@@ -135,11 +135,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
 
     const formatDate = (timestamp: string) => {
         return timestamp 
-          ? moment(timestamp).tz("Asia/Manila", true).format("MMM DD, YYYY hh:mm A") 
+          ? moment(timestamp).format("MMM DD, YYYY hh:mm A") // This will automatically adjust to the local timezone
           : "N/A";
       };
       
-
     return (
         <div className="mb-4">
             {/* Pagination & View Mode Buttons */}
