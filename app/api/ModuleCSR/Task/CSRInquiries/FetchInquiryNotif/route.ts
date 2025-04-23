@@ -11,19 +11,26 @@ const sql = neon(databaseUrl);
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const csrAgent = searchParams.get("referenceId"); // Use 'referenceId' for PostgreSQL query.
+    const csrAgent = searchParams.get("referenceId");
 
     if (!csrAgent) {
-      return NextResponse.json({ success: false, error: "csragent is required" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "csragent is required" },
+        { status: 400 }
+      );
     }
 
     const inquiries = await sql`
-      SELECT * 
+      SELECT 
+        salesagentname,
+        date_created,
+        status,
+        csragent,
+        companyname,
+        ticketreferencenumber
       FROM inquiries 
       WHERE csragent = ${csrAgent};
     `;
-
-    console.log("Fetched inquiries:", inquiries); // Debugging line
 
     return NextResponse.json({ success: true, data: inquiries }, { status: 200 });
   } catch (error: any) {
