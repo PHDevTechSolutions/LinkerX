@@ -286,7 +286,6 @@ const ListofUser: React.FC = () => {
                                                         <option value="">Select Status</option>
                                                         <option value="Active">Active</option>
                                                         <option value="Used">Used</option>
-                                                        <option value="Inactive">Inactive</option>
                                                     </select>
                                                     <p className="text-xs text-gray-600 mt-4">
                                                         Select the <strong>Status</strong> of the account to indicate its current state (Active, Used, or Inactive).
