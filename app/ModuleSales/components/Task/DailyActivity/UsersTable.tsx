@@ -360,16 +360,18 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                         {!["Client Visit", "On Site", "On Field", "Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
                                             <div className="card-footer text-xs flex justify-between items-center mt-2 pt-2">
 
-                                                <p className="text-[10px]">
-                                                    <strong>Date Created:</strong> {new Date(user.date_created).toLocaleString('en-US', {
-                                                        year: 'numeric',
-                                                        month: 'short',
-                                                        day: 'numeric',
-                                                        hour: 'numeric',
-                                                        minute: 'numeric',
-                                                        hour12: true
-                                                    })}
-                                                </p>
+<p className="text-[10px]">
+  <strong>Date Created:</strong> {new Date(user.date_created).toLocaleString('en-US', {
+    timeZone: 'Asia/Manila',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true
+  })}
+</p>
+
 
 
 
