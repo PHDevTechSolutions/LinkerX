@@ -210,42 +210,72 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     }, [editPost, companyname, referenceid]);
 
     // Fetch companies based on referenceid
-    useEffect(() => {
-        if (referenceid) {
+    //useEffect(() => {
+        //if (referenceid) {
             // API call to fetch company data
-            fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
+            //fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`)
+                //.then((response) => response.json())
+                //.then((data) => {
+                    //if (data.success) {
                         // Filter companies with status 'Active' or 'Used', and exclude certain 'typeclient' values
-                        const filteredCompanies = data.data.filter((company: any) =>
-                            (company.status === 'Active' || company.status === 'Used') &&
-                            ![
-                                'CSR Inquiries',
-                                'Balance 20',
-                                'Top 50',
-                                'Next 30',
-                                'New Account - Client Development'
-                            ].includes(company.typeclient)
-                        );
+                        //const filteredCompanies = data.data.filter((company: any) =>
+                            //(company.status === 'Active' || company.status === 'Used') &&
+                            //![
+                                //'CSR Inquiries',
+                                //'Balance 20',
+                                //'Top 50',
+                                //'Next 30',
+                                //'New Account - Client Development'
+                            //].includes(company.typeclient)
+                        //);
 
-                        setCompanies(filteredCompanies.map((company: any) => ({
-                            value: company.companyname,
-                            label: company.companyname,
-                            contactperson: company.contactperson,
-                            contactnumber: company.contactnumber,
-                            emailaddress: company.emailaddress,
-                            typeclient: company.typeclient,
-                            address: company.address,
-                            area: company.area,
-                        })));
-                    } else {
-                        console.error("Error fetching companies:", data.error);
-                    }
-                })
-                .catch((error) => console.error("Error fetching companies:", error));
-        }
-    }, [referenceid]);
+                        //setCompanies(filteredCompanies.map((company: any) => ({
+                            //value: company.companyname,
+                            //label: company.companyname,
+                            //contactperson: company.contactperson,
+                            //contactnumber: company.contactnumber,
+                            //emailaddress: company.emailaddress,
+                            //typeclient: company.typeclient,
+                            //address: company.address,
+                            //area: company.area,
+                        //})));
+                    //} else {
+                        //console.error("Error fetching companies:", data.error);
+                    //}
+                //})
+                //.catch((error) => console.error("Error fetching companies:", error));
+        //}
+    //}, [referenceid]);
+
+    useEffect(() => {
+            if (referenceid) {
+                // API call to fetch company data
+                fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            // Filter companies with status 'Active' or 'Used'
+                            const filteredCompanies = data.data.filter((company: any) =>
+                                company.status === 'Active' || company.status === 'Used'
+                            );
+    
+                            setCompanies(filteredCompanies.map((company: any) => ({
+                                value: company.companyname,
+                                label: company.companyname,
+                                contactperson: company.contactperson,
+                                contactnumber: company.contactnumber,
+                                emailaddress: company.emailaddress,
+                                typeclient: company.typeclient,
+                                address: company.address,
+                                area: company.area,
+                            })));
+                        } else {
+                            console.error("Error fetching companies:", data.error);
+                        }
+                    })
+                    .catch((error) => console.error("Error fetching companies:", error));
+            }
+        }, [referenceid]);
 
 
     useEffect(() => {
