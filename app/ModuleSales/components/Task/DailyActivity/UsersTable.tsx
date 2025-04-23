@@ -135,24 +135,30 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
     };
 
     const formatDate = (timestamp: number) => {
-        // Create a new Date object from the timestamp
         const date = new Date(timestamp);
-        
-        // Extract hours, minutes, and AM/PM
-        let hours = date.getHours();
-        const minutes = date.getMinutes();
-        const ampm = hours >= 12 ? 'PM' : 'AM';
       
-        // Convert to 12-hour format
+        // Use UTC getters instead of local ones to prevent timezone shifting.
+        let hours = date.getUTCHours();
+        const minutes = date.getUTCMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        // Convert hours to 12-hour format
         hours = hours % 12;
-        hours = hours ? hours : 12; // 0 becomes 12
+        hours = hours ? hours : 12; // if hour is 0, display as 12
         const minutesStr = minutes < 10 ? '0' + minutes : minutes;
       
-        // Format the full date
-        const formattedDate = `${date.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} ${hours}:${minutesStr} ${ampm}`;
+        // Use toLocaleDateString with timeZone 'UTC' to format the date portion
+        const formattedDateStr = date.toLocaleDateString('en-US', {
+          timeZone: 'UTC',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
       
-        return formattedDate;
+        // Return combined date and time string
+        return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
       };
+      
       
     return (
         <div className="mb-4">
