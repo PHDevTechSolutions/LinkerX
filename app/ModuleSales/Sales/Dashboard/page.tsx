@@ -789,6 +789,31 @@ const DashboardPage: React.FC = () => {
     }
   }, [userDetails.ReferenceID, currentPage]);
 
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+  
+    // Use UTC getters instead of local ones to prevent timezone shifting.
+    let hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    // Convert hours to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // if hour is 0, display as 12
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+  
+    // Use toLocaleDateString with timeZone 'UTC' to format the date portion
+    const formattedDateStr = date.toLocaleDateString('en-US', {
+      timeZone: 'UTC',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  
+    // Return combined date and time string
+    return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
+  };
+
   return (
     <SessionChecker>
       <ParentLayout>
@@ -985,9 +1010,7 @@ const DashboardPage: React.FC = () => {
 
                                     return (
                                       <tr key={index} className="border-t border-gray-100 capitalize whitespace-nowrap">
-                                        <td className="py-3 px-4 text-left">
-                                          {new Date(activity.date_created).toLocaleDateString()}
-                                        </td>
+                                        <td className="py-3 px-4 text-left">{formatDate(new Date(activity.date_created).getTime())}</td>
                                         <td className="py-3 px-4 text-left">{activity.companyname}</td>
                                         <td className="py-3 px-4 text-left">{activity.typeactivity}</td>
                                         <td className="py-3 px-4 text-left">

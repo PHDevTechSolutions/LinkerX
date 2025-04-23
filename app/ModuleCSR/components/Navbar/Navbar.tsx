@@ -861,8 +861,10 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           {/* Combined Count for All Unread or Used Notifications */}
 
           {(() => {
+
             const taskflowCount = callbackNotification.filter(
-              (notif) => notif.type === "DTracking Notification" && notif.status === "Used"
+              (notif) => notif.type === "Taskflow Notification" &&
+                notif.status == "Used"
             ).length;
 
             const dTrackingCount = trackingNotifications.filter(
