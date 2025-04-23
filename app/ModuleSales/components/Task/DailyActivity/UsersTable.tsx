@@ -5,6 +5,7 @@ import { FcAssistant, FcCollaboration, FcBullish, FcPaid, FcAddressBook, FcFullT
 import { FaMapLocationDot } from "react-icons/fa6";
 import { MdLocationCity } from "react-icons/md";
 import { RiUserLocationLine } from "react-icons/ri";
+import moment from "moment";
 
 interface UsersCardProps {
     posts: any[];
@@ -132,18 +133,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
         setStatusMenuVisible({});
     };
 
-    const formatToManila = (isoDate: string) => {
-        const options: Intl.DateTimeFormatOptions = {
-          timeZone: "Asia/Manila",
-          year: "numeric",
-          month: "short",
-          day: "2-digit",
-          hour: "numeric",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: true,
-        };
-        return new Intl.DateTimeFormat("en-US", options).format(new Date(isoDate));
+    const formatDate = (timestamp: string) => {
+        return timestamp ? moment(timestamp).format("MMM DD, YYYY hh:mm A") : "N/A";
       };
       
 
@@ -360,7 +351,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                         {!["Client Visit", "On Site", "On Field", "Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
                                             <div className="card-footer text-xs flex justify-between items-center mt-2 pt-2">
                                                
-                                                <p className="text-[10px]"><strong>Date Created:</strong> {user.date_created}</p>
+                                                <p className="text-[10px]"><strong>Date Created:</strong> {formatDate(user.date_created)}</p>
                                              
 
                                                 {/* Status Badge with Glow Effect */}
