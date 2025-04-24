@@ -630,14 +630,12 @@ const ListofUser: React.FC = () => {
         if (usedPool.length >= remaining) {
             usedCompanies = usedPool.slice(0, remaining).map((company) => ({
                 ...company,
-                status: "Active",
                 date_assigned: today.toISOString().slice(0, 10),
             }));
             remaining = 0;
         } else {
             usedCompanies = usedPool.map((company) => ({
                 ...company,
-                status: "Active",
                 date_assigned: today.toISOString().slice(0, 10),
             }));
             remaining -= usedCompanies.length;
@@ -670,14 +668,14 @@ const ListofUser: React.FC = () => {
             }
 
             // Ensure the parameter name matches the backend query parameter
-            const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`);
+            const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAutomatedAccounts?referenceid=${referenceid}`);
             const data = await response.json();
 
             if (data.success && Array.isArray(data.data)) {
-                const activeCompanies = data.data.filter((company: Company) => company.status === "Active" || company.status === "Used");
-                setPost(activeCompanies);
+                // Remove the filtering for 'Active' and 'Used' status
+                setPost(data.data); // Set all fetched companies
             } else {
-                setPost([]); // No active companies
+                setPost([]); // No companies fetched
             }
         } catch (error) {
             console.error("Error fetching companies:", error);
@@ -786,15 +784,15 @@ const ListofUser: React.FC = () => {
         }
     }, [post]);
 
-    const isAllowedUser = userDetails?.Role === "Super Admin" ||
-        (userDetails?.Role === "Territory Sales Associate" && userDetails?.ReferenceID === "JG-NCR-920587");
+    //const isAllowedUser = userDetails?.Role === "Super Admin" ||
+        //(userDetails?.Role === "Territory Sales Associate" && userDetails?.ReferenceID === "JG-NCR-920587");
 
-    const isRestrictedUser = !isAllowedUser;
+    //const isRestrictedUser = !isAllowedUser;
 
     // Automatically show modal if the user is restricted
-    useEffect(() => {
-        setShowAccessModal(isRestrictedUser);
-    }, [isRestrictedUser]);
+    //useEffect(() => {
+        //setShowAccessModal(isRestrictedUser);
+    //}, [isRestrictedUser]);
 
     return (
         <SessionChecker>
