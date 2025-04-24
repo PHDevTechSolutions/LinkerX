@@ -622,7 +622,7 @@ useEffect(() => {
                             {notif.date_created &&
                               (notif.type === "Inquiry Notification" || notif.type === "Follow-Up Notification") && (
                                 <span className="text-[8px] mt-1 block">
-                                  {new Date(notif.date_created).toLocaleString()}
+                                  {formatDate(new Date(notif.date_created).getTime())}
                                 </span>
                               )}
 
