@@ -11,9 +11,9 @@ const sql = neon(databaseUrl);
 export async function GET(req: Request) {
     try {
         const url = new URL(req.url);
-        const referenceid = url.searchParams.get("referenceid");
+        const referenceid = url.searchParams.get("referenceid"); // Get referenceid from query params
 
-        console.log("Received referenceid:", referenceid); // Log the referenceid
+        console.log("Received referenceid:", referenceid); // Log the received referenceid
 
         if (!referenceid) {
             return NextResponse.json(
@@ -22,6 +22,7 @@ export async function GET(req: Request) {
             );
         }
 
+        // Query PostgreSQL to fetch accounts where referenceid matches
         const accounts = await sql`SELECT * FROM accounts WHERE referenceid = ${referenceid};`;
 
         if (accounts.length === 0) {
@@ -31,6 +32,7 @@ export async function GET(req: Request) {
             );
         }
 
+        // Respond with the fetched accounts
         return NextResponse.json({ success: true, data: accounts }, { status: 200 });
     } catch (error: any) {
         console.error("Error fetching accounts:", error);
@@ -40,6 +42,5 @@ export async function GET(req: Request) {
         );
     }
 }
-
 
 export const dynamic = "force-dynamic"; // Ensure fresh data fetch

@@ -597,52 +597,55 @@ const ListofUser: React.FC = () => {
     const getFilteredCompanies = async (post: any[]) => {
         let remaining = 35;
     
-        // Get current week number in the month
         const today = new Date();
         const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         const currentWeek = Math.ceil((today.getDate() + firstDayOfMonth.getDay()) / 7);
     
-        // Include 1 "New Account - Client Development" per week
+        // --- 1 New Account per week rule ---
         const newAccountCompanies = post
-            .filter((company) => company.status === "Active" && company.typeclient === "New Account - Client Development")
+            .filter((company) =>
+                (company.status === "Active" || company.status === "Used") &&
+                company.typeclient === "New Account - Client Development"
+            )
             .slice(0, 1);
+    
         remaining -= newAccountCompanies.length;
     
         let usedCompanies: any[] = [];
         let activeCompanies: any[] = [];
     
-        // Try to get from USED first
-        const usedPool = [
-            ...post.filter((company) => company.status === "Used" && company.typeclient === "Top 50"),
-            ...post.filter((company) => company.status === "Used" && company.typeclient === "Next 30"),
-            ...post.filter((company) => company.status === "Used" && company.typeclient === "Balance 20"),
-        ];
+        // --- USED pool only ---
+        const usedPool = post.filter((company) =>
+            company.status === "Used" &&
+            ["Top 50", "Next 30", "Balance 20"].includes(company.typeclient)
+        );
     
+        // --- ACTIVE pool only ---
+        const activePool = post.filter((company) =>
+            company.status === "Active" &&
+            ["Top 50", "Next 30", "Balance 20"].includes(company.typeclient)
+        );
+    
+        // --- Prioritize USED companies ---
         if (usedPool.length >= remaining) {
             usedCompanies = usedPool.slice(0, remaining).map((company) => ({
                 ...company,
                 status: "Active",
-                date_assigned: new Date().toISOString().slice(0, 10),
+                date_assigned: today.toISOString().slice(0, 10),
             }));
             remaining = 0;
         } else {
             usedCompanies = usedPool.map((company) => ({
                 ...company,
                 status: "Active",
-                date_assigned: new Date().toISOString().slice(0, 10),
+                date_assigned: today.toISOString().slice(0, 10),
             }));
             remaining -= usedCompanies.length;
     
-            // Then get from ACTIVE if needed
-            const activePool = [
-                ...post.filter((company) => company.status === "Active" && company.typeclient === "Top 50"),
-                ...post.filter((company) => company.status === "Active" && company.typeclient === "Next 30"),
-                ...post.filter((company) => company.status === "Active" && company.typeclient === "Balance 20"),
-            ];
-    
+            // Then fill the rest with ACTIVE companies if needed
             activeCompanies = activePool.slice(0, remaining).map((company) => ({
                 ...company,
-                date_assigned: new Date().toISOString().slice(0, 10),
+                date_assigned: today.toISOString().slice(0, 10),
             }));
     
             remaining -= activeCompanies.length;
@@ -652,39 +655,52 @@ const ListofUser: React.FC = () => {
             ...newAccountCompanies,
             ...usedCompanies,
             ...activeCompanies,
-        ].slice(0, 35);
+        ].slice(0, 35); // Ensures hard cap of 35
     
         setRemainingBalance(35 - finalCompanies.length);
         setTodayCompanies(finalCompanies);
     };
     
     
+    
     // Fetch companies from API with ReferenceID as query param
     const fetchCompanies = async () => {
         try {
-            const referenceid = encodeURIComponent(userDetails.ReferenceID); // Encode the reference ID
+            const referenceid = userDetails.ReferenceID; // Directly use the reference ID from MongoDB
+            if (!referenceid) {
+                return;
+            }
+    
+            // Ensure the parameter name matches the backend query parameter
             const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`);
             const data = await response.json();
-
+    
             if (data.success && Array.isArray(data.data)) {
                 const activeCompanies = data.data.filter((company: Company) => company.status === "Active" || company.status === "Used");
                 setPost(activeCompanies);
             } else {
-                setPost([]);
+                setPost([]); // No active companies
             }
         } catch (error) {
             console.error("Error fetching companies:", error);
         }
     };
-
+    
+    useEffect(() => {
+        if (userDetails.ReferenceID) {
+            // Fetch companies once the ReferenceID is available
+            fetchCompanies();
+        }
+    }, [userDetails.ReferenceID]); // Run when ReferenceID is updated
+    
+    
     const handleProceed = async () => {
         if (!selectedCompany) return;
     
         try {
-            // Ensure the status updates directly from "Used" to "Active" or "Active" to "Used"
             let newStatus;
-            
-            // Check if the company is currently active or used and update accordingly
+    
+            // Ensure the status updates directly from "Used" to "Active" or "Active" to "Used"
             if (selectedCompany.status === "Active") {
                 newStatus = "Used";  // Active should be changed to Used
             } else if (selectedCompany.status === "Used") {
@@ -718,26 +734,40 @@ const ListofUser: React.FC = () => {
             console.log("Company status updated:", result);
     
             // Update the local state of todayCompanies list with the new status
-            const updatedList = todayCompanies.map((company) =>
-                company.id === selectedCompany.id ? { ...company, status: newStatus } : company
+            setTodayCompanies(prevCompanies =>
+                prevCompanies.map(company =>
+                    company.id === selectedCompany.id ? { ...company, status: newStatus } : company
+                )
             );
-            setTodayCompanies(updatedList);
     
-            // Reflect the new status in the selectedCompany state
-            setSelectedCompany({
-                ...selectedCompany,
-                status: newStatus,  // Set the updated status
-            });
+            setSelectedCompany(prev => ({
+                ...prev,
+                status: newStatus, 
+                companyname: prev?.companyname ?? "",
+                referenceid: prev?.referenceid ?? "",
+                tsm: prev?.tsm ?? "",
+                manager: prev?.manager ?? "",
+                typeclient: prev?.typeclient ?? "",
+                id: prev?.id ?? 0,  // Default to 0 if undefined
+                contactnumber: prev?.contactnumber ?? "",  // Default to empty string if undefined
+                contactperson: prev?.contactperson ?? "",  // Default to empty string if undefined
+                emailaddress: prev?.emailaddress ?? "",  // Default to empty string if undefined
+                address: prev?.address ?? "",  // Default to empty string if undefined
+                area: prev?.area ?? "",  // Default to empty string if undefined
+                remarks: prev?.remarks ?? "",  // Default to empty string if undefined
+                typeactivity: prev?.typeactivity ?? "",  // Default to empty string if undefined
+                startdate: prev?.startdate ?? "",  // Default to empty string if undefined
+                enddate: prev?.enddate ?? "",  // Default to empty string if undefined
+            }));
     
-            // Optionally show the form after the status change
-            setShowForm(true);
+            setShowForm(true); // Optionally show the form after the status change
     
         } catch (error) {
-            console.error("❌ Error updating company status:", error);
         } finally {
             setShowModal(false); // Close modal after action
         }
     };
+    
     
     // Handle Accept button to show modal
     const handleAccept = (company: any) => {
