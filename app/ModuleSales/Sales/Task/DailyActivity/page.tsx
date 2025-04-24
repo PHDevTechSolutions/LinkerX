@@ -844,18 +844,17 @@ const ListofUser: React.FC = () => {
         }
     }, [post]);
 
-    const isRestrictedUser =
-        (userDetails?.Role !== "Super Admin" && userDetails?.ReferenceID !== "XLGR-GLOBAL-ERP-000000") ||
-        (userDetails?.Role !== "Territory Sales Associate" && userDetails?.ReferenceID !== "JG-NCR-920587");
+    const isAllowedUser =
+        userDetails?.Role === "Super Admin" ||
+        (userDetails?.Role === "Territory Sales Associate" && userDetails?.ReferenceID === "JG-NCR-920587");
+
+    const isRestrictedUser = !isAllowedUser;
 
     // Automatically show modal if the user is restricted
     useEffect(() => {
-        if (isRestrictedUser) {
-            setShowAccessModal(true);
-        } else {
-            setShowAccessModal(false);
-        }
+        setShowAccessModal(isRestrictedUser);
     }, [isRestrictedUser]);
+
 
 
     return (
