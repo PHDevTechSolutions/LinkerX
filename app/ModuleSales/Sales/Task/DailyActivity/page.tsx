@@ -16,6 +16,37 @@ import 'react-toastify/dist/ReactToastify.css';
 // Icons
 import { CiCircleRemove, CiSaveUp1, CiTrash } from "react-icons/ci";
 import { PiHandTapThin } from "react-icons/pi";
+import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
+
+// Read leftover
+const fetchLeftover = async () => {
+    const res = await fetch("/api/Storage");
+    if (!res.ok) return 0;
+    const data = await res.json();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const savedDate = new Date(data.date);
+  
+    // Only apply leftover if it was from yesterday
+    if (
+      savedDate.getDate() === yesterday.getDate() &&
+      savedDate.getMonth() === yesterday.getMonth() &&
+      savedDate.getFullYear() === yesterday.getFullYear()
+    ) {
+      return data.leftover || 0;
+    }
+  
+    return 0;
+  };
+  
+  const saveLeftover = async (leftover: number) => {
+    await fetch("/api/Storage", {
+      method: "POST",
+      body: JSON.stringify({ leftover }),
+    });
+  };
+  
+  
 
 // Function to get formatted Manila timestamp
 const getFormattedTimestamp = () => {
@@ -594,70 +625,74 @@ const ListofUser: React.FC = () => {
         }
     }, [post]);
 
-    const getFilteredCompanies = async (post: any[]) => {
-        let remaining = 35;
-
+    const getFilteredCompanies = async (post: Company[]) => {
+        const leftover = await fetchLeftover();
+        let remaining = 35 + leftover;
+    
         const today = new Date();
         const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         const currentWeek = Math.ceil((today.getDate() + firstDayOfMonth.getDay()) / 7);
-
-        // --- 1 New Account per week rule ---
+    
         const newAccountCompanies = post
-            .filter((company) =>
-                (company.status === "Active" || company.status === "Used") &&
-                company.typeclient === "New Account - Client Development"
-            )
-            .slice(0, 1);
-
+          .filter(
+            (company) =>
+              (company.status === "Active" || company.status === "Used") &&
+              company.typeclient === "New Account - Client Development"
+          )
+          .slice(0, 1);
+    
         remaining -= newAccountCompanies.length;
-
-        let usedCompanies: any[] = [];
-        let activeCompanies: any[] = [];
-
-        // --- USED pool only ---
-        const usedPool = post.filter((company) =>
+    
+        let usedCompanies: Company[] = [];
+        let activeCompanies: Company[] = [];
+    
+        const usedPool = post.filter(
+          (company) =>
             company.status === "Used" &&
             ["Top 50", "Next 30", "Balance 20"].includes(company.typeclient)
         );
-
-        // --- ACTIVE pool only ---
-        const activePool = post.filter((company) =>
+    
+        const activePool = post.filter(
+          (company) =>
             company.status === "Active" &&
             ["Top 50", "Next 30", "Balance 20"].includes(company.typeclient)
         );
-
-        // --- Prioritize USED companies ---
+    
         if (usedPool.length >= remaining) {
-            usedCompanies = usedPool.slice(0, remaining).map((company) => ({
-                ...company,
-                date_assigned: today.toISOString().slice(0, 10),
-            }));
-            remaining = 0;
+          usedCompanies = usedPool.slice(0, remaining).map((company) => ({
+            ...company,
+            date_assigned: today.toISOString().slice(0, 10),
+          }));
+          remaining = 0;
         } else {
-            usedCompanies = usedPool.map((company) => ({
-                ...company,
-                date_assigned: today.toISOString().slice(0, 10),
-            }));
-            remaining -= usedCompanies.length;
-
-            // Then fill the rest with ACTIVE companies if needed
-            activeCompanies = activePool.slice(0, remaining).map((company) => ({
-                ...company,
-                date_assigned: today.toISOString().slice(0, 10),
-            }));
-
-            remaining -= activeCompanies.length;
+          usedCompanies = usedPool.map((company) => ({
+            ...company,
+            date_assigned: today.toISOString().slice(0, 10),
+          }));
+          remaining -= usedCompanies.length;
+    
+          activeCompanies = activePool.slice(0, remaining).map((company) => ({
+            ...company,
+            date_assigned: today.toISOString().slice(0, 10),
+          }));
+    
+          remaining -= activeCompanies.length;
         }
-
+    
         const finalCompanies = [
-            ...newAccountCompanies,
-            ...usedCompanies,
-            ...activeCompanies,
-        ].slice(0, 35); // Ensures hard cap of 35
-
-        setRemainingBalance(35 - finalCompanies.length);
+          ...newAccountCompanies,
+          ...usedCompanies,
+          ...activeCompanies,
+        ].slice(0, 35);
+    
+        const updatedLeftover = 35 - finalCompanies.length;
+        setRemainingBalance(updatedLeftover);
         setTodayCompanies(finalCompanies);
-    };
+    
+        // Save leftover to be used tomorrow
+        await saveLeftover(updatedLeftover);
+      };
+    
 
     // Fetch companies from API with ReferenceID as query param
     const fetchCompanies = async () => {
@@ -998,9 +1033,9 @@ const ListofUser: React.FC = () => {
                                                                         </span>
                                                                         <button
                                                                             onClick={() => handleAccept(company)}
-                                                                            className="px-3 py-1 text-[10px] bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                                                            className="px-3 py-1 text-[10px] bg-blue-500 text-white rounded hover:bg-blue-600 transition flex gap-1"
                                                                         >
-                                                                            Accept
+                                                                            Accept <IoCheckmarkDoneCircleOutline size={15} />
                                                                         </button>
                                                                     </div>
                                                                 ))
