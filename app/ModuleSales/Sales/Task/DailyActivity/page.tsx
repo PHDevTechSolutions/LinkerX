@@ -845,9 +845,10 @@ const ListofUser: React.FC = () => {
     }, [post]);
 
     const isRestrictedUser =
-        userDetails?.Role !== "Super Admin" && userDetails?.ReferenceID !== "XLGR-GLOBAL-ERP-000000";
+        (userDetails?.Role !== "Super Admin" && userDetails?.ReferenceID !== "XLGR-GLOBAL-ERP-000000") ||
+        (userDetails?.Role !== "Territory Sales Associate" && userDetails?.ReferenceID !== "JG-NCR-920587");
 
-    //Automatically show modal if the user is restricted
+    // Automatically show modal if the user is restricted
     useEffect(() => {
         if (isRestrictedUser) {
             setShowAccessModal(true);
@@ -855,6 +856,7 @@ const ListofUser: React.FC = () => {
             setShowAccessModal(false);
         }
     }, [isRestrictedUser]);
+
 
     return (
         <SessionChecker>
