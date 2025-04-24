@@ -114,6 +114,8 @@ const ListofUser: React.FC = () => {
     const [countdown, setCountdown] = useState(0);
     const [timerRunning, setTimerRunning] = useState(false);
 
+    const [showAccessModal, setShowAccessModal] = useState(false);
+
     const taskRef = useRef<HTMLDivElement | null>(null); // Reference for My Task div
 
     // Fetch user data based on query parameters (user ID)
@@ -193,7 +195,7 @@ const ListofUser: React.FC = () => {
                 const matchesClientType = selectedClientType
                     ? post?.typeclient === selectedClientType
                     : true;
-                
+
                 const matchesStatus = selectedStatus
                     ? post?.activitystatus === selectedStatus
                     : true;
@@ -503,7 +505,7 @@ const ListofUser: React.FC = () => {
             const referenceid = encodeURIComponent(userDetails.ReferenceID); // Encode the reference ID
             const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`);
             const data = await response.json();
-    
+
             if (data.success && Array.isArray(data.data)) {
                 const activeCompanies = data.data.filter((company: Company) => company.status === "Active" || company.status === "Used");
                 setPost(activeCompanies);
@@ -514,7 +516,7 @@ const ListofUser: React.FC = () => {
             console.error("Error fetching companies:", error);
         }
     };
-    
+
 
     function calculateDate(selectedDuration: string, selectedTime: string) {
         // Get current date in Manila timezone
@@ -676,19 +678,19 @@ const ListofUser: React.FC = () => {
 
     const getFilteredCompanies = async (post: any[]) => {
         let remaining = remainingBalance || 35;
-    
+
         // Get current week number in the month
         const today = new Date();
         const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         const currentWeek = Math.ceil((today.getDate() + firstDayOfMonth.getDay()) / 7); // Get current week
-    
+
         // Get New Account - Client Development per week (always 1 per week)
         const newAccountCompanies = post
             .filter((company) => company.status === "Active" && company.typeclient === "New Account - Client Development")
             .slice(0, 1); // Only 1 company per week
-    
+
         remaining -= newAccountCompanies.length;
-    
+
         // First, fill remaining slots with Used companies (priority)
         let usedCompanies: any[] = [];
         if (remaining > 0) {
@@ -704,10 +706,10 @@ const ListofUser: React.FC = () => {
                     date_assigned: new Date().toISOString().slice(0, 10), // Add today's date
                 }));
         }
-    
+
         // Adjust remaining balance after Used companies
         remaining -= usedCompanies.length;
-    
+
         // If there are still slots left, fill with Active companies
         let activeCompanies: any[] = [];
         if (remaining > 0) {
@@ -722,23 +724,23 @@ const ListofUser: React.FC = () => {
                     date_assigned: new Date().toISOString().slice(0, 10), // Add today's date
                 }));
         }
-    
+
         // Combine Used companies (now Active) and Active companies
         const finalCompanies = [
             ...newAccountCompanies, // Include New Account - Client Development (once per week)
             ...usedCompanies, // Used companies first (now Active)
             ...activeCompanies, // Then Active companies
         ].slice(0, 35); // Ensure the total number is 35
-    
+
         // Update remaining balance
         const newBalance = Math.max(0, 35 - finalCompanies.length);
         setRemainingBalance(newBalance);
         setTodayCompanies(finalCompanies);
-    
+
         // Save the assigned companies to the backend
         await saveToDatabase(finalCompanies, newBalance);
     };
-    
+
 
     const saveToDatabase = async (companies: any[], balance: number) => {
         try {
@@ -754,12 +756,12 @@ const ListofUser: React.FC = () => {
             });
 
             if (!response.ok) {
-                
+
             } else {
                 console.log("✅ Assigned companies saved successfully.");
             }
         } catch (error) {
-            
+
         }
     };
 
@@ -774,7 +776,7 @@ const ListofUser: React.FC = () => {
             try {
                 // Determine the new status based on the current one
                 const newStatus = selectedCompany.status === "Used" ? "Active" : "Used";
-    
+
                 // Call API to update company status
                 const response = await fetch(
                     "/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus",
@@ -789,32 +791,32 @@ const ListofUser: React.FC = () => {
                         }),
                     }
                 );
-    
+
                 if (response.ok) {
                     const result = await response.json();
                     console.log("✅ Company status updated successfully:", result.data);
-    
+
                     // Remove the company from the list if it's being updated
                     const updatedCompanies = todayCompanies.filter(
                         (company) => company.id !== selectedCompany.id
                     );
-    
+
                     // Adjust remaining balance
                     const newBalance =
                         newStatus === "Used" ? Math.max(0, remainingBalance - 1) : remainingBalance + 1;
-    
+
                     setTodayCompanies(updatedCompanies);
                     setRemainingBalance(newBalance);
-    
+
                     // Save updated data to the database after status update
                     await saveToDatabase(updatedCompanies, newBalance);
-    
+
                     // Set updated status of the company
                     setSelectedCompany({
                         ...selectedCompany,
                         status: newStatus,
                     });
-    
+
                     // Show form after update
                     setShowForm(true);
                 } else {
@@ -828,7 +830,7 @@ const ListofUser: React.FC = () => {
             }
         }
     };
-    
+
     // Handle Cancel to Close Modal
     const handleCancel = () => {
         setShowModal(false);
@@ -842,6 +844,18 @@ const ListofUser: React.FC = () => {
         }
     }, [post]);
 
+    const isRestrictedUser =
+        userDetails?.Role !== "Super Admin" && userDetails?.ReferenceID !== "XLGR-GLOBAL-ERP-000000";
+
+    //Automatically show modal if the user is restricted
+    useEffect(() => {
+        if (isRestrictedUser) {
+            setShowAccessModal(true);
+        } else {
+            setShowAccessModal(false);
+        }
+    }, [isRestrictedUser]);
+
     return (
         <SessionChecker>
             <ParentLayout>
@@ -849,354 +863,366 @@ const ListofUser: React.FC = () => {
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
                             <div className="grid grid-cols-1 md:grid-cols-1">
-                            {showForm && selectedCompany ? (
-                                <AddPostForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditUser(null);
-                                        setSelectedCompany(null);
-                                    }}
-                                    refreshPosts={fetchAccount} // Pass the refreshPosts callback
-                                    userDetails={{
-                                        id: editUser ? editUser.id : userDetails.UserId,
-                                        referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
-                                        manager: editUser ? editUser.manager : userDetails.Manager,
-                                        tsm: editUser ? editUser.tsm : userDetails.TSM,
-                                        targetquota: editUser ? editUser.targetquota : userDetails.TargetQuota,
-                                    }}
-                                    editUser={editUser} // ✅ Properly pass editUser for editing
-                                    companyData={{
-                                        companyname: selectedCompany?.companyname || "",
-                                        typeclient: selectedCompany?.typeclient || "",
-                                        contactperson: selectedCompany?.contactperson || "",
-                                        contactnumber: selectedCompany?.contactnumber || "",
-                                        emailaddress: selectedCompany?.emailaddress || "",
-                                        address: selectedCompany?.address || "",
-                                        area: selectedCompany?.area || "",
-                                    }}
-                                />
-                            ) : (
-                                <>
-                                    <div className="flex justify-between items-center mb-4">
-                                        <div className="flex items-center gap-3">
-                                            <button
-                                                className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
-                                                onClick={handleButtonClick}
-                                            >
-                                                <PiHandTapThin size={20} /> Tap
-                                            </button>
-                                        </div>
+                                {showForm && selectedCompany ? (
+                                    <AddPostForm
+                                        onCancel={() => {
+                                            setShowForm(false);
+                                            setEditUser(null);
+                                            setSelectedCompany(null);
+                                        }}
+                                        refreshPosts={fetchAccount} // Pass the refreshPosts callback
+                                        userDetails={{
+                                            id: editUser ? editUser.id : userDetails.UserId,
+                                            referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
+                                            manager: editUser ? editUser.manager : userDetails.Manager,
+                                            tsm: editUser ? editUser.tsm : userDetails.TSM,
+                                            targetquota: editUser ? editUser.targetquota : userDetails.TargetQuota,
+                                        }}
+                                        editUser={editUser} // ✅ Properly pass editUser for editing
+                                        companyData={{
+                                            companyname: selectedCompany?.companyname || "",
+                                            typeclient: selectedCompany?.typeclient || "",
+                                            contactperson: selectedCompany?.contactperson || "",
+                                            contactnumber: selectedCompany?.contactnumber || "",
+                                            emailaddress: selectedCompany?.emailaddress || "",
+                                            address: selectedCompany?.address || "",
+                                            area: selectedCompany?.area || "",
+                                        }}
+                                    />
+                                ) : (
+                                    <>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <button
+                                                    className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
+                                                    onClick={handleButtonClick}
+                                                >
+                                                    <PiHandTapThin size={20} /> Tap
+                                                </button>
+                                            </div>
 
-                                        {showPersonalForm && (
-                                            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1000]">
-                                                <div className="bg-white p-8 rounded shadow-lg w-96 max-w-lg">
-                                                    <h2 className="text-sm font-bold mb-4">Personal Activity</h2>
-                                                    <p className="text-xs text-gray-600 mb-4">
-                                                        This form helps track your <strong>personal activities</strong> by selecting an activity type, adding remarks, and specifying the time spent. It assists in managing tasks, time allocation, and productivity analysis.
-                                                    </p>
-
-                                                    <form onSubmit={handleSubmit}>
-                                                        <input type="hidden" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                                                        <input type="hidden" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                                                        <input type="hidden" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                                                        <input type="hidden" value={startdate} readOnly className="w-full px-3 py-2 border rounded text-xs bg-gray-100 cursor-not-allowed" />
-                                                        <input type="hidden" value={enddate} readOnly className="w-full px-3 py-2 border rounded text-xs" />
-
-                                                        {/* Select Option */}
-                                                        <select value={activitystatus} onChange={(e) => setactivitystatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize mb-4">
-                                                            <option value="">-- Select an Option --</option>
-                                                            <option value="Assisting other Agents Client">Assisting other Agents Client</option>
-                                                            <option value="Coordination of SO to Warehouse">Coordination of SO to Warehouse</option>
-                                                            <option value="Coordination of SO to Orders">Coordination of SO to Orders</option>
-                                                            <option value="Updating Reports">Updating Reports</option>
-                                                            <option value="Email and Viber Checking">Email and Viber Checking</option>
-                                                            <optgroup label="──────────────────"></optgroup>
-                                                            <option value="1st Break">1st Break</option>
-                                                            <option value="Client Meeting">Client Meeting</option>
-                                                            <option value="Coffee Break">Coffee Break </option>
-                                                            <option value="Group Meeting">Group Meeting</option>
-                                                            <option value="Last Break">Last Break</option>
-                                                            <option value="Lunch Break">Lunch Break</option>
-                                                            <option value="TSM Coaching">TSM Coaching</option>
-                                                        </select>
-
-                                                        {/* Remarks Input */}
-                                                        <textarea value={activityremarks} onChange={(e) => setactivityremarks(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize resize-none mb-4" rows={4} placeholder="Enter remarks here..."></textarea>
-
-                                                        <select value={timeDuration} onChange={handleTimeChange} className="w-full px-3 py-2 border rounded text-xs capitalize mb-2">
-                                                            <option value="">Choose Time</option>
-                                                            <option value="1 Minute">1 Minute</option>
-                                                            <option value="5 Minutes">5 Minutes</option>
-                                                            <option value="10 Minutes">10 Minutes</option>
-                                                            <option value="15 Minutes">15 Minutes</option>
-                                                            <option value="20 Minutes">20 Minutes</option>
-                                                            <option value="30 Minutes">30 Minutes</option>
-                                                            <option value="1 Hour">1 Hour</option>
-                                                            <option value="2 Hours">2 Hours</option>
-                                                            <option value="3 Hours">3 Hours</option>
-                                                        </select>
+                                            {showPersonalForm && (
+                                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1000]">
+                                                    <div className="bg-white p-8 rounded shadow-lg w-96 max-w-lg">
+                                                        <h2 className="text-sm font-bold mb-4">Personal Activity</h2>
                                                         <p className="text-xs text-gray-600 mb-4">
-                                                            Select the <strong>activity duration</strong> to log the time spent on the task, ranging from minutes to hours.
+                                                            This form helps track your <strong>personal activities</strong> by selecting an activity type, adding remarks, and specifying the time spent. It assists in managing tasks, time allocation, and productivity analysis.
                                                         </p>
 
-                                                        {/* Buttons */}
-                                                        <div className="mt-6 flex justify-end">
-                                                            <button type="button" className="bg-gray-400 text-xs text-white px-5 py-2 rounded mr-2 flex items-center gap-1" onClick={closeForm} disabled={loading}><CiCircleRemove size={20} />Cancel</button>
-                                                            <button type="submit" className="bg-blue-900 text-white text-xs px-5 py-2 rounded flex items-center gap-1" disabled={loading}><CiSaveUp1 size={20} />{loading ? "Submitting..." : "Submit"}</button>
-                                                        </div>
-                                                    </form>
+                                                        <form onSubmit={handleSubmit}>
+                                                            <input type="hidden" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                                                            <input type="hidden" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                                                            <input type="hidden" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                                                            <input type="hidden" value={startdate} readOnly className="w-full px-3 py-2 border rounded text-xs bg-gray-100 cursor-not-allowed" />
+                                                            <input type="hidden" value={enddate} readOnly className="w-full px-3 py-2 border rounded text-xs" />
+
+                                                            {/* Select Option */}
+                                                            <select value={activitystatus} onChange={(e) => setactivitystatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize mb-4">
+                                                                <option value="">-- Select an Option --</option>
+                                                                <option value="Assisting other Agents Client">Assisting other Agents Client</option>
+                                                                <option value="Coordination of SO to Warehouse">Coordination of SO to Warehouse</option>
+                                                                <option value="Coordination of SO to Orders">Coordination of SO to Orders</option>
+                                                                <option value="Updating Reports">Updating Reports</option>
+                                                                <option value="Email and Viber Checking">Email and Viber Checking</option>
+                                                                <optgroup label="──────────────────"></optgroup>
+                                                                <option value="1st Break">1st Break</option>
+                                                                <option value="Client Meeting">Client Meeting</option>
+                                                                <option value="Coffee Break">Coffee Break </option>
+                                                                <option value="Group Meeting">Group Meeting</option>
+                                                                <option value="Last Break">Last Break</option>
+                                                                <option value="Lunch Break">Lunch Break</option>
+                                                                <option value="TSM Coaching">TSM Coaching</option>
+                                                            </select>
+
+                                                            {/* Remarks Input */}
+                                                            <textarea value={activityremarks} onChange={(e) => setactivityremarks(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize resize-none mb-4" rows={4} placeholder="Enter remarks here..."></textarea>
+
+                                                            <select value={timeDuration} onChange={handleTimeChange} className="w-full px-3 py-2 border rounded text-xs capitalize mb-2">
+                                                                <option value="">Choose Time</option>
+                                                                <option value="1 Minute">1 Minute</option>
+                                                                <option value="5 Minutes">5 Minutes</option>
+                                                                <option value="10 Minutes">10 Minutes</option>
+                                                                <option value="15 Minutes">15 Minutes</option>
+                                                                <option value="20 Minutes">20 Minutes</option>
+                                                                <option value="30 Minutes">30 Minutes</option>
+                                                                <option value="1 Hour">1 Hour</option>
+                                                                <option value="2 Hours">2 Hours</option>
+                                                                <option value="3 Hours">3 Hours</option>
+                                                            </select>
+                                                            <p className="text-xs text-gray-600 mb-4">
+                                                                Select the <strong>activity duration</strong> to log the time spent on the task, ranging from minutes to hours.
+                                                            </p>
+
+                                                            {/* Buttons */}
+                                                            <div className="mt-6 flex justify-end">
+                                                                <button type="button" className="bg-gray-400 text-xs text-white px-5 py-2 rounded mr-2 flex items-center gap-1" onClick={closeForm} disabled={loading}><CiCircleRemove size={20} />Cancel</button>
+                                                                <button type="submit" className="bg-blue-900 text-white text-xs px-5 py-2 rounded flex items-center gap-1" disabled={loading}><CiSaveUp1 size={20} />{loading ? "Submitting..." : "Submit"}</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
+                                            )}
 
-                                        {showTimerModal && (
-                                            <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-end justify-end pointer-events-auto">
-                                                {/* Invisible overlay to block clicks */}
-                                                <div className="absolute inset-0"></div>
+                                            {showTimerModal && (
+                                                <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-end justify-end pointer-events-auto">
+                                                    {/* Invisible overlay to block clicks */}
+                                                    <div className="absolute inset-0"></div>
 
-                                                {/* Modal Box */}
-                                                <div className="relative bg-white p-6 rounded-lg shadow-lg w-64 text-center border border-gray-300 m-4">
-                                                    <h2 className="text-sm font-bold mb-2">Activity in Progress</h2>
-                                                    <p className="text-xl font-bold text-red-600">
-                                                        {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, "0")}
-                                                    </p>
-                                                    <p className="text-xs text-gray-500 mt-2">Please wait until the timer ends.</p>
+                                                    {/* Modal Box */}
+                                                    <div className="relative bg-white p-6 rounded-lg shadow-lg w-64 text-center border border-gray-300 m-4">
+                                                        <h2 className="text-sm font-bold mb-2">Activity in Progress</h2>
+                                                        <p className="text-xl font-bold text-red-600">
+                                                            {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, "0")}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500 mt-2">Please wait until the timer ends.</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                                        {/* Task */}
-                                        <div className="col-span-1 lg:col-span-3 bg-white shadow-md rounded-lg p-4">
-                                            <h2 className="text-lg font-bold mb-2">Automated Task</h2>
-                                            <p className="text-xs text-gray-600 mb-4">
-                                                This section displays your <strong>tasks</strong> in a <strong>card layout</strong>. Each task is represented as a card, offering a visually appealing and more flexible design compared to traditional tables. You can filter tasks based on various criteria like <strong>client type</strong>, <strong>date range</strong>, and other parameters using the search filters.
-                                            </p>
-
-                                            {/* Search Filters */}
-                                            <SearchFilters
-                                                searchTerm={searchTerm}
-                                                setSearchTerm={setSearchTerm}
-                                                selectedClientType={selectedClientType}
-                                                setSelectedClientType={setSelectedClientType}
-                                                selectedStatus={selectedStatus}
-                                                setSelectedStatus={setSelectedStatus}
-                                                startDate={startDate}
-                                                setStartDate={setStartDate}
-                                                endDate={endDate}
-                                                setEndDate={setEndDate}
-                                            />
-
-                                            {/* Users Table */}
-                                            <UsersTable
-                                                posts={currentPosts}
-                                                handleEdit={(user) => handleEdit(user)}
-                                                handleStatusUpdate={handleStatusUpdate}
-                                                handleDelete={confirmDelete}
-                                            />
+                                            )}
                                         </div>
 
-                                        {/* Automated Task */}
-                                        <div className="col-span-1 bg-white shadow-md rounded-lg p-4">
-                                            <div className="flex mb-4 border-b">
-                                                <button
-                                                    onClick={() => handleTabChange("Automated Task")}
-                                                    className={`text-xs px-4 py-2 border-b-2 w-full ${activeTab === "Automated Task" ? "border-blue-500 font-semibold" : "text-gray-600"
-                                                        }`}
-                                                >
-                                                    Automated Task
-                                                </button>
-                                                <button
-                                                    onClick={() => handleTabChange("List Accounts")}
-                                                    className={`text-xs px-4 py-2 border-b-2 w-full ${activeTab === "List Accounts" ? "border-blue-500 font-semibold" : "text-gray-600"
-                                                        }`}
-                                                >
-                                                    List Accounts
-                                                </button>
+                                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                                            {/* Task */}
+                                            <div className="col-span-1 lg:col-span-3 bg-white shadow-md rounded-lg p-4">
+                                                <h2 className="text-lg font-bold mb-2">Automated Task</h2>
+                                                <p className="text-xs text-gray-600 mb-4">
+                                                    This section displays your <strong>tasks</strong> in a <strong>card layout</strong>. Each task is represented as a card, offering a visually appealing and more flexible design compared to traditional tables. You can filter tasks based on various criteria like <strong>client type</strong>, <strong>date range</strong>, and other parameters using the search filters.
+                                                </p>
+
+                                                {/* Search Filters */}
+                                                <SearchFilters
+                                                    searchTerm={searchTerm}
+                                                    setSearchTerm={setSearchTerm}
+                                                    selectedClientType={selectedClientType}
+                                                    setSelectedClientType={setSelectedClientType}
+                                                    selectedStatus={selectedStatus}
+                                                    setSelectedStatus={setSelectedStatus}
+                                                    startDate={startDate}
+                                                    setStartDate={setStartDate}
+                                                    endDate={endDate}
+                                                    setEndDate={setEndDate}
+                                                />
+
+                                                {/* Users Table */}
+                                                <UsersTable
+                                                    posts={currentPosts}
+                                                    handleEdit={(user) => handleEdit(user)}
+                                                    handleStatusUpdate={handleStatusUpdate}
+                                                    handleDelete={confirmDelete}
+                                                />
                                             </div>
 
-                                            {activeTab === "Automated Task" ? (
-                                                <>
-                                                    <h3 className="text-sm font-semibold mb-2">Automated Task</h3>
-                                                    <p className="text-xs text-gray-600 mb-4">
-                                                        Below are some company names fetched from the system.
-                                                    </p>
+                                            {/* Automated Task */}
+                                            <div className="col-span-1 bg-white shadow-md rounded-lg p-4">
+                                                <div className="flex mb-4 border-b">
+                                                    <button
+                                                        onClick={() => handleTabChange("Automated Task")}
+                                                        className={`text-xs px-4 py-2 border-b-2 w-full ${activeTab === "Automated Task" ? "border-blue-500 font-semibold" : "text-gray-600"
+                                                            }`}
+                                                    >
+                                                        Automated Task
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleTabChange("List Accounts")}
+                                                        className={`text-xs px-4 py-2 border-b-2 w-full ${activeTab === "List Accounts" ? "border-blue-500 font-semibold" : "text-gray-600"
+                                                            }`}
+                                                    >
+                                                        List Accounts
+                                                    </button>
+                                                </div>
 
-                                                    {/* Display 5 random company names */}
-                                                    <div className="space-y-2">
-                                                        {todayCompanies.length > 0 ? (
-                                                            todayCompanies.map((company, index) => (
-                                                                <div
-                                                                    key={index}
-                                                                    className={`p-2 bg-gray-100 rounded flex justify-between items-center text-[10px] transition-all duration-200 ease-in-out transform hover:scale-[1.02] uppercase font-medium text-gray-800 ${company.typeclient === "New Account - Client Development" ? "bg-yellow-200" : ""
-                                                                        }`}
-                                                                >
-                                                                    <span>
-                                                                        {company.companyname}
-                                                                        <br />
-                                                                        <span className="text-gray-500">{company.typeclient}</span>
-                                                                    </span>
-                                                                    <button
-                                                                        onClick={() => handleAccept(company)}
-                                                                        className="px-3 py-1 text-[10px] bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                                {activeTab === "Automated Task" ? (
+                                                    <>
+                                                        <h3 className="text-sm font-semibold mb-2">Automated Task</h3>
+                                                        <p className="text-xs text-gray-600 mb-4">
+                                                            Below are some company names fetched from the system.
+                                                        </p>
+
+                                                        {/* Display 5 random company names */}
+                                                        <div className="space-y-2">
+                                                            {todayCompanies.length > 0 ? (
+                                                                todayCompanies.map((company, index) => (
+                                                                    <div
+                                                                        key={index}
+                                                                        className={`p-2 bg-gray-100 rounded flex justify-between items-center text-[10px] transition-all duration-200 ease-in-out transform hover:scale-[1.02] uppercase font-medium text-gray-800 ${company.typeclient === "New Account - Client Development" ? "bg-yellow-200" : ""
+                                                                            }`}
                                                                     >
-                                                                        Accept
-                                                                    </button>
-                                                                </div>
-                                                            ))
-                                                        ) : (
-                                                            <div className="text-xs text-gray-500 text-center p-2">
-                                                                {remainingBalance === 0
-                                                                    ? "✅ All 35 companies have been used today. Come back tomorrow!"
-                                                                    : "No available companies today."}
-                                                            </div>
-                                                        )}
-
-                                                        {/* Modal for Proceed/Cancel */}
-                                                        {showModal && (
-                                                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[1000]">
-                                                                <div className="bg-white rounded-lg p-5 w-72 text-center shadow-lg">
-                                                                    <p className="text-xs font-semibold mb-4">
-                                                                        Are you sure you want to proceed?
-                                                                    </p>
-                                                                    <div className="flex justify-between text-xs">
+                                                                        <span>
+                                                                            {company.companyname}
+                                                                            <br />
+                                                                            <span className="text-gray-500">{company.typeclient}</span>
+                                                                        </span>
                                                                         <button
-                                                                            onClick={handleCancel}
-                                                                            className="px-3 py-1 bg-gray-300 text-black rounded hover:bg-gray-400 transition"
+                                                                            onClick={() => handleAccept(company)}
+                                                                            className="px-3 py-1 text-[10px] bg-blue-500 text-white rounded hover:bg-blue-600 transition"
                                                                         >
-                                                                            Cancel
-                                                                        </button>
-                                                                        <button
-                                                                            onClick={handleProceed}
-                                                                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                                                                        >
-                                                                            Proceed
+                                                                            Accept
                                                                         </button>
                                                                     </div>
+                                                                ))
+                                                            ) : (
+                                                                <div className="text-xs text-gray-500 text-center p-2">
+                                                                    {remainingBalance === 0
+                                                                        ? "✅ All 35 companies have been used today. Come back tomorrow!"
+                                                                        : "No available companies today."}
                                                                 </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
+                                                            )}
 
-                                                </>
-                                            ) : (
-                                                <>
-                                                    {/* List Accounts Tab Content */}
-                                                    <h3 className="text-sm font-semibold mb-2">List Accounts</h3>
-                                                    <p className="text-xs text-gray-600 mb-4">
-                                                        View and manage your list of company accounts.
-                                                    </p>
-                                                    <div className="p-0 rounded text-[10px] text-gray-700 uppercase">
-                                                        <ul className="space-y-2 h-90 overflow-y-auto max-h-[500px] w-full pr-2">
-                                                            {[
-                                                                // Order Top 50 first
-                                                                ...post
-                                                                    .filter((company) => company.status === "Active" && company.typeclient === "Top 50")
-                                                                    .map((company, index) => ({
-                                                                        ...company,
-                                                                        order: index + 1,
-                                                                    })),
-                                                                // Next 30
-                                                                ...post
-                                                                    .filter((company) => company.status === "Active" && company.typeclient === "Next 30")
-                                                                    .map((company, index, array) => ({
-                                                                        ...company,
-                                                                        order: post.filter((c) => c.status === "Active" && c.typeclient === "Top 50").length + index + 1,
-                                                                    })),
-                                                                // Below 20
-                                                                ...post
-                                                                    .filter((company) => company.status === "Active" && company.typeclient === "Balance 20")
-                                                                    .map((company, index, array) => ({
-                                                                        ...company,
-                                                                        order:
-                                                                            post.filter((c) => c.status === "Active" && (c.typeclient === "Top 50" || c.typeclient === "Next 30")).length +
-                                                                            index +
-                                                                            1,
-                                                                    })),
-                                                                // New Account - Client Development
-                                                                ...post
-                                                                    .filter((company) => company.status === "Active" && company.typeclient === "New Account - Client Development")
-                                                                    .map((company, index, array) => ({
-                                                                        ...company,
-                                                                        order:
-                                                                            post.filter(
-                                                                                (c) =>
-                                                                                    c.status === "Active" &&
-                                                                                    (c.typeclient === "Top 50" || c.typeclient === "Next 30" || c.typeclient === "Balance 20")
-                                                                            ).length +
-                                                                            index +
-                                                                            1,
-                                                                    })),
-                                                                // Append Used status at the end
-                                                                ...post
-                                                                    .filter((company) => company.status === "Used")
-                                                                    .map((company, index, usedArray) => ({
-                                                                        ...company,
-                                                                        order:
-                                                                            post.filter((c) => c.status === "Active").length +
-                                                                            index +
-                                                                            1,
-                                                                    })),
-                                                            ]
-                                                                .sort((a, b) => a.order - b.order)
-                                                                .map((company) => (
-                                                                    <li
-                                                                        key={company.order}
-                                                                        className={`p-2 bg-gray-100 rounded-sm shadow flex justify-between items-center border-l-4 transition-all duration-200 ease-in-out transform hover:scale-[1.02]
+                                                            {/* Modal for Proceed/Cancel */}
+                                                            {showModal && (
+                                                                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[1000]">
+                                                                    <div className="bg-white rounded-lg p-5 w-72 text-center shadow-lg">
+                                                                        <p className="text-xs font-semibold mb-4">
+                                                                            Are you sure you want to proceed?
+                                                                        </p>
+                                                                        <div className="flex justify-between text-xs">
+                                                                            <button
+                                                                                onClick={handleCancel}
+                                                                                className="px-3 py-1 bg-gray-300 text-black rounded hover:bg-gray-400 transition"
+                                                                            >
+                                                                                Cancel
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={handleProceed}
+                                                                                className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                                                            >
+                                                                                Proceed
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {/* List Accounts Tab Content */}
+                                                        <h3 className="text-sm font-semibold mb-2">List Accounts</h3>
+                                                        <p className="text-xs text-gray-600 mb-4">
+                                                            View and manage your list of company accounts.
+                                                        </p>
+                                                        <div className="p-0 rounded text-[10px] text-gray-700 uppercase">
+                                                            <ul className="space-y-2 h-90 overflow-y-auto max-h-[500px] w-full pr-2">
+                                                                {[
+                                                                    // Order Top 50 first
+                                                                    ...post
+                                                                        .filter((company) => company.status === "Active" && company.typeclient === "Top 50")
+                                                                        .map((company, index) => ({
+                                                                            ...company,
+                                                                            order: index + 1,
+                                                                        })),
+                                                                    // Next 30
+                                                                    ...post
+                                                                        .filter((company) => company.status === "Active" && company.typeclient === "Next 30")
+                                                                        .map((company, index, array) => ({
+                                                                            ...company,
+                                                                            order: post.filter((c) => c.status === "Active" && c.typeclient === "Top 50").length + index + 1,
+                                                                        })),
+                                                                    // Below 20
+                                                                    ...post
+                                                                        .filter((company) => company.status === "Active" && company.typeclient === "Balance 20")
+                                                                        .map((company, index, array) => ({
+                                                                            ...company,
+                                                                            order:
+                                                                                post.filter((c) => c.status === "Active" && (c.typeclient === "Top 50" || c.typeclient === "Next 30")).length +
+                                                                                index +
+                                                                                1,
+                                                                        })),
+                                                                    // New Account - Client Development
+                                                                    ...post
+                                                                        .filter((company) => company.status === "Active" && company.typeclient === "New Account - Client Development")
+                                                                        .map((company, index, array) => ({
+                                                                            ...company,
+                                                                            order:
+                                                                                post.filter(
+                                                                                    (c) =>
+                                                                                        c.status === "Active" &&
+                                                                                        (c.typeclient === "Top 50" || c.typeclient === "Next 30" || c.typeclient === "Balance 20")
+                                                                                ).length +
+                                                                                index +
+                                                                                1,
+                                                                        })),
+                                                                    // Append Used status at the end
+                                                                    ...post
+                                                                        .filter((company) => company.status === "Used")
+                                                                        .map((company, index, usedArray) => ({
+                                                                            ...company,
+                                                                            order:
+                                                                                post.filter((c) => c.status === "Active").length +
+                                                                                index +
+                                                                                1,
+                                                                        })),
+                                                                ]
+                                                                    .sort((a, b) => a.order - b.order)
+                                                                    .map((company) => (
+                                                                        <li
+                                                                            key={company.order}
+                                                                            className={`p-2 bg-gray-100 rounded-sm shadow flex justify-between items-center border-l-4 transition-all duration-200 ease-in-out transform hover:scale-[1.02]
                                                                             ${company.status === "Active" ? "border-green-700" : company.status === "Used" ? "border-blue-500" : "border-gray-300"}
                                                                         `}>
 
-                                                                        {/* Numbering with Company Info */}
-                                                                        <span>
-                                                                            {company.order}. {company.companyname}
-                                                                            <br />
-                                                                            <span
-                                                                                className={`${company.status === "Active"
-                                                                                    ? "text-green-700"
-                                                                                    : "text-red-600"
-                                                                                    }`}
-                                                                            >
-                                                                                {company.typeclient}
+                                                                            {/* Numbering with Company Info */}
+                                                                            <span>
+                                                                                {company.order}. {company.companyname}
+                                                                                <br />
+                                                                                <span
+                                                                                    className={`${company.status === "Active"
+                                                                                        ? "text-green-700"
+                                                                                        : "text-red-600"
+                                                                                        }`}
+                                                                                >
+                                                                                    {company.typeclient}
+                                                                                </span>
                                                                             </span>
-                                                                        </span>
-                                                                    </li>
+                                                                        </li>
 
-                                                                ))}
+                                                                    ))}
 
-                                                            {/* Show message if no company matches the filter */}
-                                                            {post.filter(
-                                                                (company) => company.status === "Active" || company.status === "Used"
-                                                            ).length === 0 && (
-                                                                    <li className="p-2 bg-white rounded shadow text-center text-gray-500">
-                                                                        No matching companies found.
-                                                                    </li>
-                                                                )}
-                                                        </ul>
-                                                    </div>
-                                                </>
-                                            )}
+                                                                {/* Show message if no company matches the filter */}
+                                                                {post.filter(
+                                                                    (company) => company.status === "Active" || company.status === "Used"
+                                                                ).length === 0 && (
+                                                                        <li className="p-2 bg-white rounded shadow text-center text-gray-500">
+                                                                            No matching companies found.
+                                                                        </li>
+                                                                    )}
+                                                            </ul>
+                                                        </div>
+                                                    </>
+                                                )}
 
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {showDeleteModal && (
+                                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1000]">
+                                        <div className="bg-white p-4 rounded shadow-lg">
+                                            <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
+                                            <p className="text-xs">Are you sure you want to delete this post?</p>
+                                            <div className="mt-4 flex justify-end">
+                                                <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2 flex items-center gap-1" onClick={handleDelete}><CiTrash size={20} />Delete</button>
+                                                <button className="bg-gray-300 text-xs px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowDeleteModal(false)}><CiCircleRemove size={20} /> Cancel</button>
+                                            </div>
                                         </div>
                                     </div>
-                                </>
-                            )}
+                                )}
 
-                            {showDeleteModal && (
-                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1000]">
-                                    <div className="bg-white p-4 rounded shadow-lg">
-                                        <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
-                                        <p className="text-xs">Are you sure you want to delete this post?</p>
-                                        <div className="mt-4 flex justify-end">
-                                            <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2 flex items-center gap-1" onClick={handleDelete}><CiTrash size={20} />Delete</button>
-                                            <button className="bg-gray-300 text-xs px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowDeleteModal(false)}><CiCircleRemove size={20} /> Cancel</button>
+                                {showAccessModal && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20 h-screen w-full">
+                                        <div className="bg-white p-6 rounded shadow-lg w-96 max-h-full overflow-y-auto">
+                                            <h2 className="text-lg font-bold text-red-600 mb-4">⚠️ Access Denied</h2>
+                                            <p className="text-sm text-gray-700 mb-4">
+                                                You do not have the necessary permissions to perform this action.
+                                                Only <strong>Super Admin</strong> or <strong>Leroux Y Xchire</strong> can access this section.
+                                            </p>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            <ToastContainer className="text-xs" autoClose={1000} />
-                        </div>
+                                <ToastContainer className="text-xs" autoClose={1000} />
+                            </div>
                         </div>
                     )}
                 </UserFetcher>

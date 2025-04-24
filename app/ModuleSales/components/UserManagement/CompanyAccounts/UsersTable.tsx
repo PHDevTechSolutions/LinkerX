@@ -14,6 +14,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
   const [updatedUser, setUpdatedUser] = useState<any[]>([]);
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
   const [bulkEditMode, setBulkEditMode] = useState(false);
+  const [bulkChangeMode, setBulkChangeMode] = useState(false);
   const [bulkTransferMode, setBulkTransferMode] = useState(false);
   const [bulkTransferTSAMode, setBulkTransferTSAMode] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
@@ -22,6 +23,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
   const [tsaList, setTsaList] = useState<any[]>([]);
   const [selectedTsa, setSelectedTsa] = useState("");
   const [newTypeClient, setNewTypeClient] = useState("");
+  const [newStatus, setNewStatus] = useState("");
 
   useEffect(() => {
     setUpdatedUser(posts);
@@ -68,6 +70,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
     setBulkEditMode((prev) => !prev);
     setSelectedUsers(new Set());
     setNewTypeClient("");
+  }, []);
+
+  const toggleBulkChangeMode = useCallback(() => {
+    setBulkChangeMode((prev) => !prev);
+    setSelectedUsers(new Set());
+    setNewStatus("");
   }, []);
 
   const toggleBulkTransferMode = useCallback(() => {
@@ -133,6 +141,28 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
       console.error("Error updating users:", error);
     }
   }, [selectedUsers, newTypeClient]);
+
+  const handleBulkChange = useCallback(async () => {
+    if (selectedUsers.size === 0 || !newStatus) return;
+    try {
+      const response = await fetch(`/api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Change`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userIds: Array.from(selectedUsers), status: newStatus }),
+      });
+      if (response.ok) {
+        setUpdatedUser((prev) => prev.map((user) =>
+          selectedUsers.has(user.id) ? { ...user, status: newStatus } : user
+        ));
+        setSelectedUsers(new Set());
+        setBulkChangeMode(false);
+      } else {
+        console.error("Failed to update users");
+      }
+    } catch (error) {
+      console.error("Error updating users:", error);
+    }
+  }, [selectedUsers, newStatus]);
 
   const handleSelectAll = useCallback(() => {
     if (selectedUsers.size === updatedUser.length) {
@@ -205,6 +235,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
           <CiEdit size={16} />
           {bulkEditMode ? "Cancel Bulk Edit" : "Bulk Edit"}
         </button>
+        <button onClick={toggleBulkChangeMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-900 hover:text-white">
+          <CiEdit size={16} />
+          {bulkChangeMode ? "Cancel Bulk Change" : "Bulk Change"}
+        </button>
         <button onClick={toggleBulkTransferMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
           <BiTransfer size={16} />
           {bulkTransferMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Territory Sales Manager"}
@@ -220,7 +254,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
       </div>
 
       {/* Bulk Action Panel */}
-      {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode) && (
+      {(bulkDeleteMode || bulkEditMode || bulkChangeMode || bulkTransferMode || bulkTransferTSAMode) && (
         <div className="mb-4 p-3 bg-gray-100 rounded-md text-xs">
           {/* Select All Checkbox */}
           <div className="flex items-center justify-between">
@@ -283,6 +317,17 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                   <option value="CSR Inquiries">CSR Inquiries</option>
                 </select>
                 <button onClick={handleBulkEdit} className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs" disabled={!newTypeClient}>Apply Changes</button>
+              </div>
+            )}
+
+            {bulkChangeMode && (
+              <div className="flex items-center gap-2">
+                <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="px-2 py-1 border rounded-md">
+                  <option value="">Select Status</option>
+                  <option value="Active">Active</option>
+                  <option value="Used">Used</option>
+                </select>
+                <button onClick={handleBulkChange} className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs" disabled={!newStatus}>Apply Changes</button>
               </div>
             )}
           </div>
