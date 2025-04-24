@@ -14,7 +14,7 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 // Icons
-import { CiSquarePlus, CiCircleRemove, CiSaveUp1, CiTrash, CiRepeat } from "react-icons/ci";
+import { CiCircleRemove, CiSaveUp1, CiTrash } from "react-icons/ci";
 import { PiHandTapThin } from "react-icons/pi";
 
 // Function to get formatted Manila timestamp
@@ -69,12 +69,9 @@ const ListofUser: React.FC = () => {
     const [posts, setPosts] = useState<any[]>([]);
 
     const [post, setPost] = useState<Company[]>([]);
-    const [randomCompanies, setRandomCompanies] = useState<Company[]>([]);
-    const [typeClient, setTypeClient] = useState<string>(""); // Selected typeclient
     const [showModal, setShowModal] = useState<boolean>(false); // Modal visibility
     const [selectedCompany, setSelectedCompany] = useState<Company | null>(null); // Selected company data
-    const [typeActivity, setTypeActivity] = useState("");
-    const [generatedMessage, setGeneratedMessage] = useState("");
+    
     const [activeTab, setActiveTab] = useState("Automated Task");
     const [remainingBalance, setRemainingBalance] = useState<number>(0);
     const [todayCompanies, setTodayCompanies] = useState<any[]>([]);
@@ -86,7 +83,6 @@ const ListofUser: React.FC = () => {
     const [timeValue, setTimeValue] = useState<string>("");
 
     const [searchTerm, setSearchTerm] = useState("");
-    const [currentPage, setCurrentPage] = useState("");
     const [selectedClientType, setSelectedClientType] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("");
     const [startDate, setStartDate] = useState(""); // Default to null
@@ -493,31 +489,6 @@ const ListofUser: React.FC = () => {
         };
     }, []);
 
-    // Shuffle array and get random 5 companies
-    const getRandomCompanies = (companies: Company[]) => {
-        const shuffled = [...companies].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, 2);
-    };
-
-    // Fetch companies from API with ReferenceID as query param
-    const fetchCompanies = async () => {
-        try {
-            const referenceid = encodeURIComponent(userDetails.ReferenceID); // Encode the reference ID
-            const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`);
-            const data = await response.json();
-
-            if (data.success && Array.isArray(data.data)) {
-                const activeCompanies = data.data.filter((company: Company) => company.status === "Active" || company.status === "Used");
-                setPost(activeCompanies);
-            } else {
-                setPost([]);
-            }
-        } catch (error) {
-            console.error("Error fetching companies:", error);
-        }
-    };
-
-
     function calculateDate(selectedDuration: string, selectedTime: string) {
         // Get current date in Manila timezone
         const now = new Date(
@@ -592,60 +563,7 @@ const ListofUser: React.FC = () => {
     useEffect(() => {
         fetchCompanies();
     }, [userDetails.ReferenceID]);
-
-    // Message generator function
-    const generateMessage = (activity: string): string[] => {
-        switch (activity) {
-            case "Follow Up":
-                return [
-                    "Following up on the previous inquiry. Kindly provide an update.",
-                    "Just checking in regarding the progress of the previous discussions.",
-                    "A quick follow-up to discuss the pending tasks. Please advise.",
-                    "Reaching out again to ensure all concerns are addressed.",
-                    "Seeking confirmation on the next steps for the ongoing project.",
-                    "Touching base to see if there's anything else we can assist with.",
-                ];
-            case "Email and Viber Checking":
-                return [
-                    "Checking for any updates in emails and Viber messages.",
-                    "Ensuring that all Viber and email communications are acknowledged.",
-                    "Reviewing recent messages and emails for important information.",
-                    "Scanning for any missed messages in email or Viber.",
-                    "Following up on unread or unaddressed communications.",
-                    "Verifying if all important responses have been sent.",
-                ];
-            case "Walk in Client":
-                return [
-                    "Attending to a walk-in client and providing necessary assistance.",
-                    "Gathering client requirements from walk-in customers.",
-                    "Assisting a walk-in client with the service inquiry.",
-                    "Ensuring that all concerns of the walk-in client are noted.",
-                    "Providing information and guidance to the walk-in client.",
-                    "Addressing inquiries of walk-in clients effectively.",
-                ];
-            default:
-                return [""];
-        }
-    };
-
-    // Generate initial message based on selection
-    const handleActivityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedActivity: string = e.target.value;
-        setTypeActivity(selectedActivity);
-
-        // Generate and set a random message
-        const messages: string[] = generateMessage(selectedActivity);
-        setGeneratedMessage(messages[Math.floor(Math.random() * messages.length)]);
-    };
-
-    // Generate new message when clicking "Generate Other"
-    const handleGenerateOther = () => {
-        if (typeActivity) {
-            const messages: string[] = generateMessage(typeActivity);
-            setGeneratedMessage(messages[Math.floor(Math.random() * messages.length)]);
-        }
-    };
-
+    
     const handleTabChange = (tab: string) => {
         setActiveTab(tab);
     };
@@ -677,158 +595,154 @@ const ListofUser: React.FC = () => {
     }, [post]);
 
     const getFilteredCompanies = async (post: any[]) => {
-        let remaining = remainingBalance || 35;
-
+        let remaining = 35;
+    
         // Get current week number in the month
         const today = new Date();
         const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const currentWeek = Math.ceil((today.getDate() + firstDayOfMonth.getDay()) / 7); // Get current week
-
-        // Get New Account - Client Development per week (always 1 per week)
+        const currentWeek = Math.ceil((today.getDate() + firstDayOfMonth.getDay()) / 7);
+    
+        // Include 1 "New Account - Client Development" per week
         const newAccountCompanies = post
             .filter((company) => company.status === "Active" && company.typeclient === "New Account - Client Development")
-            .slice(0, 1); // Only 1 company per week
-
+            .slice(0, 1);
         remaining -= newAccountCompanies.length;
-
-        // First, fill remaining slots with Used companies (priority)
+    
         let usedCompanies: any[] = [];
-        if (remaining > 0) {
-            usedCompanies = [
-                ...post.filter((company) => company.status === "Used" && company.typeclient === "Top 50").slice(0, remaining),
-                ...post.filter((company) => company.status === "Used" && company.typeclient === "Next 30").slice(0, remaining),
-                ...post.filter((company) => company.status === "Used" && company.typeclient === "Balance 20").slice(0, remaining),
-            ]
-                .slice(0, remaining)
-                .map((company) => ({
-                    ...company,
-                    status: "Active", // Change status from Used to Active
-                    date_assigned: new Date().toISOString().slice(0, 10), // Add today's date
-                }));
-        }
-
-        // Adjust remaining balance after Used companies
-        remaining -= usedCompanies.length;
-
-        // If there are still slots left, fill with Active companies
         let activeCompanies: any[] = [];
-        if (remaining > 0) {
-            activeCompanies = [
-                ...post.filter((company) => company.status === "Active" && company.typeclient === "Top 50").slice(0, remaining),
-                ...post.filter((company) => company.status === "Active" && company.typeclient === "Next 30").slice(0, remaining),
-                ...post.filter((company) => company.status === "Active" && company.typeclient === "Balance 20").slice(0, remaining),
-            ]
-                .slice(0, remaining)
-                .map((company) => ({
-                    ...company,
-                    date_assigned: new Date().toISOString().slice(0, 10), // Add today's date
-                }));
+    
+        // Try to get from USED first
+        const usedPool = [
+            ...post.filter((company) => company.status === "Used" && company.typeclient === "Top 50"),
+            ...post.filter((company) => company.status === "Used" && company.typeclient === "Next 30"),
+            ...post.filter((company) => company.status === "Used" && company.typeclient === "Balance 20"),
+        ];
+    
+        if (usedPool.length >= remaining) {
+            usedCompanies = usedPool.slice(0, remaining).map((company) => ({
+                ...company,
+                status: "Active",
+                date_assigned: new Date().toISOString().slice(0, 10),
+            }));
+            remaining = 0;
+        } else {
+            usedCompanies = usedPool.map((company) => ({
+                ...company,
+                status: "Active",
+                date_assigned: new Date().toISOString().slice(0, 10),
+            }));
+            remaining -= usedCompanies.length;
+    
+            // Then get from ACTIVE if needed
+            const activePool = [
+                ...post.filter((company) => company.status === "Active" && company.typeclient === "Top 50"),
+                ...post.filter((company) => company.status === "Active" && company.typeclient === "Next 30"),
+                ...post.filter((company) => company.status === "Active" && company.typeclient === "Balance 20"),
+            ];
+    
+            activeCompanies = activePool.slice(0, remaining).map((company) => ({
+                ...company,
+                date_assigned: new Date().toISOString().slice(0, 10),
+            }));
+    
+            remaining -= activeCompanies.length;
         }
-
-        // Combine Used companies (now Active) and Active companies
+    
         const finalCompanies = [
-            ...newAccountCompanies, // Include New Account - Client Development (once per week)
-            ...usedCompanies, // Used companies first (now Active)
-            ...activeCompanies, // Then Active companies
-        ].slice(0, 35); // Ensure the total number is 35
-
-        // Update remaining balance
-        const newBalance = Math.max(0, 35 - finalCompanies.length);
-        setRemainingBalance(newBalance);
+            ...newAccountCompanies,
+            ...usedCompanies,
+            ...activeCompanies,
+        ].slice(0, 35);
+    
+        setRemainingBalance(35 - finalCompanies.length);
         setTodayCompanies(finalCompanies);
+    };
+    
+    
+    // Fetch companies from API with ReferenceID as query param
+    const fetchCompanies = async () => {
+        try {
+            const referenceid = encodeURIComponent(userDetails.ReferenceID); // Encode the reference ID
+            const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`);
+            const data = await response.json();
 
-        // Save the assigned companies to the backend
-        await saveToDatabase(finalCompanies, newBalance);
+            if (data.success && Array.isArray(data.data)) {
+                const activeCompanies = data.data.filter((company: Company) => company.status === "Active" || company.status === "Used");
+                setPost(activeCompanies);
+            } else {
+                setPost([]);
+            }
+        } catch (error) {
+            console.error("Error fetching companies:", error);
+        }
     };
 
-
-    const saveToDatabase = async (companies: any[], balance: number) => {
+    const handleProceed = async () => {
+        if (!selectedCompany) return;
+    
         try {
-            const response = await fetch("/api/ModuleSales/Task/DailyActivity/SaveAssignedCompanies", {
+            // Ensure the status updates directly from "Used" to "Active" or "Active" to "Used"
+            let newStatus;
+            
+            // Check if the company is currently active or used and update accordingly
+            if (selectedCompany.status === "Active") {
+                newStatus = "Used";  // Active should be changed to Used
+            } else if (selectedCompany.status === "Used") {
+                newStatus = "Active";  // Used should be changed to Active
+            } else {
+                console.error("Invalid status detected for the company.");
+                return;  // No valid status to toggle, prevent updating
+            }
+    
+            console.log("Updating company:", selectedCompany.id, "→", newStatus);
+    
+            // Call API to update the status on the backend
+            const response = await fetch("/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    companies,
-                    remainingBalance: balance,
+                    id: selectedCompany.id,
+                    status: newStatus,  // Update status to new status
                 }),
             });
-
+    
             if (!response.ok) {
-
-            } else {
-                console.log("✅ Assigned companies saved successfully.");
+                const errorText = await response.text();
+                console.error("❌ Update failed:", errorText);
+                return;
             }
+    
+            const result = await response.json();
+            console.log("Company status updated:", result);
+    
+            // Update the local state of todayCompanies list with the new status
+            const updatedList = todayCompanies.map((company) =>
+                company.id === selectedCompany.id ? { ...company, status: newStatus } : company
+            );
+            setTodayCompanies(updatedList);
+    
+            // Reflect the new status in the selectedCompany state
+            setSelectedCompany({
+                ...selectedCompany,
+                status: newStatus,  // Set the updated status
+            });
+    
+            // Optionally show the form after the status change
+            setShowForm(true);
+    
         } catch (error) {
-
+            console.error("❌ Error updating company status:", error);
+        } finally {
+            setShowModal(false); // Close modal after action
         }
     };
-
+    
     // Handle Accept button to show modal
     const handleAccept = (company: any) => {
         setSelectedCompany(company);
         setShowModal(true);
-    };
-
-    const handleProceed = async () => {
-        if (selectedCompany) {
-            try {
-                // Determine the new status based on the current one
-                const newStatus = selectedCompany.status === "Used" ? "Active" : "Used";
-
-                // Call API to update company status
-                const response = await fetch(
-                    "/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            id: selectedCompany.id,
-                            status: newStatus,
-                        }),
-                    }
-                );
-
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log("✅ Company status updated successfully:", result.data);
-
-                    // Remove the company from the list if it's being updated
-                    const updatedCompanies = todayCompanies.filter(
-                        (company) => company.id !== selectedCompany.id
-                    );
-
-                    // Adjust remaining balance
-                    const newBalance =
-                        newStatus === "Used" ? Math.max(0, remainingBalance - 1) : remainingBalance + 1;
-
-                    setTodayCompanies(updatedCompanies);
-                    setRemainingBalance(newBalance);
-
-                    // Save updated data to the database after status update
-                    await saveToDatabase(updatedCompanies, newBalance);
-
-                    // Set updated status of the company
-                    setSelectedCompany({
-                        ...selectedCompany,
-                        status: newStatus,
-                    });
-
-                    // Show form after update
-                    setShowForm(true);
-                } else {
-                    console.error("❌ Failed to update status.");
-                }
-            } catch (error) {
-                console.error("❌ Error updating company status:", error);
-            } finally {
-                // Close modal after API call
-                setShowModal(false);
-            }
-        }
     };
 
     // Handle Cancel to Close Modal
@@ -844,8 +758,7 @@ const ListofUser: React.FC = () => {
         }
     }, [post]);
 
-    const isAllowedUser =
-        userDetails?.Role === "Super Admin" ||
+    const isAllowedUser = userDetails?.Role === "Super Admin" ||
         (userDetails?.Role === "Territory Sales Associate" && userDetails?.ReferenceID === "JG-NCR-920587");
 
     const isRestrictedUser = !isAllowedUser;
@@ -854,8 +767,6 @@ const ListofUser: React.FC = () => {
     useEffect(() => {
         setShowAccessModal(isRestrictedUser);
     }, [isRestrictedUser]);
-
-
 
     return (
         <SessionChecker>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-// Ensure TASKFLOW_DB_URL is set
+// Ensure TASKFLOW_DB_URL is set in the environment
 const databaseUrl = process.env.TASKFLOW_DB_URL;
 if (!databaseUrl) {
     throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
         const { id, status } = body;
         console.log("Received request to update company status:", { id, status });
 
-        // Update the company status in `daily_activity` table using `id`
+        // Update the company status in the `accounts` table using `id`
         const result = await sql`
             UPDATE accounts
             SET status = ${status}
@@ -50,7 +50,6 @@ export async function POST(req: Request) {
         );
     }
 }
-
 
 // Force dynamic data fetch to avoid caching
 export const dynamic = "force-dynamic";
