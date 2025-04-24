@@ -284,7 +284,6 @@ const ListofUser: React.FC = () => {
                                                     <label className="block text-xs font-bold mb-2" htmlFor="referenceid">Status</label>
                                                     <select value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                                         <option value="">Select Status</option>
-                                                        <option value="Active">Active</option>
                                                         <option value="Used">Used</option>
                                                     </select>
                                                     <p className="text-xs text-gray-600 mt-4">

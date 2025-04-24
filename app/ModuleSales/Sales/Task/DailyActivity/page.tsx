@@ -676,38 +676,20 @@ const ListofUser: React.FC = () => {
 
     const getFilteredCompanies = async (post: any[]) => {
         let remaining = remainingBalance || 35;
-
+    
         // Get current week number in the month
         const today = new Date();
         const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         const currentWeek = Math.ceil((today.getDate() + firstDayOfMonth.getDay()) / 7); // Get current week
-
-        // Get one New Account - Client Development per week
+    
+        // Get New Account - Client Development per week (always 1 per week)
         const newAccountCompanies = post
-            .filter(
-                (company) =>
-                    company.status === "Active" &&
-                    company.typeclient === "New Account - Client Development"
-            )
+            .filter((company) => company.status === "Active" && company.typeclient === "New Account - Client Development")
             .slice(0, 1); // Only 1 company per week
-
+    
         remaining -= newAccountCompanies.length;
-
-        // Get remaining companies to fill 35 slots
-        const activeCompanies = [
-            ...post.filter((company) => company.status === "Active" && company.typeclient === "Top 50").slice(0, remaining),
-            ...post.filter((company) => company.status === "Active" && company.typeclient === "Next 30").slice(0, remaining),
-            ...post.filter((company) => company.status === "Active" && company.typeclient === "Balance 20").slice(0, remaining),
-        ]
-            .slice(0, remaining) // Fill remaining slots
-            .map((company) => ({
-                ...company,
-                date_assigned: new Date().toISOString().slice(0, 10), // Add today's date
-            }));
-
-        remaining -= activeCompanies.length;
-
-        // If remaining slots, get from Used companies
+    
+        // First, fill remaining slots with Used companies (priority)
         let usedCompanies: any[] = [];
         if (remaining > 0) {
             usedCompanies = [
@@ -718,25 +700,45 @@ const ListofUser: React.FC = () => {
                 .slice(0, remaining)
                 .map((company) => ({
                     ...company,
+                    status: "Active", // Change status from Used to Active
                     date_assigned: new Date().toISOString().slice(0, 10), // Add today's date
                 }));
         }
-
-        // Combine Active, New Account, and Used companies
+    
+        // Adjust remaining balance after Used companies
+        remaining -= usedCompanies.length;
+    
+        // If there are still slots left, fill with Active companies
+        let activeCompanies: any[] = [];
+        if (remaining > 0) {
+            activeCompanies = [
+                ...post.filter((company) => company.status === "Active" && company.typeclient === "Top 50").slice(0, remaining),
+                ...post.filter((company) => company.status === "Active" && company.typeclient === "Next 30").slice(0, remaining),
+                ...post.filter((company) => company.status === "Active" && company.typeclient === "Balance 20").slice(0, remaining),
+            ]
+                .slice(0, remaining)
+                .map((company) => ({
+                    ...company,
+                    date_assigned: new Date().toISOString().slice(0, 10), // Add today's date
+                }));
+        }
+    
+        // Combine Used companies (now Active) and Active companies
         const finalCompanies = [
             ...newAccountCompanies, // Include New Account - Client Development (once per week)
-            ...activeCompanies,
-            ...usedCompanies,
-        ].slice(0, 35);
-
+            ...usedCompanies, // Used companies first (now Active)
+            ...activeCompanies, // Then Active companies
+        ].slice(0, 35); // Ensure the total number is 35
+    
         // Update remaining balance
         const newBalance = Math.max(0, 35 - finalCompanies.length);
         setRemainingBalance(newBalance);
         setTodayCompanies(finalCompanies);
-
-        // ✅ Save assigned companies to the backend
+    
+        // Save the assigned companies to the backend
         await saveToDatabase(finalCompanies, newBalance);
     };
+    
 
     const saveToDatabase = async (companies: any[], balance: number) => {
         try {
@@ -770,6 +772,9 @@ const ListofUser: React.FC = () => {
     const handleProceed = async () => {
         if (selectedCompany) {
             try {
+                // Determine the new status based on the current one
+                const newStatus = selectedCompany.status === "Used" ? "Active" : "Used";
+    
                 // Call API to update company status
                 const response = await fetch(
                     "/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus",
@@ -780,7 +785,7 @@ const ListofUser: React.FC = () => {
                         },
                         body: JSON.stringify({
                             id: selectedCompany.id,
-                            status: "Used",
+                            status: newStatus,
                         }),
                     }
                 );
@@ -789,13 +794,15 @@ const ListofUser: React.FC = () => {
                     const result = await response.json();
                     console.log("✅ Company status updated successfully:", result.data);
     
-                    // Remove the used company from the list
+                    // Remove the company from the list if it's being updated
                     const updatedCompanies = todayCompanies.filter(
                         (company) => company.id !== selectedCompany.id
                     );
     
-                    // Reduce remaining balance after using one company
-                    const newBalance = Math.max(0, remainingBalance - 1);
+                    // Adjust remaining balance
+                    const newBalance =
+                        newStatus === "Used" ? Math.max(0, remainingBalance - 1) : remainingBalance + 1;
+    
                     setTodayCompanies(updatedCompanies);
                     setRemainingBalance(newBalance);
     
@@ -805,7 +812,7 @@ const ListofUser: React.FC = () => {
                     // Set updated status of the company
                     setSelectedCompany({
                         ...selectedCompany,
-                        status: "Used",
+                        status: newStatus,
                     });
     
                     // Show form after update

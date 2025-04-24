@@ -398,8 +398,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
               <div className="flex items-center gap-2">
                 <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="px-2 py-1 border rounded-md">
                   <option value="">Select Status</option>
-                  <option value="Inactive">Inactive</option>
-                  <option value="Active">Active</option>
+                  <option value="Used">Used</option>
                 </select>
                 <button onClick={handleBulkEditStatus} className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs" disabled={!newStatus}>Apply Changes</button>
               </div>

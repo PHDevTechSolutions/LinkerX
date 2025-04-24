@@ -25,6 +25,7 @@ interface Notification {
   _id: string;
   recepient: string;
   sender: string;
+  remarks: string;
 }
 
 interface NavbarProps {
@@ -110,14 +111,14 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const [activeTab, setActiveTab] = useState<"notifications" | "messages">("notifications");
   const [loadingId, setLoadingId] = useState<string | number | null>(null);
-  
+
   const [notificationData, setNotificationData] = useState<NotificationData[]>([]);
   const [callbackNotification, setCallbackNotification] = useState<Callback[]>([]);
   const [trackingNotifications, setTrackingNotifications] = useState<TrackingItem[]>([]);
   const [wrapUpNotifications, setWrapUpNotifications] = useState<Inquiries[]>([]);
   const [emailNotifications, setEmailNotifications] = useState<Email[]>([]);
 
-  const allNotifications = [...notifications, ...trackingNotifications, ...callbackNotification];
+  const allNotifications = [...notifications, ...trackingNotifications, ...callbackNotification, ...notificationData];
 
   const [shake, setShake] = useState(false);
 
@@ -202,7 +203,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     const fetchNotificationsData = async () => {
       try {
         const res = await fetch(
-          `/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`
+          `/api/ModuleCSR/Task/Progress/FetchProgress?referenceId=${userReferenceId}`
         );
         const data = await res.json();
 
@@ -215,23 +216,22 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           .filter((notif: any) => {
             const notifDate = new Date(notif.date_created);
             notifDate.setHours(0, 0, 0, 0);
-
             return notif.csragent === userReferenceId && notifDate <= today;
           })
           .sort((a: any, b: any) => {
-            const dateA = new Date(a.date_created).getTime();
-            const dateB = new Date(b.date_created).getTime();
-            return dateB - dateA;
+            return new Date(b.date_created).getTime() - new Date(a.date_created).getTime();
           });
 
-        // Include companyname and ticketreferencenumber in the formatted notifications
         const formattedNotificationsData = validNotifications.map((notif: any) => ({
-          salesagentname: notif.salesagentname || "Unknown Agent",
+          _id: notif.id || notif._id, // Fallback for safety
           date_created: notif.date_created,
           status: notif.status,
           csragent: notif.csragent,
-          companyname: notif.companyname, 
+          companyname: notif.companyname,
+          typecall: notif.typecall,
+          typeactivity: notif.typeactivity,
           ticketreferencenumber: notif.ticketreferencenumber,
+          remarks: notif.remarks || "No remarks.",
           type: "Notification"
         }));
 
@@ -244,58 +244,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
     fetchNotificationsData();
     const interval = setInterval(fetchNotificationsData, 10000);
-    return () => clearInterval(interval);
-  }, [userReferenceId]);
-
-  // Load dismissed notifications from localStorage
-  useEffect(() => {
-    if (!userReferenceId) return;
-
-    const fetchNotifications = async () => {
-      try {
-        const res = await fetch(
-          `/api/ModuleCSR/Task/CSRInquiries/FetchInquiryNotif?referenceId=${userReferenceId}`
-        );
-        const data = await res.json();
-
-        if (!data.success) return;
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const validNotifications = data.data
-          .filter((notif: any) => {
-            const notifDate = new Date(notif.date_created);
-            notifDate.setHours(0, 0, 0, 0);
-
-            return notif.csragent === userReferenceId && notifDate <= today;
-          })
-          .sort((a: any, b: any) => {
-            const dateA = new Date(a.date_created).getTime();
-            const dateB = new Date(b.date_created).getTime();
-            return dateB - dateA;
-          });
-
-        // Include companyname and ticketreferencenumber in the formatted notifications
-        const formattedNotifications = validNotifications.map((notif: any) => ({
-          salesagentname: notif.salesagentname || "Unknown Agent",
-          date_created: notif.date_created,
-          status: notif.status,
-          csragent: notif.csragent,
-          companyname: notif.companyname, 
-          ticketreferencenumber: notif.ticketreferencenumber,
-          type: "Taskflow Notification"
-        }));
-
-        setNotifications(formattedNotifications);
-        setNotificationCount(formattedNotifications.length);
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-      }
-    };
-
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
   }, [userReferenceId]);
 
@@ -989,6 +937,54 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
               {activeTab === "notifications" ? (
                 <>
+                  {notifications.filter((notif) => notif.typeactivity === "CSR Inquiries").length > 0 ? (
+                    <ul className="space-y-2">
+                      {notifications
+                        .filter((notif) => notif.typeactivity === "CSR Inquiries")
+                        .map((notif, index) => (
+                          <li
+                            key={notif._id || index}
+                            className={`p-3 border-b rounded-md relative text-left text-xs text-gray-900 capitalize
+                              ${notif.type === "Notification" ? "bg-yellow-100" : "bg-gray-100"} hover:bg-gray-200`}
+                          >
+                            <p className="text-[10px] mt-5">
+                              Your <strong>{notif.companyname}</strong> ticket number: <strong>{notif.ticketreferencenumber}</strong> is currently marked as <strong>{notif.typecall}</strong>.
+                            </p>
+
+                            <p className="text-[10px] text-gray-700 mt-1">
+                              <span className="font-medium">Remarks:</span> {notif.remarks}
+                            </p>
+
+                            {notif.date_created && (
+                              <span className="text-[8px] mt-1 block text-gray-500">
+                                {new Date(notif.date_created).toLocaleString()}
+                              </span>
+                            )}
+
+                            <button
+                              onClick={() => handleMarkAsStatusRead(notif._id)}
+                              disabled={loadingId === notif._id}
+                              className={`text-[9px] mb-2 absolute top-2 right-2 transition-all duration-150 ${notif.status === "Read"
+                                  ? "text-green-600 font-bold"
+                                  : loadingId === notif._id
+                                    ? "text-gray-500 cursor-not-allowed"
+                                    : "text-blue-600 hover:text-blue-800"
+                                }`}
+                            >
+                              {loadingId === notif._id
+                                ? "Loading..."
+                                : notif.status === "Read"
+                                  ? "Read"
+                                  : "Mark as Read"}
+                            </button>
+                          </li>
+                        ))}
+                    </ul>
+                  ) : (
+                    <p className="text-xs text-gray-500 text-center">No CSR Inquiries for now.</p>
+                  )}
+
+
                   {notifications.filter((notif) => notif.status === "Used").length > 0 ? (
                     <ul className="space-y-2">
                       {notifications
@@ -1041,7 +1037,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                   ) : (
                     <></>
                   )}
-
 
                   {trackingNotifications.filter((notif) => notif.TrackingStatus === "Open" && notif.status !== "Read").length > 0 ? (
                     <ul className="space-y-2">
