@@ -33,6 +33,15 @@ interface NavbarProps {
   isDarkMode: boolean;
 }
 
+type NotificationData = {
+  callback: string;
+  message: string;
+  type: string;
+  date_created: string;
+  csragent: string;
+  status: string;
+}
+
 type Callback = {
   companyname: string;
   status: string;  // Replaced typeactivity with status
@@ -102,6 +111,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const [activeTab, setActiveTab] = useState<"notifications" | "messages">("notifications");
   const [loadingId, setLoadingId] = useState<string | number | null>(null);
   
+  const [notificationData, setNotificationData] = useState<NotificationData[]>([]);
   const [callbackNotification, setCallbackNotification] = useState<Callback[]>([]);
   const [trackingNotifications, setTrackingNotifications] = useState<TrackingItem[]>([]);
   const [wrapUpNotifications, setWrapUpNotifications] = useState<Inquiries[]>([]);
@@ -186,6 +196,57 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    if (!userReferenceId) return;
+
+    const fetchNotificationsData = async () => {
+      try {
+        const res = await fetch(
+          `/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`
+        );
+        const data = await res.json();
+
+        if (!data.success) return;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const validNotifications = data.data
+          .filter((notif: any) => {
+            const notifDate = new Date(notif.date_created);
+            notifDate.setHours(0, 0, 0, 0);
+
+            return notif.csragent === userReferenceId && notifDate <= today;
+          })
+          .sort((a: any, b: any) => {
+            const dateA = new Date(a.date_created).getTime();
+            const dateB = new Date(b.date_created).getTime();
+            return dateB - dateA;
+          });
+
+        // Include companyname and ticketreferencenumber in the formatted notifications
+        const formattedNotificationsData = validNotifications.map((notif: any) => ({
+          salesagentname: notif.salesagentname || "Unknown Agent",
+          date_created: notif.date_created,
+          status: notif.status,
+          csragent: notif.csragent,
+          companyname: notif.companyname, 
+          ticketreferencenumber: notif.ticketreferencenumber,
+          type: "Notification"
+        }));
+
+        setNotifications(formattedNotificationsData);
+        setNotificationCount(formattedNotificationsData.length);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+
+    fetchNotificationsData();
+    const interval = setInterval(fetchNotificationsData, 10000);
+    return () => clearInterval(interval);
+  }, [userReferenceId]);
+
   // Load dismissed notifications from localStorage
   useEffect(() => {
     if (!userReferenceId) return;
@@ -237,7 +298,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
   }, [userReferenceId]);
-
 
   const fetchTrackingData = async () => {
     try {
