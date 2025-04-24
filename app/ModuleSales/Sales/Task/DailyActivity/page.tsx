@@ -71,7 +71,7 @@ const ListofUser: React.FC = () => {
     const [post, setPost] = useState<Company[]>([]);
     const [showModal, setShowModal] = useState<boolean>(false); // Modal visibility
     const [selectedCompany, setSelectedCompany] = useState<Company | null>(null); // Selected company data
-    
+
     const [activeTab, setActiveTab] = useState("Automated Task");
     const [remainingBalance, setRemainingBalance] = useState<number>(0);
     const [todayCompanies, setTodayCompanies] = useState<any[]>([]);
@@ -563,7 +563,7 @@ const ListofUser: React.FC = () => {
     useEffect(() => {
         fetchCompanies();
     }, [userDetails.ReferenceID]);
-    
+
     const handleTabChange = (tab: string) => {
         setActiveTab(tab);
     };
@@ -596,11 +596,11 @@ const ListofUser: React.FC = () => {
 
     const getFilteredCompanies = async (post: any[]) => {
         let remaining = 35;
-    
+
         const today = new Date();
         const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         const currentWeek = Math.ceil((today.getDate() + firstDayOfMonth.getDay()) / 7);
-    
+
         // --- 1 New Account per week rule ---
         const newAccountCompanies = post
             .filter((company) =>
@@ -608,24 +608,24 @@ const ListofUser: React.FC = () => {
                 company.typeclient === "New Account - Client Development"
             )
             .slice(0, 1);
-    
+
         remaining -= newAccountCompanies.length;
-    
+
         let usedCompanies: any[] = [];
         let activeCompanies: any[] = [];
-    
+
         // --- USED pool only ---
         const usedPool = post.filter((company) =>
             company.status === "Used" &&
             ["Top 50", "Next 30", "Balance 20"].includes(company.typeclient)
         );
-    
+
         // --- ACTIVE pool only ---
         const activePool = post.filter((company) =>
             company.status === "Active" &&
             ["Top 50", "Next 30", "Balance 20"].includes(company.typeclient)
         );
-    
+
         // --- Prioritize USED companies ---
         if (usedPool.length >= remaining) {
             usedCompanies = usedPool.slice(0, remaining).map((company) => ({
@@ -641,26 +641,26 @@ const ListofUser: React.FC = () => {
                 date_assigned: today.toISOString().slice(0, 10),
             }));
             remaining -= usedCompanies.length;
-    
+
             // Then fill the rest with ACTIVE companies if needed
             activeCompanies = activePool.slice(0, remaining).map((company) => ({
                 ...company,
                 date_assigned: today.toISOString().slice(0, 10),
             }));
-    
+
             remaining -= activeCompanies.length;
         }
-    
+
         const finalCompanies = [
             ...newAccountCompanies,
             ...usedCompanies,
             ...activeCompanies,
         ].slice(0, 35); // Ensures hard cap of 35
-    
+
         setRemainingBalance(35 - finalCompanies.length);
         setTodayCompanies(finalCompanies);
     };
-    
+
     // Fetch companies from API with ReferenceID as query param
     const fetchCompanies = async () => {
         try {
@@ -668,11 +668,11 @@ const ListofUser: React.FC = () => {
             if (!referenceid) {
                 return;
             }
-    
+
             // Ensure the parameter name matches the backend query parameter
             const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`);
             const data = await response.json();
-    
+
             if (data.success && Array.isArray(data.data)) {
                 const activeCompanies = data.data.filter((company: Company) => company.status === "Active" || company.status === "Used");
                 setPost(activeCompanies);
@@ -683,21 +683,21 @@ const ListofUser: React.FC = () => {
             console.error("Error fetching companies:", error);
         }
     };
-    
+
     useEffect(() => {
         if (userDetails.ReferenceID) {
             // Fetch companies once the ReferenceID is available
             fetchCompanies();
         }
     }, [userDetails.ReferenceID]); // Run when ReferenceID is updated
-    
-    
+
+
     const handleProceed = async () => {
         if (!selectedCompany) return;
-    
+
         try {
             let newStatus;
-    
+
             // Ensure the status updates directly from "Used" to "Active" or "Active" to "Used"
             if (selectedCompany.status === "Active") {
                 newStatus = "Used";  // Active should be changed to Used
@@ -707,9 +707,9 @@ const ListofUser: React.FC = () => {
                 console.error("Invalid status detected for the company.");
                 return;  // No valid status to toggle, prevent updating
             }
-    
+
             console.log("Updating company:", selectedCompany.id, "→", newStatus);
-    
+
             // Call API to update the status on the backend
             const response = await fetch("/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus", {
                 method: "POST",
@@ -721,26 +721,26 @@ const ListofUser: React.FC = () => {
                     status: newStatus,  // Update status to new status
                 }),
             });
-    
+
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error("❌ Update failed:", errorText);
                 return;
             }
-    
+
             const result = await response.json();
             console.log("Company status updated:", result);
-    
+
             // Update the local state of todayCompanies list with the new status
             setTodayCompanies(prevCompanies =>
                 prevCompanies.map(company =>
                     company.id === selectedCompany.id ? { ...company, status: newStatus } : company
                 )
             );
-    
+
             setSelectedCompany(prev => ({
                 ...prev,
-                status: newStatus, 
+                status: newStatus,
                 companyname: prev?.companyname ?? "",
                 referenceid: prev?.referenceid ?? "",
                 tsm: prev?.tsm ?? "",
@@ -757,16 +757,16 @@ const ListofUser: React.FC = () => {
                 startdate: prev?.startdate ?? "",  // Default to empty string if undefined
                 enddate: prev?.enddate ?? "",  // Default to empty string if undefined
             }));
-    
+
             setShowForm(true); // Optionally show the form after the status change
-    
+
         } catch (error) {
         } finally {
             setShowModal(false); // Close modal after action
         }
     };
-    
-    
+
+
     // Handle Accept button to show modal
     const handleAccept = (company: any) => {
         setSelectedCompany(company);
@@ -976,6 +976,11 @@ const ListofUser: React.FC = () => {
                                                         <p className="text-xs text-gray-600 mb-4">
                                                             Below are some company names fetched from the system.
                                                         </p>
+
+                                                        {/* Company count */}
+                                                        <div className="text-xs font-medium text-gray-700 mb-3">
+                                                            Showing {todayCompanies.length} of 35 companies — Remaining: {remainingBalance}
+                                                        </div>
 
                                                         {/* Display 5 random company names */}
                                                         <div className="space-y-2">
