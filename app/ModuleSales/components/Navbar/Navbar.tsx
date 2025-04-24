@@ -101,119 +101,125 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   }, []);
 
   // Load dismissed notifications from localStorage
-  useEffect(() => {
-    if (!userReferenceId) return;
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
 
-    const fetchNotifications = async () => {
+    // Use UTC getters to prevent time zone shifting
+    let hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // if hour is 0, display as 12
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+
+    // Format the date in UTC
+    const formattedDateStr = date.toLocaleDateString('en-US', {
+        timeZone: 'UTC',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
+
+    // Return the formatted date with time
+    return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
+};
+
+
+useEffect(() => {
+  if (!userReferenceId) return;
+
+  const fetchNotifications = async () => {
       try {
-        const res = await fetch(
-          `/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`
-        );
-        const data = await res.json();
+          const res = await fetch(
+              `/api/ModuleSales/Task/Callback/FetchCallback?referenceId=${userReferenceId}`
+          );
+          const data = await res.json();
 
-        if (!data.success) return;
+          if (!data.success) return;
 
-        // Get current date (without time) for checking notifications
-        const today = new Date().setHours(0, 0, 0, 0);
+          // Get the current date (set to 00:00:00 in UTC)
+          const today = new Date().setUTCHours(0, 0, 0, 0);
 
-        // Filter valid notifications based on type
-        const validNotifications = data.data
-          .filter((notif: any) => {
-            switch (notif.type) {
-              // ✅ CASE 1: Callback Notification (Only for TSA ReferenceID)
-              case "Callback Notification":
-                if (notif.callback && notif.referenceid === userReferenceId) {
-                  const callbackDate = new Date(notif.callback).setHours(0, 0, 0, 0);
-                  return callbackDate <= today;
-                }
-                return false;
+          // Filter valid notifications based on type
+          const validNotifications = data.data
+              .filter((notif: any) => {
+                  switch (notif.type) {
+                      case "Callback Notification":
+                          if (notif.callback && notif.referenceid === userReferenceId) {
+                              const callbackDate = new Date(notif.callback).setUTCHours(0, 0, 0, 0);
+                              return callbackDate <= today;
+                          }
+                          return false;
 
-              // ✅ CASE 2 & 3: Inquiry Notification (For TSA and TSM)
-              case "Inquiry Notification":
-                if (notif.date_created) {
-                  const inquiryDate = new Date(notif.date_created).setHours(0, 0, 0, 0);
+                      case "Inquiry Notification":
+                          if (notif.date_created) {
+                              const inquiryDate = new Date(notif.date_created).setUTCHours(0, 0, 0, 0);
 
-                  // Check for TSA
-                  if (notif.referenceid === userReferenceId && inquiryDate <= today) {
-                    return true;
+                              // Check for TSA or TSM referenceId
+                              if ((notif.referenceid === userReferenceId || notif.tsm === userReferenceId) && inquiryDate <= today) {
+                                  return true;
+                              }
+                          }
+                          return false;
+
+                      case "Follow-Up Notification":
+                          if (notif.date_created && (notif.referenceid === userReferenceId || notif.tsm === userReferenceId)) {
+                              const notificationTime = new Date(notif.date_created);
+
+                              // Adjust notification times based on message content
+                              if (notif.message?.includes("Ringing Only")) {
+                                  notificationTime.setDate(notificationTime.getDate() + 10); // After 10 days
+                              } else if (notif.message?.includes("No Requirements")) {
+                                  notificationTime.setDate(notificationTime.getDate() + 15); // After 15 days
+                              } else if (notif.message?.includes("Cannot Be Reached")) {
+                                  notificationTime.setDate(notificationTime.getDate() + 3); // After 3 days
+                              } else if (notif.message?.includes("Not Connected With The Company")) {
+                                  notificationTime.setMinutes(notificationTime.getMinutes() + 15); // After 15 minutes
+                              } else if (notif.message?.includes("With SPFS")) {
+                                  notificationTime.setDate(notificationTime.getDate() + 7); // Weekly
+                                  const validUntil = new Date(notif.date_created);
+                                  validUntil.setMonth(validUntil.getMonth() + 2); // Valid for 2 months
+                                  if (new Date() > validUntil) {
+                                      return false; // Expired after 2 months
+                                  }
+                              } else if (notif.message?.includes("Sent Quotation - Standard")) {
+                                  notificationTime.setDate(notificationTime.getDate() + 1); // After 1 day
+                              } else if (notif.message?.includes("Sent Quotation - With SPF")) {
+                                  notificationTime.setDate(notificationTime.getDate() + 5); // After 5 days
+                              } else if (notif.message?.includes("Waiting for Projects")) {
+                                  notificationTime.setDate(notificationTime.getDate() + 30); // After 30 days
+                              }
+
+                              // Show notification after the specified time
+                              return new Date() >= notificationTime;
+                          }
+                          return false;
+
+                      default:
+                          return false;
                   }
+              })
+              .sort((a: any, b: any) => {
+                  const dateA = new Date(a.callback || a.date_created).getTime();
+                  const dateB = new Date(b.callback || b.date_created).getTime();
+                  return dateB - dateA; // Descending order
+              });
 
-                  // Check for TSM
-                  if (notif.tsm === userReferenceId && inquiryDate <= today) {
-                    return true;
-                  }
-                }
-                return false;
-
-              // ✅ CASE 4: Follow-Up Notification (Only for TSM)
-              case "Follow-Up Notification":
-                if (
-                  notif.date_created &&
-                  (notif.referenceid === userReferenceId || notif.tsm === userReferenceId)
-                ) {
-                  const notificationTime = new Date(notif.date_created);
-
-                  // ✅ Apply delays based on message content
-                  if (notif.message?.includes("Ringing Only")) {
-                    notificationTime.setDate(notificationTime.getDate() + 10); // After 10 days
-                  } else if (notif.message?.includes("No Requirements")) {
-                    notificationTime.setDate(notificationTime.getDate() + 15); // After 15 days
-                  } else if (notif.message?.includes("Cannot Be Reached")) {
-                    notificationTime.setDate(notificationTime.getDate() + 3); // After 3 days
-                  } else if (notif.message?.includes("Not Connected With The Company")) {
-                    notificationTime.setMinutes(notificationTime.getMinutes() + 15); // After 15 minutes
-                  } else if (notif.message?.includes("With SPFS")) {
-                    notificationTime.setDate(notificationTime.getDate() + 7); // Weekly
-                    const validUntil = new Date(notif.date_created);
-                    validUntil.setMonth(validUntil.getMonth() + 2); // Valid for 2 months
-                    if (new Date() > validUntil) {
-                      return false; // Expired after 2 months
-                    }
-                  } else if (
-                    notif.message?.includes("Sent Quotation - Standard") ||
-                    notif.message?.includes("Sent Quotation - With Special Price")
-                  ) {
-                    notificationTime.setDate(notificationTime.getDate() + 1); // After 1 day
-                  } else if (notif.message?.includes("Sent Quotation - With SPF")) {
-                    notificationTime.setDate(notificationTime.getDate() + 5); // After 5 days
-                  } else if (notif.message?.includes("Waiting for Projects")) {
-                    notificationTime.setDate(notificationTime.getDate() + 30); // After 30 days
-                  }
-
-                  // ✅ Show notification after the specified time
-                  return new Date() >= notificationTime;
-                }
-                return false;
-
-              default:
-                return false;
-
-            }
-          })
-          // ✅ Sort notifications by date_created or callback in DESCENDING order
-          .sort((a: any, b: any) => {
-            const dateA = new Date(a.callback || a.date_created).getTime();
-            const dateB = new Date(b.callback || b.date_created).getTime();
-            return dateB - dateA; // Descending order
-          });
-
-        // Set valid notifications
-        setNotifications(
-          validNotifications.map((notif: any) => ({
-            ...notif,
-            status: notif.status, // ✅ Add status correctly
-          }))
-        );
-        setNotificationCount(validNotifications.length);
+          // Set valid notifications and the count
+          setNotifications(validNotifications);
+          setNotificationCount(validNotifications.length);
       } catch (error) {
-        console.error("Error fetching notifications:", error);
+          console.error("Error fetching notifications:", error);
       }
-    };
+  };
 
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 10000);
-    return () => clearInterval(interval);
-  }, [userReferenceId]);
+  fetchNotifications();
+  const interval = setInterval(fetchNotifications, 10000); // Refresh every 10 seconds
+  return () => clearInterval(interval); // Clean up interval on unmount
+}, [userReferenceId]);
+
 
   // ✅ Handle click outside to close notifications
   useEffect(() => {
@@ -608,7 +614,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                             {/* Timestamp for Callback Notification */}
                             {notif.callback && notif.type === "Callback Notification" && (
                               <span className="text-[8px] mt-1 block">
-                                {new Date(notif.callback).toLocaleString()}
+                                {formatDate(new Date(notif.callback).getTime())}
                               </span>
                             )}
 

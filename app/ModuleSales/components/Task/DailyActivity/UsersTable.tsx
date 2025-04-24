@@ -73,13 +73,13 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
     }, [posts]);
 
     //useEffect(() => {
-        //const grouped = updatedUser.reduce((acc, user) => {
-            //const dateKey = format(parseISO(user.date_created), "yyyy-MM-dd");
-            //if (!acc[dateKey]) acc[dateKey] = [];
-            //acc[dateKey].push(user);
-            //return acc;
-        //}, {} as Record<string, any[]>);
-        //setGroupedByDate(grouped);
+    //const grouped = updatedUser.reduce((acc, user) => {
+    //const dateKey = format(parseISO(user.date_created), "yyyy-MM-dd");
+    //if (!acc[dateKey]) acc[dateKey] = [];
+    //acc[dateKey].push(user);
+    //return acc;
+    //}, {} as Record<string, any[]>);
+    //setGroupedByDate(grouped);
     //}, [updatedUser]);
 
     useEffect(() => {
@@ -92,7 +92,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
         }, {} as Record<string, any[]>);
         setGroupedByDate(grouped);
     }, [updatedUser]);
-    
+
 
     const getFilteredDates = () => {
         if (viewMode === "day") {
@@ -148,30 +148,30 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
 
     const formatDate = (timestamp: number) => {
         const date = new Date(timestamp);
-      
+
         // Use UTC getters instead of local ones to prevent timezone shifting.
         let hours = date.getUTCHours();
         const minutes = date.getUTCMinutes();
         const ampm = hours >= 12 ? 'PM' : 'AM';
-        
+
         // Convert hours to 12-hour format
         hours = hours % 12;
         hours = hours ? hours : 12; // if hour is 0, display as 12
         const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-      
+
         // Use toLocaleDateString with timeZone 'UTC' to format the date portion
         const formattedDateStr = date.toLocaleDateString('en-US', {
-          timeZone: 'UTC',
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
+            timeZone: 'UTC',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
         });
-      
+
         // Return combined date and time string
         return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
-      };
-      
-      
+    };
+
+
     return (
         <div className="mb-4">
             {/* Pagination & View Mode Buttons */}
@@ -194,16 +194,16 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
 
             {/* User Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-0">
-            {formattedDates.map((day) => {
-    const formattedDay = format(day, "yyyy-MM-dd");
-    
-    const usersForDate = updatedUser.filter(user => {
-        const userDate = new Date(user.date_created).toISOString().split("T")[0];
-        return userDate === formattedDay;
-    });
+                {formattedDates.map((day) => {
+                    const formattedDay = format(day, "yyyy-MM-dd");
 
-    const pinned = usersForDate.filter(user => pinnedUsers.has(user.id));
-    const unpinned = usersForDate.filter(user => !pinnedUsers.has(user.id));
+                    const usersForDate = updatedUser.filter(user => {
+                        const userDate = new Date(user.date_created).toISOString().split("T")[0];
+                        return userDate === formattedDay;
+                    });
+
+                    const pinned = usersForDate.filter(user => pinnedUsers.has(user.id));
+                    const unpinned = usersForDate.filter(user => !pinnedUsers.has(user.id));
 
                     return (
                         <div key={formattedDay} className="border rounded p-2 bg-white mb-4">
@@ -388,9 +388,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                         {/* Status Badge */}
                                         {!["Client Visit", "On Site", "On Field", "Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
                                             <div className="card-footer text-xs flex justify-between items-center mt-2 pt-2">
-                                               
+
                                                 <p className="text-[10px]"><strong>Date Created:</strong> {formatDate(user.date_created)}</p>
-                                             
+
                                                 {/* Status Badge with Glow Effect */}
                                                 <span
                                                     className={`relative px-2 py-1 rounded-full text-white text-[8px] 
