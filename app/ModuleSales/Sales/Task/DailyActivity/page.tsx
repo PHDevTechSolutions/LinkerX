@@ -661,8 +661,6 @@ const ListofUser: React.FC = () => {
         setTodayCompanies(finalCompanies);
     };
     
-    
-    
     // Fetch companies from API with ReferenceID as query param
     const fetchCompanies = async () => {
         try {
@@ -1048,37 +1046,37 @@ const ListofUser: React.FC = () => {
                                                                 {[
                                                                     // Order Top 50 first
                                                                     ...post
-                                                                        .filter((company) => company.status === "Active" && company.typeclient === "Top 50")
+                                                                        .filter((company) => company.status === "Used" && company.typeclient === "Top 50")
                                                                         .map((company, index) => ({
                                                                             ...company,
                                                                             order: index + 1,
                                                                         })),
                                                                     // Next 30
                                                                     ...post
-                                                                        .filter((company) => company.status === "Active" && company.typeclient === "Next 30")
+                                                                        .filter((company) => company.status === "Used" && company.typeclient === "Next 30")
                                                                         .map((company, index, array) => ({
                                                                             ...company,
-                                                                            order: post.filter((c) => c.status === "Active" && c.typeclient === "Top 50").length + index + 1,
+                                                                            order: post.filter((c) => c.status === "Used" && c.typeclient === "Top 50").length + index + 1,
                                                                         })),
                                                                     // Below 20
                                                                     ...post
-                                                                        .filter((company) => company.status === "Active" && company.typeclient === "Balance 20")
+                                                                        .filter((company) => company.status === "Used" && company.typeclient === "Balance 20")
                                                                         .map((company, index, array) => ({
                                                                             ...company,
                                                                             order:
-                                                                                post.filter((c) => c.status === "Active" && (c.typeclient === "Top 50" || c.typeclient === "Next 30")).length +
+                                                                                post.filter((c) => c.status === "Used" && (c.typeclient === "Top 50" || c.typeclient === "Next 30")).length +
                                                                                 index +
                                                                                 1,
                                                                         })),
                                                                     // New Account - Client Development
                                                                     ...post
-                                                                        .filter((company) => company.status === "Active" && company.typeclient === "New Account - Client Development")
+                                                                        .filter((company) => company.status === "Used" && company.typeclient === "New Account - Client Development")
                                                                         .map((company, index, array) => ({
                                                                             ...company,
                                                                             order:
                                                                                 post.filter(
                                                                                     (c) =>
-                                                                                        c.status === "Active" &&
+                                                                                        c.status === "Used" &&
                                                                                         (c.typeclient === "Top 50" || c.typeclient === "Next 30" || c.typeclient === "Balance 20")
                                                                                 ).length +
                                                                                 index +
@@ -1086,11 +1084,11 @@ const ListofUser: React.FC = () => {
                                                                         })),
                                                                     // Append Used status at the end
                                                                     ...post
-                                                                        .filter((company) => company.status === "Used")
+                                                                        .filter((company) => company.status === "Active")
                                                                         .map((company, index, usedArray) => ({
                                                                             ...company,
                                                                             order:
-                                                                                post.filter((c) => c.status === "Active").length +
+                                                                                post.filter((c) => c.status === "Used").length +
                                                                                 index +
                                                                                 1,
                                                                         })),
@@ -1100,7 +1098,7 @@ const ListofUser: React.FC = () => {
                                                                         <li
                                                                             key={company.order}
                                                                             className={`p-2 bg-gray-100 rounded-sm shadow flex justify-between items-center border-l-4 transition-all duration-200 ease-in-out transform hover:scale-[1.02]
-                                                                            ${company.status === "Active" ? "border-green-700" : company.status === "Used" ? "border-blue-500" : "border-gray-300"}
+                                                                            ${company.status === "Active" ? "border-green-700" : company.status === "Used" ? "border-blue-900" : "border-gray-300"}
                                                                         `}>
 
                                                                             {/* Numbering with Company Info */}
@@ -1108,9 +1106,9 @@ const ListofUser: React.FC = () => {
                                                                                 {company.order}. {company.companyname}
                                                                                 <br />
                                                                                 <span
-                                                                                    className={`${company.status === "Active"
-                                                                                        ? "text-green-700"
-                                                                                        : "text-red-600"
+                                                                                    className={`${company.status === "Used"
+                                                                                        ? "text-blue-900"
+                                                                                        : "text-green-600"
                                                                                         }`}
                                                                                 >
                                                                                     {company.typeclient}
@@ -1122,7 +1120,7 @@ const ListofUser: React.FC = () => {
 
                                                                 {/* Show message if no company matches the filter */}
                                                                 {post.filter(
-                                                                    (company) => company.status === "Active" || company.status === "Used"
+                                                                    (company) => company.status === "Used" || company.status === "Active"
                                                                 ).length === 0 && (
                                                                         <li className="p-2 bg-white rounded shadow text-center text-gray-500">
                                                                             No matching companies found.
