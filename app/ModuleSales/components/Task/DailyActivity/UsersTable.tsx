@@ -72,15 +72,27 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
         setUpdatedUser(posts);
     }, [posts]);
 
+    //useEffect(() => {
+        //const grouped = updatedUser.reduce((acc, user) => {
+            //const dateKey = format(parseISO(user.date_created), "yyyy-MM-dd");
+            //if (!acc[dateKey]) acc[dateKey] = [];
+            //acc[dateKey].push(user);
+            //return acc;
+        //}, {} as Record<string, any[]>);
+        //setGroupedByDate(grouped);
+    //}, [updatedUser]);
+
     useEffect(() => {
         const grouped = updatedUser.reduce((acc, user) => {
-            const dateKey = format(parseISO(user.date_created), "yyyy-MM-dd");
+            const utcDate = new Date(user.date_created);
+            const dateKey = utcDate.toISOString().split("T")[0]; // Always UTC date
             if (!acc[dateKey]) acc[dateKey] = [];
             acc[dateKey].push(user);
             return acc;
         }, {} as Record<string, any[]>);
         setGroupedByDate(grouped);
     }, [updatedUser]);
+    
 
     const getFilteredDates = () => {
         if (viewMode === "day") {
@@ -182,12 +194,16 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
 
             {/* User Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-0">
-                {formattedDates.map((day) => {
-                    const formattedDay = format(day, "yyyy-MM-dd");
-                    const usersForDate = updatedUser.filter(user => format(parseISO(user.date_created), "yyyy-MM-dd") === formattedDay);
-                    // Separate pinned users from unpinned
-                    const pinned = usersForDate.filter(user => pinnedUsers.has(user.id));
-                    const unpinned = usersForDate.filter(user => !pinnedUsers.has(user.id));
+            {formattedDates.map((day) => {
+    const formattedDay = format(day, "yyyy-MM-dd");
+    
+    const usersForDate = updatedUser.filter(user => {
+        const userDate = new Date(user.date_created).toISOString().split("T")[0];
+        return userDate === formattedDay;
+    });
+
+    const pinned = usersForDate.filter(user => pinnedUsers.has(user.id));
+    const unpinned = usersForDate.filter(user => !pinnedUsers.has(user.id));
 
                     return (
                         <div key={formattedDay} className="border rounded p-2 bg-white mb-4">
