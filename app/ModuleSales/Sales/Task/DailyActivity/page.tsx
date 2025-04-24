@@ -1217,7 +1217,7 @@ const ListofUser: React.FC = () => {
                                             <h2 className="text-lg font-bold text-red-600 mb-4">⚠️ Access Denied</h2>
                                             <p className="text-sm text-gray-700 mb-4">
                                                 You do not have the necessary permissions to perform this action.
-                                                Only <strong>Super Admin</strong> or <strong>Leroux Y Xchire</strong> can access this section.
+                                                Only <strong>Super Admin</strong> / <strong>Leroux Y Xchire</strong> can access this section.
                                             </p>
                                         </div>
                                     </div>
