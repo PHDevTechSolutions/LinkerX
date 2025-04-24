@@ -987,14 +987,16 @@ const ListofUser: React.FC = () => {
                                                             {todayCompanies.length > 0 ? (
                                                                 todayCompanies.map((company, index) => (
                                                                     <div
-                                                                        key={index}
+                                                                        key={company.id}
                                                                         className={`p-2 bg-gray-100 rounded flex justify-between items-center text-[10px] transition-all duration-200 ease-in-out transform hover:scale-[1.02] uppercase font-medium text-gray-800 ${company.typeclient === "New Account - Client Development" ? "bg-yellow-200" : ""
                                                                             }`}
                                                                     >
                                                                         <span>
-                                                                            {company.companyname}
+                                                                            <strong>{company.companyname}</strong>
                                                                             <br />
-                                                                            <span className="text-gray-500">{company.typeclient}</span>
+                                                                            <span className="text-black">{company.typeclient} / {company.status}</span>
+                                                                            <br />
+                                                                            <span className="text-black">{company.address}</span>
                                                                         </span>
                                                                         <button
                                                                             onClick={() => handleAccept(company)}
@@ -1019,6 +1021,7 @@ const ListofUser: React.FC = () => {
                                                                         <p className="text-xs font-semibold mb-4">
                                                                             Are you sure you want to proceed?
                                                                         </p>
+
                                                                         <div className="flex justify-between text-xs">
                                                                             <button
                                                                                 onClick={handleCancel}
