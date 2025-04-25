@@ -56,6 +56,16 @@ interface Post {
     Status: string;
     Remarks: string;
     createdAt: string;
+    SONumber: string;
+    SOAmount: string;
+    QtySold: string;
+    SODate: string;
+    PONumber: string;
+    PaymentTerms: string;
+    POSource: string;
+    PaymentDate: string;
+    DeliveryDate: string;
+    POStatus: string;
 }
 
 interface ActivityTableProps {
@@ -245,6 +255,16 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                     <th className="border p-2">Channel</th>
                                     <th className="border p-2">Wrap-Up</th>
                                     <th className="border p-2">Source</th>
+                                    <th className="border p-2">SO Number</th>
+                                    <th className="border p-2">SO Amount</th>
+                                    <th className="border p-2">QTY Sold</th>
+                                    <th className="border p-2">PO Number</th>
+                                    <th className="border p-2">SO Date</th>
+                                    <th className="border p-2">Payment Terms</th>
+                                    <th className="border p-2">PO Source</th>
+                                    <th className="border p-2">PO Status</th>
+                                    <th className="border p-2">Payment Date</th>
+                                    <th className="border p-2">Delivery Date</th>
                                     <th className="border p-2">Customer Type</th>
                                     <th className="border p-2">Customer Status</th>
                                     <th className="border p-2">Status</th>
@@ -284,6 +304,16 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                                                 <td className="border p-2">{post.Channel}</td>
                                                                 <td className="border p-2">{post.WrapUp}</td>
                                                                 <td className="border p-2">{post.Source}</td>
+                                                                <td className="border p-2">{post.SONumber}</td>
+                                                                <td className="border p-2">{post.SOAmount}</td>
+                                                                <td className="border p-2">{post.QtySold}</td>
+                                                                <td className="border p-2">{post.PONumber}</td>
+                                                                <td className="border p-2">{post.SODate}</td>
+                                                                <td className="border p-2">{post.PaymentTerms}</td>
+                                                                <td className="border p-2">{post.POSource}</td>
+                                                                <td className="border p-2">{post.POStatus}</td>
+                                                                <td className="border p-2">{post.PaymentDate}</td>
+                                                                <td className="border p-2">{post.DeliveryDate}</td>
                                                                 <td className="border p-2">{post.CustomerType}</td>
                                                                 <td className="border p-2">{post.CustomerStatus}</td>
                                                                 <td className={`border p-2 ${STATUS_COLORS[post.Status]}`}>{post.Status}</td>
@@ -436,6 +466,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                             <table className="min-w-full bg-white border border-gray-200 text-xs">
                                 <thead>
                                     <tr className="text-left whitespace-nowrap bg-gray-100">
+                                        <th className="border p-2">Date Created</th>
                                         <th className="border p-2">Ticket No</th>
                                         <th className="border p-2">Ticket Received</th>
                                         <th className="border p-2">Ticket Endorsed</th>
@@ -450,6 +481,16 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                         <th className="border p-2">Channel</th>
                                         <th className="border p-2">Wrap-Up</th>
                                         <th className="border p-2">Source</th>
+                                        <th className="border p-2">SO Number</th>
+                                        <th className="border p-2">SO Amount</th>
+                                        <th className="border p-2">QTY Sold</th>
+                                        <th className="border p-2">PO Number</th>
+                                        <th className="border p-2">SO Date</th>
+                                        <th className="border p-2">Payment Terms</th>
+                                        <th className="border p-2">PO Source</th>
+                                        <th className="border p-2">PO Status</th>
+                                        <th className="border p-2">Payment Date</th>
+                                        <th className="border p-2">Delivery Date</th>
                                         <th className="border p-2">Customer Type</th>
                                         <th className="border p-2">Customer Status</th>
                                         <th className="border p-2">Status</th>
@@ -458,14 +499,14 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                         <th className="border p-2">Sales Agent</th>
                                         <th className="border p-2">Remarks</th>
                                         <th className="border p-2">Inquiry / Concern</th>
-                                        <th className="border p-2">Date Created</th>
                                         <th className="border p-2">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {paginatedPosts.map((post) => (
                                         <tr key={post._id} className="border text-left whitespace-nowrap">
-                                            <td className="border p-2 uppercase">{post.TicketReferenceNumber}</td>
+                                            <td className="border p-2">{new Date(post.createdAt).toLocaleString()}</td>
+                                            <td className="border p-2">{post.TicketReferenceNumber}</td>
                                             <td className="border p-2">{new Date(post.TicketReceived).toLocaleString()}</td>
                                             <td className="border p-2">{new Date(post.TicketEndorsed).toLocaleString()}</td>
                                             <td className="border p-2">{post.CompanyName}</td>
@@ -479,6 +520,16 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                             <td className="border p-2">{post.Channel}</td>
                                             <td className="border p-2">{post.WrapUp}</td>
                                             <td className="border p-2">{post.Source}</td>
+                                            <td className="border p-2">{post.SONumber}</td>
+                                            <td className="border p-2">{post.SOAmount}</td>
+                                            <td className="border p-2">{post.QtySold}</td>
+                                            <td className="border p-2">{post.PONumber}</td>
+                                            <td className="border p-2">{post.SODate}</td>
+                                            <td className="border p-2">{post.PaymentTerms}</td>
+                                            <td className="border p-2">{post.POSource}</td>
+                                            <td className="border p-2">{post.POStatus}</td>
+                                            <td className="border p-2">{post.PaymentDate}</td>
+                                            <td className="border p-2">{post.DeliveryDate}</td>
                                             <td className="border p-2">{post.CustomerType}</td>
                                             <td className="border p-2">{post.CustomerStatus}</td>
                                             <td className={`border p-2 ${STATUS_COLORS[post.Status]}`}>{post.Status}</td>
@@ -491,7 +542,6 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                                     ? `${post.Inquiries.substring(0, 20)}...`
                                                     : post.Inquiries}
                                             </td>
-                                            <td className="border p-2">{new Date(post.createdAt).toLocaleString()}</td>
                                             <td className="border p-2">
                                                 <button onClick={() => handleEdit(post)}>Edit</button>
                                             </td>
