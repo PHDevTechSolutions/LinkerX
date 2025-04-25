@@ -26,27 +26,25 @@ const fetchLeftover = async () => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const savedDate = new Date(data.date);
-  
+
     // Only apply leftover if it was from yesterday
     if (
-      savedDate.getDate() === yesterday.getDate() &&
-      savedDate.getMonth() === yesterday.getMonth() &&
-      savedDate.getFullYear() === yesterday.getFullYear()
+        savedDate.getDate() === yesterday.getDate() &&
+        savedDate.getMonth() === yesterday.getMonth() &&
+        savedDate.getFullYear() === yesterday.getFullYear()
     ) {
-      return data.leftover || 0;
+        return data.leftover || 0;
     }
-  
+
     return 0;
-  };
-  
-  const saveLeftover = async (leftover: number) => {
+};
+
+const saveLeftover = async (leftover: number) => {
     await fetch("/api/Storage", {
-      method: "POST",
-      body: JSON.stringify({ leftover }),
+        method: "POST",
+        body: JSON.stringify({ leftover }),
     });
-  };
-  
-  
+};
 
 // Function to get formatted Manila timestamp
 const getFormattedTimestamp = () => {
@@ -144,6 +142,7 @@ const ListofUser: React.FC = () => {
     const [showAccessModal, setShowAccessModal] = useState(false);
 
     const taskRef = useRef<HTMLDivElement | null>(null); // Reference for My Task div
+    const [totalActivityCount, setTotalActivityCount] = useState<number>(0);
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -628,71 +627,70 @@ const ListofUser: React.FC = () => {
     const getFilteredCompanies = async (post: Company[]) => {
         const leftover = await fetchLeftover();
         let remaining = 35 + leftover;
-    
+
         const today = new Date();
         const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         const currentWeek = Math.ceil((today.getDate() + firstDayOfMonth.getDay()) / 7);
-    
+
         const newAccountCompanies = post
-          .filter(
-            (company) =>
-              (company.status === "Active" || company.status === "Used") &&
-              company.typeclient === "New Account - Client Development"
-          )
-          .slice(0, 1);
-    
+            .filter(
+                (company) =>
+                    (company.status === "Active" || company.status === "Used") &&
+                    company.typeclient === "New Account - Client Development"
+            )
+            .slice(0, 1);
+
         remaining -= newAccountCompanies.length;
-    
+
         let usedCompanies: Company[] = [];
         let activeCompanies: Company[] = [];
-    
+
         const usedPool = post.filter(
-          (company) =>
-            company.status === "Used" &&
-            ["Top 50", "Next 30", "Balance 20"].includes(company.typeclient)
+            (company) =>
+                company.status === "Used" &&
+                ["Top 50", "Next 30", "Balance 20"].includes(company.typeclient)
         );
-    
+
         const activePool = post.filter(
-          (company) =>
-            company.status === "Active" &&
-            ["Top 50", "Next 30", "Balance 20"].includes(company.typeclient)
+            (company) =>
+                company.status === "Active" &&
+                ["Top 50", "Next 30", "Balance 20"].includes(company.typeclient)
         );
-    
+
         if (usedPool.length >= remaining) {
-          usedCompanies = usedPool.slice(0, remaining).map((company) => ({
-            ...company,
-            date_assigned: today.toISOString().slice(0, 10),
-          }));
-          remaining = 0;
+            usedCompanies = usedPool.slice(0, remaining).map((company) => ({
+                ...company,
+                date_assigned: today.toISOString().slice(0, 10),
+            }));
+            remaining = 0;
         } else {
-          usedCompanies = usedPool.map((company) => ({
-            ...company,
-            date_assigned: today.toISOString().slice(0, 10),
-          }));
-          remaining -= usedCompanies.length;
-    
-          activeCompanies = activePool.slice(0, remaining).map((company) => ({
-            ...company,
-            date_assigned: today.toISOString().slice(0, 10),
-          }));
-    
-          remaining -= activeCompanies.length;
+            usedCompanies = usedPool.map((company) => ({
+                ...company,
+                date_assigned: today.toISOString().slice(0, 10),
+            }));
+            remaining -= usedCompanies.length;
+
+            activeCompanies = activePool.slice(0, remaining).map((company) => ({
+                ...company,
+                date_assigned: today.toISOString().slice(0, 10),
+            }));
+
+            remaining -= activeCompanies.length;
         }
-    
+
         const finalCompanies = [
-          ...newAccountCompanies,
-          ...usedCompanies,
-          ...activeCompanies,
+            ...newAccountCompanies,
+            ...usedCompanies,
+            ...activeCompanies,
         ].slice(0, 35);
-    
+
         const updatedLeftover = 35 - finalCompanies.length;
         setRemainingBalance(updatedLeftover);
         setTodayCompanies(finalCompanies);
-    
+
         // Save leftover to be used tomorrow
         await saveLeftover(updatedLeftover);
-      };
-    
+    };
 
     // Fetch companies from API with ReferenceID as query param
     const fetchCompanies = async () => {
@@ -799,7 +797,6 @@ const ListofUser: React.FC = () => {
         }
     };
 
-
     // Handle Accept button to show modal
     const handleAccept = (company: any) => {
         setSelectedCompany(company);
@@ -820,14 +817,58 @@ const ListofUser: React.FC = () => {
     }, [post]);
 
     //const isAllowedUser = userDetails?.Role === "Super Admin" ||
-        //(userDetails?.Role === "Territory Sales Associate" && userDetails?.ReferenceID === "JG-NCR-920587");
+    //(userDetails?.Role === "Territory Sales Associate" && userDetails?.ReferenceID === "JG-NCR-920587");
 
     //const isRestrictedUser = !isAllowedUser;
 
     // Automatically show modal if the user is restricted
     //useEffect(() => {
-        //setShowAccessModal(isRestrictedUser);
+    //setShowAccessModal(isRestrictedUser);
     //}, [isRestrictedUser]);
+
+    useEffect(() => {
+        if (!userDetails.ReferenceID) return;
+
+        const fetchDashboardData = async () => {
+            try {
+                const baseURL = "/api/ModuleSales/Dashboard/";
+                const encodeID = encodeURIComponent(userDetails.ReferenceID);
+
+                // Common API calls
+                const commonEndpoints = [
+                    `FetchTotalActivity?referenceID=${encodeID}`,
+                ].map((endpoint) => fetch(baseURL + endpoint));
+
+                // Fetch all data concurrently
+                const [commonRes] = await Promise.all([
+                    Promise.all(commonEndpoints),
+                ]);
+
+                // Extract responses
+                const [activityRes] = commonRes;
+
+                // Validate all responses
+                const allCommonResponses = [activityRes];
+                if (!allCommonResponses.every((res) => res.ok)) {
+                    throw new Error("Failed to fetch common dashboard data");
+                }
+
+                // Convert responses to JSON
+                const [activityData] = await Promise.all(
+                    allCommonResponses.map((res) => res.json())
+                );
+
+                if (activityData.success) {
+                    setTotalActivityCount(activityData.totalActivityCount);
+                }
+
+            } catch (error) {
+                console.error("Error fetching dashboard data:", error);
+            }
+        };
+
+        fetchDashboardData();
+    }, [userDetails.ReferenceID,]);
 
     return (
         <SessionChecker>
@@ -986,6 +1027,11 @@ const ListofUser: React.FC = () => {
 
                                             {/* Automated Task */}
                                             <div className="col-span-1 bg-white shadow-md rounded-lg p-4">
+                                                <div className="bg-blue-900 text-white shadow-md rounded-lg p-2 flex flex-col items-center justify-center">
+                                                    <h3 className="text-xs font-bold mb-1">My Overall Activity Count for Today</h3>
+                                                    <p className="text-4xl font-light">{totalActivityCount.toLocaleString()}</p>
+                                                </div>
+
                                                 <div className="flex mb-4 border-b">
                                                     <button
                                                         onClick={() => handleTabChange("Automated Task")}
@@ -1009,11 +1055,6 @@ const ListofUser: React.FC = () => {
                                                         <p className="text-xs text-gray-600 mb-4">
                                                             Below are some company names fetched from the system.
                                                         </p>
-
-                                                        {/* Company count */}
-                                                        <div className="text-xs font-medium text-gray-700 mb-3">
-                                                            Showing {todayCompanies.length} of 35 companies — Remaining: {remainingBalance}
-                                                        </div>
 
                                                         {/* Display 5 random company names */}
                                                         <div className="space-y-2">
@@ -1041,9 +1082,7 @@ const ListofUser: React.FC = () => {
                                                                 ))
                                                             ) : (
                                                                 <div className="text-xs text-gray-500 text-center p-2">
-                                                                    {remainingBalance === 0
-                                                                        ? "✅ All 35 companies have been used today. Come back tomorrow!"
-                                                                        : "No available companies today."}
+
                                                                 </div>
                                                             )}
 
