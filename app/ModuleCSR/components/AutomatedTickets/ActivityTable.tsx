@@ -544,7 +544,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                             </td>
                                             <td className="border p-2">
                                                 <button onClick={() => handleEdit(post)} className="mr-2 text-blue-900">Edit</button>
-                                                <button onClick={() => handleDelete(post._id)} className="mr-2 text-delte-900">Delete</button>
+                                                <button onClick={() => handleDelete(post._id)} className="mr-2 text-red-900">Delete</button>
                                             </td>
 
                                         </tr>
