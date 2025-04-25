@@ -96,7 +96,8 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
-    const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
+    const [userFilter, setUserFilter] = useState(""); // Add this line
+
 
     const getFormattedDate = (date: Date) => {
         const dayOfWeek = daysOfWeek[date.getDay()];
@@ -112,10 +113,14 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
         )
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
+    const filteredPosts = userFilter
+        ? sortedPosts.filter((post) => post.userName === userFilter)
+        : sortedPosts;
+
     // Pagination Logic
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const paginatedPosts = sortedPosts.slice(startIndex, endIndex);
+    const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
     const totalPages = Math.ceil(sortedPosts.length / itemsPerPage);
 
     useEffect(() => {
@@ -205,7 +210,6 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
         document.body.appendChild(link);
         link.click();
     };
-
 
     return (
         <div className="p-4 bg-white rounded-lg shadow">
@@ -444,6 +448,21 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                 >
                                     📤 Export
                                 </button>
+                                <label className="text-xs text-gray-700">
+                                    Filter by CSR Agent:
+                                    <select
+                                        value={userFilter}
+                                        onChange={(e) => setUserFilter(e.target.value)}
+                                        className="ml-2 px-2 py-1 border rounded text-xs capitalize"
+                                    >
+                                        <option value="">All</option>
+                                        {[...new Set(posts.map((post) => post.userName))].map((user) => (
+                                            <option key={user} value={user}>
+                                                {user}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
                             </div>
                             <label className="text-xs text-gray-700">
                                 Show
@@ -467,6 +486,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                 <thead>
                                     <tr className="text-left whitespace-nowrap bg-gray-100">
                                         <th className="border p-2">Date Created</th>
+                                        <th className="border p-2">CSR Agent</th>
                                         <th className="border p-2">Ticket No</th>
                                         <th className="border p-2">Ticket Received</th>
                                         <th className="border p-2">Ticket Endorsed</th>
@@ -506,6 +526,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                     {paginatedPosts.map((post) => (
                                         <tr key={post._id} className="border text-left whitespace-nowrap">
                                             <td className="border p-2">{new Date(post.createdAt).toLocaleString()}</td>
+                                            <td className="border p-2 capitalize">{post.userName}</td>
                                             <td className="border p-2">{post.TicketReferenceNumber}</td>
                                             <td className="border p-2">{new Date(post.TicketReceived).toLocaleString()}</td>
                                             <td className="border p-2">{new Date(post.TicketEndorsed).toLocaleString()}</td>
