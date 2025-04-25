@@ -177,40 +177,6 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
         }
     };
 
-    const handleExport = () => {
-        const headers = [
-            "Ticket No",
-            "Company",
-            "Customer",
-            "Contact Number",
-            "Status",
-            "Date Created",
-        ];
-
-        // Export only the current visible table data (paginatedPosts)
-        const dataToExport = paginatedPosts.map((post) => [
-            post.TicketReferenceNumber,
-            post.CompanyName,
-            post.CustomerName,
-            post.ContactNumber,
-            post.Status,
-            new Date(post.createdAt).toLocaleString(),
-        ]);
-
-        // Prepare CSV content
-        const csvContent =
-            "data:text/csv;charset=utf-8," +
-            [headers.join(","), ...dataToExport.map((row) => row.join(","))].join("\n");
-
-        // Create downloadable link for CSV
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `export_${startDate}_${endDate}.csv`);
-        document.body.appendChild(link);
-        link.click();
-    };
-
     return (
         <div className="p-4 bg-white rounded-lg shadow">
             <div className="flex mb-4 border-b">
@@ -437,17 +403,9 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                 <>
                     {/* Table View with Pagination */}
                     <div className="p-4 bg-white rounded-lg shadow">
-                        <h3 className="text-xs font-bold mb-4">📄 Table View</h3>
-
                         {/* Length Menu */}
                         <div className="flex justify-between items-center mb-4">
                             <div className="flex gap-2 items-center">
-                                <button
-                                    onClick={handleExport}
-                                    className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
-                                >
-                                    📤 Export
-                                </button>
                                 <label className="text-xs text-gray-700">
                                     Filter by CSR Agent:
                                     <select

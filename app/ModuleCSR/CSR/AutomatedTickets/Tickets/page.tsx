@@ -10,6 +10,8 @@ import AccountsTable from "../../../components/AutomatedTickets/ActivityTable";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { CiCirclePlus } from "react-icons/ci";
+import { CiImport, CiExport } from "react-icons/ci";
+import ExcelJS from "exceljs";
 
 const ActivityPage: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -141,27 +143,26 @@ const ActivityPage: React.FC = () => {
             post.CustomerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (post.TicketReferenceNumber && post.TicketReferenceNumber.includes(searchTerm)) ||
             post.ContactNumber?.includes(searchTerm);
-    
+
         const matchesStatus = selectedStatus ? post.Status?.includes(selectedStatus) : true;
         const matchesSalesAgent = salesAgent ? post.SalesAgent?.toLowerCase().includes(salesAgent.toLowerCase()) : true;
-    
+
         const postDate = post?.createdAt ? new Date(post.createdAt) : null;
-    
-        // Check if the post's date is within the selected date range
+
         let isWithinDateRange = true;
-    
+
         if (startDate && postDate) {
             const start = new Date(startDate);
-            start.setHours(0, 0, 0, 0); // Start of the day
+            start.setHours(0, 0, 0, 0);
             isWithinDateRange = postDate >= start;
         }
-    
+
         if (endDate && postDate) {
             const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999); // End of the day
+            end.setHours(23, 59, 59, 999);
             isWithinDateRange = isWithinDateRange && postDate <= end;
         }
-    
+
         if (userDetails.Role === "Super Admin") {
             return matchesSearchTerm && matchesStatus && matchesSalesAgent && isWithinDateRange;
         } else if (userDetails.Role === "Admin") {
@@ -181,11 +182,85 @@ const ActivityPage: React.FC = () => {
                 isWithinDateRange
             );
         }
-    
-        return false; // Default case: if none of the roles match, return false
+
+        return false;
     });
-    
-    
+
+    const exportToExcel = () => {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("Automated Tickets");
+
+        worksheet.columns = [
+            { header: 'CSR Agent', key: 'userName', width: 25 },
+            { header: 'Ticket Reference Number', key: 'TicketReferenceNumber', width: 25 },
+            { header: 'Ticket Received', key: 'TicketReceived', width: 25 },
+            { header: 'Ticket Endorsed', key: 'TicketEndorsed', width: 25 },
+            { header: 'Company Name', key: 'CompanyName', width: 30 },
+            { header: 'Customer Name', key: 'CustomerName', width: 30 },
+            { header: 'Contact Number', key: 'ContactNumber', width: 20 },
+            { header: 'Email Address', key: 'Email', width: 30 },
+            { header: 'Gender', key: 'gender', width: 15 },
+            { header: 'Client Segment', key: 'CustomerSegment', width: 20 },
+            { header: 'City Address', key: 'CityAddress', width: 25 },
+            { header: 'Traffic', key: 'Traffic', width: 15 },
+            { header: 'Channel', key: 'Channel', width: 15 },
+            { header: 'Wrap-Up', key: 'WrapUp', width: 15 },
+            { header: 'Source', key: 'Source', width: 20 },
+            { header: 'SO Number', key: 'SONumber', width: 20 },
+            { header: 'SO Amount', key: 'SOAmount', width: 15 },
+            { header: 'QTY Sold', key: 'QTYSold', width: 10 },
+            { header: 'Customer Type', key: 'CustomerType', width: 20 },
+            { header: 'Customer Status', key: 'CustomerStatus', width: 20 },
+            { header: 'Status', key: 'Status', width: 15 },
+            { header: 'Department', key: 'Department', width: 20 },
+            { header: 'Sales Manager', key: 'SalesManager', width: 25 },
+            { header: 'Sales Agent', key: 'SalesAgent', width: 25 },
+            { header: 'Remarks', key: 'Remarks', width: 30 }
+        ];
+
+        filteredAccounts.forEach((post) => {
+            worksheet.addRow({
+                userName: post.userName || '',
+                TicketReferenceNumber: post.TicketReferenceNumber || '',
+                TicketReceived: post.TicketReceived ? new Date(post.TicketReceived).toLocaleString() : '',
+                TicketEndorsed: post.TicketEndorsed ? new Date(post.TicketEndorsed).toLocaleString() : '',
+                CompanyName: post.CompanyName || '',
+                CustomerName: post.CustomerName || '',
+                ContactNumber: post.ContactNumber || '',
+                Email: post.Email || '',
+                Gender: post.Gender || '',
+                CustomerSegment: post.CustomerSegment || '',
+                CityAddress: post.CityAddress || '',
+                Traffic: post.Traffic || '',
+                Channel: post.Channel || '',
+                WrapUp: post.WrapUp || '',
+                Source: post.Source || '',
+                SONumber: post.SONumber || '',
+                SOAmount: post.SOAmount || '',
+                QTYSold: post.QTYSold || '',
+                CustomerType: post.CustomerType || '',
+                CustomerStatus: post.CustomerStatus || '',
+                Status: post.Status || '',
+                Department: post.Department || '',
+                SalesManager: post.SalesManager || '',
+                SalesAgent: post.SalesAgent || '',
+                Remarks: post.Remarks || ''
+            });
+        });
+
+        workbook.xlsx.writeBuffer().then((buffer) => {
+            const blob = new Blob([buffer], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "AutomatedTickets.xlsx";
+            link.click();
+        });
+    };
+
+
+
     // Edit post function
     const handleEdit = (post: any) => {
         setEditPost(post);
@@ -226,15 +301,15 @@ const ActivityPage: React.FC = () => {
     };
 
     //const isRestrictedUser =
-        //userDetails?.Role !== "Super Admin" && userDetails?.Role !== "Admin" && userDetails?.ReferenceID !== "LR-CSR-849432";
+    //userDetails?.Role !== "Super Admin" && userDetails?.Role !== "Admin" && userDetails?.ReferenceID !== "LR-CSR-849432";
 
     // Automatically show modal if the user is restricted
     //useEffect(() => {
-        //if (isRestrictedUser) {
-            //setShowAccessModal(true);
-        //} else {
-            //setShowAccessModal(false);
-        //}
+    //if (isRestrictedUser) {
+    //setShowAccessModal(true);
+    //} else {
+    //setShowAccessModal(false);
+    //}
     //}, [isRestrictedUser]);
 
     return (
@@ -263,9 +338,14 @@ const ActivityPage: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
-                                            <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded flex items-center gap-1" onClick={() => setShowForm(true)}>
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
                                                 <CiCirclePlus size={20} />Add Ticket
                                             </button>
+                                            <div className="flex gap-2">
+                                                <button onClick={exportToExcel} className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
+                                                    <CiExport size={16} /> Export
+                                                </button>
+                                            </div>
                                         </div>
                                         <h2 className="text-lg font-bold mb-2">Automated Tickets</h2>
                                         <p className="text-xs mb-4">
