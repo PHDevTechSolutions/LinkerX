@@ -512,7 +512,13 @@ useEffect(() => {
 
   const totalNotifCount = notifications.filter((notif) => notif.status === "Unread").length + emailCount;
 
-
+  useEffect(() => {
+    if (showModal && selectedNotif) {
+      const audio = new Audio('/alertmessage.mp3');
+      audio.play().catch((err) => console.error("Audio play failed:", err));
+    }
+  }, [showModal, selectedNotif]);
+  
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center space-x-4">
@@ -705,6 +711,7 @@ useEffect(() => {
             </div>
           </motion.div>
         )}
+        
 
         {showModal && selectedNotif && (
           <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
@@ -722,7 +729,7 @@ useEffect(() => {
 
               {/* Timestamp */}
               <span className="text-[10px] text-gray-500 block mb-4">
-                {new Date(selectedNotif.date_created).toLocaleString()}
+              {formatDate(new Date(selectedNotif.date_created).getTime())}
               </span>
 
               <div className="flex justify-end space-x-2">
