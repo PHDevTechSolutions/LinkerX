@@ -16,7 +16,8 @@ async function bulkEditUsers(userIds: string[], status: string) {
 
         const result = await sql`
             UPDATE accounts
-            SET status = ${status}
+            SET status = ${status},  -- Added a comma here
+                date_updated = CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
             WHERE id = ANY(${userIds})
             RETURNING *;
         `;

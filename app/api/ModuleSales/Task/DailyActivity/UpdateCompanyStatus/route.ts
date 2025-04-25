@@ -20,7 +20,9 @@ export async function POST(req: Request) {
 
         const result = await sql`
             UPDATE accounts
-            SET status = ${status}
+            SET 
+                status = ${status},
+                date_updated = CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
             WHERE id = ${id}
             RETURNING *;
         `;

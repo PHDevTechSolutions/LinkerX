@@ -16,7 +16,9 @@ async function bulkEditUsers(userIds: string[], typeclient: string) {
 
         const result = await sql`
             UPDATE accounts
-            SET typeclient = ${typeclient}
+            SET 
+                typeclient = ${typeclient},
+                date_updated = CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
             WHERE id = ANY(${userIds})
             RETURNING *;
         `;
