@@ -248,34 +248,36 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     //}, [referenceid]);
 
     useEffect(() => {
-            if (referenceid) {
-                // API call to fetch company data
-                fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`)
-                    .then((response) => response.json())
-                    .then((data) => {
-                        if (data.success) {
-                            // Filter companies with status 'Active' or 'Used'
-                            const filteredCompanies = data.data.filter((company: any) =>
-                                company.status === 'Active' || company.status === 'Used'
-                            );
+        if (referenceid) {
+            // API call to fetch company data
+            fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        // Filter companies with status 'Active' or 'Used'
+                        const filteredCompanies = data.data.filter((company: any) =>
+                            company.status === 'Active' || company.status === 'Used'
+                        );
     
-                            setCompanies(filteredCompanies.map((company: any) => ({
-                                value: company.companyname,
-                                label: company.companyname,
-                                contactperson: company.contactperson,
-                                contactnumber: company.contactnumber,
-                                emailaddress: company.emailaddress,
-                                typeclient: company.typeclient,
-                                address: company.address,
-                                area: company.area,
-                            })));
-                        } else {
-                            console.error("Error fetching companies:", data.error);
-                        }
-                    })
-                    .catch((error) => console.error("Error fetching companies:", error));
-            }
-        }, [referenceid]);
+                        setCompanies(filteredCompanies.map((company: any) => ({
+                            id: company.id,  // Ensure `id` is included in the mapped object
+                            companyname: company.companyname,
+                            value: company.companyname,
+                            label: company.companyname,
+                            contactperson: company.contactperson,
+                            contactnumber: company.contactnumber,
+                            emailaddress: company.emailaddress,
+                            typeclient: company.typeclient,
+                            address: company.address,
+                            area: company.area,
+                        })));
+                    } else {
+                        console.error("Error fetching companies:", data.error);
+                    }
+                })
+                .catch((error) => console.error("Error fetching companies:", error));
+        }
+    }, [referenceid]);
 
 
     useEffect(() => {
@@ -284,78 +286,68 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         setEmailAddresses(emailaddress ? emailaddress.split(", ") : [""]);
     }, [contactperson, contactnumber, emailaddress]);
 
-    const handleCompanySelect = (selectedOption: any) => {
-        const newStatus = selectedOption ? 'Used' : 'Active';
-
-        // If a company was previously selected, set its status back to Active
-        if (previousCompany && previousCompany.value !== selectedOption?.value) {
-            // Update previous company status to Active
-            fetch(`/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    companyname: previousCompany.value,
-                    status: 'Active', // Set the status to Active for the previous company
-                }),
-            })
-                .then(response => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        console.log("Previous company status updated to Active.");
-                    } else {
-                        console.error("Error updating previous company status:", data.error);
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error updating previous company status:", error);
+    const handleCompanySelect = async (selectedOption: any) => {
+        const newStatus = selectedOption ? 'Active' : 'Used';
+    
+        try {
+            // Check if previousCompany has a valid id
+            if (previousCompany && previousCompany.id && previousCompany.id !== selectedOption?.id) {
+                console.log("Updating previous company to Active:", previousCompany.id);
+                const res = await fetch(`/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: previousCompany.id, // Correct `id` being passed
+                        status: 'Used',
+                    }),
                 });
-        }
-
-        // Update the current selected company's status to Used and the form fields
-        if (selectedOption) {
-            setPreviousCompany(selectedOption); // Track the current selection for future reference
-            setcompanyname(selectedOption.value);
-            setcontactperson(selectedOption.contactperson);
-            setcontactnumber(selectedOption.contactnumber);
-            setemailaddress(selectedOption.emailaddress);
-            settypeclient(selectedOption.typeclient);
-            setaddress(selectedOption.address);
-            setarea(selectedOption.area);
-        } else {
-            // If no company is selected, reset all fields and set the previous company as null
-            setPreviousCompany(null);
-            setcompanyname("");
-            setcontactperson("");
-            setcontactnumber("");
-            setemailaddress("");
-            settypeclient("");
-            setaddress("");
-            setarea("");
-        }
-
-        // Ensure both companyname and status are passed in the request body
-        fetch(`/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                companyname: selectedOption ? selectedOption.value : "", // Ensure companyname is passed
-                status: newStatus, // Ensure status is passed
-            }),
-        })
-            .then(response => response.json())
-            .then((data) => {
-                if (data.success) {
-                    console.log("Company status updated successfully.");
-                } else {
-
+                const data = await res.json();
+                if (!data.success) {
+                    console.error("Failed to update previous company:", data.error);
                 }
-            })
-            .catch((error) => {
-            });
+            }
+    
+            // Check if selectedOption has valid data
+            if (selectedOption && selectedOption.id) {
+                console.log("Selected Company Data:", selectedOption);
+    
+                setPreviousCompany(selectedOption);
+                setcompanyname(selectedOption.companyname);  // Ensure correct key name here
+                setcontactperson(selectedOption.contactperson);
+                setcontactnumber(selectedOption.contactnumber);
+                setemailaddress(selectedOption.emailaddress);
+                settypeclient(selectedOption.typeclient);
+                setaddress(selectedOption.address);
+                setarea(selectedOption.area);
+    
+                // Update the selected company to 'Used'
+                console.log("Updating selected company status to:", newStatus);
+                const res = await fetch(`/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: selectedOption.id,  // Ensure `id` is passed correctly
+                        status: newStatus,
+                    }),
+                });
+                const data = await res.json();
+                if (!data.success) {
+                    console.error("Failed to update selected company:", data.error);
+                }
+            } else {
+                console.log("No selected company, resetting form fields.");
+                setPreviousCompany(null);
+                setcompanyname("");
+                setcontactperson("");
+                setcontactnumber("");
+                setemailaddress("");
+                settypeclient("");
+                setaddress("");
+                setarea("");
+            }
+        } catch (error) {
+            console.error("Unexpected error while updating company status:", error);
+        }
     };
 
     const handleContactPersonChange = (index: number, value: string) => {
