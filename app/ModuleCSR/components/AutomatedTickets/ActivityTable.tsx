@@ -57,7 +57,7 @@ interface Post {
     Remarks: string;
     createdAt: string;
     SONumber: string;
-    SOAmount: string;
+    Amount: string;
     QtySold: string;
     SODate: string;
     PONumber: string;
@@ -275,7 +275,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                                                 <td className="border p-2">{post.WrapUp}</td>
                                                                 <td className="border p-2">{post.Source}</td>
                                                                 <td className="border p-2">{post.SONumber}</td>
-                                                                <td className="border p-2">{post.SOAmount}</td>
+                                                                <td className="border p-2">{post.Amount}</td>
                                                                 <td className="border p-2">{post.QtySold}</td>
                                                                 <td className="border p-2">{post.PONumber}</td>
                                                                 <td className="border p-2">{post.SODate}</td>
@@ -500,7 +500,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                             <td className="border p-2">{post.WrapUp}</td>
                                             <td className="border p-2">{post.Source}</td>
                                             <td className="border p-2">{post.SONumber}</td>
-                                            <td className="border p-2">{post.SOAmount}</td>
+                                            <td className="border p-2">{post.Amount}</td>
                                             <td className="border p-2">{post.QtySold}</td>
                                             <td className="border p-2">{post.PONumber}</td>
                                             <td className="border p-2">{post.SODate}</td>
