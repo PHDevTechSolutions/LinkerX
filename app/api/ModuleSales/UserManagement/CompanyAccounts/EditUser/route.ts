@@ -43,7 +43,7 @@ async function editUser(
                 address = ${address},
                 area = ${area},
                 status = ${status},
-                date_updated = CURRENT_TIMESTAMP
+                date_updated = CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
             WHERE id = ${id} 
             RETURNING *;
         `;
