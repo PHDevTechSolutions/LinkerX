@@ -42,7 +42,8 @@ async function editUser(
                 companygroup = ${companygroup},
                 address = ${address},
                 area = ${area},
-                status = ${status}
+                status = ${status},
+                date_updated = CURRENT_TIMESTAMP
             WHERE id = ${id} 
             RETURNING *;
         `;
