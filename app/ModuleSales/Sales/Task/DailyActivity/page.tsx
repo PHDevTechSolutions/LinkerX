@@ -1171,8 +1171,8 @@ const ListofUser: React.FC = () => {
                                                                 todayCompanies.map((company, index) => (
                                                                     <div
                                                                         key={company.id}
-                                                                        className={`p-2 rounded flex justify-between items-center text-[10px] transition-all duration-200 ease-in-out transform hover:scale-[1.02] uppercase font-medium 
-        ${company.typeclient === "New Account - Client Development"
+                                                                        className={`p-2 rounded-lg shadow-lg flex justify-between items-center text-[10px] transition-all duration-200 ease-in-out transform hover:scale-[1.02] uppercase font-medium 
+                                                                            ${company.typeclient === "New Account - Client Development"
                                                                                 ? "bg-yellow-200 text-black"
                                                                                 : company.status === "Used"
                                                                                     ? "bg-lime-200 text-black"
