@@ -254,13 +254,14 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.success) {
-                        // Filter companies with status 'Active' or 'Used'
+                        // Filter companies: status is 'Active' or 'Used' AND typeclient is NOT Top 50, Next 30, or Balance 20
                         const filteredCompanies = data.data.filter((company: any) =>
-                            company.status === 'Active' || company.status === 'Used'
+                            (company.status === 'Active' || company.status === 'Used') &&
+                            !['Top 50', 'Next 30', 'Balance 20'].includes(company.typeclient)
                         );
     
                         setCompanies(filteredCompanies.map((company: any) => ({
-                            id: company.id,  // Ensure `id` is included in the mapped object
+                            id: company.id,
                             companyname: company.companyname,
                             value: company.companyname,
                             label: company.companyname,
@@ -278,7 +279,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 .catch((error) => console.error("Error fetching companies:", error));
         }
     }, [referenceid]);
-
 
     useEffect(() => {
         setContactPersons(contactperson ? contactperson.split(", ") : [""]);
