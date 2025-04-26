@@ -178,7 +178,8 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-        ? posts.filter((post) => {
+    ? posts
+        .filter((post) => {
             // Check if the company name or typeclient matches the search term (case-insensitive)
             const matchesSearchTerm =
                 post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -214,7 +215,6 @@ const ListofUser: React.FC = () => {
                     : userDetails.Role === "Territory Sales Associate" || userDetails.Role === "Territory Sales Manager"
                         ? post?.referenceid === referenceID // TSA and TSM see only their assigned companies
                         : false; // Default to false if no role matches
-            // Default to false if no role matches
 
             // Check if the post's status is either 'Active' or 'Used'
             const isActiveOrUsed = post?.status === "Active" || post?.status === "Used";
@@ -229,7 +229,25 @@ const ListofUser: React.FC = () => {
                 isActiveOrUsed // ✅ Ensures 'Active' or 'Used' status
             );
         })
-        : [];
+        .sort((a, b) => {
+            // Sort alphabetically by company name with numbers first (A-Z, 0-9)
+            const companyNameA = a.companyname?.toLowerCase() || "";
+            const companyNameB = b.companyname?.toLowerCase() || "";
+
+            // Compare numbers first (if any), then letters
+            const numFirstA = companyNameA.match(/^\d+/) ? parseInt(companyNameA.match(/^\d+/)[0], 10) : Infinity;
+            const numFirstB = companyNameB.match(/^\d+/) ? parseInt(companyNameB.match(/^\d+/)[0], 10) : Infinity;
+
+            // Compare by number first
+            if (numFirstA !== numFirstB) {
+                return numFirstA - numFirstB;
+            }
+
+            // If numbers are the same, compare alphabetically (A-Z)
+            return companyNameA.localeCompare(companyNameB);
+        })
+    : [];
+
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
