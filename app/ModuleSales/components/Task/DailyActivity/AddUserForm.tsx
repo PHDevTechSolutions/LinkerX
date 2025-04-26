@@ -499,7 +499,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                       onChange={handleInputChange}
                       className="border p-2 rounded uppercase"
                       placeholder="Q# Number"
-                      disabled={!selectedActivity.quotationnumber} // Disable if empty
                     />
                     <input
                       name="quotationamount"
@@ -507,7 +506,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                       onChange={handleInputChange}
                       className="border p-2 rounded"
                       placeholder="Q-Amount"
-                      disabled={!selectedActivity.quotationamount} // Disable if empty
                     />
                     <input
                       name="soamount"
@@ -515,7 +513,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                       onChange={handleInputChange}
                       className="border p-2 rounded"
                       placeholder="SO-Amount"
-                      disabled={!selectedActivity.soamount} // Disable if empty
                     />
                     <input
                       name="sonumber"
@@ -523,7 +520,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                       onChange={handleInputChange}
                       className="border p-2 rounded uppercase"
                       placeholder="SO-Number"
-                      disabled={!selectedActivity.sonumber} // Disable if empty
+                      
                     />
                     <input
                       name="actualsales"
@@ -531,7 +528,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                       onChange={handleInputChange}
                       className="border p-2 rounded"
                       placeholder="Actual Sales"
-                      disabled={!selectedActivity.actualsales} // Disable if empty
                     />
                     <textarea
                       name="remarks"
