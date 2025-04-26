@@ -17,6 +17,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { CiCircleRemove, CiSaveUp1, CiTrash } from "react-icons/ci";
 import { PiHandTapThin } from "react-icons/pi";
 import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
+import { FcManager, FcPhone, FcFeedback, FcHome } from "react-icons/fc";
 
 // Read leftover
 const fetchLeftover = async () => {
@@ -1177,12 +1178,28 @@ const ListofUser: React.FC = () => {
                                                                                     ? "bg-lime-200 text-black"
                                                                                     : "bg-teal-300 text-black"}`}
                                                                     >
-                                                                        <span>
+                                                                        <span className="space-y-1">
                                                                             <strong>{company.companyname}</strong>
                                                                             <br />
                                                                             <span>{company.typeclient} / {company.status}</span>
                                                                             <br />
-                                                                            <span>{company.address}</span>
+
+                                                                            <span className="flex gap-1 items-start">
+                                                                                <FcManager size={10} className="flex-shrink-0 mt-[2px]" />
+                                                                                <span>{company.contactperson}</span>
+                                                                            </span>
+                                                                            <span className="flex gap-1 items-start">
+                                                                                <FcPhone size={10} className="flex-shrink-0 mt-[2px]" />
+                                                                                <span className="italic">{company.contactnumber}</span>
+                                                                            </span>
+                                                                            <span className="flex gap-1 items-start">
+                                                                                <FcFeedback size={10} className="flex-shrink-0 mt-[2px]" />
+                                                                                <span className="break-all italic lowercase">{company.emailaddress}</span>
+                                                                            </span>
+                                                                            <span className="flex gap-1 items-start">
+                                                                                <FcHome size={10} className="flex-shrink-0 mt-[2px]" />
+                                                                                <span className="break-words capitalize">{company.address}</span>
+                                                                            </span>
                                                                         </span>
                                                                         <button
                                                                             onClick={() => handleAccept(company)}
