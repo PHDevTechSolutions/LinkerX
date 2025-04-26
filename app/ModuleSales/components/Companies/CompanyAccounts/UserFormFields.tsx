@@ -134,7 +134,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
       <div className="flex flex-wrap -mx-4">
         <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="companyname">Company Name</label>
-          <input type="text" id="companyname" value={companyname} onChange={(e) => setcompanyname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize"
+          <input type="text" id="companyname" value={companyname} onChange={(e) => setcompanyname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required
           />
         </div>
         {/* Contact Person */}
@@ -178,7 +178,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         </div>
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="typeclient">Type of Client</label>
-          <select id="typeclient" value={typeclient} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+          <select id="typeclient" value={typeclient} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
             <option value="">Select Client</option>
             <option value="Top 50">Top 50</option>
             <option value="Next 30">Next 30</option>
@@ -203,7 +203,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         </div>
         <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="area">Status</label>
-          <select id="status" value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+          <select id="status" value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
             <option value="">Select Status</option>
             <option value="Used">Used</option>
           </select>
