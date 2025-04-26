@@ -95,45 +95,47 @@ const OutboundCallPage: React.FC = () => {
 
     // Filter posts based on search and selected client type
     const filteredPosts = posts
-    .filter((post) => {
-        const accountName = post.companyname ? post.companyname.toLowerCase() : "";
-        const ticketnumber = post.ticketreferencenumber ? post.ticketreferencenumber.toLowerCase() : "";
-        const AgentFirstname = post.AgentFirstname ? post.AgentFirstname.toLowerCase() : "";
+        .filter((post) => {
+            const accountName = post.companyname ? post.companyname.toUpperCase() : "";
+            const ticketNumber = post.ticketreferencenumber ? post.ticketreferencenumber.toUpperCase() : "";
+            const agentFirstname = post.AgentFirstname ? post.AgentFirstname.toUpperCase() : "";
 
-        const matchesSearch =
-            accountName.includes(searchTerm.toLowerCase()) ||
-            ticketnumber.includes(searchTerm.toLowerCase()) ||
-            AgentFirstname.includes(searchTerm.toLowerCase());
+            const search = searchTerm.toUpperCase();
 
-        const isCSRInquiry = post.typeclient === "CSR Inquiries";
+            const matchesSearch =
+                accountName.includes(search) ||
+                ticketNumber.includes(search) ||
+                agentFirstname.includes(search);
 
-        const postStartDate = post.startdate ? new Date(post.startdate) : null;
-        const postEndDate = post.enddate ? new Date(post.enddate) : null;
+            const isCSRInquiry = post.typeclient === "CSR Inquiries";
 
-        const isWithinDateRange =
-            (!startDate || (postStartDate && postStartDate >= new Date(startDate))) &&
-            (!endDate || (postEndDate && postEndDate <= new Date(endDate)));
+            const postStartDate = post.startdate ? new Date(post.startdate) : null;
+            const postEndDate = post.enddate ? new Date(post.enddate) : null;
 
-        return matchesSearch && isWithinDateRange && isCSRInquiry;
-    })
-    .map((post) => {
-        const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
-        const salesmanager = usersList.find((user) => user.ReferenceID === post.tsm);
+            const isWithinDateRange =
+                (!startDate || (postStartDate && postStartDate >= new Date(startDate))) &&
+                (!endDate || (postEndDate && postEndDate <= new Date(endDate)));
 
-        return {
-            ...post,
-            AgentFirstname: agent ? agent.Firstname : "Unknown",
-            AgentLastname: agent ? agent.Lastname : "Unknown",
-            ManagerFirstname: salesmanager ? salesmanager.Firstname : "Unknown",
-            ManagerLastname: salesmanager ? salesmanager.Lastname : "Unknown",
-        };
-    })
-    .sort((a, b) => {
-        const dateA = new Date(a.date_created).getTime();
-        const dateB = new Date(b.date_created).getTime();
-        return dateB - dateA;
-      });
-       // 🔽 Sort by date_created descending
+            return matchesSearch && isWithinDateRange && isCSRInquiry;
+        })
+        .map((post) => {
+            const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+            const salesmanager = usersList.find((user) => user.ReferenceID === post.tsm);
+
+            return {
+                ...post,
+                AgentFirstname: agent ? agent.Firstname : "Unknown",
+                AgentLastname: agent ? agent.Lastname : "Unknown",
+                ManagerFirstname: salesmanager ? salesmanager.Firstname : "Unknown",
+                ManagerLastname: salesmanager ? salesmanager.Lastname : "Unknown",
+            };
+        })
+        .sort((a, b) => {
+            const dateA = new Date(a.date_created).getTime();
+            const dateB = new Date(b.date_created).getTime();
+            return dateB - dateA;
+        });
+    // 🔽 Sort by date_created descending
 
     // Pagination logic
     const indexOfLastPost = currentPage * postsPerPage;
@@ -190,15 +192,15 @@ const OutboundCallPage: React.FC = () => {
     };
 
     //const isRestrictedUser =
-        //userDetails?.Role !== "Super Admin" && userDetails?.ReferenceID !== "LR-CSR-849432";
+    //userDetails?.Role !== "Super Admin" && userDetails?.ReferenceID !== "LR-CSR-849432";
 
     // Automatically show modal if the user is restricted
     //useEffect(() => {
-        //if (isRestrictedUser) {
-            //setShowAccessModal(true);
-        //} else {
-            //setShowAccessModal(false);
-        //}
+    //if (isRestrictedUser) {
+    //setShowAccessModal(true);
+    //} else {
+    //setShowAccessModal(false);
+    //}
     //}, [isRestrictedUser]);
 
     return (
@@ -208,7 +210,7 @@ const OutboundCallPage: React.FC = () => {
                     {(userName) => (
                         <div className="container mx-auto p-4 relative">
                             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
-                            <h2 className="text-lg font-bold mb-2">Daily CSR Transaction</h2>
+                                <h2 className="text-lg font-bold mb-2">Daily CSR Transaction</h2>
                                 <p className="text-xs mb-2">The Daily CSR Transaction section displays essential details of customer service interactions, including the Ticket Number, Account Name, Contact, Email, Wrap Up, Inquiry/Concern, Remarks, Agent, TSM, and Time Consumed. This helps track and manage customer inquiries efficiently while monitoring agent performance and resolution times.</p>
 
                                 {/* Display total entries */}
