@@ -1170,23 +1170,31 @@ const ListofUser: React.FC = () => {
                                                                 todayCompanies.map((company, index) => (
                                                                     <div
                                                                         key={company.id}
-                                                                        className={`p-2 bg-gray-100 rounded flex justify-between items-center text-[10px] transition-all duration-200 ease-in-out transform hover:scale-[1.02] uppercase font-medium text-gray-800 ${company.typeclient === "New Account - Client Development" ? "bg-yellow-200" : ""
-                                                                            }`}
+                                                                        className={`p-2 rounded flex justify-between items-center text-[10px] transition-all duration-200 ease-in-out transform hover:scale-[1.02] uppercase font-medium 
+        ${company.typeclient === "New Account - Client Development"
+                                                                                ? "bg-yellow-200 text-black"
+                                                                                : company.status === "Used"
+                                                                                    ? "bg-lime-200 text-black"
+                                                                                    : "bg-teal-300 text-black"}`}
                                                                     >
                                                                         <span>
                                                                             <strong>{company.companyname}</strong>
                                                                             <br />
-                                                                            <span className="text-black">{company.typeclient} / {company.status}</span>
+                                                                            <span>{company.typeclient} / {company.status}</span>
                                                                             <br />
-                                                                            <span className="text-black">{company.address}</span>
+                                                                            <span>{company.address}</span>
                                                                         </span>
                                                                         <button
                                                                             onClick={() => handleAccept(company)}
-                                                                            className="px-3 py-1 text-[10px] bg-blue-500 text-white rounded hover:bg-blue-600 transition flex gap-1"
+                                                                            className={`px-3 py-1 text-[10px] rounded hover:bg-blue-600 transition flex gap-1 
+            ${company.status === "Used"
+                                                                                    ? "bg-green-900 text-white"
+                                                                                    : "bg-gray-100 text-black"}`}
                                                                         >
                                                                             Accept <IoCheckmarkDoneCircleOutline size={15} />
                                                                         </button>
                                                                     </div>
+
                                                                 ))
                                                             ) : (
                                                                 <div className="text-xs text-gray-500 text-center p-2">
