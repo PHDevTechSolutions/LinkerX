@@ -102,24 +102,43 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [showModal, setShowModal] = useState(false);
   const [modalRemarks, setModalRemarks] = useState("");
 
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // 🔥 FIX: Ensure activityList is always an array
   const [activityList, setActivityList] = useState<{
-      id: number;
-      typeactivity: string;
-      callback: string;
-      callstatus: string;
-      typecall: string;
-      remarks: string;
-      quotationnumber: string;
-      quotationamount: string;
-      sonumber: string;
-      soamount: string;
-      actualsales: string;
-      activitystatus: string;
-      date_created: string;
-    }[]>([]);
-  
+    id: number;
+    typeactivity: string;
+    callback: string;
+    callstatus: string;
+    typecall: string;
+    remarks: string;
+    quotationnumber: string;
+    quotationamount: string;
+    sonumber: string;
+    soamount: string;
+    actualsales: string;
+    activitystatus: string;
+    date_created: string;
+  }[]>([]);
+
+  type Activity = {
+    id: number;
+    typeactivity: string;
+    callback: string;
+    callstatus: string;
+    typecall: string;
+    remarks: string;
+    quotationnumber: string;
+    quotationamount: string;
+    sonumber: string;
+    soamount: string;
+    actualsales: string;
+    activitystatus: string;
+    date_created: string;
+  };
+
 
   // Fetch progress data when activitynumber change
   useEffect(() => {
@@ -219,17 +238,17 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
-  
+
     // Use UTC getters instead of local ones to prevent timezone shifting.
     let hours = date.getUTCHours();
     const minutes = date.getUTCMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
-    
+
     // Convert hours to 12-hour format
     hours = hours % 12;
     hours = hours ? hours : 12; // if hour is 0, display as 12
     const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-  
+
     // Use toLocaleDateString with timeZone 'UTC' to format the date portion
     const formattedDateStr = date.toLocaleDateString('en-US', {
       timeZone: 'UTC',
@@ -237,9 +256,61 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       day: 'numeric',
       year: 'numeric',
     });
-  
+
     // Return combined date and time string
     return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
+  };
+
+  const handleEditClick = (activityId: number) => {
+    const selected = activityList.find((act) => act.id === activityId);
+    if (selected) {
+      setSelectedActivity(selected);
+      setIsEditModalOpen(true);
+    }
+  };
+
+  // Handle input change inside modal
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setSelectedActivity((prev) => prev ? { ...prev, [name]: value } : prev);
+  };
+
+  // Save edited activity to API
+  const handleSaveEdit = async () => {
+    if (!selectedActivity) return;
+
+    try {
+      const response = await fetch('/api/ModuleSales/Task/DailyActivity/EditProgress', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(selectedActivity),
+      });
+
+      if (response.ok) {
+        // Update local list after saving
+        const updatedList = activityList.map((activity) =>
+          activity.id === selectedActivity.id ? selectedActivity : activity
+        );
+        setActivityList(updatedList);
+
+        toast.success('Activity updated successfully!'); // Optional kung gumagamit ka ng toast
+        setIsEditModalOpen(false);
+        setSelectedActivity(null);
+      } else {
+        toast.error('Failed to update activity.');
+      }
+    } catch (error) {
+      console.error('Error updating activity:', error);
+      toast.error('An error occurred while updating.');
+    }
+  };
+
+  // Close modal
+  const handleModalClose = () => {
+    setIsEditModalOpen(false);
+    setSelectedActivity(null);
   };
 
   return (
@@ -345,8 +416,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                       </td>
                       <td className="px-4 py-2 border">{activity.activitystatus}</td>
                       <td className="px-4 py-2 flex justify-center item-center">
-                        <button onClick={() => handleDeleteClick(activity.id.toString())} className="text-red-600">
-                          <CiTrash size={16} />
+                        <button onClick={() => handleDeleteClick(activity.id.toString())} className="bg-white p-2 rounded-md flex mr-1 shadow-md text-red-600">
+                          <CiTrash size={16} /> Delete
+                        </button>
+                        <button onClick={() => handleEditClick(activity.id)} className="bg-white p-2 rounded-md flex shadow-md text-blue-900">
+                          <CiEdit size={16} /> Edit
                         </button>
                       </td>
                     </tr>
@@ -358,6 +432,141 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                 )}
               </tbody>
             </table>
+
+            {isEditModalOpen && selectedActivity && (
+              <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50">
+                <div className="bg-white p-6 rounded-lg w-full max-w-xl">
+                  <h2 className="text-md font-bold mb-4">Edit Activity</h2>
+
+                  <div className="grid grid-cols-2 gap-4 text-xs">
+                    <input
+                      name="typeactivity"
+                      value={selectedActivity.typeactivity || ""}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded"
+                      placeholder="Type of Activity"
+                      disabled
+                    />
+                    <input
+                      name="callback"
+                      value={selectedActivity.callback || ""}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded"
+                      placeholder="Callback"
+                      disabled
+                    />
+
+                    <select
+                      name="callstatus"
+                      value={selectedActivity.callstatus || ""}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleInputChange(e)}
+                      className="w-full px-3 py-2 border rounded text-xs capitalize"
+                      required
+                      disabled={!selectedActivity.callstatus} // Disable if empty
+                    >
+                      <option value="">Select Status</option>
+                      <option value="Successful">Successful</option>
+                      <option value="Unsuccessful">Unsuccessful</option>
+                    </select>
+
+                    <select
+                      name="typecall"
+                      value={selectedActivity.typecall || ""}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleInputChange(e)}
+                      className="border p-2 rounded"
+                      required
+                      disabled={!selectedActivity.typecall} // Disable if empty
+                    >
+                      <option value="">Select Status</option>
+                      <option value="Cannot Be Reached">Cannot Be Reached</option>
+                      <option value="Follow Up Pending">Follow Up Pending</option>
+                      <option value="Inactive">Inactive</option>
+                      <option value="Requirements">No Requirements</option>
+                      <option value="Not Connected with the Company">Not Connected with the Company</option>
+                      <option value="Request for Quotation">Request for Quotation</option>
+                      <option value="Ringing Only">Ringing Only</option>
+                      <option value="Sent Quotation - Standard">Sent Quotation - Standard</option>
+                      <option value="Sent Quotation - With Special Price">Sent Quotation - With Special Price</option>
+                      <option value="Sent Quotation - With SPF">Sent Quotation - With SPF</option>
+                      <option value="Touch Base">Touch Base</option>
+                      <option value="Waiting for Future Projects">Waiting for Future Projects</option>
+                      <option value="With SPFS">With SPFS</option>
+                    </select>
+
+                    <input
+                      name="quotationnumber"
+                      value={selectedActivity.quotationnumber || ""}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded uppercase"
+                      placeholder="Q# Number"
+                      disabled={!selectedActivity.quotationnumber} // Disable if empty
+                    />
+                    <input
+                      name="quotationamount"
+                      value={selectedActivity.quotationamount || ""}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded"
+                      placeholder="Q-Amount"
+                      disabled={!selectedActivity.quotationamount} // Disable if empty
+                    />
+                    <input
+                      name="soamount"
+                      value={selectedActivity.soamount || ""}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded"
+                      placeholder="SO-Amount"
+                      disabled={!selectedActivity.soamount} // Disable if empty
+                    />
+                    <input
+                      name="sonumber"
+                      value={selectedActivity.sonumber || ""}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded uppercase"
+                      placeholder="SO-Number"
+                      disabled={!selectedActivity.sonumber} // Disable if empty
+                    />
+                    <input
+                      name="actualsales"
+                      value={selectedActivity.actualsales || ""}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded"
+                      placeholder="Actual Sales"
+                      disabled={!selectedActivity.actualsales} // Disable if empty
+                    />
+                    <textarea
+                      name="remarks"
+                      value={selectedActivity.remarks || ""}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded col-span-2 capitalize"
+                      placeholder="Remarks"
+                    />
+                    <input
+                      name="activitystatus"
+                      value={selectedActivity.activitystatus || ""}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded col-span-2"
+                      placeholder="Status"
+                      disabled
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-2 mt-4">
+                    <button
+                      onClick={handleModalClose}
+                      className="bg-gray-400 text-xs text-white px-5 py-2 rounded mr-2 flex items-center gap-1"
+                    >
+                      <CiCircleRemove size={20} />Cancel
+                    </button>
+                    <button
+                      onClick={handleSaveEdit}
+                      className="bg-blue-900 text-white text-xs px-5 py-2 rounded flex items-center gap-1"
+                    >
+                      <CiSaveUp1 size={20} />Submit
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Modal for showing full remarks */}
             {showModal && (
