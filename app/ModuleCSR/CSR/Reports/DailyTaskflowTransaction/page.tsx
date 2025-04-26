@@ -95,49 +95,45 @@ const OutboundCallPage: React.FC = () => {
 
     // Filter posts based on search and selected client type
     const filteredPosts = posts
-        .filter((post) => {
-            const accountName = post.companyname ? post.companyname.toLowerCase() : "";
-            const ticketnumber = post.ticketreferencenumber
-                ? post.ticketreferencenumber.toLowerCase()
-                : "";
-            const AgentFirstname = post.AgentFirstname
-                ? post.AgentFirstname.toLowerCase()
-                : "";
+    .filter((post) => {
+        const accountName = post.companyname ? post.companyname.toLowerCase() : "";
+        const ticketnumber = post.ticketreferencenumber ? post.ticketreferencenumber.toLowerCase() : "";
+        const AgentFirstname = post.AgentFirstname ? post.AgentFirstname.toLowerCase() : "";
 
-            const matchesSearch =
-                accountName.includes(searchTerm.toLowerCase()) ||
-                ticketnumber.includes(searchTerm.toLowerCase()) || // ✅ Added ticket number filter
-                AgentFirstname.includes(searchTerm.toLowerCase());
+        const matchesSearch =
+            accountName.includes(searchTerm.toLowerCase()) ||
+            ticketnumber.includes(searchTerm.toLowerCase()) ||
+            AgentFirstname.includes(searchTerm.toLowerCase());
 
-            // Filter by CSR Inquiries only
-            const isCSRInquiry = post.typeclient === "CSR Inquiries";
+        const isCSRInquiry = post.typeclient === "CSR Inquiries";
 
-            // Date range filtering
-            const postStartDate = post.startdate ? new Date(post.startdate) : null;
-            const postEndDate = post.enddate ? new Date(post.enddate) : null;
-            const isWithinDateRange =
-                (!startDate || (postStartDate && postStartDate >= new Date(startDate))) &&
-                (!endDate || (postEndDate && postEndDate <= new Date(endDate)));
+        const postStartDate = post.startdate ? new Date(post.startdate) : null;
+        const postEndDate = post.enddate ? new Date(post.enddate) : null;
 
-            return (
-                matchesSearch && isWithinDateRange && isCSRInquiry
-            );
-        })
-        .map((post) => {
-            // Find the agent with the same ReferenceID in usersList
-            const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+        const isWithinDateRange =
+            (!startDate || (postStartDate && postStartDate >= new Date(startDate))) &&
+            (!endDate || (postEndDate && postEndDate <= new Date(endDate)));
 
-            // Find the manager with the same ReferenceID in usersList
-            const salesmanager = usersList.find((user) => user.ReferenceID === post.tsm);
+        return matchesSearch && isWithinDateRange && isCSRInquiry;
+    })
+    .map((post) => {
+        const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+        const salesmanager = usersList.find((user) => user.ReferenceID === post.tsm);
 
-            return {
-                ...post,
-                AgentFirstname: agent ? agent.Firstname : "Unknown",
-                AgentLastname: agent ? agent.Lastname : "Unknown",
-                ManagerFirstname: salesmanager ? salesmanager.Firstname : "Unknown",
-                ManagerLastname: salesmanager ? salesmanager.Lastname : "Unknown",
-            };
-        });
+        return {
+            ...post,
+            AgentFirstname: agent ? agent.Firstname : "Unknown",
+            AgentLastname: agent ? agent.Lastname : "Unknown",
+            ManagerFirstname: salesmanager ? salesmanager.Firstname : "Unknown",
+            ManagerLastname: salesmanager ? salesmanager.Lastname : "Unknown",
+        };
+    })
+    .sort((a, b) => {
+        const dateA = new Date(a.date_created).getTime();
+        const dateB = new Date(b.date_created).getTime();
+        return dateB - dateA;
+      });
+       // 🔽 Sort by date_created descending
 
     // Pagination logic
     const indexOfLastPost = currentPage * postsPerPage;

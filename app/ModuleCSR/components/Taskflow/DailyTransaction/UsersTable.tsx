@@ -28,6 +28,31 @@ const DailyTransactionTable: React.FC<DailyTransactionTableProps> = ({ posts }) 
     });
   }, [posts]);
 
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+  
+    // Use UTC getters instead of local ones to prevent timezone shifting.
+    let hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    // Convert hours to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // if hour is 0, display as 12
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+  
+    // Use toLocaleDateString with timeZone 'UTC' to format the date portion
+    const formattedDateStr = date.toLocaleDateString('en-US', {
+      timeZone: 'UTC',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  
+    // Return combined date and time string
+    return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
+  };
+
   return (
     <div className="overflow-x-auto">
       {sortedPosts.length > 0 ? (
@@ -44,6 +69,7 @@ const DailyTransactionTable: React.FC<DailyTransactionTableProps> = ({ posts }) 
               <th className="p-3 border">Agent</th>
               <th className="p-3 border">TSM</th>
               <th className="p-3 border">Time Consumed</th>
+              <th className="p-3 border">Date</th>
             </tr>
           </thead>
           <tbody>
@@ -52,15 +78,15 @@ const DailyTransactionTable: React.FC<DailyTransactionTableProps> = ({ posts }) 
                 key={post._id || `post-${index}`} // Fallback key if _id is missing
                 className="border-b hover:bg-gray-50 capitalize"
               >
-                <td className="p-3 border">{post.ticketreferencenumber || "N/A"}</td>
-                <td className="p-3 border">{post.companyname || "N/A"}</td>
+                <td className="p-3 border">{post.ticketreferencenumber || "-"}</td>
+                <td className="p-3 border">{post.companyname || "-"}</td>
                 <td className="p-3 border">
-                  {post.contact_person || "N/A"} / {post.contactnumber || "N/A"}
+                  {post.contact_person || "-"} / {post.contactnumber || "-"}
                 </td>
-                <td className="p-3 border lowercase">{post.emailaddress || "N/A"}</td>
-                <td className="p-3 border">{post.wrapup || "N/A"}</td>
-                <td className="p-3 border capitalize">{post.inquiries || "N/A"}</td>
-                <td className="p-3 border capitalize">{post.remarks || "N/A"}</td>
+                <td className="p-3 border lowercase">{post.emailaddress || "-"}</td>
+                <td className="p-3 border">{post.wrapup || "-"}</td>
+                <td className="p-3 border capitalize">{post.inquiries || "-"}</td>
+                <td className="p-3 border capitalize">{post.remarks || "-"}</td>
                 <td className="p-3 border italic capitalize">
                   {post?.AgentFirstname || ""}, {post?.AgentLastname || ""}
                 </td>
@@ -70,6 +96,7 @@ const DailyTransactionTable: React.FC<DailyTransactionTableProps> = ({ posts }) 
                 <td className="p-3 border">
                   {calculateTimeConsumed(post.startdate, post.enddate)}
                 </td>
+                <td className="p-3 border">{formatDate(post.date_created)}</td>
               </tr>
             ))}
           </tbody>
