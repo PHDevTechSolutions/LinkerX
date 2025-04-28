@@ -78,30 +78,32 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
     fetchManagers();
   }, []);
+  
 
   useEffect(() => {
-    const fetchTSM = async () => {
+    const fetchManagers = async () => {
       try {
-        const response = await fetch("/api/tsm?Role=Territory Sales Manager");
+        const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager"); 
         if (!response.ok) {
           throw new Error("Failed to fetch managers");
         }
         const data = await response.json();
-
+  
         // Use ReferenceID as value
         const options = data.map((user: any) => ({
           value: user.ReferenceID, // ReferenceID ang isesend
           label: `${user.Firstname} ${user.Lastname}`, // Pero ang nakikita sa UI ay Name
         }));
-
+  
         setTSMOptions(options);
       } catch (error) {
         console.error("Error fetching managers:", error);
       }
     };
-
-    fetchTSM();
+  
+    fetchManagers();
   }, []);
+  
 
   // Function para gumawa ng random 6-digit number
   const generateRandomNumber = () => {
@@ -190,6 +192,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="Territory Sales Manager">Territory Sales Manager</option>
             <option value="Territory Sales Associate">Territory Sales Associate</option>
             <option value="Staff">CSR Staff</option>
+            <option value="E-Commerce Staff">E-Commerce Staff</option>
           </select>
         </div>
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -199,6 +202,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="Sales">Sales Department</option>
             <option value="CSR">CSR Department</option>
             <option value="IT">IT Department</option>
+            <option value="Ecommerce">E-Commerce Department</option>
           </select>
         </div>
       </div>

@@ -192,15 +192,14 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     useEffect(() => {
         const fetchTSM = async () => {
             try {
-                const response = await fetch("/api/tsm?Role=Territory Sales Manager");
+                const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager");
                 if (!response.ok) throw new Error("Failed to fetch managers");
     
                 const data = await response.json();
-                const filteredData = data.filter((user: any) => user.Status !== "Resigned" && user.Status !== "Terminated");
     
-                const options: OptionType[] = filteredData.map((user: any) => ({
-                    value: user.ReferenceID, // Store only ReferenceID
-                    label: `${user.Firstname} ${user.Lastname}`, // Display Firstname Lastname
+                const options: OptionType[] = data.map((user: any) => ({
+                    value: user.ReferenceID,
+                    label: `${user.Firstname} ${user.Lastname}`,
                 }));
                 setSalesManagers(options);
             } catch (error) {
@@ -210,15 +209,14 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     
         const fetchTSA = async () => {
             try {
-                const response = await fetch("/api/tsa?Role=Territory Sales Associate");
+                const response = await fetch("/api/tsa?Roles=Territory Sales Associate,E-Commerce Staff");
                 if (!response.ok) throw new Error("Failed to fetch agents");
     
                 const data = await response.json();
-                const filteredData = data.filter((user: any) => user.Status !== "Resigned" && user.Status !== "Terminated");
     
-                const options: OptionType[] = filteredData.map((user: any) => ({
-                    value: user.ReferenceID, // Store only ReferenceID
-                    label: `${user.Firstname} ${user.Lastname}`, // Display Firstname Lastname
+                const options: OptionType[] = data.map((user: any) => ({
+                    value: user.ReferenceID,
+                    label: `${user.Firstname} ${user.Lastname}`,
                 }));
                 setSalesAgents(options);
             } catch (error) {
@@ -228,7 +226,8 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     
         fetchTSM();
         fetchTSA();
-    }, []);    
+    }, []);
+    
 
     return (
         <>
