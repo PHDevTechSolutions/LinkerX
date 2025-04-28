@@ -20,20 +20,20 @@ export async function GET(req: Request) {
       );
     }
 
-    const today = new Date();
-    today.setUTCHours(0, 0, 0, 0); // Start of the day UTC
-
+    // Query for CSR inquiries (without filtering by today's date)
     const inquiries = await sql`
       SELECT 
+        id, 
         date_created,
-        status,
+        activitystatus,
         csragent,
         companyname,
         ticketreferencenumber,
         typeactivity,
-        typecall
+        typecall,
+        remarks
       FROM progress 
-      WHERE csragent = ${userReferenceId} AND date_created <= ${today};
+      WHERE csragent = ${userReferenceId};
     `;
 
     return NextResponse.json({ success: true, data: inquiries }, { status: 200 });
@@ -46,4 +46,4 @@ export async function GET(req: Request) {
   }
 }
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"; // Keeps the response dynamic for real-time data
