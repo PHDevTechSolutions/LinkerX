@@ -32,7 +32,8 @@ export async function GET(req: Request) {
         typeactivity,
         typecall,
         remarks,
-        csrremarks
+        csrremarks,
+        referenceid
       FROM progress 
       WHERE csragent = ${userReferenceId};
     `;

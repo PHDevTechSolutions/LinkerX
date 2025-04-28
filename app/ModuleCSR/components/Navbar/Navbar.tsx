@@ -50,6 +50,8 @@ type NotificationData = {
   remarks: string;
   id: string;
   csrremarks: string;
+  referenceid: string;
+  fullname: string;
 }
 
 type Callback = {
@@ -232,22 +234,31 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
             return new Date(b.date_created).getTime() - new Date(a.date_created).getTime();
           });
 
-        const formattedNotificationsData: NotificationData[] = validNotifications.map((notif: any) => ({
-          _id: notif.id || notif._id,
-          id: notif.id,
-          date_created: notif.date_created,
-          activitystatus: notif.activitystatus,
-          csragent: notif.csragent,
-          companyname: notif.companyname,
-          typecall: notif.typecall,
-          typeactivity: notif.typeactivity,
-          csrremarks: notif.csrremarks,
-          ticketreferencenumber: notif.ticketreferencenumber,
-          remarks: notif.remarks || "No remarks.",
-          type: "Notification"
-        }));
+        const formattedNotificationsData: NotificationData[] = validNotifications.map((notif: any) => {
+          // Find the user associated with this referenceid
+          const user = usersList.find((user: any) => user.ReferenceID === notif.referenceid);
 
-        setNotificationData(formattedNotificationsData); // <-- Gamit na natin notificationData
+          // If user is found, concatenate Firstname and Lastname as fullname
+          const fullname = user ? `${user.Firstname} ${user.Lastname}` : "Unknown User";
+
+          return {
+            _id: notif.id || notif._id,
+            id: notif.id,
+            date_created: notif.date_created,
+            activitystatus: notif.activitystatus,
+            csragent: notif.csragent,
+            companyname: notif.companyname,
+            typecall: notif.typecall,
+            typeactivity: notif.typeactivity,
+            csrremarks: notif.csrremarks,
+            fullname,  // Replace referenceid with fullname
+            ticketreferencenumber: notif.ticketreferencenumber,
+            remarks: notif.remarks || "No remarks.",
+            type: "Notification"
+          };
+        });
+
+        setNotificationData(formattedNotificationsData); // Update state with the formatted data
       } catch (error) {
         console.error("Error fetching notifications:", error);
       }
@@ -257,7 +268,8 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     const interval = setInterval(fetchNotificationsData, 10000); // Refresh every 10 seconds
 
     return () => clearInterval(interval); // Cleanup
-  }, [userReferenceId]);
+  }, [userReferenceId, usersList]);  // Add usersList as dependency to trigger on users data change
+
 
 
 
@@ -803,11 +815,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const UpdateProgressStatus = async (progressId: string) => {
     try {
       setLoadingId(progressId); // Set the loading state
-  
+
       const progressIdAsString = progressId.toString(); // Convert to string just in case
-  
+
       console.log("Sending request to update CSR with ID:", progressIdAsString);
-  
+
       const response = await fetch("/api/ModuleCSR/Task/Progress/UpdateProgress", {
         method: "PUT",
         headers: {
@@ -818,7 +830,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           csrremarks: "Read", // Update the CSR remarks
         }),
       });
-  
+
       if (response.ok) {
         // ✅ Update csrremarks locally
         setNotificationData((prev) =>
@@ -842,7 +854,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
       setLoadingId(null); // Reset loading state
     }
   };
-  
+
 
   const UpdateEmailStatus = async (emailId: string) => {
     try {
@@ -972,9 +984,9 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
 
             const ProgressCount = notificationData.filter(
-              (notif) => notif.type === "Notification" && 
-              notif.activitystatus && 
-              notif.csrremarks !== "Read"
+              (notif) => notif.type === "Notification" &&
+                notif.activitystatus &&
+                notif.csrremarks !== "Read"
             ).length;
 
             const emailCount = emailNotifications.filter(
@@ -1044,7 +1056,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                             >
                               <p className="text-[10px] mt-5">
                                 Your <strong>{notif.companyname}</strong> ticket number: <strong>{notif.ticketreferencenumber}</strong> is currently marked as <strong>{notif.typecall}</strong>.
-                              </p> 
+                              </p>
+
+                              <p className="text-[10px] text-gray-700 mt-1">
+                                <span className="font-medium">Processed by:</span> {notif.fullname}
+                              </p>
 
                               <p className="text-[10px] text-gray-700 mt-1">
                                 <span className="font-medium">Remarks:</span> {notif.remarks}
