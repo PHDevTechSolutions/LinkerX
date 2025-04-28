@@ -31,7 +31,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
 
   useEffect(() => {
     if (bulkTransferMode) {
-      fetch("/api/tsm?Role=Territory Sales Manager")
+      fetch("/api/fetchtsm?Role=Territory Sales Manager")
         .then((res) => res.json())
         .then((data) => {
           if (Array.isArray(data)) {
@@ -47,7 +47,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
 
   useEffect(() => {
     if (bulkTransferTSAMode) {
-      fetch("/api/tsa?Role=Territory Sales Associate")
+      fetch("/api/fetchtsa?Role=Territory Sales Associate")
         .then((res) => res.json())
         .then((data) => {
           if (Array.isArray(data)) {
