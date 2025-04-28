@@ -466,6 +466,28 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 </>
             )}
 
+            {editPost ? (
+                <>
+                    <div className="flex flex-wrap -mx-4">
+                        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                            <label className="block text-xs font-bold mb-2" htmlFor="SONumber">SO Number</label>
+                            <input type="text" id="SONumber" value={SONumber || ""} onChange={(e) => setSONumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs"/>
+                        </div>
+                        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                            <label className="block text-xs font-bold mb-2" htmlFor="Amount">Amount</label>
+                            <input type="number" id="Amount" value={Amount || ""} onChange={handleAmountChange} className="w-full px-3 py-2 border rounded text-xs"/>
+                        </div>
+                        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                            <label className="block text-xs font-bold mb-2" htmlFor="QtySold">QTY Sold</label>
+                            <input type="number" id="QtySold" value={QtySold || ""} onChange={handleQtySoldChange} className="w-full px-3 py-2 border rounded text-xs"/>
+                        </div>
+                    </div>
+                </>
+            ) : (
+                // You can add alternative UI here if needed when not in edit mode
+                <></>
+            )}
+
             {Remarks === "PO Received" && (
                 <>
                     <div className="flex flex-wrap -mx-4">
@@ -596,6 +618,24 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         </div>
                     </div>
                 </>
+            )}
+            
+            {editPost ? (
+                <>
+                    <div className="flex flex-wrap -mx-4">
+                        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                            <label className="block text-xs font-bold mb-2" htmlFor="QuotationNumber">Quotation Reference Number</label>
+                            <input type="text" id="QuotationNumber" value={QuotationNumber || ""} onChange={(e) => setQuotationNumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                        </div>
+                        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                            <label className="block text-xs font-bold mb-2" htmlFor="QuotationAmount">Quotation Amount</label>
+                            <input type="number" id="QuotationAmount" value={QuotationAmount || ""} onChange={(e) => setQuotationAmount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                        </div>
+                    </div>
+                </>
+            ) : (
+                // You can add alternative UI here if needed when not in edit mode
+                <></>
             )}
 
             {Remarks === "No Stocks / Insufficient Stocks" || Remarks === "Item Not Carried" || Remarks === "Non Standard Item" ? (
