@@ -10,6 +10,7 @@ interface UsersCardProps {
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, fetchAccount }) => {
   const [updatedUser, setUpdatedUser] = useState<any[]>([]);
+  const [selectedAgent, setSelectedAgent] = useState<string>("");
 
   useEffect(() => {
     setUpdatedUser(posts);
@@ -31,8 +32,34 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
     return `${hours > 0 ? hours + "h " : ""}${minutes > 0 ? minutes + "m " : ""}${seconds}s`;
   };
 
+  // Filter users by the selected agent
+  const filteredUsers = selectedAgent
+    ? updatedUser.filter((user) => `${user.AgentFirstname} ${user.AgentLastname}` === selectedAgent)
+    : updatedUser;
+
+  // Get unique agent names for the dropdown
+  const agentNames = Array.from(
+    new Set(updatedUser.map((user) => `${user.AgentFirstname} ${user.AgentLastname}`))
+  );
+
   return (
     <div className="overflow-x-auto">
+      <div className="mb-4">
+        {/* Dropdown to filter by agent */}
+        <select
+          value={selectedAgent}
+          onChange={(e) => setSelectedAgent(e.target.value)}
+          className="w-full max-w-xs p-2 border rounded text-xs"
+        >
+          <option value="">Filter by Agent</option>
+          {agentNames.map((agent) => (
+            <option key={agent} value={agent}>
+              {agent}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <table className="bg-white border border-gray-200 text-xs">
         <thead>
           <tr className="bg-gray-100 text-left">
@@ -53,8 +80,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
           </tr>
         </thead>
         <tbody>
-          {updatedUser.length > 0 ? (
-            updatedUser.map((post) => (
+          {filteredUsers.length > 0 ? (
+            filteredUsers.map((post) => (
               <tr key={post.id} className="border-t">
                 <td className="py-2 px-4 border capitalize whitespace-nowrap ">
                   {post.AgentFirstname} {post.AgentLastname}
