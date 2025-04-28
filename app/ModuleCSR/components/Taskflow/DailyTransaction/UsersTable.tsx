@@ -105,10 +105,10 @@ const DailyTransactionTable: React.FC<DailyTransactionTableProps> = ({ posts }) 
               <p><strong>Contact:</strong> {selectedTicket.contact_person || "-"} / {selectedTicket.contactnumber || "-"}</p>
               <p><strong>Email:</strong> {selectedTicket.emailaddress || "-"}</p>
               <p><strong>Wrap Up:</strong> {selectedTicket.wrapup || "-"}</p>
-              <p><strong>Inquiry / Concern:</strong> {selectedTicket.inquiries || "-"}</p>
-              <p><strong>Remarks:</strong> {selectedTicket.remarks || "-"}</p>
-              <p><strong>Agent:</strong> {selectedTicket?.AgentFirstname || ""}, {selectedTicket?.AgentLastname || ""}</p>
-              <p><strong>TSM:</strong> {selectedTicket?.ManagerFirstname || ""}, {selectedTicket?.ManagerLastname || ""}</p>
+              <p className="capitalize"><strong>Inquiry / Concern:</strong> {selectedTicket.inquiries || "-"}</p>
+              <p className="capitalize"><strong>Remarks:</strong> {selectedTicket.remarks || "-"}</p>
+              <p className="capitalize"><strong>Agent:</strong> {selectedTicket?.AgentFirstname || ""}, {selectedTicket?.AgentLastname || ""}</p>
+              <p className="capitalize"><strong>TSM:</strong> {selectedTicket?.ManagerFirstname || ""}, {selectedTicket?.ManagerLastname || ""}</p>
               <p><strong>Time Consumed:</strong> {calculateTimeConsumed(selectedTicket.startdate, selectedTicket.enddate)}</p>
               <p><strong>Date Created:</strong> {formatDate(selectedTicket.date_created)}</p>
             </div>
