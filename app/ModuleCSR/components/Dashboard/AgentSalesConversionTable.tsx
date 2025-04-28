@@ -9,6 +9,8 @@ interface Metric {
   Status: string;
   createdAt: string;
   CustomerStatus: string;
+  TicketEndorsed: string;
+  TicketReceived: string;
 }
 
 interface AgentSalesConversionProps {
@@ -190,6 +192,21 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     }
   );
 
+  const calculateResponseTime = (TicketReceived: string, TicketEndorsed: string) => {
+    if (!TicketReceived || !TicketEndorsed) return "N/A";
+
+    const start = new Date(TicketReceived);
+    const end = new Date(TicketEndorsed);
+
+    const diffInSeconds = (end.getTime() - start.getTime()) / 1000;
+    const hours = Math.floor(diffInSeconds / 3600);
+    const minutes = Math.floor((diffInSeconds % 3600) / 60);
+    const seconds = Math.floor(diffInSeconds % 60);
+
+    return `${hours}h ${minutes}m ${seconds}s`;
+  };
+
+
   // ✅ Final Averages for % Conversion, ATU, and ATV
   return (
     <div className="overflow-x-auto max-h-screen overflow-y-auto">
@@ -212,6 +229,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
               <th className="border p-2">Sales Per (New-Non Buying)</th>
               <th className="border p-2">Sales Per (Existing Active)</th>
               <th className="border p-2">Sales Per (Existing Inactive)</th>
+              <th className="border p-2">CSR Response Time</th>
             </tr>
           </thead>
           <tbody>
@@ -240,6 +258,15 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
                       totals.totalAmount / totals.totalConversionToSale
                     );
 
+                // ✅ Calculate CSR Response Time
+                const csrResponseTime =
+                  agentMetrics.length > 0
+                    ? calculateResponseTime(
+                      agentMetrics[0].TicketReceived,
+                      agentMetrics[0].TicketEndorsed
+                    )
+                    : "N/A";
+
                 return (
                   <tr key={index} className="text-center border-t text-[10px]">
                     <td className="border p-2 whitespace-nowrap">
@@ -267,6 +294,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
                     <td className="border p-2">
                       {formatAmountWithPeso(totals.existingInactiveAmount)}
                     </td>
+                    <td className="border p-2">{csrResponseTime}</td>
                   </tr>
                 );
               })
