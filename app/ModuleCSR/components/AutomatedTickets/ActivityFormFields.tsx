@@ -194,9 +194,11 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
             try {
                 const response = await fetch("/api/tsm?Role=Territory Sales Manager");
                 if (!response.ok) throw new Error("Failed to fetch managers");
-
+    
                 const data = await response.json();
-                const options: OptionType[] = data.map((user: any) => ({
+                const filteredData = data.filter((user: any) => user.Status !== "Resigned" && user.Status !== "Terminated");
+    
+                const options: OptionType[] = filteredData.map((user: any) => ({
                     value: user.ReferenceID, // Store only ReferenceID
                     label: `${user.Firstname} ${user.Lastname}`, // Display Firstname Lastname
                 }));
@@ -205,26 +207,28 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 console.error("Error fetching managers:", error);
             }
         };
-
+    
         const fetchTSA = async () => {
             try {
                 const response = await fetch("/api/tsa?Role=Territory Sales Associate");
                 if (!response.ok) throw new Error("Failed to fetch agents");
-
+    
                 const data = await response.json();
-                const options: OptionType[] = data.map((user: any) => ({
+                const filteredData = data.filter((user: any) => user.Status !== "Resigned" && user.Status !== "Terminated");
+    
+                const options: OptionType[] = filteredData.map((user: any) => ({
                     value: user.ReferenceID, // Store only ReferenceID
                     label: `${user.Firstname} ${user.Lastname}`, // Display Firstname Lastname
                 }));
                 setSalesAgents(options);
             } catch (error) {
-                console.error("Error fetch agents:", error);
+                console.error("Error fetching agents:", error);
             }
         };
-
+    
         fetchTSM();
         fetchTSA();
-    }, []);
+    }, []);    
 
     return (
         <>

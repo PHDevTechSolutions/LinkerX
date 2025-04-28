@@ -160,6 +160,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <select id="Department" value={Department || ""} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
             <option>Select Department</option>
             <option value="Sales">Sales</option>
+            <option value="Ecommerce">E-Commerce</option>
           </select>
         </div>
       </div>

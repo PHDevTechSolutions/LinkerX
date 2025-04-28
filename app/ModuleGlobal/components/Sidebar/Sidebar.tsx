@@ -185,6 +185,8 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         { title: 'Maintenance', href: `/ModuleGlobal/ERP/Settings/Maintenance${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'API Keys', href: `/ModuleGlobal/ERP/Settings/APIKeys${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Users', href: `/ModuleGlobal/ERP/UserManagement/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Territory Sales Manager', href: `/ModuleGlobal/ERP/UserManagement/TSM${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'National Sales Manager', href: `/ModuleGlobal/ERP/UserManagement/ManagerDirectors${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {

@@ -94,9 +94,9 @@ const ListofUser: React.FC = () => {
         const matchesRole = (
             (userDetails.Role === "Super Admin" || userDetails.Role === "Admin") &&
             (post?.Role === "Manager" || post?.Role === "Admin") &&
-            post?.Department === "Sales" &&
             (userDetails.Role !== "Admin" || post?.Role !== "Super Admin")
         );
+        
 
         // Return the filtered result
         return matchesSearchTerm && matchesRole;
