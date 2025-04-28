@@ -98,6 +98,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     createdAt, setcreatedAt,
     editPost
 }) => {
+
     const [companies, setCompanies] = useState<any[]>([]);
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -197,9 +198,9 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
             try {
                 const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager");
                 if (!response.ok) throw new Error("Failed to fetch managers");
-    
+
                 const data = await response.json();
-    
+
                 const options: OptionType[] = data.map((user: any) => ({
                     value: user.ReferenceID,
                     label: `${user.Firstname} ${user.Lastname}`,
@@ -209,14 +210,14 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 console.error("Error fetching managers:", error);
             }
         };
-    
+
         const fetchTSA = async () => {
             try {
                 const response = await fetch("/api/tsa?Roles=Territory Sales Associate,E-Commerce Staff");
                 if (!response.ok) throw new Error("Failed to fetch agents");
-    
+
                 const data = await response.json();
-    
+
                 const options: OptionType[] = data.map((user: any) => ({
                     value: user.ReferenceID,
                     label: `${user.Firstname} ${user.Lastname}`,
@@ -226,11 +227,11 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 console.error("Error fetching agents:", error);
             }
         };
-    
+
         fetchTSM();
         fetchTSA();
     }, []);
-    
+
     return (
         <>
             <div className="flex flex-wrap -mx-4">
@@ -261,10 +262,24 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <input type="hidden" id="ReferenceID" value={ReferenceID || ""} onChange={(e) => setReferenceID(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" disabled />
                         <label className="block text-xs font-bold mb-2" htmlFor="CompanyName">Company Name</label>
                         {editPost ? (
-                            <input type="text" id="CompanyName" value={CompanyName} readOnly className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" />
+                            <input
+                                type="text"
+                                id="CompanyName"
+                                value={CompanyName}  // Ensure CompanyName is set as the value here
+                                onChange={(e) => setCompanyName(e.target.value)}  // Updates the CompanyName when editing
+                                className="w-full px-3 py-2 border rounded text-xs"
+                            />
                         ) : (
-                            <Select id="CompanyName" options={CompanyOptions} onChange={handleCompanyChange} className="w-full text-xs capitalize" placeholder="Select Company" isClearable />
+                            <Select
+                                id="CompanyName"
+                                options={CompanyOptions}
+                                onChange={handleCompanyChange}  // Keeps the original onChange handler for the Select component
+                                className="w-full text-xs capitalize"
+                                placeholder="Select Company"
+                                isClearable
+                            />
                         )}
+
                     </div>
                     <div className="w-full sm:w-1/2 md:w-1/3 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2" htmlFor="CustomerName">Customer Name</label>
@@ -601,14 +616,14 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </div>
                 </div>
             ) : null}
-            
+
             {Remarks !== "PO Received" && (
-            <div className="flex flex-wrap -mx-4">
-                <div className="w-full sm:w-1/1 md:w-1/1 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="Inquiries">Inquiry / Concern</label>
-                    <textarea id="Inquiries" value={Inquiries || ""} onChange={(e) => setInquiries(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={5}></textarea>
+                <div className="flex flex-wrap -mx-4">
+                    <div className="w-full sm:w-1/1 md:w-1/1 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2" htmlFor="Inquiries">Inquiry / Concern</label>
+                        <textarea id="Inquiries" value={Inquiries || ""} onChange={(e) => setInquiries(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={5}></textarea>
+                    </div>
                 </div>
-            </div>
             )}
 
             <div className="flex flex-wrap -mx-4">
