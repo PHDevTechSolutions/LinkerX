@@ -26,6 +26,7 @@ interface Notification {
   recepient: string;
   sender: string;
   remarks: string;
+  csrremarks: string;
 }
 
 interface NavbarProps {
@@ -47,6 +48,8 @@ type NotificationData = {
   typeactivity: string;
   ticketreferencenumber: string;
   remarks: string;
+  id: string;
+  csrremarks: string;
 }
 
 type Callback = {
@@ -140,7 +143,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     trackingNotifications.filter((notif) => notif.type === "Taskflow Notification" && notif.status === "Used").length,
     trackingNotifications.filter((notif) => notif.type === "DTracking Notification" && notif.TrackingStatus === "Open" && notif.status !== "Read").length,
     wrapUpNotifications.filter((notif) => notif.type === "WrapUp Notification" && notif.Status === "Endorsed" && notif.NotificationStatus !== "Read").length,
-    notificationData.filter((notif) => notif.type === "Notification" && notif.activitystatus).length
+    notificationData.filter((notif) => notif.type === "Notification" && notif.activitystatus && notif.csrremarks !== "Read").length
   ].some(count => count > 0);
 
   useEffect(() => {
@@ -206,19 +209,19 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
   useEffect(() => {
     if (!userReferenceId) return;
-  
+
     const fetchNotificationsData = async () => {
       try {
         const res = await fetch(
           `/api/ModuleCSR/Task/Progress/FetchProgress?referenceId=${userReferenceId}`
         );
         const data = await res.json();
-  
+
         if (!data.success) return;
-  
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-  
+
         const validNotifications = data.data
           .filter((notif: any) => {
             const notifDate = new Date(notif.date_created);
@@ -228,29 +231,31 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           .sort((a: any, b: any) => {
             return new Date(b.date_created).getTime() - new Date(a.date_created).getTime();
           });
-  
+
         const formattedNotificationsData: NotificationData[] = validNotifications.map((notif: any) => ({
           _id: notif.id || notif._id,
+          id: notif.id,
           date_created: notif.date_created,
           activitystatus: notif.activitystatus,
           csragent: notif.csragent,
           companyname: notif.companyname,
           typecall: notif.typecall,
           typeactivity: notif.typeactivity,
+          csrremarks: notif.csrremarks,
           ticketreferencenumber: notif.ticketreferencenumber,
           remarks: notif.remarks || "No remarks.",
           type: "Notification"
         }));
-  
+
         setNotificationData(formattedNotificationsData); // <-- Gamit na natin notificationData
       } catch (error) {
         console.error("Error fetching notifications:", error);
       }
     };
-  
+
     fetchNotificationsData();
     const interval = setInterval(fetchNotificationsData, 10000); // Refresh every 10 seconds
-  
+
     return () => clearInterval(interval); // Cleanup
   }, [userReferenceId]);
 
@@ -795,6 +800,50 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   };
 
+  const UpdateProgressStatus = async (progressId: string) => {
+    try {
+      setLoadingId(progressId); // Set the loading state
+  
+      const progressIdAsString = progressId.toString(); // Convert to string just in case
+  
+      console.log("Sending request to update CSR with ID:", progressIdAsString);
+  
+      const response = await fetch("/api/ModuleCSR/Task/Progress/UpdateProgress", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ids: [progressIdAsString], // Send ID as array
+          csrremarks: "Read", // Update the CSR remarks
+        }),
+      });
+  
+      if (response.ok) {
+        // ✅ Update csrremarks locally
+        setNotificationData((prev) =>
+          prev.map((notif) =>
+            notif.id && notif.id.toString() === progressIdAsString
+              ? { ...notif, csrremarks: "Read" }
+              : notif
+          )
+        );
+        // Remove the updated notification from the list after 1 minute
+        setNotificationData((prev) =>
+          prev.filter((notif) => notif.id && notif.id.toString() !== progressIdAsString)
+        );
+      } else {
+        const errorDetails = await response.json();
+        console.error("Error updating progress csrremarks:", errorDetails);
+      }
+    } catch (error) {
+      console.error("Error marking progress as read:", error);
+    } finally {
+      setLoadingId(null); // Reset loading state
+    }
+  };
+  
+
   const UpdateEmailStatus = async (emailId: string) => {
     try {
       setLoadingId(emailId); // Start loading with the string ID
@@ -857,15 +906,15 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
     // Format the date in UTC
     const formattedDateStr = date.toLocaleDateString('en-US', {
-        timeZone: 'UTC',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
+      timeZone: 'UTC',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
     });
 
     // Return the formatted date with time
     return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
-};
+  };
 
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
@@ -923,7 +972,9 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
 
             const ProgressCount = notificationData.filter(
-              (notif) => notif.type === "Notification" && notif.activitystatus
+              (notif) => notif.type === "Notification" && 
+              notif.activitystatus && 
+              notif.csrremarks !== "Read"
             ).length;
 
             const emailCount = emailNotifications.filter(
@@ -977,35 +1028,60 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
               {activeTab === "notifications" ? (
                 <>
-                  {notificationData.filter((notif) => notif.ticketreferencenumber).length > 0 ? (
+                  {notificationData.filter((notif) => notif.ticketreferencenumber && notif.csrremarks !== "Read").length > 0 ? (
                     <ul className="space-y-2 mb-2">
                       {notificationData
-                        .filter((notif) => notif.ticketreferencenumber)
-                        .map((notif, index) => (
-                          <li
-                            key={notif._id || index}
-                            className={`p-3 border-b rounded-md relative text-left text-xs text-gray-900 capitalize
-                              ${notif.type === "Notification" ? "bg-yellow-100" : "bg-gray-100"} hover:bg-gray-200`}
-                          >
-                            <p className="text-[10px] mt-5">
-                              Your <strong>{notif.companyname}</strong> ticket number: <strong>{notif.ticketreferencenumber}</strong> is currently marked as <strong>{notif.typecall}</strong>.
-                            </p>
+                        .filter((notif) => notif.ticketreferencenumber && notif.csrremarks !== "Read")
+                        .map((notif, index) => {
+                          const notifId = notif._id || notif.id || index; // Fallback para sure may value
+                          const notifIdStr = notifId.toString(); // Safe kasi fallback na
 
-                            <p className="text-[10px] text-gray-700 mt-1">
-                              <span className="font-medium">Remarks:</span> {notif.remarks}
-                            </p>
+                          return (
+                            <li
+                              key={notifIdStr}
+                              className={`p-3 border-b rounded-md relative text-left text-xs text-gray-900 capitalize
+                                ${notif.type === "Notification" ? "bg-yellow-100" : "bg-gray-100"} hover:bg-gray-200`}
+                            >
+                              <p className="text-[10px] mt-5">
+                                Your <strong>{notif.companyname}</strong> ticket number: <strong>{notif.ticketreferencenumber}</strong> is currently marked as <strong>{notif.typecall}</strong>.
+                              </p> 
 
-                            {notif.date_created && (
-                              <span className="text-[8px] mt-1 block text-gray-500">
-                                {formatDate(new Date(notif.date_created).getTime())}
-                              </span>
-                            )}
-                          </li>
-                        ))}
+                              <p className="text-[10px] text-gray-700 mt-1">
+                                <span className="font-medium">Remarks:</span> {notif.remarks}
+                              </p>
+
+                              {notif.date_created && (
+                                <span className="text-[8px] mt-1 block text-gray-500">
+                                  {formatDate(new Date(notif.date_created).getTime())}
+                                </span>
+                              )}
+
+                              <button
+                                onClick={() => UpdateProgressStatus(notif.id.toString())}
+                                disabled={loadingId === notif.id.toString()}
+                                className={`text-[9px] mb-2 cursor-pointer absolute top-2 right-2 ${notif.csrremarks === "Read"
+                                  ? "text-green-600 font-bold"
+                                  : loadingId === notif.id.toString()
+                                    ? "text-gray-500 cursor-not-allowed"
+                                    : "text-black hover:text-blue-800"
+                                  }`}
+                              >
+                                {loadingId === notif.id.toString()
+                                  ? "Loading..."
+                                  : notif.csrremarks === "Read"
+                                    ? "Read"
+                                    : "Mark as Read"
+                                }
+                              </button>
+
+                            </li>
+                          );
+                        })}
                     </ul>
                   ) : (
                     <p className="text-xs text-gray-500 text-center"></p>
                   )}
+
 
                   {notifications.filter((notif) => notif.status === "Used").length > 0 ? (
                     <ul className="space-y-2">

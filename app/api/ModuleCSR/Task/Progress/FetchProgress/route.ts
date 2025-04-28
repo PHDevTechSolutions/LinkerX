@@ -31,7 +31,8 @@ export async function GET(req: Request) {
         ticketreferencenumber,
         typeactivity,
         typecall,
-        remarks
+        remarks,
+        csrremarks
       FROM progress 
       WHERE csragent = ${userReferenceId};
     `;
