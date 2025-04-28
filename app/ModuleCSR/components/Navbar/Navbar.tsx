@@ -842,6 +842,31 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   };
 
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+
+    // Use UTC getters to prevent time zone shifting
+    let hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // if hour is 0, display as 12
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+
+    // Format the date in UTC
+    const formattedDateStr = date.toLocaleDateString('en-US', {
+        timeZone: 'UTC',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
+
+    // Return the formatted date with time
+    return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
+};
+
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center">
@@ -972,7 +997,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
                             {notif.date_created && (
                               <span className="text-[8px] mt-1 block text-gray-500">
-                                {new Date(notif.date_created).toLocaleString()}
+                                {formatDate(new Date(notif.date_created).getTime())}
                               </span>
                             )}
                           </li>
