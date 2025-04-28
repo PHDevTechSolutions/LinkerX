@@ -61,6 +61,8 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
 
     const [SONumber, setSONumber] = useState(editPost ? editPost.SONumber : "");
     const [PONumber, setPONumber] = useState(editPost ? editPost.PONumber : "");
+    const [QuotationNumber, setQuotationNumber] = useState(editPost ? editPost.QuotationNumber: "");
+    const [QuotationAmount, setQuotationAmount] = useState(editPost ? editPost.QuotationAmount : "");
     const [SODate, setSODate] = useState(editPost ? editPost.SODate : "");
     const [PaymentTerms, setPaymentTerms] = useState(editPost ? editPost.PaymentTerms : "");
     const [PaymentDate, setPaymentDate] = useState(editPost ? editPost.PaymentDate : "");
@@ -287,6 +289,10 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
                     setSONumber={setSONumber}
                     PONumber={PONumber}
                     setPONumber={setPONumber}
+                    QuotationNumber={QuotationNumber}
+                    setQuotationNumber={setQuotationNumber}
+                    QuotationAmount={QuotationAmount}
+                    setQuotationAmount={setQuotationAmount}
                     SODate={SODate}
                     setSODate={setSODate}
                     PaymentTerms={PaymentTerms}
@@ -307,7 +313,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
                 />
                 <div className="flex justify-between">
                     <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded text-xs">{editPost ? "Update" : "Submit"}</button>
-                    <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs" onClick={onCancel}>Cancel</button>
+                    <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs" onClick={onCancel}>Back</button>
                 </div>
             </form>
             <ToastContainer className="text-xs" autoClose={1000} />

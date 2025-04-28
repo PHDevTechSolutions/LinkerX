@@ -141,7 +141,7 @@ const AddTracking: React.FC<AddTrackingProps> = ({ userDetails, onCancel, refres
                 />
                 <div className="flex justify-between">
                     <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded text-xs">{editPost ? "Update" : "Submit"}</button>
-                    <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs" onClick={onCancel}>Cancel</button>
+                    <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs" onClick={onCancel}>Back</button>
                 </div>
             </form>
             <ToastContainer className="text-xs" autoClose={1000} />

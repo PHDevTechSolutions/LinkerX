@@ -127,13 +127,14 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
     useEffect(() => {
         const fetchTSM = async () => {
             try {
-                const response = await fetch("/api/tsm?Role=Territory Sales Manager");
+                const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager");
                 if (!response.ok) throw new Error("Failed to fetch managers");
 
                 const data = await response.json();
+
                 const options: OptionType[] = data.map((user: any) => ({
-                    value: `${user.Firstname} ${user.Lastname}`, // Store only ReferenceID
-                    label: `${user.Firstname} ${user.Lastname}`, // Display Firstname Lastname
+                    value: user.ReferenceID,
+                    label: `${user.Firstname} ${user.Lastname}`,
                 }));
                 setSalesManagers(options);
             } catch (error) {
@@ -143,13 +144,14 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
 
         const fetchTSA = async () => {
             try {
-                const response = await fetch("/api/tsa?Role=Territory Sales Associate");
+                const response = await fetch("/api/tsa?Roles=Territory Sales Associate,E-Commerce Staff");
                 if (!response.ok) throw new Error("Failed to fetch agents");
 
                 const data = await response.json();
+
                 const options: OptionType[] = data.map((user: any) => ({
-                    value: `${user.Firstname} ${user.Lastname}`, // Store Firstname Lastname as value
-                    label: `${user.Firstname} ${user.Lastname}`, // Display Firstname Lastname
+                    value: user.ReferenceID,
+                    label: `${user.Firstname} ${user.Lastname}`,
                 }));
                 setSalesAgents(options);
             } catch (error) {
@@ -159,7 +161,6 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
 
         fetchTSM();
         fetchTSA();
-
     }, []);
 
     return (
@@ -241,7 +242,7 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
                         <option value="Engineering">Engineering</option>
                         <option value="Human Resources">Human Resources</option>
                         <option value="Marketing">Marketing</option>
-                        <option value="Purchasing">Purchasing</option>
+                        <option value="Procurement">Procurement</option>
                         <option value="Sales">Sales</option>
                         <option value="Warehouse">Warehouse</option>
                     </select>

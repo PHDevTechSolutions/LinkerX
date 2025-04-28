@@ -51,6 +51,8 @@ interface FormFieldsProps {
     // PO Received Hidden Fields
     SONumber: string; setSONumber: (value: string) => void;
     PONumber: string; setPONumber: (value: string) => void;
+    QuotationNumber: string; setQuotationNumber: (value: string) => void;
+    QuotationAmount: string; setQuotationAmount: (value: string) => void;
     SODate: string; setSODate: (value: string) => void;
     PaymentTerms: string; setPaymentTerms: (value: string) => void;
     PaymentDate: string; setPaymentDate: (value: string) => void;
@@ -90,6 +92,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     Traffic, setTraffic, Inquiries, setInquiries, Department, setDepartment,
 
     SONumber, setSONumber, PONumber, setPONumber, SODate, setSODate, PaymentTerms, setPaymentTerms,
+    QuotationNumber, setQuotationNumber, QuotationAmount, setQuotationAmount,
     PaymentDate, setPaymentDate, DeliveryDate, setDeliveryDate, POStatus, setPOStatus, POSource, setPOSource,
 
     createdAt, setcreatedAt,
@@ -228,7 +231,6 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
         fetchTSA();
     }, []);
     
-
     return (
         <>
             <div className="flex flex-wrap -mx-4">
@@ -357,13 +359,11 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <option value="After Sales">After Sales</option>
                         <option value="Customer Complaint">Customer Complaint</option>
                         <option value="Customer Feedback/Recommendation">Customer Feedback/Recommendation</option>
-                        <option value="Job Inquiry">Job Inquiry</option>
                         <option value="Job Applicants">Job Applicants</option>
                         <option value="Supplier/Vendor Product Offer">Supplier/Vendor Product Offer</option>
                         <option value="Follow Up Non-Sales">Follow Up Non-Sales</option>
                         <option value="Internal Whistle Blower">Internal Whistle Blower</option>
                         <option value="Threats/Extortion/Intimidation">Threats/Extortion/Intimidation</option>
-                        <option value="Prank Call">Prank Call</option>
                         <option value="Supplier Accreditation Request">Supplier Accreditation Request</option>
                         <option value="Internal Concern">Internal Concern</option>
                         <option value="Others">Others</option>
@@ -384,7 +384,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <option value="Word of Mouth">Word of Mouth</option>
                         <option value="Quotation Docs">Quotation Docs</option>
                         <option value="Google Searcj">Google Search</option>
-                        <option value="Email Blast">Email Blast</option>
+                        <option value="Site Visit">Site Visit</option>
                         <option value="Agent Call">Agent Call</option>
                         <option value="Catalogue">Catalogue</option>
                         <option value="Shopee">Shopee</option>
@@ -392,8 +392,9 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <option value="Tiktok">Tiktok</option>
                         <option value="WorldBex">Worldbex</option>
                         <option value="PhilConstruct">PhilConstruct</option>
-                        <option value="Calendar">Calendar</option>
+                        <option value="Conex">Conex</option>
                         <option value="Product Demo">Product Demo</option>
+
                     </select>
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
@@ -489,7 +490,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                             <input type="datetime-local" id="DeliveryDate" value={DeliveryDate || ""} onChange={(e) => setDeliveryDate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                         </div>
                         <div className="w-full sm:w-1/1 md:w-1/1 px-4 mb-4">
-                            <label className="block text-xs font-bold mb-2" htmlFor="POStatus">PO Status</label>
+                            <label className="block text-xs font-bold mb-2" htmlFor="POStatus">Remarks</label>
                             <textarea id="POStatus" value={POStatus || ""} onChange={(e) => setPOStatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" rows={5} />
                         </div>
                     </div>
@@ -505,7 +506,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <option value="Engineering">Engineering</option>
                         <option value="Human Resources">Human Resources</option>
                         <option value="Marketing">Marketing</option>
-                        <option value="Purchasing">Purchasing</option>
+                        <option value="Procurement">Procurement</option>
                         <option value="Sales Department">Sales Department</option>
                         <option value="Warehouse">Warehouse</option>
                     </select>
@@ -567,6 +568,21 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 </div>
             </div>
 
+            {Remarks === "Quotation For Approval" && (
+                <>
+                    <div className="flex flex-wrap -mx-4">
+                        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                            <label className="block text-xs font-bold mb-2" htmlFor="QuotationNumber">Quotation Reference Number</label>
+                            <input type="text" id="QuotationNumber" value={QuotationNumber || ""} onChange={(e) => setQuotationNumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                        </div>
+                        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                            <label className="block text-xs font-bold mb-2" htmlFor="QuotationAmount">Quotation Amount</label>
+                            <input type="number" id="QuotationAmount" value={QuotationAmount || ""} onChange={(e) => setQuotationAmount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                        </div>
+                    </div>
+                </>
+            )}
+
             {Remarks === "No Stocks / Insufficient Stocks" || Remarks === "Item Not Carried" || Remarks === "Non Standard Item" ? (
                 <div className="flex flex-wrap -mx-4">
                     <div className="w-full sm:w-1/1 md:w-1/2 px-4 mb-4">
@@ -585,13 +601,15 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </div>
                 </div>
             ) : null}
-
+            
+            {Remarks !== "PO Received" && (
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/1 md:w-1/1 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="Inquiries">Inquiry / Concern</label>
-                    <textarea id="Inquiries" value={Inquiries || ""} onChange={(e) => setInquiries(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" rows={5}></textarea>
+                    <textarea id="Inquiries" value={Inquiries || ""} onChange={(e) => setInquiries(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={5}></textarea>
                 </div>
             </div>
+            )}
 
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">

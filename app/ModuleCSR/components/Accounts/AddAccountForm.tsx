@@ -91,7 +91,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ onCancel, refreshPosts,
             {editPost ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
             {editPost ? "Update" : "Submit"}
           </button>
-          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} />Cancel</button>
+          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} />Back</button>
         </div>
       </form>
       <ToastContainer className="text-xs" autoClose={1000} />

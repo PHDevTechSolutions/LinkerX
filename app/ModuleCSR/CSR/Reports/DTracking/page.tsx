@@ -7,9 +7,8 @@ import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 import AddTracking from "../../../components/Reports/DTracking/AddTracking";
-import SearchFilters from "../../../components/Reports/ReceivedPO/SearchFilters";
+import SearchFilters from "../../../components/Reports/DTracking/SearchFilters";
 import DTrackingTable from "../../../components/Reports/DTracking/DTrackingTable";
-import Pagination from "../../../components/Reports/DTracking/Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { CiCirclePlus, CiExport } from "react-icons/ci";
@@ -19,8 +18,7 @@ const ReceivedPO: React.FC = () => {
     const [editPost, setEditPost] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(10);
+  
     const [startDate, setStartDate] = useState("");  // Start date for filtering
     const [endDate, setEndDate] = useState("");  // End date for filtering
 
@@ -127,12 +125,6 @@ const ReceivedPO: React.FC = () => {
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Sorted by createdAt
 
 
-    // Pagination logic
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
-    const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
-
     // Edit post function
     const handleEdit = (post: any) => {
         setEditPost(post);
@@ -221,8 +213,6 @@ const ReceivedPO: React.FC = () => {
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
-                                                postsPerPage={postsPerPage}
-                                                setPostsPerPage={setPostsPerPage}
                                                 startDate={startDate}
                                                 setStartDate={setStartDate}
                                                 endDate={endDate}
@@ -230,17 +220,9 @@ const ReceivedPO: React.FC = () => {
                                             />
                                             <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"><CiExport size={20} /> Export to Excel</button>
                                             <DTrackingTable
-                                                posts={currentPosts}
+                                                posts={filteredAccounts}
                                                 handleEdit={handleEdit}
                                             />
-                                            <Pagination
-                                                currentPage={currentPage}
-                                                totalPages={totalPages}
-                                                setCurrentPage={setCurrentPage}
-                                            />
-                                            <div className="text-xs mt-2">
-                                                Showing {indexOfFirstPost + 1} to {Math.min(indexOfLastPost, filteredAccounts.length)} of {filteredAccounts.length} entries
-                                            </div>
                                         </div>
                                     </>
                                 )}

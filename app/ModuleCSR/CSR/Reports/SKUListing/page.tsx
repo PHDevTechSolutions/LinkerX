@@ -9,10 +9,9 @@ import UserFetcher from "../../../components/User/UserFetcher";
 import AddSkuListing from "../../../components/Reports/SKUListing/AddSkuListing";
 import SearchFilters from "../../../components/Reports/SKUListing/SearchFilters";
 import SkuTable from "../../../components/Reports/SKUListing/SkuTable";
-import Pagination from "../../../components/Reports/SKUListing/Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { CiExport  } from "react-icons/ci";
+import { CiExport } from "react-icons/ci";
 
 const SKUListing: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -20,7 +19,6 @@ const SKUListing: React.FC = () => {
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(10);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
     const [startDate, setStartDate] = useState("");  // Start date for filtering
@@ -43,25 +41,29 @@ const SKUListing: React.FC = () => {
     }, []);
 
     // Filter accounts based on search term and city address
-    const filteredAccounts = posts.filter((post) => {
-        const isSearchMatch =
-            post.Remarks && typeof post.Remarks === "string"
-                ? post.Remarks.toLowerCase().includes(searchTerm.toLowerCase())
-                : false;
-    
-        const isDateInRange =
-            (!startDate || new Date(post.createdAt) >= new Date(startDate)) &&
-            (!endDate || new Date(post.createdAt) <= new Date(endDate));
-    
-        return isSearchMatch && isDateInRange;
-    });
-    
+    const filteredAccounts = posts
+        .filter((post) => {
+            const remarks =
+                post.Remarks && typeof post.Remarks === "string" ? post.Remarks.toLowerCase() : "";
 
-    // Pagination logic
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
-    const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
+            const isRemarksMatch =
+                remarks === "no stocks / insufficient stocks" ||
+                remarks === "item not carried" ||
+                remarks === "non standard item";
+
+            const isDateInRange =
+                (!startDate || new Date(post.createdAt) >= new Date(startDate)) &&
+                (!endDate || new Date(post.createdAt) <= new Date(endDate));
+
+            return isRemarksMatch && isDateInRange;
+        })
+        .sort((a, b) => {
+            const dateA = new Date(a.createdAt);
+            const dateB = new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime(); // Descending order (latest date first)
+        });
+
+
 
     // Edit post function
     const handleEdit = (post: any) => {
@@ -167,8 +169,6 @@ const SKUListing: React.FC = () => {
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
-                                                postsPerPage={postsPerPage}
-                                                setPostsPerPage={setPostsPerPage}
                                                 startDate={startDate}
                                                 setStartDate={setStartDate}
                                                 endDate={endDate}
@@ -176,20 +176,12 @@ const SKUListing: React.FC = () => {
                                             />
                                             <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"><CiExport size={20} /> Export to Excel</button>
                                             <SkuTable
-                                                posts={currentPosts}
+                                                posts={filteredAccounts}
                                                 handleEdit={handleEdit}
                                                 handleDelete={confirmDelete}
                                                 setPosts={setPosts}
                                                 Role={user ? user.Role : ""}
                                             />
-                                            <Pagination
-                                                currentPage={currentPage}
-                                                totalPages={totalPages}
-                                                setCurrentPage={setCurrentPage}
-                                            />
-                                            <div className="text-xs mt-2">
-                                                Showing {indexOfFirstPost + 1} to {Math.min(indexOfLastPost, filteredAccounts.length)} of {filteredAccounts.length} entries
-                                            </div>
                                         </div>
                                     </>
                                 )}
@@ -218,3 +210,4 @@ const SKUListing: React.FC = () => {
 };
 
 export default SKUListing;
+
