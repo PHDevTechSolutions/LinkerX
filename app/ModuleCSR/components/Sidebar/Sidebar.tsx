@@ -65,7 +65,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
 
   const menuItems = [
     {
-      title: 'CSR Inquiries',
+      title: 'Inquiries',
       icon: CiInboxIn,
       subItems: [
         { title: 'Automated Tickets', href: `/ModuleCSR/CSR/AutomatedTickets/Tickets${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
