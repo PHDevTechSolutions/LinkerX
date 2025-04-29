@@ -360,6 +360,14 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                     className="w-4 h-4 text-blue-600"
                   />
                 )}
+                {bulkChangeMode && (
+                  <input
+                    type="checkbox"
+                    checked={selectedUsers.has(post.id)}
+                    onChange={() => handleSelectUser(post.id)}
+                    className="w-4 h-4 text-blue-600"
+                  />
+                )}
                 {bulkTransferMode && (
                   <input
                     type="checkbox"

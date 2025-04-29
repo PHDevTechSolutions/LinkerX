@@ -216,28 +216,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
     }
   }, [selectedUsers, newTypeClient]);
 
-  const handleBulkEditStatus = useCallback(async () => {
-    if (selectedUsers.size === 0 || !newStatus) return;
-    try {
-      const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/Bulk-Edit`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userIds: Array.from(selectedUsers), status: newStatus }),
-      });
-      if (response.ok) {
-        setUpdatedUser((prev) => prev.map((user) =>
-          selectedUsers.has(user.id) ? { ...user, status: newStatus } : user
-        ));
-        setSelectedUsers(new Set());
-        setBulkEditMode(false);
-      } else {
-        console.error("Failed to update users");
-      }
-    } catch (error) {
-      console.error("Error updating users:", error);
-    }
-  }, [selectedUsers, newStatus]);
-
   const handleBulkRemove = useCallback(async () => {
     if (selectedUsers.size === 0 || !newStatus || !newRemarks) return;
     try {
@@ -332,11 +310,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
           {bulkEditMode ? "Cancel Bulk Edit" : "Bulk Edit"}
         </button>
 
-        <button onClick={toggleBulkEditStatusMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-900 hover:text-white">
-          <CiEdit size={16} />
-          {bulkEditStatusMode ? "Cancel Bulk Status" : "Bulk Change Status"}
-        </button>
-
         <button onClick={toggleBulkRemoveMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-900 hover:text-white">
           <CiTrash size={16} />
           {bulkRemoveMode ? "Cancel Remove Edit" : "Bulk Remove"}
@@ -349,7 +322,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
       </div>
 
       {/* Bulk Action Panel */}
-      {(bulkDeleteMode || bulkEditMode || bulkEditStatusMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
+      {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
         <div className="mb-4 p-3 bg-gray-100 rounded-md text-xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -391,16 +364,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                   <option value="Transfer Account">Transfer Account</option>
                 </select>
                 <button onClick={handleBulkEdit} className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs" disabled={!newTypeClient}>Apply Changes</button>
-              </div>
-            )}
-
-            {bulkEditStatusMode && (
-              <div className="flex items-center gap-2">
-                <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="px-2 py-1 border rounded-md">
-                  <option value="">Select Status</option>
-                  <option value="Used">Used</option>
-                </select>
-                <button onClick={handleBulkEditStatus} className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs" disabled={!newStatus}>Apply Changes</button>
               </div>
             )}
 
