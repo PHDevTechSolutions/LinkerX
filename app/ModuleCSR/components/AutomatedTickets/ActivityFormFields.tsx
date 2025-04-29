@@ -600,7 +600,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     />
                 </div>
                 )}
-
+                {WrapUp !== "Job Applicants" && (
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2 bg-white-300 px-2 py-1" htmlFor="Remarks">Remarks</label>
                     <select id="Remarks" value={Remarks || ""} onChange={(e) => setRemarks(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" >
@@ -622,6 +622,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <option value="Sold">Sold</option>
                     </select>
                 </div>
+                )}
             </div>
 
             {Remarks === "Quotation For Approval" && (
@@ -675,8 +676,8 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </div>
                 </div>
             ) : null}
-
-            {Remarks !== "PO Received" && (
+            
+            {(Remarks !== "PO Received" && WrapUp !== "Job Applicants") && (
                 <div className="flex flex-wrap -mx-4">
                     <div className="w-full sm:w-1/1 md:w-1/1 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2" htmlFor="Inquiries">Inquiry / Concern</label>
@@ -684,7 +685,8 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </div>
                 </div>
             )}
-
+            
+            {WrapUp !== "Job Applicants" && (
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="TsmAcknowledgeDate">TSM Acknowledge Date</label>
@@ -727,6 +729,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     />
                 </div>
             </div>
+            )}
         </>
     );
 };
