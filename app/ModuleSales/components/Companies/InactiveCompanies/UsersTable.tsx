@@ -63,6 +63,31 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
         });
     }, []);
 
+    const formatDate = (timestamp: number) => {
+        const date = new Date(timestamp);
+
+        // Use UTC getters instead of local ones to prevent timezone shifting.
+        let hours = date.getUTCHours();
+        const minutes = date.getUTCMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+
+        // Convert hours to 12-hour format
+        hours = hours % 12;
+        hours = hours ? hours : 12; // if hour is 0, display as 12
+        const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+
+        // Use toLocaleDateString with timeZone 'UTC' to format the date portion
+        const formattedDateStr = date.toLocaleDateString('en-US', {
+            timeZone: 'UTC',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        });
+
+        // Return combined date and time string
+        return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
+    };
+
     return (
         <div className="mb-4">
             {/* Bulk Action Buttons */}
@@ -102,8 +127,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
             )}
 
             {/* Users Table */}
-            <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border border-gray-200 text-xs">
+            <div className="mb-4 overflow-x-auto">
+                <table className="w-full bg-white border border-gray-200 text-xs overflow-x-auto">
                     <thead>
                         <tr className="bg-gray-100">
                             <th className="p-2 border"></th>
@@ -115,26 +140,30 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                             <th className="p-2 border">Area</th>
                             <th className="p-2 border">Type of Client</th>
                             <th className="p-2 border">Status</th>
+                            <th className="p-2 border">Date Posted</th>
+                            <th className="p-2 border">Date Updated</th>
                             <th className="p-2 border">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {updatedUser.length > 0 ? (
                             updatedUser.map((post) => (
-                                <tr key={post.id} className="hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02]">
+                                <tr key={post.id} className="hover:bg-gray-50 capitalize">
                                     <td className="p-2 border text-center">
                                         {(bulkEditMode) && (
                                             <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4" />
                                         )}
                                     </td>
-                                    <td className="p-2 border">{post.companyname}</td>
-                                    <td className="p-2 border">{post.contactperson}</td>
-                                    <td className="p-2 border">{post.contactnumber}</td>
-                                    <td className="p-2 border lowercase">{post.emailaddress}</td>
-                                    <td className="p-2 border">{post.address}</td>
-                                    <td className="p-2 border">{post.area}</td>
-                                    <td className="p-2 border">{post.typeclient}</td>
-                                    <td className="p-2 border">{post.status}</td>
+                                    <td className="p-2 border whitespace-nowrap">{post.companyname}</td>
+                                    <td className="p-2 border whitespace-nowrap">{post.contactperson}</td>
+                                    <td className="p-2 border whitespace-nowrap">{post.contactnumber}</td>
+                                    <td className="p-2 border lowercase whitespace-nowrap">{post.emailaddress}</td>
+                                    <td className="p-2 border whitespace-nowrap">{post.address}</td>
+                                    <td className="p-2 border whitespace-nowrap">{post.area}</td>
+                                    <td className="p-2 border whitespace-nowrap">{post.typeclient}</td>
+                                    <td className="p-2 border whitespace-nowrap">{post.status}</td>
+                                    <td className="p-2 border whitespace-nowrap">{formatDate(post.date_created)}</td>
+                                    <td className="p-2 border whitespace-nowrap">{formatDate(post.date_updated)}</td>
                                     <td className="p-2 border">
                                         <Menu as="div" className="relative inline-block align-item-center text-center">
                                             <div>
