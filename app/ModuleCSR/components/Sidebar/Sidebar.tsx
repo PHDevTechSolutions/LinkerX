@@ -79,13 +79,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         { title: 'List of Accounts', href: `/ModuleCSR/CSR/Accounts/AccountList${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
-    {
-      title: 'Email',
-      icon: CiMail,
-      subItems: [
-        { title: 'Compose Email', href: `/ModuleCSR/CSR/Email/ComposeEmail${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
+    //{
+      //title: 'Email',
+      //icon: CiMail,
+      //subItems: [
+        //{ title: 'Compose Email', href: `/ModuleCSR/CSR/Email/ComposeEmail${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      //],
+    //},
     {
       title: 'Reports',
       icon: CiWavePulse1,
