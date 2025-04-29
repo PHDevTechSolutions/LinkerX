@@ -418,7 +418,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
 
                                     return (
                                         <tr key={index} className="text-center border-t text-[10px]">
-                                            <td className="border p-2 whitespace-nowrap p-2">
+                                            <td className="border p-2 whitespace-nowrap p-2 uppercase">
                                                 {getSalesAgentName(agentMetrics[0].SalesAgent)}
                                             </td>
                                             <td className="border p-2 whitespace-nowrap">{totals.sales}</td>

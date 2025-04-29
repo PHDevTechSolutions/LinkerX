@@ -269,7 +269,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
 
                 return (
                   <tr key={index} className="text-center border-t text-[10px]">
-                    <td className="border p-2 whitespace-nowrap">
+                    <td className="border p-2 whitespace-nowrap uppercase">
                       {referenceIdToNameMap[refId] || "Unknown"}
                     </td>
                     <td className="border p-2">{totals.sales}</td>
