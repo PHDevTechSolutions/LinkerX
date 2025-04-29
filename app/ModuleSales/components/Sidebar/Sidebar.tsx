@@ -21,10 +21,12 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const router = useRouter();
   const [userNotifications, setUserNotifications] = useState<any>(null);
   const [inactiveAccount, setInactiveAccount] = useState<any>(null);
+  const [deleteAccount, setDeleteAccount] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   const [pendingInquiryCount, setPendingInquiryCount] = useState(0);
   const [pendingInactiveCount, setPendingInactiveCount] = useState(0);
+  const [pendingDeleteCount, setPendingDeleteCount] = useState(0);
 
   // Retrieve the selected avatar from localStorage or default if not set
   const selectedAvatar = localStorage.getItem('selectedAvatar') || `https://robohash.org/${userDetails.Firstname}${userDetails.Lastname}?size=200x200`;
@@ -141,7 +143,41 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
     if (userDetails.ReferenceID) fetchAccountInactive();
   }, [userDetails.ReferenceID]);
 
-
+  useEffect(() => {
+    const fetchAccountDeletion = async () => {
+      try {
+        // Fetch accounts and pass ReferenceID from MongoDB
+        const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchDeleteCount?referenceId=${userDetails.ReferenceID}`);
+  
+        if (!response.ok) throw new Error("Failed to fetch accounts for deletion or removal");
+  
+        const result = await response.json();
+  
+        if (!result.success) {
+          console.error(result.error);
+          return;
+        }
+  
+        const data = result.data; // Access the accounts array
+        setDeleteAccount(data); // Set the fetched data to state
+  
+        // Count accounts where status is "For Deletion" or "Remove"
+        const deleteCount = data.filter(
+          (account: any) => 
+            account.status?.toLowerCase() === "for deletion" || 
+            account.status?.toLowerCase() === "remove"
+        ).length;
+  
+        setPendingDeleteCount(deleteCount); // Update state with the count
+      } catch (error) {
+        console.error("Error fetching accounts for deletion or removal:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    if (userDetails.ReferenceID) fetchAccountDeletion();
+  }, [userDetails.ReferenceID]);
 
   const menuItems = [
     {
@@ -414,7 +450,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
                 {item.title === 'Task' && pendingInquiryCount > 0 && (
                   <span className="ml-2 text-[8px] bg-red-700 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInquiryCount}</span>
                 )}
-                {item.title === 'My Companies' && pendingInactiveCount > 0 && (
+                {item.title === 'My Companies' && pendingInactiveCount && pendingDeleteCount> 0 && (
                   <span className="ml-2 text-[8px] bg-red-700 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount}</span>
                 )}
                 {!collapsed && (
@@ -442,6 +478,9 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
                         )}
                         {subItem.title === 'Inactive Companies' && pendingInactiveCount > 0 && (
                           <span className="ml-2 text-[8px] bg-red-700 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount}</span>
+                        )}
+                        {subItem.title === 'For Deletion' && pendingDeleteCount > 0 && (
+                          <span className="ml-2 text-[8px] bg-red-700 rounded-lg m-1 pl-2 pr-2 text-white">{pendingDeleteCount}</span>
                         )}
                       </Link>
                     ))}
