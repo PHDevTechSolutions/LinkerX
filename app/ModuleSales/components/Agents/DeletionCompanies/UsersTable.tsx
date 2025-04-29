@@ -10,6 +10,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
   const [updatedUser, setUpdatedUser] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [usersList, setUsersList] = useState<any[]>([]);
 
   useEffect(() => {
     setUpdatedUser(posts);
@@ -53,6 +54,25 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
     }
   };
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("/api/getUsers"); // API endpoint mo
+        const data = await response.json();
+        setUsersList(data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const getFullname = (referenceId: string) => {
+    const user = usersList.find((user: any) => user.ReferenceID === referenceId);
+    return user ? `${user.Firstname} ${user.Lastname}` : "Unknown User";
+  };
+
   return (
     <div className="mb-4">
       {/* Modal Confirmation */}
@@ -86,6 +106,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
         <table className="min-w-full bg-white border border-gray-200 text-xs">
           <thead>
             <tr className="bg-gray-100 text-left">
+              <th className="p-2 border">Agent </th>
               <th className="p-2 border">Company Name</th>
               <th className="p-2 border">Contact Person</th>
               <th className="p-2 border">Contact Number</th>
@@ -102,6 +123,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
             {updatedUser.length > 0 ? (
               updatedUser.map((post) => (
                 <tr key={post.id} className="hover:bg-gray-50 capitalize">
+                  <td className="p-2 border">{getFullname(post.referenceid)}</td>
                   <td className="p-2 border">{post.companyname}</td>
                   <td className="p-2 border">{post.contactperson}</td>
                   <td className="p-2 border">{post.contactnumber}</td>
@@ -111,15 +133,14 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                   <td className="p-2 border">{post.typeclient}</td>
                   <td className="p-2 border">
                     <span
-                      className={`px-2 py-1 text-[8px] font-semibold rounded-full ${
-                        post.status === "For Deletion"
+                      className={`px-2 py-1 text-[8px] font-semibold rounded-full ${post.status === "For Deletion"
                           ? "bg-yellow-400 text-gray-900"
                           : post.status === "Remove"
-                          ? "bg-gray-100 text-gray-700"
-                          : post.status === "Approve For Deletion"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-green-100 text-green-700"
-                      }`}
+                            ? "bg-gray-100 text-gray-700"
+                            : post.status === "Approve For Deletion"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-green-100 text-green-700"
+                        }`}
                     >
                       {post.status}
                     </span>
