@@ -88,13 +88,15 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="Manager">Manager</option>
             <option value="Territory Sales Manager">Territory Sales Manager</option>
             <option value="Territory Sales Associate">Territory Sales Associate</option>
+            <option value="HR Manager">HR Manager</option>
           </select>
         </div>
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Role">Department</label>
           <select id="Department" value={Department || ""} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
             <option>Select Department</option>
-            <option value="Sales">Sales</option>
+            <option value="Sales">Sales Department</option>
+            <option value="HR">HR Department</option>
           </select>
         </div>
         </div>

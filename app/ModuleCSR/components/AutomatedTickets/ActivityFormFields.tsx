@@ -196,7 +196,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     useEffect(() => {
         const fetchTSM = async () => {
             try {
-                const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager");
+                const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager, HR Manager");
                 if (!response.ok) throw new Error("Failed to fetch managers");
 
                 const data = await response.json();
@@ -580,7 +580,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     />
                 </div>
 
-                {/* Sales Agent Dropdown */}
+                {WrapUp !== "Job Applicants" && (
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2 bg-white-300 px-2 py-1">
                         Sales Agent
@@ -599,6 +599,8 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         className="text-xs capitalize"
                     />
                 </div>
+                )}
+
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2 bg-white-300 px-2 py-1" htmlFor="Remarks">Remarks</label>
                     <select id="Remarks" value={Remarks || ""} onChange={(e) => setRemarks(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" >

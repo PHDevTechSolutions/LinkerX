@@ -93,7 +93,7 @@ const ListofUser: React.FC = () => {
         // Check role-based filtering
         const matchesRole = (
             (userDetails.Role === "Super Admin" || userDetails.Role === "Admin") &&
-            (post?.Role === "Manager" || post?.Role === "Admin") &&
+            (post?.Role === "Manager" || post?.Role === "Admin" || post?.Role === "HR Manager") &&
             (userDetails.Role !== "Admin" || post?.Role !== "Super Admin")
         );
         
