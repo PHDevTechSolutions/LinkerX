@@ -105,7 +105,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       //],
     //},
     {
-      title: 'Taskflow 2025 (React)',
+      title: 'Taskflow',
       icon: TaskflowIcon,
       subItems: [
         { title: 'Outbound Calls', href: `/ModuleCSR/CSR/Taskflow/OutboundCall${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
@@ -126,15 +126,15 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         { title: 'CSR Faqs', href: `/ModuleCSR/CSR/Help${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
+    //{
+      //title: 'Global Employees',
+      //icon: CiUser,
+      //subItems: [
+        //{ title: 'Ecoshift Employees', href: `/ModuleCSR/CSR/Ecoshift/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      //],
+    //},
     {
-      title: 'Global Employees',
-      icon: CiUser,
-      subItems: [
-        { title: 'Ecoshift Employees', href: `/ModuleCSR/CSR/Ecoshift/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
-    {
-      title: 'Settings',
+      title: 'Profile',
       icon: CiSettings,
       subItems: [
         { title: 'Update Profile', href: `/ModuleCSR/CSR/Setting/Profile${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
@@ -162,7 +162,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       item.title === "Email" || 
       item.title === "Taskflow 2025 (React)" ||
       item.title === "Eco Help" ||
-      item.title === "Settings" || 
+      item.title === "Profile" || 
       item.title === "What is Ecodesk?";
     }
     // Admin and Super Admin can see all items

@@ -16,18 +16,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const monthInt = parseInt(month as string);
     const yearInt = parseInt(year as string);
 
-    const startOfMonth = new Date(yearInt, monthInt - 1, 1);
+    const startOfMonth = new Date(yearInt, monthInt - 1, 1, 0, 0, 0, 0);
+    const now = new Date();
     let endOfMonth: Date;
 
-    const now = new Date();
     const isCurrentMonth = now.getFullYear() === yearInt && (now.getMonth() + 1) === monthInt;
 
     if (isCurrentMonth) {
-      // Kung ongoing month, hanggang ngayon lang
+      // If the selected month is current month, end at "now"
       endOfMonth = now;
     } else {
-      // Kung tapos na ang month, last day ng month
-      endOfMonth = new Date(yearInt, monthInt, 0, 23, 59, 59);
+      // Else, end at the last second of the last day of the selected month
+      endOfMonth = new Date(yearInt, monthInt, 0, 23, 59, 59, 999);
     }
 
     console.log("Filtering by Date Range:", startOfMonth, endOfMonth);
@@ -37,24 +37,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const matchFilter: any = {
       Gender: { $in: ["Male", "Female"] },
-      createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+      createdAt: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      },
     };
 
     if (Role === "Staff" && ReferenceID) {
       matchFilter.ReferenceID = ReferenceID;
     }
 
-    const result = await monitoringCollection
-      .aggregate([
-        { $match: matchFilter },
-        {
-          $group: {
-            _id: "$Gender",
-            count: { $sum: 1 },
-          },
+    const result = await monitoringCollection.aggregate([
+      { $match: matchFilter },
+      {
+        $group: {
+          _id: "$Gender",
+          count: { $sum: 1 },
         },
-      ])
-      .toArray();
+      },
+    ]).toArray();
 
     console.log("Aggregated Gender Data:", result);
     res.status(200).json(result);
