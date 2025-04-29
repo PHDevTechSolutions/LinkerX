@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { CiImport, CiExport } from "react-icons/ci";
+import ExcelJS from "exceljs";
 
 interface Metric {
     userName: string;
@@ -104,7 +106,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
         "LX-NCR-001": "Leroux Xchire",
         "": "",
 
-        
+
     };
 
     // Function to get Sales Agent name by ReferenceID
@@ -215,7 +217,6 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
         );
     };
 
-
     // ✅ Format amount with Peso sign
     const formatAmountWithPeso = (amount: any) => {
         const parsedAmount = parseFloat(amount);
@@ -226,7 +227,6 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
             .toFixed(2)
             .replace(/\d(?=(\d{3})+\.)/g, "$&,")}`;
     };
-
 
     // ✅ Calculate overall totals for tfoot
     const totals = Object.values(groupedMetrics).reduce(
@@ -287,109 +287,201 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
         }
     );
 
+    const exportToExcel = () => {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("TSA Traffic to Sales Conversion");
+
+        worksheet.columns = [
+            { header: 'Agent Name', key: 'agentName', width: 25 },
+            { header: 'Sales', key: 'sales', width: 10 },
+            { header: 'Non-Sales', key: 'nonSales', width: 10 },
+            { header: 'Amount', key: 'amount', width: 15 },
+            { header: 'QTY Sold', key: 'qtySold', width: 10 },
+            { header: 'Conversion to Sale', key: 'conversionToSale', width: 20 },
+            { header: '% Conversion Inquiry to Sales', key: 'conversionPercentage', width: 25 },
+            { header: 'New Client', key: 'newClientCount', width: 15 },
+            { header: 'New Non-Buying', key: 'newNonBuyingCount', width: 18 },
+            { header: 'Existing Active', key: 'existingActiveCount', width: 18 },
+            { header: 'Existing Inactive', key: 'existingInactiveCount', width: 20 },
+            { header: 'New Client (Converted To Sales)', key: 'newClientConvertedAmount', width: 30 },
+            { header: 'New Non-Buying (Converted To Sales)', key: 'newNonBuyingConvertedAmount', width: 35 },
+            { header: 'Existing Active (Converted To Sales)', key: 'existingActiveConvertedAmount', width: 35 },
+            { header: 'Existing Inactive (Converted To Sales)', key: 'existingInactiveConvertedAmount', width: 35 },
+        ];
+
+        Object.keys(groupedMetrics).forEach((refId) => {
+            const agentMetrics = groupedMetrics[refId];
+            const totals = calculateAgentTotals(agentMetrics);
+            const conversionPercentage =
+                totals.sales === 0
+                    ? "0.00%"
+                    : `${((totals.totalConversionToSale / totals.sales) * 100).toFixed(2)}%`;
+
+            worksheet.addRow({
+                agentName: getSalesAgentName(agentMetrics[0].SalesAgent),
+                sales: totals.sales,
+                nonSales: totals.nonSales,
+                amount: totals.totalAmount,
+                qtySold: totals.totalQtySold,
+                conversionToSale: totals.totalConversionToSale,
+                conversionPercentage,
+                newClientCount: totals.newClientCount,
+                newNonBuyingCount: totals.newNonBuyingCount,
+                existingActiveCount: totals.existingActiveCount,
+                existingInactiveCount: totals.existingInactiveCount,
+                newClientConvertedAmount: totals.newClientConvertedAmount,
+                newNonBuyingConvertedAmount: totals.newNonBuyingConvertedAmount,
+                existingActiveConvertedAmount: totals.existingActiveConvertedAmount,
+                existingInactiveConvertedAmount: totals.existingInactiveConvertedAmount
+            });
+        });
+
+        // Optional: add total row
+        worksheet.addRow({}); // blank spacer
+        const totalsRow = worksheet.addRow({
+            agentName: 'Total',
+            sales: totals.sales,
+            nonSales: totals.nonSales,
+            amount: totals.totalAmount,
+            qtySold: totals.totalQtySold,
+            conversionToSale: totals.totalConversionToSale,
+            conversionPercentage:
+                totals.sales === 0
+                    ? "0.00%"
+                    : `${((totals.totalConversionToSale / totals.sales) * 100).toFixed(2)}%`,
+            newClientCount: totals.newClientCount,
+            newNonBuyingCount: totals.newNonBuyingCount,
+            existingActiveCount: totals.existingActiveCount,
+            existingInactiveCount: totals.existingInactiveCount,
+            newClientConvertedAmount: totals.newClientConvertedAmount,
+            newNonBuyingConvertedAmount: totals.newNonBuyingConvertedAmount,
+            existingActiveConvertedAmount: totals.existingActiveConvertedAmount,
+            existingInactiveConvertedAmount: totals.existingInactiveConvertedAmount
+        });
+
+        totalsRow.font = { bold: true };
+
+        workbook.xlsx.writeBuffer().then((buffer) => {
+            const blob = new Blob([buffer], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "TSATrafficSalesConversion.xlsx";
+            link.click();
+        });
+    };
+
+
     // ✅ Final Averages for % Conversion, ATU, and ATV
     return (
         <div className="overflow-x-auto max-h-screen overflow-y-auto">
             {loading ? (
                 <p className="text-xs">Loading...</p>
             ) : (
-                <table className="min-w-full bg-white border border-gray-300 shadow-md">
-                    <thead className="bg-gray-100 text-[10px] uppercase text-gray-700">
-                        <tr>
-                            <th className="border p-2">Agent Name</th>
-                            <th className="border p-2">Sales</th>
-                            <th className="border p-2">Non-Sales</th>
-                            <th className="border p-2">Amount</th>
-                            <th className="border p-2">QTY Sold</th>
-                            <th className="border p-2">Conversion to Sale</th>
-                            <th className="border p-2">% Conversion Inquiry to Sales</th>
-                            <th className="border p-2">New Client</th>
-                            <th className="border p-2">New Non-Buying</th>
-                            <th className="border p-2">Existing Active</th>
-                            <th className="border p-2">Existing Inactive</th>
-                            <th className="border p-2">New Client (Converted To Sales)</th>
-                            <th className="border p-2">New Non-Buying (Converted To Sales)</th>
-                            <th className="border p-2">Existing Active (Converted To Sales)</th>
-                            <th className="border p-2">Existing Inactive (Converted To Sales)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Object.keys(groupedMetrics).length > 0 ? (
-                            Object.keys(groupedMetrics).map((refId, index) => {
-                                const agentMetrics = groupedMetrics[refId];
-                                const totals = calculateAgentTotals(agentMetrics);
+                <>
+                    <button onClick={exportToExcel} className="flex items-center gap-1 mb-2 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
+                        <CiExport size={16} /> Export
+                    </button>
 
-                                // ✅ Calculate Conversion % 
-                                const conversionPercentage =
-                                    totals.sales === 0
-                                        ? "0.00%"
-                                        : `${((totals.totalConversionToSale / totals.sales) * 100).toFixed(2)}%`;
-
-                                return (
-                                    <tr key={index} className="text-center border-t text-[10px]">
-                                        <td className="border p-2 whitespace-nowrap p-2">
-                                            {getSalesAgentName(agentMetrics[0].SalesAgent)}
-                                        </td>
-                                        <td className="border p-2 whitespace-nowrap">{totals.sales}</td>
-                                        <td className="border p-2 whitespace-nowrap">{totals.nonSales}</td>
-                                        <td className="border p-2 whitespace-nowrap">
-                                            {formatAmountWithPeso(totals.totalAmount)}
-                                        </td>
-                                        <td className="border p-2 whitespace-nowrap">{totals.totalQtySold}</td>
-                                        <td className="border p-2 whitespace-nowrap">{totals.totalConversionToSale}</td>
-                                        <td className="border p-2 whitespace-nowrap">{conversionPercentage}</td>
-                                        <td className="border p-2 whitespace-nowrap">{totals.newClientCount}</td>
-                                        <td className="border p-2 whitespace-nowrap">{totals.newNonBuyingCount}</td>
-                                        <td className="border p-2 whitespace-nowrap">{totals.existingActiveCount}</td>
-                                        <td className="border p-2 whitespace-nowrap">{totals.existingInactiveCount}</td>
-                                        <td className="border p-2 whitespace-nowrap">{formatAmountWithPeso(totals.newClientConvertedAmount)}</td>
-                                        <td className="border p-2 whitespace-nowrap">{formatAmountWithPeso(totals.newNonBuyingConvertedAmount)}</td>
-                                        <td className="border p-2 whitespace-nowrap">{formatAmountWithPeso(totals.existingActiveConvertedAmount)}</td>
-                                        <td className="border p-2 whitespace-nowrap">{formatAmountWithPeso(totals.existingInactiveConvertedAmount)}</td>
-                                    </tr>
-                                );
-                            })
-                        ) : (
+                    <table className="min-w-full bg-white border border-gray-300 shadow-md">
+                        <thead className="bg-gray-100 text-[10px] uppercase text-gray-700">
                             <tr>
-                                <td colSpan={13} className="p-2 text-center text-gray-500">
-                                    No data available
+                                <th className="border p-2">Agent Name</th>
+                                <th className="border p-2">Sales</th>
+                                <th className="border p-2">Non-Sales</th>
+                                <th className="border p-2">Amount</th>
+                                <th className="border p-2">QTY Sold</th>
+                                <th className="border p-2">Conversion to Sale</th>
+                                <th className="border p-2">% Conversion Inquiry to Sales</th>
+                                <th className="border p-2">New Client</th>
+                                <th className="border p-2">New Non-Buying</th>
+                                <th className="border p-2">Existing Active</th>
+                                <th className="border p-2">Existing Inactive</th>
+                                <th className="border p-2">New Client (Converted To Sales)</th>
+                                <th className="border p-2">New Non-Buying (Converted To Sales)</th>
+                                <th className="border p-2">Existing Active (Converted To Sales)</th>
+                                <th className="border p-2">Existing Inactive (Converted To Sales)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {Object.keys(groupedMetrics).length > 0 ? (
+                                Object.keys(groupedMetrics).map((refId, index) => {
+                                    const agentMetrics = groupedMetrics[refId];
+                                    const totals = calculateAgentTotals(agentMetrics);
+
+                                    // ✅ Calculate Conversion % 
+                                    const conversionPercentage =
+                                        totals.sales === 0
+                                            ? "0.00%"
+                                            : `${((totals.totalConversionToSale / totals.sales) * 100).toFixed(2)}%`;
+
+                                    return (
+                                        <tr key={index} className="text-center border-t text-[10px]">
+                                            <td className="border p-2 whitespace-nowrap p-2">
+                                                {getSalesAgentName(agentMetrics[0].SalesAgent)}
+                                            </td>
+                                            <td className="border p-2 whitespace-nowrap">{totals.sales}</td>
+                                            <td className="border p-2 whitespace-nowrap">{totals.nonSales}</td>
+                                            <td className="border p-2 whitespace-nowrap">
+                                                {formatAmountWithPeso(totals.totalAmount)}
+                                            </td>
+                                            <td className="border p-2 whitespace-nowrap">{totals.totalQtySold}</td>
+                                            <td className="border p-2 whitespace-nowrap">{totals.totalConversionToSale}</td>
+                                            <td className="border p-2 whitespace-nowrap">{conversionPercentage}</td>
+                                            <td className="border p-2 whitespace-nowrap">{totals.newClientCount}</td>
+                                            <td className="border p-2 whitespace-nowrap">{totals.newNonBuyingCount}</td>
+                                            <td className="border p-2 whitespace-nowrap">{totals.existingActiveCount}</td>
+                                            <td className="border p-2 whitespace-nowrap">{totals.existingInactiveCount}</td>
+                                            <td className="border p-2 whitespace-nowrap">{formatAmountWithPeso(totals.newClientConvertedAmount)}</td>
+                                            <td className="border p-2 whitespace-nowrap">{formatAmountWithPeso(totals.newNonBuyingConvertedAmount)}</td>
+                                            <td className="border p-2 whitespace-nowrap">{formatAmountWithPeso(totals.existingActiveConvertedAmount)}</td>
+                                            <td className="border p-2 whitespace-nowrap">{formatAmountWithPeso(totals.existingInactiveConvertedAmount)}</td>
+                                        </tr>
+                                    );
+                                })
+                            ) : (
+                                <tr>
+                                    <td colSpan={13} className="p-2 text-center text-gray-500">
+                                        No data available
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                        <tfoot>
+                            <tr className="bg-gray-200 text-[10px] font-bold text-center">
+                                <td className="border p-2">Total</td>
+                                <td className="border p-2">{totals.sales}</td>
+                                <td className="border p-2">{totals.nonSales}</td>
+                                <td className="border p-2">{formatAmountWithPeso(totals.totalAmount)}</td>
+                                <td className="border p-2">{totals.totalQtySold}</td>
+                                <td className="border p-2">{totals.totalConversionToSale}</td>
+                                <td className="border p-2">
+                                    {totals.sales === 0
+                                        ? "0.00%"
+                                        : `${((totals.totalConversionToSale / totals.sales) * 100).toFixed(2)}%`}
+                                </td>
+                                <td className="border p-2">{totals.newClientCount}</td>
+                                <td className="border p-2">{totals.newNonBuyingCount}</td>
+                                <td className="border p-2">{totals.existingActiveCount}</td>
+                                <td className="border p-2">{totals.existingInactiveCount}</td>
+                                <td className="border p-2">
+                                    {formatAmountWithPeso(totals.newClientConvertedAmount)}
+                                </td>
+                                <td className="border p-2">
+                                    {formatAmountWithPeso(totals.newNonBuyingConvertedAmount)}
+                                </td>
+                                <td className="border p-2">
+                                    {formatAmountWithPeso(totals.existingActiveConvertedAmount)}
+                                </td>
+                                <td className="border p-2">
+                                    {formatAmountWithPeso(totals.existingInactiveConvertedAmount)}
                                 </td>
                             </tr>
-                        )}
-                    </tbody>
-                    <tfoot>
-                        <tr className="bg-gray-200 text-[10px] font-bold text-center">
-                            <td className="border p-2">Total</td>
-                            <td className="border p-2">{totals.sales}</td>
-                            <td className="border p-2">{totals.nonSales}</td>
-                            <td className="border p-2">{formatAmountWithPeso(totals.totalAmount)}</td>
-                            <td className="border p-2">{totals.totalQtySold}</td>
-                            <td className="border p-2">{totals.totalConversionToSale}</td>
-                            <td className="border p-2">
-                                {totals.sales === 0
-                                    ? "0.00%"
-                                    : `${((totals.totalConversionToSale / totals.sales) * 100).toFixed(2)}%`}
-                            </td>
-                            <td className="border p-2">{totals.newClientCount}</td>
-                            <td className="border p-2">{totals.newNonBuyingCount}</td>
-                            <td className="border p-2">{totals.existingActiveCount}</td>
-                            <td className="border p-2">{totals.existingInactiveCount}</td>
-                            <td className="border p-2">
-                                {formatAmountWithPeso(totals.newClientConvertedAmount)}
-                            </td>
-                            <td className="border p-2">
-                                {formatAmountWithPeso(totals.newNonBuyingConvertedAmount)}
-                            </td>
-                            <td className="border p-2">
-                                {formatAmountWithPeso(totals.existingActiveConvertedAmount)}
-                            </td>
-                            <td className="border p-2">
-                                {formatAmountWithPeso(totals.existingInactiveConvertedAmount)}
-                            </td>
-                        </tr>
-                    </tfoot>
+                        </tfoot>
 
-                </table>
+                    </table>
+                </>
             )}
         </div>
     );
