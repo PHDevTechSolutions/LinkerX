@@ -235,18 +235,19 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     useEffect(() => {
         const now = new Date();
       
-        // Get UTC values to avoid timezone issues
-        const year = now.getUTCFullYear();
-        const month = String(now.getUTCMonth() + 1).padStart(2, '0'); // Month is 0-indexed
-        const day = String(now.getUTCDate()).padStart(2, '0');
-        const hours = String(now.getUTCHours()).padStart(2, '0');
-        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+        // Get LOCAL values (NOT UTC)
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
       
-        // Format to "YYYY-MM-DDTHH:MM" which is required by datetime-local
+        // Format to "YYYY-MM-DDTHH:MM" for datetime-local
         const formatted = `${year}-${month}-${day}T${hours}:${minutes}`;
       
         setcreatedAt(formatted);
       }, []);
+      
       
 
     return (
