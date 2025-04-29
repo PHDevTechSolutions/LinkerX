@@ -232,6 +232,23 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
         fetchTSA();
     }, []);
 
+    useEffect(() => {
+        const now = new Date();
+      
+        // Get UTC values to avoid timezone issues
+        const year = now.getUTCFullYear();
+        const month = String(now.getUTCMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+        const day = String(now.getUTCDate()).padStart(2, '0');
+        const hours = String(now.getUTCHours()).padStart(2, '0');
+        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+      
+        // Format to "YYYY-MM-DDTHH:MM" which is required by datetime-local
+        const formatted = `${year}-${month}-${day}T${hours}:${minutes}`;
+      
+        setcreatedAt(formatted);
+      }, []);
+      
+
     return (
         <>
             <div className="flex flex-wrap -mx-4">
@@ -471,15 +488,15 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     <div className="flex flex-wrap -mx-4">
                         <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                             <label className="block text-xs font-bold mb-2" htmlFor="SONumber">SO Number</label>
-                            <input type="text" id="SONumber" value={SONumber || ""} onChange={(e) => setSONumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs"/>
+                            <input type="text" id="SONumber" value={SONumber || ""} onChange={(e) => setSONumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                         </div>
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-2" htmlFor="Amount">Amount</label>
-                            <input type="number" id="Amount" value={Amount || ""} onChange={handleAmountChange} className="w-full px-3 py-2 border rounded text-xs"/>
+                            <input type="number" id="Amount" value={Amount || ""} onChange={handleAmountChange} className="w-full px-3 py-2 border rounded text-xs" />
                         </div>
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-2" htmlFor="QtySold">QTY Sold</label>
-                            <input type="number" id="QtySold" value={QtySold || ""} onChange={handleQtySoldChange} className="w-full px-3 py-2 border rounded text-xs"/>
+                            <input type="number" id="QtySold" value={QtySold || ""} onChange={handleQtySoldChange} className="w-full px-3 py-2 border rounded text-xs" />
                         </div>
                     </div>
                 </>
@@ -619,7 +636,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </div>
                 </>
             )}
-            
+
             {editPost ? (
                 <>
                     <div className="flex flex-wrap -mx-4">

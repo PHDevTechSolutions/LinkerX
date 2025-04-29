@@ -239,7 +239,7 @@ const ListofUser: React.FC = () => {
     useEffect(() => {
         const fetchTSM = async () => {
             try {
-                const response = await fetch("/api/tsm?Role=Territory Sales Manager");
+                const response = await fetch("/api/fetchtsm?Role=Territory Sales Manager");
                 if (!response.ok) {
                     throw new Error("Failed to fetch managers");
                 }
@@ -263,7 +263,7 @@ const ListofUser: React.FC = () => {
     useEffect(() => {
         const fetchTSA = async () => {
             try {
-                const response = await fetch("/api/tsa?Role=Territory Sales Associate");
+                const response = await fetch("/api/fetchtsa?Role=Territory Sales Associate");
                 if (!response.ok) {
                     throw new Error("Failed to fetch agents");
                 }
@@ -299,20 +299,6 @@ const ListofUser: React.FC = () => {
 
     useEffect(() => {
         fetchAccount();
-    }, []);
-
-    useEffect(() => {
-        fetch("/api/tsa?Role=Territory Sales Associate")
-            .then((res) => res.json())
-            .then((data) => {
-                if (Array.isArray(data)) {
-                    setTsaList(data);
-                } else {
-                    console.error("Invalid TSA list format:", data);
-                    setTsaList([]);
-                }
-            })
-            .catch((err) => console.error("Error fetching TSA list:", err));
     }, []);
 
 
