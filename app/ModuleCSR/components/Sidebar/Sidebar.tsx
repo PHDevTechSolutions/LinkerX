@@ -164,7 +164,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const filteredMenuItems = menuItems.filter((item) => {
     if (userDetails.Role === "Staff") {
       // Staff can only see
-      return item.title === "CSR Inquiries" || 
+      return item.title === "Inquiries" || 
       item.title === "Customer Database" || 
       item.title === "Reports" || 
       item.title === "Email" || 
