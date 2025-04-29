@@ -108,8 +108,16 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       title: 'Taskflow',
       icon: TaskflowIcon,
       subItems: [
-        { title: 'Outbound Calls', href: `/ModuleCSR/CSR/Taskflow/OutboundCall${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Database', href: `/ModuleCSR/CSR/Taskflow/Database${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { 
+          title: 'Outbound Calls', 
+          href: `/ModuleCSR/CSR/Taskflow/OutboundCall${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
+        },
+        ...(userDetails.Role !== 'Staff' ? [
+          { 
+            title: 'Database', 
+            href: `/ModuleCSR/CSR/Taskflow/Database${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
+          }
+        ] : [])
       ],
     },
     {
