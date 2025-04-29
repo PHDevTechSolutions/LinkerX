@@ -380,9 +380,11 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
                 <p className="text-xs">Loading...</p>
             ) : (
                 <>
-                    <button onClick={exportToExcel} className="flex items-center gap-1 mb-2 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
-                        <CiExport size={16} /> Export
-                    </button>
+                    {Role === "Admin" && (
+                        <button onClick={exportToExcel} className="flex items-center gap-1 border mb-2 bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
+                            <CiExport size={16} /> Export
+                        </button>
+                    )}
 
                     <table className="min-w-full bg-white border border-gray-300 shadow-md">
                         <thead className="bg-gray-100 text-[10px] uppercase text-gray-700">
