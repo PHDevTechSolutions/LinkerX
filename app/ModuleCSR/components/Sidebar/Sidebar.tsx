@@ -160,7 +160,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       item.title === "Customer Database" || 
       item.title === "Reports" || 
       item.title === "Email" || 
-      item.title === "Taskflow 2025 (React)" ||
+      item.title === "Taskflow" ||
       item.title === "Eco Help" ||
       item.title === "Profile" || 
       item.title === "What is Ecodesk?";
