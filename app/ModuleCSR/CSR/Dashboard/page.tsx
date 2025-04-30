@@ -324,7 +324,7 @@ const DashboardPage: React.FC = () => {
         {showAccessModal && (
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20 h-screen w-full">
             <div className="bg-white p-6 rounded shadow-lg w-96 max-h-full overflow-y-auto">
-              <h2 className="text-lg font-bold text-red-600 mb-4">⚠️ Access Denied</h2>
+              <h2 className="text-lg font-bold text-red-600 mb-4">⚠️ Under-Maintenance</h2>
               <p className="text-sm text-gray-700 mb-4">
                 You do not have the necessary permissions to perform this action.
                 Only <strong>IT Personnel</strong> can access this section.
