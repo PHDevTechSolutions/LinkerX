@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { RiRefreshLine } from "react-icons/ri";
 
 interface CustomerType {
   CustomerType: string | null;
@@ -21,8 +22,8 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({
   Role,
   month,
   year,
-  startDate = "",  // Default empty string if not provided
-  endDate = "",    // Default empty string if not provided
+  startDate = "",
+  endDate = "",
 }) => {
   const [customerTypeData, setCustomerTypeData] = useState<CustomerType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,7 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({
     const fetchCustomerTypeData = async () => {
       setLoading(true);
       try {
-        // Construct start and end dates based on the provided year and month
+        // Construct start and end dates once
         const startDateFormatted = `${year}-${String(month).padStart(2, "0")}-01`;
         const endDateFormatted = new Date(year, month, 0).toISOString().split("T")[0];
 
@@ -46,6 +47,7 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({
           filtered = data.filter((item: CustomerType) => item.ReferenceID === ReferenceID);
         }
 
+        // Filtering logic
         const final = filtered.filter((item: CustomerType) => {
           if (!item.createdAt) return false;
           const createdAtDate = new Date(item.createdAt);
@@ -69,16 +71,19 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({
     };
 
     fetchCustomerTypeData();
-  }, [ReferenceID, Role, month, year, startDate, endDate]); 
+  }, [ReferenceID, Role, month, year, startDate, endDate]);
 
-  // Count by CustomerType
-  const typeCounts: { [key: string]: number } = {};
-  customerTypeData.forEach((item) => {
-    const type = item.CustomerType || "Unknown";
-    typeCounts[type] = (typeCounts[type] || 0) + 1;
-  });
+  // Memoized calculation of type counts
+  const typeCounts = useMemo(() => {
+    return customerTypeData.reduce((acc, item) => {
+      const type = item.CustomerType || "Unknown";
+      acc[type] = (acc[type] || 0) + 1;
+      return acc;
+    }, {} as { [key: string]: number });
+  }, [customerTypeData]);
 
-  const total = Object.values(typeCounts).reduce((sum, val) => sum + val, 0);
+  // Calculate total
+  const total = useMemo(() => Object.values(typeCounts).reduce((sum, val) => sum + val, 0), [typeCounts]);
 
   const colorMap: { [key: string]: string } = {
     "B2B": "bg-blue-600",
@@ -94,9 +99,11 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({
       <h3 className="text-sm font-bold mb-4 text-center">Inbound Traffic Per Customer Type</h3>
 
       {loading ? (
-        <p className="text-center text-gray-500 text-xs">Loading...</p>
-      ) : total === 0 ? (
-        <p className="text-center text-gray-500 text-xs">No data available</p>
+        <div className="flex justify-center items-center h-full w-full">
+          <div className="flex justify-center items-center w-30 h-30">
+            <RiRefreshLine size={30} className="animate-spin" />
+          </div>
+        </div>
       ) : (
         <div className="space-y-4">
           {Object.entries(typeCounts).map(([type, count]) => (

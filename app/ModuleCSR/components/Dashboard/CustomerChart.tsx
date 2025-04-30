@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
+import { RiRefreshLine } from "react-icons/ri";
 
 interface CustomerStatus {
   CustomerStatus: string | null;
@@ -27,17 +28,26 @@ const CustomerChart: React.FC<CustomerChartProps> = ({
   const [customerData, setCustomerData] = useState<CustomerStatus[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const calculateDateRange = useCallback(() => {
+    const start = `${year}-${String(month).padStart(2, "0")}-01`;
+    const end = new Date(year, month, 0).toISOString().split("T")[0];
+    return { startDate: start, endDate: end };
+  }, [month, year]);
+
   useEffect(() => {
     const fetchCustomerData = async () => {
       setLoading(true);
-      try {
-        // Ensure startDate and endDate are set properly
-        const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
-        const endDate = new Date(year, month, 0).toISOString().split("T")[0];
+      const { startDate, endDate } = calculateDateRange();
 
+      try {
         const res = await fetch(
           `/api/ModuleCSR/Dashboard/Customer?ReferenceID=${ReferenceID}&Role=${Role}&startDate=${startDate}&endDate=${endDate}`
         );
+
+        if (!res.ok) {
+          console.error("Failed to fetch customer data:", res.statusText);
+          return;
+        }
 
         const data = await res.json();
 
@@ -72,14 +82,17 @@ const CustomerChart: React.FC<CustomerChartProps> = ({
     };
 
     fetchCustomerData();
-  }, [ReferenceID, Role, month, year, startDate, endDate]);
+  }, [ReferenceID, Role, month, year, calculateDateRange]);
 
-  // Count by CustomerStatus
-  const statusCounts: { [key: string]: number } = {};
-  customerData.forEach((item) => {
-    const status = item.CustomerStatus || "Unknown";
-    statusCounts[status] = (statusCounts[status] || 0) + 1;
-  });
+  // Memoize status counts calculation to avoid recalculating on every render
+  const statusCounts = useMemo(() => {
+    const counts: { [key: string]: number } = {};
+    customerData.forEach((item) => {
+      const status = item.CustomerStatus || "Unknown";
+      counts[status] = (counts[status] || 0) + 1;
+    });
+    return counts;
+  }, [customerData]);
 
   const total = Object.values(statusCounts).reduce((sum, val) => sum + val, 0);
 
@@ -96,9 +109,11 @@ const CustomerChart: React.FC<CustomerChartProps> = ({
       <h3 className="text-sm font-bold mb-4 text-center">Customer Status Distribution</h3>
 
       {loading ? (
-        <p className="text-center text-gray-500 text-xs">Loading...</p>
-      ) : total === 0 ? (
-        <p className="text-center text-gray-500 text-xs">No data available</p>
+        <div className="flex justify-center items-center h-full w-full">
+          <div className="flex justify-center items-center w-30 h-30">
+            <RiRefreshLine size={30} className="animate-spin" />
+          </div>
+        </div>
       ) : (
         <div className="space-y-4">
           {Object.entries(statusCounts).map(([status, count]) => (

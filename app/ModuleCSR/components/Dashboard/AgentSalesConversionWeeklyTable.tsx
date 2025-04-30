@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { RiRefreshLine } from "react-icons/ri";
 
 interface Metric {
   userName: string;
@@ -81,20 +82,21 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
   }, [ReferenceID, Role, month, year]);
 
   // ✅ Group by ReferenceID
-  const groupedMetrics: Record<string, Metric[]> = metrics.reduce(
-    (acc, metric) => {
-      if (!acc[metric.ReferenceID]) {
-        acc[metric.ReferenceID] = [];
-      }
-      acc[metric.ReferenceID].push(metric);
-      return acc;
-    },
-    {} as Record<string, Metric[]>
+  const groupedMetrics = useMemo(
+    () =>
+      metrics.reduce((acc, metric) => {
+        if (!acc[metric.ReferenceID]) {
+          acc[metric.ReferenceID] = [];
+        }
+        acc[metric.ReferenceID].push(metric);
+        return acc;
+      }, {} as Record<string, Metric[]>),
+    [metrics]
   );
 
   // ✅ Calculate totals per agent
-  const calculateAgentTotals = (agentMetrics: Metric[]) => {
-    const totals = agentMetrics.reduce(
+  const calculateAgentTotals = useCallback((agentMetrics: Metric[]) => {
+    return agentMetrics.reduce(
       (acc, metric) => {
         const amount = parseFloat(metric.Amount) || 0;
         const qtySold = parseFloat(metric.QtySold) || 0;
@@ -103,7 +105,6 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
         const createdAtDate = new Date(metric.createdAt);
         const day = createdAtDate.getDate();
 
-        // ✅ Week-based amount
         if (day >= 1 && day <= 7) acc.week1 += amount;
         else if (day >= 8 && day <= 14) acc.week2 += amount;
         else if (day >= 15 && day <= 21) acc.week3 += amount;
@@ -129,12 +130,10 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
         week4: 0,
       }
     );
-
-    return totals;
-  };
+  }, []);
 
   // ✅ Format amount with Peso sign
-  const formatAmountWithPeso = (amount: any) => {
+  const formatAmountWithPeso = useCallback((amount: any) => {
     const parsedAmount = parseFloat(amount);
     if (isNaN(parsedAmount)) {
       return "₱0.00";
@@ -142,7 +141,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
     return `₱${parsedAmount
       .toFixed(2)
       .replace(/\d(?=(\d{3})+\.)/g, "$&,")}`;
-  };
+  }, []);
 
   // ✅ Calculate total for all agents
   const calculateTotalMetrics = () => {
@@ -181,7 +180,11 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
   return (
     <div className="overflow-x-auto max-h-screen overflow-y-auto">
       {loading ? (
-        <p className="text-xs">Loading...</p>
+        <div className="flex justify-center items-center h-full w-full">
+          <div className="flex justify-center items-center w-30 h-30">
+            <RiRefreshLine size={30} className="animate-spin" />
+          </div>
+        </div>
       ) : (
         <table className="min-w-full bg-white border border-gray-300 shadow-md">
           <thead className="bg-gray-100 text-xs uppercase text-gray-700">
@@ -233,7 +236,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
               })
             ) : (
               <tr>
-                <td colSpan={10} className="p-2 text-center text-gray-500">
+                <td colSpan={10} className="p-2 text-center text-gray-500 text-xs">
                   No data available
                 </td>
               </tr>

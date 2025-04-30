@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { RiRefreshLine } from "react-icons/ri";
 
 interface Source {
   Source: string | null;
@@ -27,26 +28,39 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({
   const [sources, setSources] = useState<Source[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const sourceLabels = [
-    "FB Ads", "Viber Community / Viber", "Whatsapp Community / Whatsapp",
-    "SMS", "Website", "Word of Mouth", "Quotation Docs", "Google Search",
-    "Site Visit", "Agent Call", "Catalogue", "Shopee", "Lazada",
-    "Tiktok", "WorldBex", "PhilConstruct", "Conex", "Product Demo"
-  ];
+  const sourceLabels = useMemo(
+    () => [
+      "FB Ads", "Viber Community / Viber", "Whatsapp Community / Whatsapp",
+      "SMS", "Website", "Word of Mouth", "Quotation Docs", "Google Search",
+      "Site Visit", "Agent Call", "Catalogue", "Shopee", "Lazada",
+      "Tiktok", "WorldBex", "PhilConstruct", "Conex", "Product Demo"
+    ],
+    []
+  );
 
-  const colors = [
-    "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40",
-    "#C9CBCF", "#8B0000", "#008080", "#FFD700", "#DC143C", "#20B2AA",
-    "#8A2BE2", "#FF4500", "#00CED1", "#2E8B57", "#4682B4", "#F08080"
-  ];
+  const colors = useMemo(
+    () => [
+      "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40",
+      "#C9CBCF", "#8B0000", "#008080", "#FFD700", "#DC143C", "#20B2AA",
+      "#8A2BE2", "#FF4500", "#00CED1", "#2E8B57", "#4682B4", "#F08080"
+    ],
+    []
+  );
 
   useEffect(() => {
     const fetchSources = async () => {
+      setLoading(true);
       try {
-        const res = await fetch(
-          `/api/ModuleCSR/Dashboard/CustomerSource?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
-        );
+        const queryParams = new URLSearchParams({
+          ReferenceID,
+          Role,
+          month: month?.toString() ?? "",
+          year: year?.toString() ?? "",
+        });
+
+        const res = await fetch(`/api/ModuleCSR/Dashboard/CustomerSource?${queryParams}`);
         if (!res.ok) throw new Error("Failed to fetch data");
+
         const data = await res.json();
 
         let filtered = data;
@@ -84,21 +98,27 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({
     };
 
     fetchSources();
-  }, [ReferenceID, Role, month, year, startDate, endDate]);
+  }, [ReferenceID, Role, month, year, startDate, endDate, sourceLabels]);
 
-  const grouped = sources.reduce((acc, item) => {
-    if (!item.Source) return acc;
-    acc[item.Source] = (acc[item.Source] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const grouped = useMemo(() => {
+    return sources.reduce((acc, item) => {
+      if (!item.Source) return acc;
+      acc[item.Source] = (acc[item.Source] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+  }, [sources]);
 
-  const maxValue = Math.max(...Object.values(grouped), 1);
+  const maxValue = useMemo(() => Math.max(...Object.values(grouped), 1), [grouped]);
 
   return (
     <div className="w-full">
       <div className="bg-white w-full h-full">
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <div className="flex justify-center items-center h-full w-full">
+            <div className="flex justify-center items-center w-30 h-30">
+              <RiRefreshLine size={30} className="animate-spin" />
+            </div>
+          </div>
         ) : (
           <div className="w-full h-full overflow-x-auto">
             <h3 className="text-center text-sm font-semibold mb-4">
@@ -110,10 +130,7 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({
                 const heightPercent = (value / maxValue) * 100;
 
                 return (
-                  <div
-                    key={label}
-                    className="flex flex-col items-center h-full group"
-                  >
+                  <div key={label} className="flex flex-col items-center h-full group">
                     <div className="relative w-full flex-1 bg-gray-100 flex items-end rounded-md overflow-hidden">
                       <div
                         className="w-full transition-all duration-300 rounded-t group-hover:scale-105 group-hover:brightness-90"
@@ -139,7 +156,6 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({
       </div>
     </div>
   );
-
 };
 
 export default CustomerSource;

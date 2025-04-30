@@ -50,7 +50,6 @@ const DashboardPage: React.FC = () => {
   const [data, setData] = useState<MyDataType[]>([]);
   const [showAccessModal, setShowAccessModal] = useState(false);
 
-
   useEffect(() => {
     const fetchUserData = async () => {
       const params = new URLSearchParams(window.location.search);
@@ -92,16 +91,15 @@ const DashboardPage: React.FC = () => {
     );
   });
 
-  const isAllowedUser =
-    userDetails?.Role === "Staff" && userDetails?.ReferenceID === "LR-CSR-654001";
+  //const isAllowedUser =
+    //userDetails?.Role === "Staff" && userDetails?.ReferenceID === "LR-CSR-654001";
 
-  const isRestrictedUser = !isAllowedUser;
+  //const isRestrictedUser = !isAllowedUser;
 
   // Automatically show modal if the user is restricted
-  useEffect(() => {
-    setShowAccessModal(isRestrictedUser);
-  }, [isRestrictedUser]);
-
+  //useEffect(() => {
+    //setShowAccessModal(isRestrictedUser);
+  //}, [isRestrictedUser]);
 
   return (
     <SessionChecker>

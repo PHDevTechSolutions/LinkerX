@@ -10,6 +10,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // ✅ Extract query parameters
     const { ReferenceID, Role } = req.query;
 
+    // ✅ Validate that Role and ReferenceID are present if needed
+    if (Role === "Staff" && !ReferenceID) {
+      return res.status(400).json({ message: "ReferenceID is required for Staff role" });
+    }
+
     // ✅ Connect to the database
     const db = await connectToDatabase();
     const monitoringCollection = db.collection("monitoring");

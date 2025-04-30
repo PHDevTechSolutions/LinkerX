@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { RiRefreshLine } from "react-icons/ri";
 
 interface Metric {
   createdAt: string;
@@ -17,90 +18,57 @@ interface MetricTableProps {
   endDate?: string;
 }
 
-const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Role, startDate, endDate }) => {
+const CHANNELS = [
+  "Google Maps", "Website", "FB Main", "FB ES Home", "Viber", "Text Message",
+  "Instagram", "Voice Call", "Email", "Whatsapp", "Shopify"
+];
+
+const COLORS = [
+  "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40",
+  "#C9CBCF", "#8B0000", "#008080", "#FFD700", "#DC143C", "#20B2AA",
+  "#8A2BE2", "#FF4500", "#00CED1", "#2E8B57", "#4682B4"
+];
+
+const MetricTable: React.FC<MetricTableProps> = ({
+  ReferenceID, month, year, Role, startDate, endDate
+}) => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  // ✅ Fixed list of channels
-  const channels = [
-    "Google Maps",
-    "Website",
-    "FB Main",
-    "FB ES Home",
-    "Viber",
-    "Text Message",
-    "Instagram",
-    "Voice Call",
-    "Email",
-    "Whatsapp",
-    "Shopify",
-  ];
-
-  // ✅ Fixed colors for each channel
-  const colors = [
-    "#3A7D44",
-    "#27445D",
-    "#71BBB2",
-    "#578FCA",
-    "#9966FF",
-    "#FF9F40",
-    "#C9CBCF",
-    "#8B0000",
-    "#008080",
-    "#FFD700",
-    "#DC143C",
-    "#20B2AA",
-    "#8A2BE2",
-    "#FF4500",
-    "#00CED1",
-    "#2E8B57",
-    "#4682B4",
-  ];
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchMetrics = async () => {
+      setLoading(true);
       try {
-        const apiUrl = `/api/ModuleCSR/Dashboard/Metrics?ReferenceID=${ReferenceID}&month=${month}&year=${year}`;
-        const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const data = await response.json();
+        const url = `/api/ModuleCSR/Dashboard/Metrics?ReferenceID=${ReferenceID}&month=${month}&year=${year}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Failed to fetch metrics");
 
-        // ✅ Filter data by role
-        let filteredData = data;
+        let data: Metric[] = await res.json();
 
+        // Apply ReferenceID filtering only if needed
         if (Role === "Staff") {
-          filteredData = data.filter(
-            (item: Metric) => item.ReferenceID === ReferenceID
-          );
+          data = data.filter(m => m.ReferenceID === ReferenceID);
         }
 
-        // Convert startDate and endDate to dates with time set to 00:00:00 and 23:59:59 respectively
-        const adjustedStartDate = startDate ? new Date(startDate) : null;
-        const adjustedEndDate = endDate ? new Date(endDate) : null;
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
 
-        if (adjustedStartDate) adjustedStartDate.setHours(0, 0, 0, 0); // Start date at 00:00:00
-        if (adjustedEndDate) adjustedEndDate.setHours(23, 59, 59, 999); // End date at 23:59:59
+        if (start) start.setHours(0, 0, 0, 0);
+        if (end) end.setHours(23, 59, 59, 999);
 
-        // ✅ Filter by month/year or by date range
-        const finalData = filteredData.filter((item: Metric) => {
-          const createdAtDate = new Date(item.createdAt);
-
-          const isWithinMonthYear =
-            month && year
-              ? createdAtDate.getMonth() + 1 === month && createdAtDate.getFullYear() === year
-              : true;
-
-          const isWithinDateRange =
-            adjustedStartDate && adjustedEndDate
-              ? createdAtDate >= adjustedStartDate && createdAtDate <= adjustedEndDate
-              : true;
-
-          return isWithinDateRange && isWithinMonthYear;
+        // Parse once for performance
+        const filtered = data.filter(({ createdAt }) => {
+          const created = new Date(createdAt);
+          const matchMonthYear =
+            month && year ? (created.getMonth() + 1 === month && created.getFullYear() === year) : true;
+          const inDateRange =
+            start && end ? (created >= start && created <= end) : true;
+          return matchMonthYear && inDateRange;
         });
 
-        setMetrics(finalData);
-      } catch (error) {
-        console.error("Error fetching metrics:", error);
+        setMetrics(filtered);
+      } catch (err) {
+        console.error("Error:", err);
       } finally {
         setLoading(false);
       }
@@ -109,40 +77,40 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
     fetchMetrics();
   }, [ReferenceID, Role, month, year, startDate, endDate]);
 
+  const grouped = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const { Channel } of metrics) {
+      if (!CHANNELS.includes(Channel)) continue;
+      counts[Channel] = (counts[Channel] || 0) + 1;
+    }
+    return counts;
+  }, [metrics]);
 
-  // ✅ Group by Channel for predefined channels
-  const grouped = metrics.reduce((acc, item) => {
-    if (!channels.includes(item.Channel)) return acc;
-    acc[item.Channel] = (acc[item.Channel] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const maxValue = Math.max(...Object.values(grouped), 1);
+  const maxValue = useMemo(() => Math.max(...Object.values(grouped), 1), [grouped]);
 
   return (
     <div className="bg-white h-full w-full">
       {loading ? (
-        <p className="text-center">Loading...</p>
+        <div className="flex justify-center items-center h-full w-full">
+          <RiRefreshLine size={30} className="animate-spin text-gray-600" />
+        </div>
       ) : (
         <div className="w-full h-full overflow-x-auto">
           <div className="flex items-end h-full space-x-4 min-w-max sm:h-[400px]">
-            {channels.map((channel, index) => {
+            {CHANNELS.map((channel, i) => {
               const value = grouped[channel] || 0;
-              const heightPercent = (value / maxValue) * 100;
+              const height = (value / maxValue) * 100;
 
               return (
-                <div
-                  key={channel}
-                  className="flex flex-col items-center w-12 h-full group"
-                >
+                <div key={channel} className="flex flex-col items-center w-12 h-full group">
                   <div className="relative w-full flex-1 bg-gray-100 flex items-end rounded-md overflow-hidden">
                     <div
-                      className="w-full transition-all duration-300 rounded-t group-hover:scale-105 group-hover:brightness-90"
-                      style={{
-                        height: `${heightPercent}%`,
-                        backgroundColor: colors[index % colors.length],
-                      }}
                       title={`${channel}: ${value}`}
+                      style={{
+                        height: `${height}%`,
+                        backgroundColor: COLORS[i % COLORS.length],
+                      }}
+                      className="w-full transition-all duration-300 rounded-t group-hover:scale-105 group-hover:brightness-90"
                     />
                   </div>
                   <span className="text-[10px] sm:text-xs text-center mt-1 break-words leading-tight">

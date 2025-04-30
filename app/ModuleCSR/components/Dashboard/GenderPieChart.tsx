@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { RiRefreshLine } from "react-icons/ri";
 
 interface GenderCount {
   Gender: string | null;
@@ -15,10 +16,11 @@ interface GenderBarChartProps {
   endDate?: string;
 }
 
-const GenderBarChart: React.FC<GenderBarChartProps> = ({ReferenceID, Role, month, year, startDate, endDate}) => {
+const GenderBarChart: React.FC<GenderBarChartProps> = ({ ReferenceID, Role, month, year, startDate, endDate }) => {
   const [genderData, setGenderData] = useState<GenderCount[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch data on component mount and relevant prop changes
   useEffect(() => {
     const fetchGenderData = async () => {
       setLoading(true);
@@ -36,14 +38,15 @@ const GenderBarChart: React.FC<GenderBarChartProps> = ({ReferenceID, Role, month
 
         let filteredData = data;
 
+        // Filter based on role if necessary
         if (Role === "Staff") {
-          filteredData = data.filter(
-            (item: GenderCount) => item.ReferenceID === ReferenceID
-          );
+          filteredData = data.filter((item: GenderCount) => item.ReferenceID === ReferenceID);
         }
 
+        // Apply date filtering only if provided
         const finalData = filteredData.filter((item: GenderCount) => {
           if (!item.createdAt) return false;
+
           const date = new Date(item.createdAt);
           return (
             date.getMonth() + 1 === month &&
@@ -63,19 +66,25 @@ const GenderBarChart: React.FC<GenderBarChartProps> = ({ReferenceID, Role, month
     fetchGenderData();
   }, [ReferenceID, Role, month, year, startDate, endDate]);
 
-  // Count based on gender
-  const maleCount = genderData.filter((item) => item.Gender === "Male").length;
-  const femaleCount = genderData.filter((item) => item.Gender === "Female").length;
-  const total = maleCount + femaleCount;
+  // Memoize the gender counts for performance optimization
+  const { maleCount, femaleCount, total } = useMemo(() => {
+    const maleCount = genderData.filter((item) => item.Gender === "Male").length;
+    const femaleCount = genderData.filter((item) => item.Gender === "Female").length;
+    const total = maleCount + femaleCount;
+
+    return { maleCount, femaleCount, total };
+  }, [genderData]);
 
   return (
     <div className="w-full max-w-md mx-auto bg-white">
       <h3 className="text-sm font-bold mb-4 text-center">Inbound Traffic Per Gender</h3>
 
       {loading ? (
-        <p className="text-center text-gray-500 text-xs">Loading...</p>
-      ) : total === 0 ? (
-        <p className="text-center text-gray-500 text-xs">No data available</p>
+        <div className="flex justify-center items-center h-full w-full">
+          <div className="flex justify-center items-center w-30 h-30">
+            <RiRefreshLine size={30} className="animate-spin" />
+          </div>
+        </div>
       ) : (
         <div className="space-y-4">
           {/* Male Count */}

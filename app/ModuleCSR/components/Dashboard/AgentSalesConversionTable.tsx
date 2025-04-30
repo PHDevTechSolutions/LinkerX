@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { RiRefreshLine } from "react-icons/ri";
 
 interface Metric {
   userName: string;
@@ -85,19 +86,18 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
   }, [ReferenceID, Role, month, year, startDate, endDate]);
 
   // ✅ Group by ReferenceID
-  const groupedMetrics: Record<string, Metric[]> = metrics.reduce(
-    (acc, metric) => {
+  const groupedMetrics: Record<string, Metric[]> = useMemo(() => {
+    return metrics.reduce((acc, metric) => {
       if (!acc[metric.ReferenceID]) {
         acc[metric.ReferenceID] = [];
       }
       acc[metric.ReferenceID].push(metric);
       return acc;
-    },
-    {} as Record<string, Metric[]>
-  );
+    }, {} as Record<string, Metric[]>);
+  }, [metrics]);
 
   // ✅ Calculate totals per agent
-  const calculateAgentTotals = (agentMetrics: Metric[]) => {
+  const calculateAgentTotals = useCallback((agentMetrics: Metric[]) => {
     return agentMetrics.reduce(
       (acc, metric) => {
         const amount = parseFloat(metric.Amount) || 0;
@@ -116,7 +116,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
           case "New Client":
             acc.newClientAmount += amount;
             break;
-          case "New-Non Buying":
+          case "New Non-Buying":
             acc.newNonBuyingAmount += amount;
             break;
           case "Existing Active":
@@ -143,10 +143,10 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
         existingInactiveAmount: 0,
       }
     );
-  };
+  }, []);
 
   // ✅ Format amount with Peso sign
-  const formatAmountWithPeso = (amount: any) => {
+  const formatAmountWithPeso = useCallback((amount: any) => {
     const parsedAmount = parseFloat(amount);
     if (isNaN(parsedAmount)) {
       return "₱0.00";
@@ -154,59 +154,56 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
     return `₱${parsedAmount
       .toFixed(2)
       .replace(/\d(?=(\d{3})+\.)/g, "$&,")}`;
-  };
+  }, []);
 
   // ✅ Calculate overall totals for tfoot
-  const totalMetrics = Object.values(groupedMetrics).reduce(
-    (acc, agentMetrics) => {
-      const totals = calculateAgentTotals(agentMetrics);
+  const totalMetrics = useMemo(() => {
+    return Object.values(groupedMetrics).reduce(
+      (acc, agentMetrics) => {
+        const totals = calculateAgentTotals(agentMetrics);
 
-      acc.sales += totals.sales;
-      acc.nonSales += totals.nonSales;
-      acc.totalAmount += totals.totalAmount;
-      acc.totalQtySold += totals.totalQtySold;
-      acc.totalConversionToSale += totals.totalConversionToSale;
-      acc.newClientAmount += totals.newClientAmount;
-      acc.newNonBuyingAmount += totals.newNonBuyingAmount;
-      acc.existingActiveAmount += totals.existingActiveAmount;
+        acc.sales += totals.sales;
+        acc.nonSales += totals.nonSales;
+        acc.totalAmount += totals.totalAmount;
+        acc.totalQtySold += totals.totalQtySold;
+        acc.totalConversionToSale += totals.totalConversionToSale;
+        acc.newClientAmount += totals.newClientAmount;
+        acc.newNonBuyingAmount += totals.newNonBuyingAmount;
+        acc.existingActiveAmount += totals.existingActiveAmount;
 
-      // ✅ Calculate Avg Transaction Unit & Value for overall
-      acc.totalATU +=
-        totals.totalConversionToSale > 0
+        acc.totalATU += totals.totalConversionToSale > 0
           ? totals.totalQtySold / totals.totalConversionToSale
           : 0;
-      acc.totalATV +=
-        totals.totalConversionToSale > 0
+        acc.totalATV += totals.totalConversionToSale > 0
           ? totals.totalAmount / totals.totalConversionToSale
           : 0;
 
-      // ✅ Calculate Conversion % for overall
-      acc.totalConversionPercentage +=
-        totals.sales > 0
+        acc.totalConversionPercentage += totals.sales > 0
           ? (totals.totalConversionToSale / totals.sales) * 100
           : 0;
 
-      acc.agentCount += 1; // Count total agents for averaging
-      return acc;
-    },
-    {
-      sales: 0,
-      nonSales: 0,
-      totalAmount: 0,
-      totalQtySold: 0,
-      totalConversionToSale: 0,
-      newClientAmount: 0,
-      newNonBuyingAmount: 0,
-      existingActiveAmount: 0,
-      existingInactiveAmount: 0,
-      totalATU: 0,
-      totalATV: 0,
-      totalConversionPercentage: 0,
-      agentCount: 0,
-    }
-  );
+        acc.agentCount += 1;
+        return acc;
+      },
+      {
+        sales: 0,
+        nonSales: 0,
+        totalAmount: 0,
+        totalQtySold: 0,
+        totalConversionToSale: 0,
+        newClientAmount: 0,
+        newNonBuyingAmount: 0,
+        existingActiveAmount: 0,
+        existingInactiveAmount: 0,
+        totalATU: 0,
+        totalATV: 0,
+        totalConversionPercentage: 0,
+        agentCount: 0,
+      }
+    );
+  }, [groupedMetrics, calculateAgentTotals]);
 
-  const calculateResponseTime = (TicketReceived: string, TicketEndorsed: string) => {
+  const calculateResponseTime = useCallback((TicketReceived: string, TicketEndorsed: string) => {
     if (!TicketReceived || !TicketEndorsed) return "N/A";
 
     const start = new Date(TicketReceived);
@@ -218,14 +215,18 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
     const seconds = Math.floor(diffInSeconds % 60);
 
     return `${hours}h ${minutes}m ${seconds}s`;
-  };
+  }, []);
 
 
   // ✅ Final Averages for % Conversion, ATU, and ATV
   return (
     <div className="overflow-x-auto max-h-screen overflow-y-auto">
       {loading ? (
-        <p className="text-xs">Loading...</p>
+        <div className="flex justify-center items-center h-full w-full">
+          <div className="flex justify-center items-center w-30 h-30">
+            <RiRefreshLine size={30} className="animate-spin" />
+          </div>
+        </div>
       ) : (
         <table className="min-w-full bg-white border border-gray-300 shadow-md">
           <thead className="bg-gray-100 text-xs uppercase text-gray-700">
@@ -314,7 +315,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
               })
             ) : (
               <tr>
-                <td colSpan={13} className="p-2 text-center text-gray-500">
+                <td colSpan={13} className="p-2 text-center text-gray-500 text-xs">
                   No data available
                 </td>
               </tr>

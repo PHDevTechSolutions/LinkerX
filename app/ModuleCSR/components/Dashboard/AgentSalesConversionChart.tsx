@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { RiRefreshLine } from "react-icons/ri";
 
 interface Metric {
   userName: string;
@@ -51,63 +52,58 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     "#C9CBCF", "#008080",
   ];
 
-  useEffect(() => {
-    const fetchMetrics = async () => {
-      try {
-        const response = await fetch(
-          `/api/ModuleCSR/Dashboard/AgentSalesConversion?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
-        );
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const data = await response.json();
-  
-        // Filter by Role
-        let filteredData = Role === "Staff"
-          ? data.filter((item: Metric) => item.ReferenceID === ReferenceID)
-          : data;
-  
-        // Date range filtering
-        const start = startDate ? new Date(startDate) : null;
-        const end = endDate ? new Date(endDate) : null;
-        if (start) start.setHours(0, 0, 0, 0);
-        if (end) end.setHours(23, 59, 59, 999);
-  
-        const finalData = filteredData.filter((item: Metric) => {
-          if (!item.createdAt) return false;
-  
-          const createdAt = new Date(item.createdAt);
-          const matchesMonthYear =
-            createdAt.getMonth() + 1 === month &&
-            createdAt.getFullYear() === year;
-  
-          const inRange =
-            (!start || createdAt >= start) &&
-            (!end || createdAt <= end);
-  
-          return matchesMonthYear && inRange;
-        });
-  
-        setMetrics(finalData);
-      } catch (error) {
-        console.error("Error fetching metrics:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchMetrics();
-  }, [ReferenceID, Role, month, year, startDate, endDate]);
-  
+  const fetchMetrics = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `/api/ModuleCSR/Dashboard/AgentSalesConversion?ReferenceID=${ReferenceID}&month=${month}&year=${year}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch data");
+      const data = await response.json();
 
-  const groupedMetrics: Record<string, Metric[]> = metrics.reduce(
-    (acc, metric) => {
+      // Date range filtering
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+      if (start) start.setHours(0, 0, 0, 0);
+      if (end) end.setHours(23, 59, 59, 999);
+
+      const finalData = data.filter((item: Metric) => {
+        if (!item.createdAt) return false;
+
+        const createdAt = new Date(item.createdAt);
+        const matchesMonthYear =
+          createdAt.getMonth() + 1 === month &&
+          createdAt.getFullYear() === year;
+
+        const inRange =
+          (!start || createdAt >= start) &&
+          (!end || createdAt <= end);
+
+        return matchesMonthYear && inRange;
+      });
+
+      setMetrics(finalData);
+    } catch (error) {
+      console.error("Error fetching metrics:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [ReferenceID, month, year, startDate, endDate]);
+
+  useEffect(() => {
+    fetchMetrics();
+  }, [fetchMetrics]);
+
+  // Memoize the grouped metrics calculation to avoid recalculating on every render
+  const groupedMetrics = useMemo(() => {
+    return metrics.reduce((acc, metric) => {
       if (!acc[metric.ReferenceID]) acc[metric.ReferenceID] = [];
       acc[metric.ReferenceID].push(metric);
       return acc;
-    },
-    {} as Record<string, Metric[]>
-  );
+    }, {} as Record<string, Metric[]>);
+  }, [metrics]);
 
-  const calculateAgentTotals = (agentMetrics: Metric[]) => {
+  // Memoize agent totals calculation to prevent unnecessary recalculations
+  const calculateAgentTotals = useCallback((agentMetrics: Metric[]) => {
     return agentMetrics.reduce(
       (acc, metric) => {
         const amount = parseFloat(metric.Amount as string) || 0;
@@ -116,19 +112,27 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
       },
       { totalAmount: 0 }
     );
-  };
+  }, []);
 
-  const agentLabels = Object.keys(groupedMetrics);
-  const maxAmount = Math.max(
-    ...agentLabels.map((refId) =>
-      calculateAgentTotals(groupedMetrics[refId]).totalAmount
-    ), 1
-  );
+  const agentLabels = useMemo(() => Object.keys(groupedMetrics), [groupedMetrics]);
+
+  const maxAmount = useMemo(() => {
+    return Math.max(
+      ...agentLabels.map((refId) =>
+        calculateAgentTotals(groupedMetrics[refId]).totalAmount
+      ),
+      1
+    );
+  }, [agentLabels, calculateAgentTotals, groupedMetrics]);
 
   return (
     <div className="overflow-x-auto w-full">
       {loading ? (
-        <p className="text-sm">Loading...</p>
+        <div className="flex justify-center items-center h-full w-full">
+          <div className="flex justify-center items-center w-30 h-30">
+            <RiRefreshLine size={30} className="animate-spin" />
+          </div>
+        </div>
       ) : (
         <div className="w-full">
           <h2 className="text-sm font-semibold mb-4">Agent Sales Conversion</h2>

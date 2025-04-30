@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { RiRefreshLine } from "react-icons/ri";
 
 interface WrapupTableData {
   createdAt: string;
@@ -54,10 +55,11 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
     "Others",
   ];
 
-  const fetchMetricsData = async () => {
-    try {
-      setLoading(true);
+  // Memoized fetch function to prevent re-fetching unnecessarily
+  const fetchMetricsData = useCallback(async () => {
+    setLoading(true);
 
+    try {
       const response = await fetch(
         `/api/ModuleCSR/Dashboard/WrapupData?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
       );
@@ -98,15 +100,15 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [ReferenceID, Role, month, year, startDate, endDate]);
 
   useEffect(() => {
     fetchMetricsData();
-  }, [ReferenceID, Role, month, year, startDate, endDate]);
+  }, [fetchMetricsData]);
 
-  // Compute weekly counts per label
-  const calculateWeeklyCounts = () => {
-    const weeklyCounts: Record<string, Record<string, number>> = {
+  // Memoized calculation of weekly counts
+  const weeklyCounts = useMemo(() => {
+    const counts: Record<string, Record<string, number>> = {
       "Week 1": {},
       "Week 2": {},
       "Week 3": {},
@@ -117,21 +119,23 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
       const week = `Week ${getWeekNumber(item.createdAt)}`;
       const label = item.WrapUp;
 
-      if (!weeklyCounts[week][label]) {
-        weeklyCounts[week][label] = 0;
+      if (!counts[week][label]) {
+        counts[week][label] = 0;
       }
-      weeklyCounts[week][label]++;
+      counts[week][label]++;
     });
 
-    return weeklyCounts;
-  };
-
-  const weeklyCounts = calculateWeeklyCounts();
+    return counts;
+  }, [metrics]);
 
   return (
     <div className="bg-white">
       {loading ? (
-        <p className="text-center">Loading...</p>
+        <div className="flex justify-center items-center h-full w-full">
+          <div className="flex justify-center items-center w-30 h-30">
+            <RiRefreshLine size={30} className="animate-spin" />
+          </div>
+        </div>
       ) : (
         <table className="w-full border-collapse border border-gray-200 text-xs">
           <thead>

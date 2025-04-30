@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { RiRefreshLine } from "react-icons/ri";
 
 interface WrapUp {
   WrapUp: string | null;
@@ -27,30 +28,25 @@ const Wrapup: React.FC<WrapupProps> = ({
   const [wrapups, setWrapups] = useState<WrapUp[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const wrapupLabels = [
-    "Customer Order",
-    "Customer Inquiry Sales",
-    "Customer Inquiry Non-Sales",
-    "Follow Up Sales",
-    "After Sales",
-    "Customer Complaint",
-    "Customer Feedback/Recommendation",
-    "Job Inquiry",
-    "Job Applicants",
-    "Supplier/Vendor Product Offer",
-    "Follow Up Non-Sales",
-    "Internal Whistle Blower",
-    "Threats/Extortion/Intimidation",
-    "Supplier Accreditation Request",
-    "Internal Concern",
-    "Others",
-  ];
+  const wrapupLabels = useMemo(
+    () => [
+      "Customer Order", "Customer Inquiry Sales", "Customer Inquiry Non-Sales",
+      "Follow Up Sales", "After Sales", "Customer Complaint", "Customer Feedback/Recommendation",
+      "Job Inquiry", "Job Applicants", "Supplier/Vendor Product Offer", "Follow Up Non-Sales",
+      "Internal Whistle Blower", "Threats/Extortion/Intimidation", "Supplier Accreditation Request",
+      "Internal Concern", "Others"
+    ],
+    []
+  );
 
-  const colors = [
-    "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40",
-    "#C9CBCF", "#8B0000", "#008080", "#FFD700", "#DC143C", "#20B2AA",
-    "#8A2BE2", "#00CED1", "#2E8B57", "#4682B4"
-  ];
+  const colors = useMemo(
+    () => [
+      "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40",
+      "#C9CBCF", "#8B0000", "#008080", "#FFD700", "#DC143C", "#20B2AA",
+      "#8A2BE2", "#00CED1", "#2E8B57", "#4682B4"
+    ],
+    []
+  );
 
   useEffect(() => {
     const fetchWrapups = async () => {
@@ -98,19 +94,25 @@ const Wrapup: React.FC<WrapupProps> = ({
     fetchWrapups();
   }, [ReferenceID, Role, month, year, startDate, endDate]);
 
-  const grouped = wrapups.reduce((acc, item) => {
-    if (!item.WrapUp) return acc;
-    acc[item.WrapUp] = (acc[item.WrapUp] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const grouped = useMemo(() => {
+    return wrapups.reduce((acc, item) => {
+      if (!item.WrapUp) return acc;
+      acc[item.WrapUp] = (acc[item.WrapUp] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+  }, [wrapups]);
 
-  const maxValue = Math.max(...Object.values(grouped), 1);
+  const maxValue = useMemo(() => Math.max(...Object.values(grouped), 1), [grouped]);
 
   return (
     <div className="w-full">
       <div className="bg-white w-full h-full">
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <div className="flex justify-center items-center h-full w-full">
+            <div className="flex justify-center items-center w-30 h-30">
+              <RiRefreshLine size={30} className="animate-spin" />
+            </div>
+          </div>
         ) : (
           <div className="w-full h-full overflow-x-auto">
             <h3 className="text-center text-sm font-semibold mb-4">
@@ -122,10 +124,7 @@ const Wrapup: React.FC<WrapupProps> = ({
                 const heightPercent = (value / maxValue) * 100;
 
                 return (
-                  <div
-                    key={label}
-                    className="flex flex-col items-center h-full group"
-                  >
+                  <div key={label} className="flex flex-col items-center h-full group">
                     <div className="relative w-full flex-1 bg-gray-100 flex items-end rounded-md overflow-hidden">
                       <div
                         className="w-full transition-all duration-300 rounded-t group-hover:scale-105 group-hover:brightness-90"

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { CiImport, CiExport } from "react-icons/ci";
+import React, { useEffect, useState, useMemo } from "react";
+import { CiExport } from "react-icons/ci";
 import ExcelJS from "exceljs";
+import { RiRefreshLine } from "react-icons/ri";
 
 interface Metric {
     userName: string;
@@ -173,13 +174,15 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     }, [ReferenceID, Role, month, year, startDate, endDate]);
 
     // ✅ Group by ReferenceID
-    const groupedMetrics = metrics.reduce((acc, metric) => {
-        if (!acc[metric.SalesAgent]) {
-            acc[metric.SalesAgent] = [];
-        }
-        acc[metric.SalesAgent].push(metric);
-        return acc;
-    }, {} as Record<string, Metric[]>);
+    const groupedMetrics = useMemo(() => {
+        return metrics.reduce((acc, metric) => {
+            if (!acc[metric.SalesAgent]) {
+                acc[metric.SalesAgent] = [];
+            }
+            acc[metric.SalesAgent].push(metric);
+            return acc;
+        }, {} as Record<string, Metric[]>);
+    }, [metrics]);
 
     // ✅ Calculate totals per agent
     const calculateAgentTotals = (agentMetrics: Metric[]) => {
@@ -202,7 +205,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
                         acc.newClientCount += 1;
                         if (isConverted) acc.newClientConvertedAmount += amount;
                         break;
-                    case "New-Non Buying":
+                    case "New Non-Buying":
                         acc.newNonBuyingCount += 1;
                         if (isConverted) acc.newNonBuyingConvertedAmount += amount;
                         break;
@@ -250,63 +253,53 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     };
 
     // ✅ Calculate overall totals for tfoot
-    const totals = Object.values(groupedMetrics).reduce(
-        (acc, agentMetrics) => {
-            const totals = calculateAgentTotals(agentMetrics);
+    const totals = useMemo(() => {
+        return Object.values(groupedMetrics).reduce(
+            (acc, agentMetrics) => {
+                const totals = calculateAgentTotals(agentMetrics);
 
-            acc.sales += totals.sales;
-            acc.nonSales += totals.nonSales;
-            acc.totalAmount += totals.totalAmount;
-            acc.totalQtySold += totals.totalQtySold;
-            acc.totalConversionToSale += totals.totalConversionToSale;
-            acc.newClientCount += totals.newClientCount;
-            acc.newNonBuyingCount += totals.newNonBuyingCount;
-            acc.existingActiveCount += totals.existingActiveCount;
-            acc.existingInactiveCount += totals.existingInactiveCount;
-            acc.newClientConvertedAmount += totals.newClientConvertedAmount;
-            acc.newNonBuyingConvertedAmount += totals.newNonBuyingConvertedAmount;
-            acc.existingActiveConvertedAmount += totals.existingActiveConvertedAmount;
-            acc.existingInactiveConvertedAmount += totals.existingInactiveConvertedAmount;
+                acc.sales += totals.sales;
+                acc.nonSales += totals.nonSales;
+                acc.totalAmount += totals.totalAmount;
+                acc.totalQtySold += totals.totalQtySold;
+                acc.totalConversionToSale += totals.totalConversionToSale;
+                acc.newClientCount += totals.newClientCount;
+                acc.newNonBuyingCount += totals.newNonBuyingCount;
+                acc.existingActiveCount += totals.existingActiveCount;
+                acc.existingInactiveCount += totals.existingInactiveCount;
+                acc.newClientConvertedAmount += totals.newClientConvertedAmount;
+                acc.newNonBuyingConvertedAmount += totals.newNonBuyingConvertedAmount;
+                acc.existingActiveConvertedAmount += totals.existingActiveConvertedAmount;
+                acc.existingInactiveConvertedAmount += totals.existingInactiveConvertedAmount;
 
-            // ✅ Calculate Avg Transaction Unit & Value for overall
-            acc.totalATU +=
-                totals.totalConversionToSale > 0
-                    ? totals.totalQtySold / totals.totalConversionToSale
-                    : 0;
-            acc.totalATV +=
-                totals.totalConversionToSale > 0
-                    ? totals.totalAmount / totals.totalConversionToSale
-                    : 0;
+                acc.totalATU += totals.totalConversionToSale > 0 ? totals.totalQtySold / totals.totalConversionToSale : 0;
+                acc.totalATV += totals.totalConversionToSale > 0 ? totals.totalAmount / totals.totalConversionToSale : 0;
+                acc.totalConversionPercentage += totals.sales > 0 ? (totals.totalConversionToSale / totals.sales) * 100 : 0;
 
-            // ✅ Calculate Conversion % for overall
-            acc.totalConversionPercentage +=
-                totals.sales > 0
-                    ? (totals.totalConversionToSale / totals.sales) * 100
-                    : 0;
-
-            acc.agentCount += 1; // Count total agents for averaging
-            return acc;
-        },
-        {
-            sales: 0,
-            nonSales: 0,
-            totalAmount: 0,
-            totalQtySold: 0,
-            totalConversionToSale: 0,
-            newClientCount: 0,
-            newNonBuyingCount: 0,
-            existingActiveCount: 0,
-            existingInactiveCount: 0,
-            newClientConvertedAmount: 0,
-            newNonBuyingConvertedAmount: 0,
-            existingActiveConvertedAmount: 0,
-            existingInactiveConvertedAmount: 0,
-            totalATU: 0,
-            totalATV: 0,
-            totalConversionPercentage: 0,
-            agentCount: 0,
-        }
-    );
+                acc.agentCount += 1;
+                return acc;
+            },
+            {
+                sales: 0,
+                nonSales: 0,
+                totalAmount: 0,
+                totalQtySold: 0,
+                totalConversionToSale: 0,
+                newClientCount: 0,
+                newNonBuyingCount: 0,
+                existingActiveCount: 0,
+                existingInactiveCount: 0,
+                newClientConvertedAmount: 0,
+                newNonBuyingConvertedAmount: 0,
+                existingActiveConvertedAmount: 0,
+                existingInactiveConvertedAmount: 0,
+                totalATU: 0,
+                totalATV: 0,
+                totalConversionPercentage: 0,
+                agentCount: 0,
+            }
+        );
+    }, [groupedMetrics]);
 
     const exportToExcel = () => {
         const workbook = new ExcelJS.Workbook();
@@ -398,7 +391,11 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     return (
         <div className="overflow-x-auto max-h-screen overflow-y-auto">
             {loading ? (
-                <p className="text-xs">Loading...</p>
+                <div className="flex justify-center items-center h-full w-full">
+                    <div className="flex justify-center items-center w-30 h-30">
+                        <RiRefreshLine size={30} className="animate-spin" />
+                    </div>
+                </div>
             ) : (
                 <>
                     {Role === "Admin" && (
@@ -465,7 +462,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
                                 })
                             ) : (
                                 <tr>
-                                    <td colSpan={13} className="p-2 text-center text-gray-500">
+                                    <td colSpan={13} className="p-2 text-center text-gray-500 text-xs">
                                         No data available
                                     </td>
                                 </tr>
