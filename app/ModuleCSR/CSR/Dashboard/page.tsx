@@ -92,7 +92,7 @@ const DashboardPage: React.FC = () => {
     );
   });
 
-  const isAllowedUser = userDetails?.Role === "Admin" ||
+  const isAllowedUser = userDetails?.Role === "Staff" ||
     (userDetails?.Role === "Staff" && userDetails?.ReferenceID === "LR-CSR-654001");
 
   const isRestrictedUser = !isAllowedUser;
