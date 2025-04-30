@@ -234,52 +234,21 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
 
     useEffect(() => {
         const now = new Date();
-
+      
         // Get LOCAL values (NOT UTC)
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
         const day = String(now.getDate()).padStart(2, '0');
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
-
+      
         // Format to "YYYY-MM-DDTHH:MM" for datetime-local
         const formatted = `${year}-${month}-${day}T${hours}:${minutes}`;
-
+      
         setcreatedAt(formatted);
-    }, []);
-
-    // Returns current date-time in UTC formatted as "YYYY-MM-DDTHH:MM"
-    const getCurrentDateTime = () => {
-        const now = new Date();
-
-        const year = now.getUTCFullYear();
-        const month = String(now.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(now.getUTCDate()).padStart(2, '0');
-        const hours = String(now.getUTCHours()).padStart(2, '0');
-        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-
-        return `${year}-${month}-${day}T${hours}:${minutes}`;
-    };
-
-    // Prevent selection of past date and time (based on UTC)
-    const getMinDateTime = () => {
-        const now = new Date();
-
-        const year = now.getUTCFullYear();
-        const month = String(now.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(now.getUTCDate()).padStart(2, '0');
-        const hours = String(now.getUTCHours()).padStart(2, '0');
-        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-
-        return `${year}-${month}-${day}T${hours}:${minutes}`;
-    };
-
-    useEffect(() => {
-        const now = getCurrentDateTime();
-        setTicketReceived(now);
-        setTicketEndorsed(now);
-    }, []);
-
+      }, []);
+      
+      
 
     return (
         <>
@@ -376,8 +345,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         value={TicketReceived || ""}
                         onChange={(e) => setTicketReceived(e.target.value)}
                         className="w-full px-3 py-2 border rounded text-xs"
-                        min={getMinDateTime()}
-                        
+                        required
                     />
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
@@ -388,8 +356,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         value={TicketEndorsed || ""}
                         onChange={(e) => setTicketEndorsed(e.target.value)}
                         className="w-full px-3 py-2 border rounded text-xs"
-                        min={getMinDateTime()}
-                    
+                        required
                     />
                 </div>
             </div>
@@ -614,48 +581,48 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 </div>
 
                 {WrapUp !== "Job Applicants" && (
-                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2 bg-white-300 px-2 py-1">
-                            Sales Agent
-                        </label>
-                        <Select
-                            options={salesAgents}
-                            value={salesAgents.find((option) => option.value === SalesAgent) || null}
-                            onChange={(selected: OptionType | null) => {
-                                setSalesAgent(selected?.value || ""); // Set the selected agent's ReferenceID
-                                // Find the full name of the selected agent and update the SalesAgentName field
-                                const selectedAgent = salesAgents.find((agent) => agent.value === selected?.value);
-                                setSalesAgentName(selectedAgent ? `${selectedAgent.label}` : ""); // Update SalesAgentName
-                            }}
-                            placeholder="Select Agent"
-                            isSearchable
-                            className="text-xs capitalize"
-                        />
-                    </div>
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2 bg-white-300 px-2 py-1">
+                        Sales Agent
+                    </label>
+                    <Select
+                        options={salesAgents}
+                        value={salesAgents.find((option) => option.value === SalesAgent) || null}
+                        onChange={(selected: OptionType | null) => {
+                            setSalesAgent(selected?.value || ""); // Set the selected agent's ReferenceID
+                            // Find the full name of the selected agent and update the SalesAgentName field
+                            const selectedAgent = salesAgents.find((agent) => agent.value === selected?.value);
+                            setSalesAgentName(selectedAgent ? `${selectedAgent.label}` : ""); // Update SalesAgentName
+                        }}
+                        placeholder="Select Agent"
+                        isSearchable
+                        className="text-xs capitalize"
+                    />
+                </div>
                 )}
 
                 {WrapUp !== "Job Applicants" && (
-                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2 bg-white-300 px-2 py-1" htmlFor="Remarks">Remarks</label>
-                        <select id="Remarks" value={Remarks || ""} onChange={(e) => setRemarks(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" >
-                            <option value="">Select Remarks</option>
-                            <option value="No Stocks / Insufficient Stocks">No Stocks / Insufficient Stocks</option>
-                            <option value="Item Not Carried">Item Not Carried</option>
-                            <option value="Quotation For Approval">Quotation For Approval</option>
-                            <option value="Customer Requested Cancellation">Customer Requested Cancellation</option>
-                            <option value="Accreditation / Partnership">Accreditation / Partnership</option>
-                            <option value="For Spf">For Spf</option>
-                            <option value="No Response From Client">No Response From Client</option>
-                            <option value="Assisted">Assisted</option>
-                            <option value="Disapproved Quotation">Disapproved Quotation</option>
-                            <option value="For Site Visit">For Site Visit</option>
-                            <option value="Non Standard Item">Non Standard Item</option>
-                            <option value="PO Received">PO Received</option>
-                            <option value="Not Converted to Sales">Not Converted to Sales</option>
-                            <option value="For Occular Inspection">For Occular Inspection</option>
-                            <option value="Sold">Sold</option>
-                        </select>
-                    </div>
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2 bg-white-300 px-2 py-1" htmlFor="Remarks">Remarks</label>
+                    <select id="Remarks" value={Remarks || ""} onChange={(e) => setRemarks(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" >
+                        <option value="">Select Remarks</option>
+                        <option value="No Stocks / Insufficient Stocks">No Stocks / Insufficient Stocks</option>
+                        <option value="Item Not Carried">Item Not Carried</option>
+                        <option value="Quotation For Approval">Quotation For Approval</option>
+                        <option value="Customer Requested Cancellation">Customer Requested Cancellation</option>
+                        <option value="Accreditation / Partnership">Accreditation / Partnership</option>
+                        <option value="For Spf">For Spf</option>
+                        <option value="No Response From Client">No Response From Client</option>
+                        <option value="Assisted">Assisted</option>
+                        <option value="Disapproved Quotation">Disapproved Quotation</option>
+                        <option value="For Site Visit">For Site Visit</option>
+                        <option value="Non Standard Item">Non Standard Item</option>
+                        <option value="PO Received">PO Received</option>
+                        <option value="Not Converted to Sales">Not Converted to Sales</option>
+                        <option value="For Occular Inspection">For Occular Inspection</option>
+                        <option value="Sold">Sold</option>
+                    </select>
+                </div>
                 )}
             </div>
 
@@ -664,11 +631,11 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     <div className="flex flex-wrap -mx-4">
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-2" htmlFor="QuotationNumber">Quotation Reference Number</label>
-                            <input type="text" id="QuotationNumber" value={QuotationNumber || ""} onChange={(e) => setQuotationNumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+                            <input type="text" id="QuotationNumber" value={QuotationNumber || ""} onChange={(e) => setQuotationNumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                         </div>
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-2" htmlFor="QuotationAmount">Quotation Amount</label>
-                            <input type="number" id="QuotationAmount" value={QuotationAmount || ""} onChange={(e) => setQuotationAmount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+                            <input type="number" id="QuotationAmount" value={QuotationAmount || ""} onChange={(e) => setQuotationAmount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                         </div>
                     </div>
                 </>
@@ -679,11 +646,11 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     <div className="flex flex-wrap -mx-4">
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-2" htmlFor="QuotationNumber">Quotation Reference Number</label>
-                            <input type="text" id="QuotationNumber" value={QuotationNumber || ""} onChange={(e) => setQuotationNumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+                            <input type="text" id="QuotationNumber" value={QuotationNumber || ""} onChange={(e) => setQuotationNumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                         </div>
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-2" htmlFor="QuotationAmount">Quotation Amount</label>
-                            <input type="number" id="QuotationAmount" value={QuotationAmount || ""} onChange={(e) => setQuotationAmount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+                            <input type="number" id="QuotationAmount" value={QuotationAmount || ""} onChange={(e) => setQuotationAmount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                         </div>
                     </div>
                 </>
@@ -710,7 +677,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </div>
                 </div>
             ) : null}
-
+            
             {(Remarks !== "PO Received" && WrapUp !== "Job Applicants") && (
                 <div className="flex flex-wrap -mx-4">
                     <div className="w-full sm:w-1/1 md:w-1/1 px-4 mb-4">
@@ -719,50 +686,50 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </div>
                 </div>
             )}
-
+            
             {WrapUp !== "Job Applicants" && (
-                <div className="flex flex-wrap -mx-4">
-                    <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2" htmlFor="TsmAcknowledgeDate">TSM Acknowledge Date</label>
-                        <input
-                            type="datetime-local"
-                            id="TsmAcknowledgeDate"
-                            value={TsmAcknowledgeDate || ""}
-                            onChange={(e) => setTsmAcknowledgeDate(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs"
-                        />
-                    </div>
-                    <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2" htmlFor="TsaAcknowledgeDate">TSA Acknowledge Date</label>
-                        <input
-                            type="datetime-local"
-                            id="TsaAcknowledgeDate"
-                            value={TsaAcknowledgeDate || ""}
-                            onChange={(e) => setTsaAcknowledgeDate(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs"
-                        />
-                    </div>
-                    <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2" htmlFor="TsmHandlingTime">TSM Handling Time</label>
-                        <input
-                            type="datetime-local"
-                            id="TsmHandlingTime"
-                            value={TsmHandlingTime || ""}
-                            onChange={(e) => setTsmHandlingTime(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs"
-                        />
-                    </div>
-                    <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2" htmlFor="TsaHandlingTime">TSA Handling Time</label>
-                        <input
-                            type="datetime-local"
-                            id="TsaHandlingTime"
-                            value={TsaHandlingTime || ""}
-                            onChange={(e) => setTsaHandlingTime(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs"
-                        />
-                    </div>
+            <div className="flex flex-wrap -mx-4">
+                <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2" htmlFor="TsmAcknowledgeDate">TSM Acknowledge Date</label>
+                    <input
+                        type="datetime-local"
+                        id="TsmAcknowledgeDate"
+                        value={TsmAcknowledgeDate || ""}
+                        onChange={(e) => setTsmAcknowledgeDate(e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-xs"
+                    />
                 </div>
+                <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2" htmlFor="TsaAcknowledgeDate">TSA Acknowledge Date</label>
+                    <input
+                        type="datetime-local"
+                        id="TsaAcknowledgeDate"
+                        value={TsaAcknowledgeDate || ""}
+                        onChange={(e) => setTsaAcknowledgeDate(e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-xs"
+                    />
+                </div>
+                <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2" htmlFor="TsmHandlingTime">TSM Handling Time</label>
+                    <input
+                        type="datetime-local"
+                        id="TsmHandlingTime"
+                        value={TsmHandlingTime || ""}
+                        onChange={(e) => setTsmHandlingTime(e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-xs"
+                    />
+                </div>
+                <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2" htmlFor="TsaHandlingTime">TSA Handling Time</label>
+                    <input
+                        type="datetime-local"
+                        id="TsaHandlingTime"
+                        value={TsaHandlingTime || ""}
+                        onChange={(e) => setTsaHandlingTime(e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-xs"
+                    />
+                </div>
+            </div>
             )}
         </>
     );
