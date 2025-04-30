@@ -106,7 +106,7 @@ const CustomerChart: React.FC<CustomerChartProps> = ({
 
   return (
     <div className="w-full max-w-md mx-auto bg-white">
-      <h3 className="text-sm font-bold mb-4 text-center">Customer Status Distribution</h3>
+      <h3 className="text-xs font-bold mb-4 text-center">Customer Status Distribution</h3>
 
       {loading ? (
         <div className="flex justify-center items-center h-full w-full">

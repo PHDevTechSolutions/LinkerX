@@ -121,7 +121,7 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({
           </div>
         ) : (
           <div className="w-full h-full overflow-x-auto">
-            <h3 className="text-center text-sm font-semibold mb-4">
+            <h3 className="text-center text-xs font-semibold mb-4">
               Where Customers Found Us
             </h3>
             <div className="flex items-end h-full space-x-4 sm:h-[400px] w-full">

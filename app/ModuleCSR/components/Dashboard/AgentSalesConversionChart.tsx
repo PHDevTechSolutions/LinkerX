@@ -135,7 +135,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
         </div>
       ) : (
         <div className="w-full">
-          <h2 className="text-sm font-semibold mb-4">Agent Sales Conversion</h2>
+          <h2 className="text-xs font-semibold mb-4">Agent Sales Conversion</h2>
 
           <div className="flex flex-col space-y-4">
             {agentLabels.map((refId, index) => {

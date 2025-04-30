@@ -77,7 +77,7 @@ const GenderBarChart: React.FC<GenderBarChartProps> = ({ ReferenceID, Role, mont
 
   return (
     <div className="w-full max-w-md mx-auto bg-white">
-      <h3 className="text-sm font-bold mb-4 text-center">Inbound Traffic Per Gender</h3>
+      <h3 className="text-xs font-bold mb-4 text-center">Inbound Traffic Per Gender</h3>
 
       {loading ? (
         <div className="flex justify-center items-center h-full w-full">
