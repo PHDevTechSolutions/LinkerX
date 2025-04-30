@@ -251,24 +251,27 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     // Returns current date-time in UTC formatted as "YYYY-MM-DDTHH:MM"
     const getCurrentDateTime = () => {
         const now = new Date();
-        return new Date(Date.UTC(
-            now.getUTCFullYear(),
-            now.getUTCMonth(),
-            now.getUTCDate(),
-            now.getUTCHours(),
-            now.getUTCMinutes()
-        )).toISOString().slice(0, 16); // "YYYY-MM-DDTHH:MM"
+
+        const year = now.getUTCFullYear();
+        const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(now.getUTCDate()).padStart(2, '0');
+        const hours = String(now.getUTCHours()).padStart(2, '0');
+        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
     };
 
+    // Prevent selection of past date and time (based on UTC)
     const getMinDateTime = () => {
         const now = new Date();
-        return new Date(Date.UTC(
-            now.getUTCFullYear(),
-            now.getUTCMonth(),
-            now.getUTCDate(),
-            now.getUTCHours(),
-            now.getUTCMinutes()
-        )).toISOString().slice(0, 16); // "YYYY-MM-DDTHH:MM"
+
+        const year = now.getUTCFullYear();
+        const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(now.getUTCDate()).padStart(2, '0');
+        const hours = String(now.getUTCHours()).padStart(2, '0');
+        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
     };
 
     useEffect(() => {
