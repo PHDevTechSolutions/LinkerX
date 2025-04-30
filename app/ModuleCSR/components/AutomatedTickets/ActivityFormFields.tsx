@@ -248,37 +248,38 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
         setcreatedAt(formatted);
     }, []);
 
-    const getCurrentDateTime = () => {
-        const now = new Date();
-    
-        // Use UTC to avoid local time zone influence
-        const year = now.getUTCFullYear();
-        const month = String(now.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(now.getUTCDate()).padStart(2, '0');
-        const hours = String(now.getUTCHours()).padStart(2, '0');
-        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-    
-        return `${year}-${month}-${day}T${hours}:${minutes}`; // "YYYY-MM-DDTHH:MM" in UTC
-    };
-    
-    const getMinDateTime = () => {
-        const now = new Date();
-    
-        // Set time to start of UTC day
-        const year = now.getUTCFullYear();
-        const month = String(now.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(now.getUTCDate()).padStart(2, '0');
-        const hours = String(now.getUTCHours()).padStart(2, '0');
-        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-    
-        return `${year}-${month}-${day}T${hours}:${minutes}`; // Midnight UTC today
-    };
-    
-    useEffect(() => {
-        const now = getCurrentDateTime();
-        setTicketReceived(now);
-        setTicketEndorsed(now);
-    }, []);
+    // Returns current date-time in UTC formatted as "YYYY-MM-DDTHH:MM"
+const getCurrentDateTime = () => {
+    const now = new Date();
+  
+    const year = now.getUTCFullYear();
+    const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(now.getUTCDate()).padStart(2, '0');
+    const hours = String(now.getUTCHours()).padStart(2, '0');
+    const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+  
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+  
+  // Prevent selection of past date and time (based on UTC)
+  const getMinDateTime = () => {
+    const now = new Date();
+  
+    const year = now.getUTCFullYear();
+    const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(now.getUTCDate()).padStart(2, '0');
+    const hours = String(now.getUTCHours()).padStart(2, '0');
+    const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+  
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+  
+  useEffect(() => {
+    const now = getCurrentDateTime();
+    setTicketReceived(now);
+    setTicketEndorsed(now);
+  }, []);
+  
     
     
 
