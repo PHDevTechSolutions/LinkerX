@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 interface Metric {
   createdAt: string;
   Channel: string;
+  ReferenceID: string; // Add this property for filtering
 }
 
 interface MetricTableProps {
@@ -11,6 +12,8 @@ interface MetricTableProps {
   Role: string;
   month: number;
   year: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 // ✅ Get week number logic
@@ -24,12 +27,7 @@ const getWeekNumber = (dateString: string) => {
   return 4; // Days 22-31 go to Week 4
 };
 
-const MetricTable: React.FC<MetricTableProps> = ({
-  ReferenceID,
-  Role,
-  month,
-  year,
-}) => {
+const MetricTable: React.FC<MetricTableProps> = ({ReferenceID, Role, month, year, startDate, endDate}) => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -60,13 +58,37 @@ const MetricTable: React.FC<MetricTableProps> = ({
       if (!response.ok) throw new Error("Failed to fetch data");
       const data = await response.json();
 
-      // ✅ Filter the data based on selected month and year
-      const filteredData = data.filter((metric: Metric) => {
-        const metricDate = new Date(metric.createdAt);
-        return (
-          metricDate.getMonth() + 1 === month &&
-          metricDate.getFullYear() === year
+      // ✅ Filter data by role
+      let filteredData = data;
+
+      if (Role === "Staff") {
+        filteredData = data.filter(
+          (item: Metric) => item.ReferenceID === ReferenceID
         );
+      }
+
+      // Convert startDate and endDate to dates with time set to 00:00:00 and 23:59:59 respectively
+      const adjustedStartDate = startDate ? new Date(startDate) : null;
+      const adjustedEndDate = endDate ? new Date(endDate) : null;
+
+      if (adjustedStartDate) adjustedStartDate.setHours(0, 0, 0, 0); // Start date at 00:00:00
+      if (adjustedEndDate) adjustedEndDate.setHours(23, 59, 59, 999); // End date at 23:59:59
+
+      // ✅ Filter by month/year or by date range
+      const finalData = filteredData.filter((item: Metric) => {
+        const createdAtDate = new Date(item.createdAt);
+
+        const isWithinMonthYear =
+          month && year
+            ? createdAtDate.getMonth() + 1 === month && createdAtDate.getFullYear() === year
+            : true;
+
+        const isWithinDateRange =
+          adjustedStartDate && adjustedEndDate
+            ? createdAtDate >= adjustedStartDate && createdAtDate <= adjustedEndDate
+            : true;
+
+        return isWithinDateRange && isWithinMonthYear;
       });
 
       setMetrics(filteredData);
@@ -79,7 +101,7 @@ const MetricTable: React.FC<MetricTableProps> = ({
 
   useEffect(() => {
     fetchMetricsData(month, year);
-  }, [ReferenceID, Role, month, year]);
+  }, [ReferenceID, Role, month, year, startDate, endDate]);
 
   // ✅ Calculate weekly counts per channel
   const calculateWeeklyCounts = () => {
@@ -107,10 +129,10 @@ const MetricTable: React.FC<MetricTableProps> = ({
   const weeklyCounts = calculateWeeklyCounts();
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-4">
+    <div className="bg-white">
       {/* ✅ Loading or Data Table */}
       {loading ? (
-        <p className="text-center">Loading...</p>
+        <p className="text-center text-xs">Loading...</p>
       ) : (
         <table className="w-full border-collapse border border-gray-200 text-xs">
           <thead>

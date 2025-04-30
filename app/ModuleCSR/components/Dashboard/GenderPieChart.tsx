@@ -1,43 +1,24 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
-import { Pie } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  CategoryScale,
-  LinearScale,
-} from "chart.js";
-import ChartDataLabels from "chartjs-plugin-datalabels";
-
-// Register Chart.js components
-ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, ChartDataLabels);
 
 interface GenderCount {
-  _id: "Male" | "Female" | string;
-  count: number;
+  Gender: string | null;
+  createdAt: string | null;
+  ReferenceID: string;
 }
 
-interface GenderPieChartProps {
+interface GenderBarChartProps {
   ReferenceID: string;
   Role: string;
   month: number;
   year: number;
+  startDate?: string;
+  endDate?: string;
 }
 
-const GenderPieChart: React.FC<GenderPieChartProps> = ({
-  ReferenceID,
-  Role,
-  month,
-  year,
-}) => {
+const GenderBarChart: React.FC<GenderBarChartProps> = ({ReferenceID, Role, month, year, startDate, endDate}) => {
   const [genderData, setGenderData] = useState<GenderCount[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch gender data
   useEffect(() => {
     const fetchGenderData = async () => {
       setLoading(true);
@@ -45,12 +26,33 @@ const GenderPieChart: React.FC<GenderPieChartProps> = ({
         const res = await fetch(
           `/api/ModuleCSR/Dashboard/Monitoring?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
         );
-        const data = await res.json();
-        if (res.ok) {
-          setGenderData(Array.isArray(data) ? data : []);
-        } else {
-          console.error("Failed to fetch gender data:", data.message);
+
+        if (!res.ok) {
+          console.error("Failed to fetch gender data:", res.statusText);
+          return;
         }
+
+        const data = await res.json();
+
+        let filteredData = data;
+
+        if (Role === "Staff") {
+          filteredData = data.filter(
+            (item: GenderCount) => item.ReferenceID === ReferenceID
+          );
+        }
+
+        const finalData = filteredData.filter((item: GenderCount) => {
+          if (!item.createdAt) return false;
+          const date = new Date(item.createdAt);
+          return (
+            date.getMonth() + 1 === month &&
+            date.getFullYear() === year &&
+            (item.Gender === "Male" || item.Gender === "Female")
+          );
+        });
+
+        setGenderData(finalData);
       } catch (error) {
         console.error("Error fetching gender data:", error);
       } finally {
@@ -59,73 +61,59 @@ const GenderPieChart: React.FC<GenderPieChartProps> = ({
     };
 
     fetchGenderData();
-  }, [month, year, ReferenceID, Role]);
+  }, [ReferenceID, Role, month, year, startDate, endDate]);
 
-  const pieChartData = {
-    labels: genderData.map((item) => item._id),
-    datasets: [
-      {
-        data: genderData.map((item) => item.count),
-        backgroundColor: ["#B8742C", "#162F0B"],
-        borderColor: "#fff",
-        borderWidth: 2,
-      },
-    ],
-  };
-
-  const pieChartOptions = {
-    responsive: true,
-    animation: {
-      animateScale: true,
-      animateRotate: true,
-    },
-    plugins: {
-      title: {
-        display: true,
-        text: "Inbound Traffic Per Gender",
-        font: {
-          size: 15,
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: function (tooltipItem: any) {
-            return `${tooltipItem.label}: ${tooltipItem.raw}`;
-          },
-        },
-      },
-      datalabels: {
-        color: "#fff",
-        font: {
-          weight: "bold" as const,
-          size: 14,
-        },
-        formatter: (value: any) => value,
-      },
-    },
-    layout: {
-      padding: 2,
-    },
-    elements: {
-      arc: {
-        borderWidth: 6,
-      },
-    },
-  };
+  // Count based on gender
+  const maleCount = genderData.filter((item) => item.Gender === "Male").length;
+  const femaleCount = genderData.filter((item) => item.Gender === "Female").length;
+  const total = maleCount + femaleCount;
 
   return (
-    <div className="flex flex-col justify-center items-center w-full h-full p-4">
-      <div className="w-full h-full">
-        {loading ? (
-          <p className="text-center text-gray-600 text-xs">Loading data...</p>
-        ) : genderData.length > 0 ? (
-          <Pie data={pieChartData} options={pieChartOptions} />
-        ) : (
-          <p className="text-center text-gray-600 text-xs">No data available</p>
-        )}
-      </div>
+    <div className="w-full max-w-md mx-auto bg-white">
+      <h3 className="text-sm font-bold mb-4 text-center">Inbound Traffic Per Gender</h3>
+
+      {loading ? (
+        <p className="text-center text-gray-500 text-xs">Loading...</p>
+      ) : total === 0 ? (
+        <p className="text-center text-gray-500 text-xs">No data available</p>
+      ) : (
+        <div className="space-y-4">
+          {/* Male Count */}
+          <div>
+            <div className="flex justify-between mb-1">
+              <span className="text-xs font-medium text-blue-800">Male</span>
+              <span className="text-xs text-gray-600">{maleCount}</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-4">
+              <div
+                className="bg-blue-800 h-4 rounded-full"
+                style={{ width: `${(maleCount / total) * 100}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Female Count */}
+          <div>
+            <div className="flex justify-between mb-1">
+              <span className="text-xs font-medium text-yellow-600">Female</span>
+              <span className="text-xs text-gray-600">{femaleCount}</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-4">
+              <div
+                className="bg-yellow-500 h-4 rounded-full"
+                style={{ width: `${(femaleCount / total) * 100}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Total Count */}
+          <div className="text-center text-xs text-gray-700 mt-4">
+            Total: <span className="font-semibold">{total}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default GenderPieChart;
+export default GenderBarChart;

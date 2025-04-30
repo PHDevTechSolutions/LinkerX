@@ -18,14 +18,11 @@ interface AgentSalesConversionProps {
   Role: string;
   month: number;
   year: number;
+  startDate?: string;
+  endDate?: string;
 }
 
-const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
-  ReferenceID,
-  Role,
-  month,
-  year,
-}) => {
+const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID, Role, month, year, startDate, endDate }) => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,7 +34,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     "AA-CSR-785895": "Arendain, Armando",
     "GL-CSR-586725": "Lumabao, Grace",
     "MD-CSR-152985": "Dungso, Mary Grace",
-    "LR-CSR-654001": "Leroux Y Xchire",
+    "LR-CSR-654001": "LX",
     "MC-CSR-947264": "Capin, Mark Vincent",
   };
 
@@ -50,16 +47,33 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
         if (!response.ok) throw new Error("Failed to fetch data");
         const data = await response.json();
 
-        // ✅ Filter by month and year in frontend if backend is not filtering
-        const filteredData = data.filter((item: Metric) => {
-          const createdAtDate = new Date(item.createdAt);
-          return (
-            createdAtDate.getMonth() + 1 === month &&
-            createdAtDate.getFullYear() === year
-          );
+        // Filter by Role
+        let filteredData = Role === "Staff"
+          ? data.filter((item: Metric) => item.ReferenceID === ReferenceID)
+          : data;
+
+        // Date range filtering
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+        if (start) start.setHours(0, 0, 0, 0);
+        if (end) end.setHours(23, 59, 59, 999);
+
+        const finalData = filteredData.filter((item: Metric) => {
+          if (!item.createdAt) return false;
+
+          const createdAt = new Date(item.createdAt);
+          const matchesMonthYear =
+            createdAt.getMonth() + 1 === month &&
+            createdAt.getFullYear() === year;
+
+          const inRange =
+            (!start || createdAt >= start) &&
+            (!end || createdAt <= end);
+
+          return matchesMonthYear && inRange;
         });
 
-        setMetrics(filteredData);
+        setMetrics(finalData);
       } catch (error) {
         console.error("Error fetching metrics:", error);
       } finally {
@@ -68,7 +82,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     };
 
     fetchMetrics();
-  }, [ReferenceID, Role, month, year]);
+  }, [ReferenceID, Role, month, year, startDate, endDate]);
 
   // ✅ Group by ReferenceID
   const groupedMetrics: Record<string, Metric[]> = metrics.reduce(
@@ -268,7 +282,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
                     : "N/A";
 
                 return (
-                  <tr key={index} className="text-center border-t text-[10px]">
+                  <tr key={index} className="text-center border-t text-xs">
                     <td className="border p-2 whitespace-nowrap uppercase">
                       {referenceIdToNameMap[refId] || "Unknown"}
                     </td>
@@ -308,7 +322,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
           </tbody>
 
           {/* ✅ TFOOT for Total Summary */}
-          <tfoot className="bg-gray-100 text-[10px] text-center font-bold">
+          <tfoot className="bg-gray-100 text-xs text-center font-bold">
             <tr>
               <td className="border p-2">TOTAL</td>
               <td className="border p-2">{totalMetrics.sales}</td>
@@ -338,6 +352,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
               <td className="border p-2">
                 {formatAmountWithPeso(totalMetrics.existingInactiveAmount)}
               </td>
+              <td className="border p-2">-</td>
             </tr>
           </tfoot>
         </table>

@@ -1,25 +1,19 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Pie } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  CategoryScale,
-  LinearScale,
-} from "chart.js";
-import ChartDataLabels from "chartjs-plugin-datalabels";
 
-// Register Chart.js components
-ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
+interface CustomerStatus {
+  CustomerStatus: string | null;
+  createdAt: string | null;
+  ReferenceID: string;
+}
 
 interface CustomerChartProps {
   ReferenceID: string;
   Role: string;
   month: number;
   year: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 const CustomerChart: React.FC<CustomerChartProps> = ({
@@ -27,112 +21,105 @@ const CustomerChart: React.FC<CustomerChartProps> = ({
   Role,
   month,
   year,
+  startDate = "",  // Default empty string if not provided
+  endDate = "",    // Default empty string if not provided
 }) => {
-  const [customerData, setCustomerData] = useState<any>(null);
+  const [customerData, setCustomerData] = useState<CustomerStatus[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch data on component load and when month/year change
   useEffect(() => {
     const fetchCustomerData = async () => {
       setLoading(true);
       try {
-        // Build start and end date based on month and year
+        // Ensure startDate and endDate are set properly
         const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
         const endDate = new Date(year, month, 0).toISOString().split("T")[0];
 
-        // ✅ Corrected API call with new endpoint and parameters
         const res = await fetch(
           `/api/ModuleCSR/Dashboard/Customer?ReferenceID=${ReferenceID}&Role=${Role}&startDate=${startDate}&endDate=${endDate}`
         );
+
         const data = await res.json();
 
-        if (res.ok) {
-          setCustomerData(data);
-        } else {
-          setCustomerData(null);
+        let filtered = data;
+        if (Role === "Staff") {
+          filtered = data.filter((item: CustomerStatus) => item.ReferenceID === ReferenceID);
         }
+
+        const final = filtered.filter((item: CustomerStatus) => {
+          if (!item.createdAt) return false;
+          const createdAtDate = new Date(item.createdAt);
+          return (
+            createdAtDate.getMonth() + 1 === month &&
+            createdAtDate.getFullYear() === year &&
+            item.CustomerStatus &&
+            [
+              "New Client",
+              "Existing Active",
+              "New Non-Buying",
+              "Existing Inactive",
+            ].includes(item.CustomerStatus)
+          );
+        });
+
+        setCustomerData(final);
       } catch (error) {
-        console.error("❌ Error fetching customer data:", error);
-        setCustomerData(null);
+        console.error("Error fetching customer data:", error);
+        setCustomerData([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchCustomerData();
-  }, [ReferenceID, Role, month, year]);
+  }, [ReferenceID, Role, month, year, startDate, endDate]);
 
-  // ✅ Prepare chart data
-  const pieChartData = {
-    labels: customerData ? customerData.map((item: any) => item._id) : [],
-    datasets: [
-      {
-        data: customerData ? customerData.map((item: any) => item.count) : [],
-        backgroundColor: ["#0B293F", "#332753", "#4C0000", "#1B360D", "#6D214F"],
-        borderColor: "#fff",
-        borderWidth: 1,
-      },
-    ],
-  };
+  // Count by CustomerStatus
+  const statusCounts: { [key: string]: number } = {};
+  customerData.forEach((item) => {
+    const status = item.CustomerStatus || "Unknown";
+    statusCounts[status] = (statusCounts[status] || 0) + 1;
+  });
 
-  const pieChartOptions = {
-    responsive: true,
-    animation: {
-      animateScale: true,
-      animateRotate: true,
-    },
-    plugins: {
-      title: {
-        display: true,
-        text: "Customer Status Distribution",
-        font: {
-          size: 15,
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: function (tooltipItem: any) {
-            return `${tooltipItem.label}: ${tooltipItem.raw}`;
-          },
-        },
-      },
-      datalabels: {
-        color: "#fff",
-        font: {
-          weight: "bold" as const,
-          size: 14,
-        },
-        formatter: function (value: any) {
-          return value;
-        },
-      },
-    },
-    layout: {
-      padding: 2,
-    },
-    elements: {
-      arc: {
-        borderWidth: 6,
-      },
-    },
+  const total = Object.values(statusCounts).reduce((sum, val) => sum + val, 0);
+
+  const colorMap: { [key: string]: string } = {
+    "New Client": "bg-blue-600",
+    "Existing Active": "bg-green-600",
+    "New Non-Buying": "bg-yellow-500",
+    "Existing Inactive": "bg-red-600",
+    "Unknown": "bg-gray-500",
   };
 
   return (
-    <div className="flex flex-col justify-center items-center w-full h-full space-y-4">
-      {/* Pie Chart */}
-      <div className="w-full h-full">
-        {loading ? (
-          <p className="text-center text-gray-600 text-xs">Loading data...</p>
-        ) : customerData && customerData.length > 0 ? (
-          <Pie
-            data={pieChartData}
-            options={pieChartOptions}
-            plugins={[ChartDataLabels]}
-          />
-        ) : (
-          <p className="text-center text-gray-600 text-xs">No data available</p>
-        )}
-      </div>
+    <div className="w-full max-w-md mx-auto bg-white">
+      <h3 className="text-sm font-bold mb-4 text-center">Customer Status Distribution</h3>
+
+      {loading ? (
+        <p className="text-center text-gray-500 text-xs">Loading...</p>
+      ) : total === 0 ? (
+        <p className="text-center text-gray-500 text-xs">No data available</p>
+      ) : (
+        <div className="space-y-4">
+          {Object.entries(statusCounts).map(([status, count]) => (
+            <div key={status}>
+              <div className="flex justify-between mb-1">
+                <span className="text-xs font-medium">{status}</span>
+                <span className="text-xs text-gray-600">{count}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-4">
+                <div
+                  className={`h-4 rounded-full ${colorMap[status] || "bg-gray-400"}`}
+                  style={{ width: `${(count / total) * 100}%` }}
+                />
+              </div>
+            </div>
+          ))}
+          <div className="text-center text-xs text-gray-700 mt-4">
+            Total: <span className="font-semibold">{total}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

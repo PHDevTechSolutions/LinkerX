@@ -34,12 +34,21 @@ const DashboardPage: React.FC = () => {
     Role: "",
   });
 
+  interface MyDataType {
+    createdAt: string;
+  }
+
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("gender");
   const [activeTable, setactiveTable] = useState("metrictable");
   const [activeSource, setactiveSource] = useState("source");
   const [activeTableTraffic, setactiveTableTraffic] = useState("saleschart");
+
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [data, setData] = useState<MyDataType[]>([]);
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -74,6 +83,14 @@ const DashboardPage: React.FC = () => {
     fetchUserData();
   }, []);
 
+  const filteredData = data.filter((item: MyDataType) => {
+    const createdAtDate = new Date(item.createdAt);
+    return (
+      (!startDate || createdAtDate >= new Date(startDate)) &&
+      (!endDate || createdAtDate <= new Date(endDate))
+    );
+  });
+
   return (
     <SessionChecker>
       <ParentLayout>
@@ -82,42 +99,28 @@ const DashboardPage: React.FC = () => {
           <div className="flex gap-4 mb-4">
             <div className="bg-white shadow-md rounded-lg p-4 w-full">
               <div className="flex gap-2">
-                {/* Month Filter */}
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
+                {/* Start Date */}
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
                   className="p-2 border rounded text-xs bg-white"
-                >
-                  <option value="1">January</option>
-                  <option value="2">February</option>
-                  <option value="3">March</option>
-                  <option value="4">April</option>
-                  <option value="5">May</option>
-                  <option value="6">June</option>
-                  <option value="7">July</option>
-                  <option value="8">August</option>
-                  <option value="9">September</option>
-                  <option value="10">October</option>
-                  <option value="11">November</option>
-                  <option value="12">December</option>
-                </select>
+                />
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="p-2 border rounded text-xs bg-white"
+                />
 
-                {/* Year Filter */}
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
-                  className="p-2 border rounded text-xs bg-white"
-                >
-                  {Array.from({ length: 5 }, (_, i) => {
-                    const year = new Date().getFullYear() - i;
-                    return (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    );
-                  })}
-                </select>
+                {/* Render filtered data */}
+                <ul>
+                  {filteredData.map((item, index) => (
+                    <li key={index}>{item.createdAt}</li>
+                  ))}
+                </ul>
               </div>
+
             </div>
           </div>
 
@@ -129,6 +132,8 @@ const DashboardPage: React.FC = () => {
                   month={Number(selectedMonth)}
                   year={Number(selectedYear)}
                   Role={userDetails.Role}
+                  startDate={startDate}
+                  endDate={endDate}
                 />
               </div>
             </div>
@@ -138,13 +143,15 @@ const DashboardPage: React.FC = () => {
                 <button className={`p-2 flex-1 ${activeTable === "metrictable" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("metrictable")}>Metrics</button>
                 <button className={`p-2 flex-1 ${activeTable === "inboundtraffic" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveTable("inboundtraffic")}>Weekly Inbound Traffic Per Channel</button>
               </div>
-              <div className="p-4">
+              <div>
                 {activeTable === "metrictable" && (
                   <MetricTable
                     ReferenceID={userDetails.ReferenceID}
                     month={Number(selectedMonth)}
                     year={Number(selectedYear)}
                     Role={userDetails.Role}
+                    startDate={startDate}
+                    endDate={endDate}
                   />
                 )}
                 {activeTable === "inboundtraffic" && (
@@ -153,6 +160,8 @@ const DashboardPage: React.FC = () => {
                     Role={userDetails.Role}
                     month={Number(selectedMonth)}
                     year={Number(selectedYear)}
+                    startDate={startDate}
+                    endDate={endDate}
                   />
                 )}
               </div>
@@ -168,6 +177,8 @@ const DashboardPage: React.FC = () => {
                   Role={userDetails.Role}
                   month={Number(selectedMonth)}
                   year={Number(selectedYear)}
+                  startDate={startDate}
+                  endDate={endDate}
                 />
               </div>
             </div>
@@ -179,6 +190,8 @@ const DashboardPage: React.FC = () => {
                   Role={userDetails.Role}
                   month={Number(selectedMonth)}
                   year={Number(selectedYear)}
+                  startDate={startDate}
+                  endDate={endDate}
                 />
               </div>
             </div>
@@ -190,6 +203,8 @@ const DashboardPage: React.FC = () => {
                   Role={userDetails.Role}
                   month={Number(selectedMonth)}
                   year={Number(selectedYear)}
+                  startDate={startDate}
+                  endDate={endDate}
                 />
               </div>
             </div>
@@ -202,13 +217,15 @@ const DashboardPage: React.FC = () => {
                 <button className={`p-2 flex-1 ${activeSource === "wrapup" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveSource("wrapup")}>Wrap Up</button>
                 <button className={`p-2 flex-1 ${activeSource === "wraptable" ? "border-b-2 border-blue-500" : ""}`} onClick={() => setactiveSource("wraptable")}>Table</button>
               </div>
-              <div className="p-4">
+              <div>
                 {activeSource === "source" && (
                   <CustomerSource
                     ReferenceID={userDetails.ReferenceID}
                     Role={userDetails.Role}
                     month={Number(selectedMonth)}
                     year={Number(selectedYear)}
+                    startDate={startDate}
+                    endDate={endDate}
                   />
                 )}
                 {activeSource === "wrapup" && (
@@ -217,6 +234,8 @@ const DashboardPage: React.FC = () => {
                     Role={userDetails.Role}
                     month={Number(selectedMonth)}
                     year={Number(selectedYear)}
+                    startDate={startDate}
+                    endDate={endDate}
                   />
                 )}
                 {activeSource === "wraptable" && (
@@ -225,6 +244,8 @@ const DashboardPage: React.FC = () => {
                     Role={userDetails.Role}
                     month={Number(selectedMonth)}
                     year={Number(selectedYear)}
+                    startDate={startDate}
+                    endDate={endDate}
                   />
                 )}
               </div>
@@ -244,6 +265,8 @@ const DashboardPage: React.FC = () => {
                       Role={userDetails.Role}
                       month={Number(selectedMonth)}
                       year={Number(selectedYear)}
+                      startDate={startDate}
+                      endDate={endDate}
                     />
                   )}
                   {activeTableTraffic === "salesconversion" && (
@@ -252,6 +275,8 @@ const DashboardPage: React.FC = () => {
                       Role={userDetails.Role}
                       month={Number(selectedMonth)}
                       year={Number(selectedYear)}
+                      startDate={startDate}
+                      endDate={endDate}
                     />
                   )}
                   {activeTableTraffic === "salesweekly" && (
@@ -260,6 +285,8 @@ const DashboardPage: React.FC = () => {
                       Role={userDetails.Role}
                       month={Number(selectedMonth)}
                       year={Number(selectedYear)}
+                      startDate={startDate}
+                      endDate={endDate}
                     />
                   )}
                 </div>
@@ -276,6 +303,8 @@ const DashboardPage: React.FC = () => {
                   Role={userDetails.Role}
                   month={Number(selectedMonth)}
                   year={Number(selectedYear)}
+                  startDate={startDate}
+                  endDate={endDate}
                 />
               </div>
             </div>

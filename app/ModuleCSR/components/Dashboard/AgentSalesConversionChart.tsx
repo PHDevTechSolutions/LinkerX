@@ -1,25 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2"; // Using Bar chart
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface Metric {
   userName: string;
   ReferenceID: string;
   Traffic: string;
-  Amount: any;
-  QtySold: any;
+  Amount: number | string;
+  QtySold: number | string;
   Status: string;
   createdAt: string;
+  WrapUp?: string;
 }
 
 interface AgentSalesConversionProps {
@@ -27,6 +16,8 @@ interface AgentSalesConversionProps {
   Role: string;
   month: number;
   year: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
@@ -34,6 +25,8 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
   Role,
   month,
   year,
+  startDate,
+  endDate,
 }) => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,14 +39,16 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     "AA-CSR-785895": "Arendain, Armando",
     "GL-CSR-586725": "Lumabao, Grace",
     "MD-CSR-152985": "Dungso, Mary Grace",
-    "LR-CSR-849432": "Leroux Y Xchire",
     "MC-CSR-947264": "Capin, Mark Vincent",
   };
 
-  // Predefined colors for each agent (fixed color set)
+  const wrapupLabels = [
+    "Confirmed", "Paid", "PDC", "Gcash", "BDO", "BPI", "Metrobank",
+  ];
+
   const colorPalette = [
     "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40",
-    "#C9CBCF", "#8B0000", "#008080",
+    "#C9CBCF", "#008080",
   ];
 
   useEffect(() => {
@@ -65,16 +60,33 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
         if (!response.ok) throw new Error("Failed to fetch data");
         const data = await response.json();
 
-        // ✅ Filter by month and year
-        const filteredData = data.filter((item: Metric) => {
-          const createdAtDate = new Date(item.createdAt);
-          return (
-            createdAtDate.getMonth() + 1 === month &&
-            createdAtDate.getFullYear() === year
-          );
+        // Filter by Role
+        let filteredData = Role === "Staff"
+          ? data.filter((item: Metric) => item.ReferenceID === ReferenceID)
+          : data;
+
+        // Date range filtering
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+        if (start) start.setHours(0, 0, 0, 0);
+        if (end) end.setHours(23, 59, 59, 999);
+
+        const finalData = filteredData.filter((item: Metric) => {
+          if (!item.createdAt || !item.WrapUp) return false;
+
+          const createdAt = new Date(item.createdAt);
+          const matchesMonthYear =
+            createdAt.getMonth() + 1 === month &&
+            createdAt.getFullYear() === year;
+
+          const inRange =
+            (!start || createdAt >= start) &&
+            (!end || createdAt <= end);
+
+          return matchesMonthYear && inRange && wrapupLabels.includes(item.WrapUp);
         });
 
-        setMetrics(filteredData);
+        setMetrics(finalData);
       } catch (error) {
         console.error("Error fetching metrics:", error);
       } finally {
@@ -83,104 +95,68 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     };
 
     fetchMetrics();
-  }, [ReferenceID, Role, month, year]);
+  }, [ReferenceID, Role, month, year, startDate, endDate]);
 
-  // ✅ Group by ReferenceID
   const groupedMetrics: Record<string, Metric[]> = metrics.reduce(
     (acc, metric) => {
-      if (!acc[metric.ReferenceID]) {
-        acc[metric.ReferenceID] = [];
-      }
+      if (!acc[metric.ReferenceID]) acc[metric.ReferenceID] = [];
       acc[metric.ReferenceID].push(metric);
       return acc;
     },
     {} as Record<string, Metric[]>
   );
 
-  // ✅ Calculate totals per agent
   const calculateAgentTotals = (agentMetrics: Metric[]) => {
-    const totals = agentMetrics.reduce(
+    return agentMetrics.reduce(
       (acc, metric) => {
-        const amount = parseFloat(metric.Amount) || 0;
+        const amount = parseFloat(metric.Amount as string) || 0;
         acc.totalAmount += amount;
         return acc;
       },
-      {
-        totalAmount: 0,
-      }
+      { totalAmount: 0 }
     );
-    return totals;
   };
 
-  // Prepare data for the bar chart
-  const chartData = {
-    labels: Object.keys(groupedMetrics).map((refId) => referenceIdToNameMap[refId] || "Unknown"),
-    datasets: [
-      {
-        label: "Amount",
-        data: Object.keys(groupedMetrics).map((refId) => {
-          const agentMetrics = groupedMetrics[refId];
-          const totals = calculateAgentTotals(agentMetrics);
-          return totals.totalAmount;
-        }),
-        backgroundColor: Object.keys(groupedMetrics).map((refId, index) => colorPalette[index % colorPalette.length]), // Assign fixed colors
-        borderColor: "#1C4E80", // Customize border color
-        borderRadius: 10,
-      },
-    ],
-  };
+  const agentLabels = Object.keys(groupedMetrics);
+  const maxAmount = Math.max(
+    ...agentLabels.map((refId) =>
+      calculateAgentTotals(groupedMetrics[refId]).totalAmount
+    ), 1
+  );
 
   return (
-    <div className="overflow-x-auto max-h-screen overflow-y-auto">
+    <div className="overflow-x-auto w-full">
       {loading ? (
-        <p className="text-xs">Loading...</p>
+        <p className="text-sm">Loading...</p>
       ) : (
-        <div className="w-full mx-auto">
-          {/* Bar chart with horizontal bars */}
-          <Bar
-            data={chartData}
-            options={{
-              indexAxis: "y", // Horizontal bar chart
-              responsive: true,
-              maintainAspectRatio: true, // ✅ Allow custom height
-              aspectRatio: 2,
-              plugins: {
-                legend: {
-                  position: "top",
-                },
-                datalabels: {
-                  color: 'black', // White text color for data labels
-                  font: {
-                    weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
-                    size: 8, // Font size for data labels
-                  },
-                  formatter: function (value: any) {
-                    return value; // Display the value directly inside the chart
-                  },
-                  backgroundColor: 'white', // Set background color of the label
-                  borderRadius: 50, // Make the background circular
-                  padding: 4, // Add padding inside the circle
-                  align: 'center', // Center the label within the circle
-                  anchor: 'center', // Anchor the label to the center of the bar
-                },
-              },
-              scales: {
-                x: {
-                  beginAtZero: true,
-                  title: {
-                    display: true,
-                    text: "Agents Sales Conversion",
-                  },
-                },
-                y: {
-                  title: {
-                    display: true,
-                    text: "Agent Name",
-                  },
-                },
-              },
-            }}
-          />
+        <div className="w-full">
+          <h2 className="text-md font-semibold mb-4">Agent Sales Conversion</h2>
+
+          <div className="flex flex-col space-y-4">
+            {agentLabels.map((refId, index) => {
+              const totals = calculateAgentTotals(groupedMetrics[refId]);
+              const widthPercent = (totals.totalAmount / maxAmount) * 100;
+
+              return (
+                <div key={refId} className="flex items-center space-x-2">
+                  <span className="text-[10px] sm:text-xs font-medium w-32">
+                    {referenceIdToNameMap[refId] || "Unknown"}
+                  </span>
+                  <div className="flex-1 bg-gray-200 h-6 rounded-md overflow-hidden">
+                    <div
+                      className="h-full text-[10px] text-white px-2 flex items-center justify-end font-semibold transition-all duration-300"
+                      style={{
+                        width: `${widthPercent}%`,
+                        backgroundColor: colorPalette[index % colorPalette.length],
+                      }}
+                    >
+                      ₱{totals.totalAmount.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

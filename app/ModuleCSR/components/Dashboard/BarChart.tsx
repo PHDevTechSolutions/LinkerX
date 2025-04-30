@@ -1,19 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import ChartDataLabels from "chartjs-plugin-datalabels";
-
-// Register chart.js components and plugins
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
 interface Metric {
   createdAt: string;
@@ -27,9 +13,11 @@ interface MetricTableProps {
   month?: number;
   year?: number;
   Role: string;
+  startDate?: string;
+  endDate?: string;
 }
 
-const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Role }) => {
+const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Role, startDate, endDate }) => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -86,13 +74,28 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
           );
         }
 
-        // ✅ Filter by month and year in frontend if backend is not filtering
+        // Convert startDate and endDate to dates with time set to 00:00:00 and 23:59:59 respectively
+        const adjustedStartDate = startDate ? new Date(startDate) : null;
+        const adjustedEndDate = endDate ? new Date(endDate) : null;
+
+        if (adjustedStartDate) adjustedStartDate.setHours(0, 0, 0, 0); // Start date at 00:00:00
+        if (adjustedEndDate) adjustedEndDate.setHours(23, 59, 59, 999); // End date at 23:59:59
+
+        // ✅ Filter by month/year or by date range
         const finalData = filteredData.filter((item: Metric) => {
           const createdAtDate = new Date(item.createdAt);
-          return (
-            createdAtDate.getMonth() + 1 === month &&
-            createdAtDate.getFullYear() === year
-          );
+
+          const isWithinMonthYear =
+            month && year
+              ? createdAtDate.getMonth() + 1 === month && createdAtDate.getFullYear() === year
+              : true;
+
+          const isWithinDateRange =
+            adjustedStartDate && adjustedEndDate
+              ? createdAtDate >= adjustedStartDate && createdAtDate <= adjustedEndDate
+              : true;
+
+          return isWithinDateRange && isWithinMonthYear;
         });
 
         setMetrics(finalData);
@@ -104,80 +107,52 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
     };
 
     fetchMetrics();
-  }, [ReferenceID, Role, month, year]);
+  }, [ReferenceID, Role, month, year, startDate, endDate]);
+
 
   // ✅ Group by Channel for predefined channels
-  const groupedMetrics = metrics.reduce((groups, metric) => {
-    if (channels.includes(metric.Channel)) {
-      if (!groups[metric.Channel]) {
-        groups[metric.Channel] = {
-          channel: metric.Channel,
-          traffic: 0,
-        };
-      }
-      groups[metric.Channel].traffic += 1;
-    }
-    return groups;
-  }, {} as Record<string, any>);
+  const grouped = metrics.reduce((acc, item) => {
+    if (!channels.includes(item.Channel)) return acc;
+    acc[item.Channel] = (acc[item.Channel] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 
-  // ✅ Prepare data for the bar chart
-  const chartData = {
-    labels: Object.keys(groupedMetrics),
-    datasets: [
-      {
-        label: "Traffic per Channel",
-        data: Object.values(groupedMetrics).map((group) => group.traffic),
-        backgroundColor: Object.keys(groupedMetrics).map(
-          (_, index) => colors[index % colors.length]
-        ),
-        borderColor: "#388E3C",
-        borderRadius: 10,
-      },
-    ],
-  };
-
-  // ✅ Chart options with data labels
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: true, // ✅ Allow custom height
-    aspectRatio: 1, // ✅ Increase height (default is 2, adjust if needed)
-    plugins: {
-      datalabels: {
-        color: "black",
-        font: {
-          weight: "bold" as const,
-          size: 8,
-        },
-        formatter: function (value: any) {
-          return value;
-        },
-        backgroundColor: "white",
-        borderRadius: 50,
-        padding: 4,
-        align: "center" as const,
-        anchor: "center" as const,
-      },
-    },
-    layout: {
-      padding: {
-        top: 20,
-        bottom: 20,
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
+  const maxValue = Math.max(...Object.values(grouped), 1);
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-4">
+    <div className="bg-white h-full w-full">
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : (
-        <div className="w-full">
-          <Bar data={chartData} options={chartOptions} />
+        <div className="w-full h-full overflow-x-auto">
+          <div className="flex items-end h-full space-x-4 min-w-max sm:h-[400px]">
+            {channels.map((channel, index) => {
+              const value = grouped[channel] || 0;
+              const heightPercent = (value / maxValue) * 100;
+
+              return (
+                <div
+                  key={channel}
+                  className="flex flex-col items-center w-12 h-full group"
+                >
+                  <div className="relative w-full flex-1 bg-gray-100 flex items-end rounded-md overflow-hidden">
+                    <div
+                      className="w-full transition-all duration-300 rounded-t group-hover:scale-105 group-hover:brightness-90"
+                      style={{
+                        height: `${heightPercent}%`,
+                        backgroundColor: colors[index % colors.length],
+                      }}
+                      title={`${channel}: ${value}`}
+                    />
+                  </div>
+                  <span className="text-[10px] sm:text-xs text-center mt-1 break-words leading-tight">
+                    {channel}
+                  </span>
+                  <span className="text-[10px] font-semibold sm:text-sm">{value}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

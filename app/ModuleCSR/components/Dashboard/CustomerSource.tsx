@@ -1,185 +1,145 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-} from "chart.js";
 
-// Register Chart.js components
-ChartJS.register(Title, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
+interface Source {
+  Source: string | null;
+  createdAt: string | null;
+  ReferenceID: string;
+}
 
 interface CustomerSourceProps {
   ReferenceID: string;
   Role: string;
-  month: number;
-  year: number;
+  month?: number;
+  year?: number;
+  startDate?: string;
+  endDate?: string;
 }
 
-const CustomerSource: React.FC<CustomerSourceProps> = ({ ReferenceID, Role, month, year }) => {
-  const [genderData, setGenderData] = useState<{ _id: string; count: number }[]>([]);
+const CustomerSource: React.FC<CustomerSourceProps> = ({
+  ReferenceID,
+  Role,
+  month,
+  year,
+  startDate,
+  endDate,
+}) => {
+  const [sources, setSources] = useState<Source[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // ✅ Fetch Customer Source Data Based on Month/Year
-  const fetchGenderData = async () => {
-    try {
-      const res = await fetch(
-        `/api/ModuleCSR/Dashboard/CustomerSource?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
-      );
-
-      if (!res.ok) throw new Error("Failed to fetch data");
-      const data = await res.json();
-      setGenderData(data || []);
-    } catch (error) {
-      console.error("Error fetching gender data:", error);
-    }
-  };
-
-  // ✅ Fetch Data When Month/Year Changes
-  useEffect(() => {
-    fetchGenderData();
-  }, [month, year, ReferenceID, Role]);
+  const sourceLabels = [
+    "FB Ads", "Viber Community / Viber", "Whatsapp Community / Whatsapp",
+    "SMS", "Website", "Word of Mouth", "Quotation Docs", "Google Search",
+    "Site Visit", "Agent Call", "Catalogue", "Shopee", "Lazada",
+    "Tiktok", "WorldBex", "PhilConstruct", "Conex", "Product Demo"
+  ];
 
   const colors = [
-    "#A64D79",
-    "#452A00",
-    "#275214",
-    "#578FCA",
-    "#9966FF",
-    "#FF9F40",
-    "#C9CBCF",
-    "#8B0000",
-    "#008080",
-    "#FFD700",
-    "#DC143C",
-    "#20B2AA",
-    "#8A2BE2",
-    "#FF4500",
-    "#00CED1",
-    "#2E8B57",
-    "#4682B4",
-    "#D2691E",
+    "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40",
+    "#C9CBCF", "#8B0000", "#008080", "#FFD700", "#DC143C", "#20B2AA",
+    "#8A2BE2", "#FF4500", "#00CED1", "#2E8B57", "#4682B4", "#F08080"
   ];
 
-  const labels = [
-    "FB Ads",
-    "Viber Community / Viber",
-    "Whatsapp Community / Whatsapp",
-    "SMS",
-    "Website",
-    "Word of Mouth",
-    "Quotation Docs",
-    "Google Search",
-    "Email Blast",
-    "Agent Call",
-    "Catalogue",
-    "Shopee",
-    "Lazada",
-    "Tiktok",
-    "Worldbex",
-    "PhilConstruct",
-    "Calendar",
-    "Product Demo",
-  ];
+  useEffect(() => {
+    const fetchSources = async () => {
+      try {
+        const res = await fetch(
+          `/api/ModuleCSR/Dashboard/CustomerSource?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch data");
+        const data = await res.json();
 
-  // ✅ Prepare Bar Chart Data
-  const barChartData = {
-    labels: labels,
-    datasets: [
-      {
-        label: "Customer Count",
-        data: labels.map((label) => {
-          const item = genderData.find((entry) => entry._id === label);
-          return item ? item.count : 0;
-        }),
-        backgroundColor: colors,
-        borderColor: "#fff",
-        borderWidth: 2,
-      },
-    ],
-  };
+        let filtered = data;
+        if (Role === "Staff") {
+          filtered = data.filter((item: Source) => item.ReferenceID === ReferenceID);
+        }
 
-  // ✅ Bar Chart Options
-  const barChartOptions: any = {
-    indexAxis: "y", // Horizontal bar chart
-    responsive: true,
-    maintainAspectRatio: true, // ✅ Allow custom height
-    aspectRatio: 1,
-    plugins: {
-      legend: {
-        display: true,
-        position: "bottom",
-        labels: {
-          generateLabels: function (chart: ChartJS) {
-            const labels = chart.data.labels as string[];
-            const datasets = chart.data.datasets as any[];
-            return labels.map((label, index) => {
-              const dataset = datasets[0];
-              const dataValue = dataset.data[index];
-              return {
-                text: `${label}: ${dataValue}`,
-                fillStyle: dataset.backgroundColor[index],
-                strokeStyle: dataset.borderColor[index],
-                lineWidth: dataset.borderWidth,
-              };
-            });
-          },
-        },
-      },
-      title: {
-        display: true,
-        text: "Where Customers Found Us",
-        font: {
-          size: 15,
-        },
-      },
-      datalabels: {
-        color: 'black', // White text color for data labels
-        font: {
-          weight: 'bold' as const, // Use "as const" to explicitly type this as a valid option for font weight
-          size: 8, // Font size for data labels
-        },
-        formatter: function (value: any) {
-          return value; // Display the value directly inside the chart
-        },
-        backgroundColor: 'white', // Set background color of the label
-        borderRadius: 50, // Make the background circular
-        padding: 4, // Add padding inside the circle
-        align: 'center', // Center the label within the circle
-        anchor: 'center', // Anchor the label to the center of the bar
-      },
-    },
-    layout: {
-      padding: 0,
-    },
-    scales: {
-      x: {
-        beginAtZero: true,
-        barThickness: 20,
-        categoryPercentage: 1.0,
-        barPercentage: 0.8,
-      },
-    },
-  };
+        const adjustedStartDate = startDate ? new Date(startDate) : null;
+        const adjustedEndDate = endDate ? new Date(endDate) : null;
+
+        if (adjustedStartDate) adjustedStartDate.setHours(0, 0, 0, 0);
+        if (adjustedEndDate) adjustedEndDate.setHours(23, 59, 59, 999);
+
+        const final = filtered.filter((item: Source) => {
+          if (!item.createdAt || !item.Source) return false;
+
+          const createdAt = new Date(item.createdAt);
+          const isWithinMonthYear = month && year
+            ? createdAt.getMonth() + 1 === month && createdAt.getFullYear() === year
+            : true;
+
+          const isWithinDateRange = adjustedStartDate && adjustedEndDate
+            ? createdAt >= adjustedStartDate && createdAt <= adjustedEndDate
+            : true;
+
+          return isWithinMonthYear && isWithinDateRange && sourceLabels.includes(item.Source);
+        });
+
+        setSources(final);
+      } catch (error) {
+        console.error("Error fetching sources:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSources();
+  }, [ReferenceID, Role, month, year, startDate, endDate]);
+
+  const grouped = sources.reduce((acc, item) => {
+    if (!item.Source) return acc;
+    acc[item.Source] = (acc[item.Source] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const maxValue = Math.max(...Object.values(grouped), 1);
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-4">
-      {/* ✅ Render Chart or No Data Message */}
-      <div className="flex justify-center items-center w-full h-full">
-        <div className="w-full h-full">
-          {genderData.length > 0 ? (
-            <Bar data={barChartData} options={barChartOptions} />
-          ) : (
-            <p className="text-center text-gray-600 text-xs">No data available</p>
-          )}
-        </div>
+    <div className="w-full">
+      <div className="bg-white w-full h-full">
+        {loading ? (
+          <p className="text-center">Loading...</p>
+        ) : (
+          <div className="w-full h-full overflow-x-auto">
+            <h3 className="text-center text-sm font-semibold mb-4">
+              Where Customers Found Us
+            </h3>
+            <div className="flex items-end h-full space-x-4 sm:h-[400px] w-full">
+              {sourceLabels.map((label, index) => {
+                const value = grouped[label] || 0;
+                const heightPercent = (value / maxValue) * 100;
+
+                return (
+                  <div
+                    key={label}
+                    className="flex flex-col items-center h-full group"
+                  >
+                    <div className="relative w-full flex-1 bg-gray-100 flex items-end rounded-md overflow-hidden">
+                      <div
+                        className="w-full transition-all duration-300 rounded-t group-hover:scale-105 group-hover:brightness-90"
+                        style={{
+                          height: `${heightPercent}%`,
+                          backgroundColor: colors[index % colors.length],
+                        }}
+                        title={`${label}: ${value}`}
+                      />
+                    </div>
+                    <span className="text-[10px] sm:text-xs text-center mt-1 break-words leading-tight">
+                      {label}
+                    </span>
+                    <span className="text-[10px] font-semibold sm:text-sm">
+                      {value}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
+
 };
 
 export default CustomerSource;

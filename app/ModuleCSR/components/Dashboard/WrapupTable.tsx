@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-interface WrapupTable {
+interface WrapupTableData {
   createdAt: string;
   WrapUp: string;
+  ReferenceID?: string;
 }
 
 interface WrapupTableProps {
@@ -11,17 +12,17 @@ interface WrapupTableProps {
   Role: string;
   month: number;
   year: number;
+  startDate?: string;
+  endDate?: string;
 }
 
-// ✅ Get week number logic
+// Week number logic based on day of the month
 const getWeekNumber = (dateString: string) => {
-  const date = new Date(dateString);
-  const dayOfMonth = date.getDate();
-
-  if (dayOfMonth <= 7) return 1;
-  if (dayOfMonth <= 14) return 2;
-  if (dayOfMonth <= 21) return 3;
-  return 4; // Days 22-31 go to Week 4
+  const day = new Date(dateString).getDate();
+  if (day <= 7) return 1;
+  if (day <= 14) return 2;
+  if (day <= 21) return 3;
+  return 4;
 };
 
 const WrapupTable: React.FC<WrapupTableProps> = ({
@@ -29,11 +30,13 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
   Role,
   month,
   year,
+  startDate,
+  endDate,
 }) => {
-  const [metrics, setMetrics] = useState<WrapupTable[]>([]);
+  const [metrics, setMetrics] = useState<WrapupTableData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const allChannels = [
+  const wrapupLabels = [
     "Customer Order",
     "Customer Inquiry Sales",
     "Customer Inquiry Non-Sales",
@@ -46,34 +49,52 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
     "Supplier/Vendor Product Offer",
     "Internal Whistle Blower",
     "Threats/Extortion/Intimidation",
-    "Prank Call",
     "Supplier Accreditation Request",
     "Internal Concern",
     "Others",
   ];
 
-  // ✅ Fetch data with month and year filtering
   const fetchMetricsData = async () => {
     try {
       setLoading(true);
+
       const response = await fetch(
         `/api/ModuleCSR/Dashboard/WrapupData?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
       );
       if (!response.ok) throw new Error("Failed to fetch data");
-      const data = await response.json();
+      const data: WrapupTableData[] = await response.json();
 
-      // ✅ Filter the data based on selected month and year
-      const filteredData = data.filter((metric: WrapupTable) => {
-        const metricDate = new Date(metric.createdAt);
-        return (
-          metricDate.getMonth() + 1 === month &&
-          metricDate.getFullYear() === year
-        );
+      // Filter by ReferenceID for Staff
+      let filteredData = Role === "Staff"
+        ? data.filter(item => item.ReferenceID === ReferenceID)
+        : data;
+
+      // Date range filtering
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+
+      if (start) start.setHours(0, 0, 0, 0);
+      if (end) end.setHours(23, 59, 59, 999);
+
+      const finalData = filteredData.filter((item) => {
+        if (!item.createdAt || !item.WrapUp) return false;
+
+        const createdAt = new Date(item.createdAt);
+
+        const matchesMonthYear =
+          createdAt.getMonth() + 1 === month &&
+          createdAt.getFullYear() === year;
+
+        const inRange =
+          (!start || createdAt >= start) &&
+          (!end || createdAt <= end);
+
+        return matchesMonthYear && inRange && wrapupLabels.includes(item.WrapUp);
       });
 
-      setMetrics(filteredData);
+      setMetrics(finalData);
     } catch (error) {
-      console.error("Error fetching metrics:", error);
+      console.error("Error fetching wrap-up data:", error);
     } finally {
       setLoading(false);
     }
@@ -81,9 +102,9 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
 
   useEffect(() => {
     fetchMetricsData();
-  }, [ReferenceID, Role, month, year]);
+  }, [ReferenceID, Role, month, year, startDate, endDate]);
 
-  // ✅ Calculate weekly counts per channel
+  // Compute weekly counts per label
   const calculateWeeklyCounts = () => {
     const weeklyCounts: Record<string, Record<string, number>> = {
       "Week 1": {},
@@ -92,15 +113,14 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
       "Week 4": {},
     };
 
-    metrics.forEach((metric) => {
-      const weekNumber = getWeekNumber(metric.createdAt);
-      if (weekNumber >= 1 && weekNumber <= 4) {
-        const key = metric.WrapUp;
-        if (!weeklyCounts[`Week ${weekNumber}`][key]) {
-          weeklyCounts[`Week ${weekNumber}`][key] = 0;
-        }
-        weeklyCounts[`Week ${weekNumber}`][key]++;
+    metrics.forEach((item) => {
+      const week = `Week ${getWeekNumber(item.createdAt)}`;
+      const label = item.WrapUp;
+
+      if (!weeklyCounts[week][label]) {
+        weeklyCounts[week][label] = 0;
       }
+      weeklyCounts[week][label]++;
     });
 
     return weeklyCounts;
@@ -109,8 +129,7 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
   const weeklyCounts = calculateWeeklyCounts();
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-4">
-      {/* ✅ Loading or Data Table */}
+    <div className="bg-white">
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : (
@@ -125,21 +144,13 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {allChannels.map((WrapUp) => (
-              <tr key={WrapUp} className="text-center border-t">
-                <td className="border p-2 text-left">{WrapUp}</td>
-                <td className="border p-2">
-                  {weeklyCounts["Week 1"][WrapUp] || 0}
-                </td>
-                <td className="border p-2">
-                  {weeklyCounts["Week 2"][WrapUp] || 0}
-                </td>
-                <td className="border p-2">
-                  {weeklyCounts["Week 3"][WrapUp] || 0}
-                </td>
-                <td className="border p-2">
-                  {weeklyCounts["Week 4"][WrapUp] || 0}
-                </td>
+            {wrapupLabels.map((label) => (
+              <tr key={label} className="text-center border-t">
+                <td className="border p-2 text-left">{label}</td>
+                <td className="border p-2">{weeklyCounts["Week 1"][label] || 0}</td>
+                <td className="border p-2">{weeklyCounts["Week 2"][label] || 0}</td>
+                <td className="border p-2">{weeklyCounts["Week 3"][label] || 0}</td>
+                <td className="border p-2">{weeklyCounts["Week 4"][label] || 0}</td>
               </tr>
             ))}
           </tbody>

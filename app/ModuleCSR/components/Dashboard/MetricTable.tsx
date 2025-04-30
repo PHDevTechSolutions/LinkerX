@@ -16,14 +16,11 @@ interface MetricTableProps {
   month?: number;
   year?: number;
   Role: string;
+  startDate?: string;
+  endDate?: string;
 }
 
-const MetricTable: React.FC<MetricTableProps> = ({
-  ReferenceID,
-  month,
-  year,
-  Role,
-}) => {
+const MetricTable: React.FC<MetricTableProps> = ({ReferenceID, month, year, Role, startDate, endDate}) => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -46,38 +43,52 @@ const MetricTable: React.FC<MetricTableProps> = ({
     const fetchMetrics = async () => {
       try {
         const apiUrl = `/api/ModuleCSR/Dashboard/Metrics?ReferenceID=${ReferenceID}&month=${month}&year=${year}`;
-        const response = await fetch(apiUrl); // Fetching data from API
+        const response = await fetch(apiUrl);
         if (!response.ok) throw new Error("Failed to fetch data");
-        const data = await response.json();
-
-        // Filter data based on the Role
-        const filteredData = data.filter((item: Metric) => {
-          const createdAtDate = new Date(item.createdAt);
-          const isWithinMonthAndYear =
-            createdAtDate.getMonth() + 1 === month &&
-            createdAtDate.getFullYear() === year;
-
-          if (Role === "Staff") {
-            // Only show data for the current ReferenceID if the role is Staff
-            return (
-              item.ReferenceID === ReferenceID &&
-              isWithinMonthAndYear
-            );
-          }
-          // Admin and Superadmin see all data
-          return isWithinMonthAndYear;
+  
+        const data: Metric[] = await response.json();
+  
+        // Filter by role
+        let roleFiltered = data;
+        if (Role === "Staff") {
+          roleFiltered = data.filter(item => item.ReferenceID === ReferenceID);
+        }
+  
+        // Adjust date range if provided
+        const adjustedStartDate = startDate ? new Date(startDate) : null;
+        const adjustedEndDate = endDate ? new Date(endDate) : null;
+  
+        if (adjustedStartDate) adjustedStartDate.setHours(0, 0, 0, 0);
+        if (adjustedEndDate) adjustedEndDate.setHours(23, 59, 59, 999);
+  
+        // Apply date filtering
+        const filtered = roleFiltered.filter(item => {
+          const createdAt = new Date(item.createdAt);
+  
+          const isInMonthYear =
+            month && year
+              ? createdAt.getMonth() + 1 === month && createdAt.getFullYear() === year
+              : true;
+  
+          const isInDateRange =
+            adjustedStartDate && adjustedEndDate
+              ? createdAt >= adjustedStartDate && createdAt <= adjustedEndDate
+              : true;
+  
+          return isInMonthYear && isInDateRange;
         });
-
-        setMetrics(filteredData);
+  
+        setMetrics(filtered);
       } catch (error) {
         console.error("Error fetching metrics:", error);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchMetrics(); // Call the fetch function
-  }, [ReferenceID, Role, month, year]);
+  
+    fetchMetrics();
+  }, [ReferenceID, Role, month, year, startDate, endDate]);
+  
 
   // Group by Channel, only for the predefined channels
   const groupedMetrics = metrics.reduce((groups, metric) => {
@@ -157,12 +168,12 @@ const MetricTable: React.FC<MetricTableProps> = ({
   const groupedArray = Object.values(groupedMetrics);
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-4">
+    <div className="bg-white">
       {/* Loading or Table Content */}
       {loading ? (
-        <p className="text-center">Loading...</p>
+        <p className="text-center text-xs">Loading...</p>
       ) : (
-        <table className="w-full border-collapse border border-gray-200 text-xs">
+        <table className="w-full border-collapse border border-gray-200 text-[10px]">
           <thead>
             <tr className="bg-gray-100">
               {[
@@ -194,7 +205,7 @@ const MetricTable: React.FC<MetricTableProps> = ({
                   : (group.totalAmount / group.totalConversionToSale).toFixed(2);
 
               return (
-                <tr key={index} className="text-center border-t">
+                <tr key={index} className="text-center border-t text-xs">
                   <td className="border p-2">{group.channel}</td>
                   <td className="border p-2">{group.traffic}</td>
                   <td className="border p-2">
@@ -217,7 +228,7 @@ const MetricTable: React.FC<MetricTableProps> = ({
               );
             })}
           </tbody>
-          <tfoot className="bg-gray-100 text-[10px] text-center font-bold">
+          <tfoot className="bg-gray-100 text-xs text-center font-bold">
             <tr>
               <td className="border p-2">TOTAL</td>
               <td className="border p-2">{totalMetrics.sales}</td>
