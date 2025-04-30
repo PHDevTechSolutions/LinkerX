@@ -646,11 +646,11 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     <div className="flex flex-wrap -mx-4">
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-2" htmlFor="QuotationNumber">Quotation Reference Number</label>
-                            <input type="text" id="QuotationNumber" value={QuotationNumber || ""} onChange={(e) => setQuotationNumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                            <input type="text" id="QuotationNumber" value={QuotationNumber || ""} onChange={(e) => setQuotationNumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required/>
                         </div>
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-2" htmlFor="QuotationAmount">Quotation Amount</label>
-                            <input type="number" id="QuotationAmount" value={QuotationAmount || ""} onChange={(e) => setQuotationAmount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                            <input type="number" id="QuotationAmount" value={QuotationAmount || ""} onChange={(e) => setQuotationAmount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required/>
                         </div>
                     </div>
                 </>
