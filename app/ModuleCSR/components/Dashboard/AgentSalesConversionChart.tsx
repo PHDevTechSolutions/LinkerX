@@ -59,33 +59,33 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
         );
         if (!response.ok) throw new Error("Failed to fetch data");
         const data = await response.json();
-
+  
         // Filter by Role
         let filteredData = Role === "Staff"
           ? data.filter((item: Metric) => item.ReferenceID === ReferenceID)
           : data;
-
+  
         // Date range filtering
         const start = startDate ? new Date(startDate) : null;
         const end = endDate ? new Date(endDate) : null;
         if (start) start.setHours(0, 0, 0, 0);
         if (end) end.setHours(23, 59, 59, 999);
-
+  
         const finalData = filteredData.filter((item: Metric) => {
-          if (!item.createdAt || !item.WrapUp) return false;
-
+          if (!item.createdAt) return false;
+  
           const createdAt = new Date(item.createdAt);
           const matchesMonthYear =
             createdAt.getMonth() + 1 === month &&
             createdAt.getFullYear() === year;
-
+  
           const inRange =
             (!start || createdAt >= start) &&
             (!end || createdAt <= end);
-
-          return matchesMonthYear && inRange && wrapupLabels.includes(item.WrapUp);
+  
+          return matchesMonthYear && inRange;
         });
-
+  
         setMetrics(finalData);
       } catch (error) {
         console.error("Error fetching metrics:", error);
@@ -93,9 +93,10 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
         setLoading(false);
       }
     };
-
+  
     fetchMetrics();
   }, [ReferenceID, Role, month, year, startDate, endDate]);
+  
 
   const groupedMetrics: Record<string, Metric[]> = metrics.reduce(
     (acc, metric) => {
