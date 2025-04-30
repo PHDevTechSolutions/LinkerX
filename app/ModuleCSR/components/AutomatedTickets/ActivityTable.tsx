@@ -56,6 +56,7 @@ interface Post {
     Status: string;
     Remarks: string;
     createdAt: string;
+    updatedAt: string;
     SONumber: string;
     Amount: string;
     QtySold: string;
@@ -444,6 +445,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                 <thead>
                                     <tr className="text-left whitespace-nowrap bg-gray-100">
                                         <th className="border p-2">Date Created</th>
+                                        <th className="border p-2">Date Last Touch / Updated</th>
                                         <th className="border p-2">CSR Agent</th>
                                         <th className="border p-2">Ticket No</th>
                                         <th className="border p-2">Ticket Received</th>
@@ -484,6 +486,11 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                     {paginatedPosts.map((post) => (
                                         <tr key={post._id} className="border text-left whitespace-nowrap">
                                             <td className="border p-2">{new Date(post.createdAt).toLocaleString()}</td>
+                                            <td className="border p-2">
+                                                {isNaN(new Date(post.updatedAt).getTime())
+                                                    ? " - "
+                                                    : new Date(post.updatedAt).toLocaleString()}
+                                            </td>
                                             <td className="border p-2 capitalize">{post.userName}</td>
                                             <td className="border p-2">{post.TicketReferenceNumber}</td>
                                             <td className="border p-2">{new Date(post.TicketReceived).toLocaleString()}</td>
