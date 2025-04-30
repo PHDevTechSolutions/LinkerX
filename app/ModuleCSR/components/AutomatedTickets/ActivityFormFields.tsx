@@ -377,7 +377,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         onChange={(e) => setTicketReceived(e.target.value)}
                         className="w-full px-3 py-2 border rounded text-xs"
                         min={getMinDateTime()}
-                        required
+                        
                     />
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
@@ -389,7 +389,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         onChange={(e) => setTicketEndorsed(e.target.value)}
                         className="w-full px-3 py-2 border rounded text-xs"
                         min={getMinDateTime()}
-                        required
+                    
                     />
                 </div>
             </div>
