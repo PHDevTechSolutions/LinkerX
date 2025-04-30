@@ -268,8 +268,10 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
         const year = now.getUTCFullYear();
         const month = String(now.getUTCMonth() + 1).padStart(2, '0');
         const day = String(now.getUTCDate()).padStart(2, '0');
+        const hours = String(now.getUTCHours()).padStart(2, '0');
+        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
     
-        return `${year}-${month}-${day}T00:00`; // Midnight UTC today
+        return `${year}-${month}-${day}T${hours}:${minutes}`; // Midnight UTC today
     };
     
     useEffect(() => {
