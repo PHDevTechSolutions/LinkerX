@@ -18,6 +18,8 @@ import AgentSalesConversionWeekly from "../../components/Dashboard/AgentSalesCon
 import AgentSalesConversionChart from "../../components/Dashboard/AgentSalesConversionChart";
 import TSASalesConversion from "../../components/Dashboard/TSASalesConversion";
 
+import { CiWarning } from "react-icons/ci";
+
 const DashboardPage: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState<string>(
     `${new Date().getMonth() + 1}`
@@ -108,6 +110,7 @@ const DashboardPage: React.FC = () => {
           {/* Month and Year Filters */}
           <div className="flex gap-4 mb-4">
             <div className="bg-white shadow-md rounded-lg p-4 w-full">
+            <p className="text-sm font-bold flex gap-1 mb-2">Under Maintenance <CiWarning size={20}/></p>
               <div className="flex gap-2">
                 {/* Start Date */}
                 <input
