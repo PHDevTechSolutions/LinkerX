@@ -184,7 +184,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
         <p className="text-xs">Loading...</p>
       ) : (
         <table className="min-w-full bg-white border border-gray-300 shadow-md">
-          <thead className="bg-gray-100 text-[10px] uppercase text-gray-700">
+          <thead className="bg-gray-100 text-xs uppercase text-gray-700">
             <tr>
               <th className="border p-2">Agent Name</th>
               <th className="border p-2">Sales</th>
@@ -206,7 +206,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
 
                 return (
                   <tr key={index} className="text-center border-t text-xs">
-                    <td className="border p-2 whitespace-nowrap uppercase">
+                    <td className="border p-2 whitespace-nowrap capitalize">
                       {referenceIdToNameMap[refId] || "-"}
                     </td>
                     <td className="border p-2">{totals.sales}</td>
