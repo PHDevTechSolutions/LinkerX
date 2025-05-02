@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { CiClock2, CiMenuBurger, CiUser, CiSettings, CiBellOn, CiCircleRemove, CiDark, CiSun, CiSearch } from "react-icons/ci";
+import { CiClock2, CiMenuBurger, CiUser, CiBellOn, CiDark, CiSun, CiSearch } from "react-icons/ci";
 import { FaExclamationCircle, FaCheckCircle } from "react-icons/fa";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { motion } from "framer-motion";
@@ -87,7 +87,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedNotif, setSelectedNotif] = useState<any>(null);
-  const [loadingRead, setLoadingRead] = useState<boolean>(false);
 
   const [emailNotifications, setEmailNotifications] = useState<Email[]>([]);
 
