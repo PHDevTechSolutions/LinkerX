@@ -352,7 +352,39 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "What is Taskflow?"
       ].includes(item.title);
     }
+
+    if (userDetails.Role === "Business Development Manager") {
+      return [
+        "Sales Performance",
+        "National",
+        "My Team",
+        "Client Activity Board",
+        "My Companies",
+        "Email",
+        "Activities",
+        "My Projects",
+        "Announcements",
+        "Global Employees",
+        "Profile",
+        "What is Taskflow?"
+      ].includes(item.title);
+    }
+
     if (userDetails.Role === "Territory Sales Associate") {
+      return [
+        "My Companies",
+        "Activities",
+        "My Projects",
+        "Email",
+        "Boards",
+        "Announcements",
+        "Global Employees",
+        "Profile",
+        "What is Taskflow?"
+      ].includes(item.title);
+    }
+
+    if (userDetails.Role === "Business Development Officer") {
       return [
         "My Companies",
         "Activities",
