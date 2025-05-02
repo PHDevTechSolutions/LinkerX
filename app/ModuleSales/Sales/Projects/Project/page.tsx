@@ -6,9 +6,9 @@ import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
 import AddPostForm from "../../../components/UserManagement/CompanyAccounts/AddUserForm";
-import SearchFilters from "../../../components/Task/CSRInquiries/SearchFilters";
-import UsersTable from "../../../components/Task/CSRInquiries/UsersTable";
-import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
+import SearchFilters from "../../../components/Projects/Project/SearchFilters";
+import UsersTable from "../../../components/Projects/Project/UsersTable";
+import Pagination from "../../../components/Projects/Project/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -151,7 +151,7 @@ const ListofUser: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">CSR Inquiries</h2>
+                                            <h2 className="text-lg font-bold mb-2">My Projects</h2>
                                             <p className="text-xs text-gray-600 mb-4">
                                                 The table under <strong>CSR Inquiries</strong> displays all company accounts that have been endorsed by the CSR department. These accounts come from various sources, including the company website and other channels. This section serves as a comprehensive record of all CSR-endorsed inquiries and transactions, allowing users to track and manage client interactions effectively.
                                             </p>

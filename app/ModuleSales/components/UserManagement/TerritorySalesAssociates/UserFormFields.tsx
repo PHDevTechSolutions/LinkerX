@@ -193,6 +193,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="Territory Sales Associate">Territory Sales Associate</option>
             <option value="Staff">CSR Staff</option>
             <option value="E-Commerce Staff">E-Commerce Staff</option>
+            <option value="Business Development Manager">Business Development Manager</option>
+            <option value="Business Development Officer">Business Development Officer</option>
           </select>
         </div>
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -203,6 +205,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="CSR">CSR Department</option>
             <option value="IT">IT Department</option>
             <option value="Ecommerce">E-Commerce Department</option>
+            <option value="Business Development">Business Development Department</option>
           </select>
         </div>
       </div>
