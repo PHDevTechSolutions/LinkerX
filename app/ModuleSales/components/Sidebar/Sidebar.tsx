@@ -201,15 +201,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         //{ title: 'Quotation', href: `/ModuleSales/Sales/Task/Quotation${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
-    {
-      title: 'My Projects',
-      icon: CiCalendar,
-      subItems: [
-        { title: 'List of Projects', href: `/ModuleSales/Sales/Projects/Projecct${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Project Categories', href: `/ModuleSales/Sales/Projects/ProjectCategory${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Type of Project/Business', href: `/ModuleSales/Sales/Projects/ProjectType${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
+    
     {
       title: 'Email',
       icon: CiMail,
