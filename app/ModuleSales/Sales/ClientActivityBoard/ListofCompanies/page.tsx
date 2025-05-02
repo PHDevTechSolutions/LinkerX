@@ -265,41 +265,48 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-        ? posts.filter((post) => {
-            const matchesSearchTerm = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+    ? posts
+          .filter((post) => {
+              const search = searchTerm.toLowerCase();
 
-            const postDate = post.date_created ? new Date(post.date_created) : null;
-            const isWithinDateRange = (
-                (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                (!endDate || (postDate && postDate <= new Date(endDate)))
-            );
+              const matchesSearchTerm =
+                  post?.companyname?.toLowerCase().includes(search) ||
+                  post?.AgentFirstname?.toLowerCase().includes(search) ||
+                  post?.referenceid?.toLowerCase().includes(search) ||
+                  post?.AgentLastname?.toLowerCase().includes(search);
 
-            const matchesClientType = selectedClientType
-                ? post?.typeclient === selectedClientType
-                : true;
+              const postDate = post.date_created ? new Date(post.date_created) : null;
 
-            const referenceID = userDetails.ReferenceID;
+              const isWithinDateRange =
+                  (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                  (!endDate || (postDate && postDate <= new Date(endDate)));
 
-            const matchesRole = userDetails.Role === "Super Admin"
-                ? true
-                : userDetails.Role === "Manager"
-                    ? post?.manager === referenceID
-                    : userDetails.Role === "Territory Sales Manager"
-                        ? post?.tsm === referenceID
-                        : false;
+              const matchesClientType = selectedClientType
+                  ? post?.typeclient === selectedClientType
+                  : true;
 
-            return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
-        }).map((post) => {
-            // Hanapin ang Agent na may parehong ReferenceID sa usersList
-            const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+              const referenceID = userDetails.ReferenceID;
 
-            return {
-                ...post,
-                AgentFirstname: agent ? agent.Firstname : "Unknown",
-                AgentLastname: agent ? agent.Lastname : "Unknown"
-            };
-        })
-        : [];
+              const matchesRole =
+                  userDetails.Role === "Super Admin"
+                      ? true
+                      : userDetails.Role === "Manager"
+                      ? post?.manager === referenceID
+                      : userDetails.Role === "Territory Sales Manager"
+                      ? post?.tsm === referenceID
+                      : false;
+
+              return matchesSearchTerm && isWithinDateRange && matchesClientType && matchesRole;
+          })
+          .map((post) => {
+              const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+              return {
+                  ...post,
+                  AgentFirstname: agent?.Firstname || "Unknown",
+                  AgentLastname: agent?.Lastname || "Unknown",
+              };
+          })
+    : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;

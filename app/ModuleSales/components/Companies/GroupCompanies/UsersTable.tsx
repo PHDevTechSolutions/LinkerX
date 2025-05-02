@@ -1,182 +1,173 @@
-import React, { useEffect, useState, useRef } from "react";
-import io from "socket.io-client";
-import { CiMenuKebab, CiRepeat, } from "react-icons/ci";
+import React, { useEffect, useState } from "react";
+import { CiMenuKebab, CiRepeat } from "react-icons/ci";
 import { Menu } from "@headlessui/react";
 import axios from "axios";
 
-const socketURL = "http://localhost:3001";
-
 interface UsersCardProps {
-    posts: any[];
-    handleEdit: (post: any) => void;
-    referenceid?: string;
+  posts: any[];
+  handleEdit: (post: any) => void;
+  referenceid?: string;
 }
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid }) => {
-    const socketRef = useRef(io(socketURL));
-    const [updatedUser, setUpdatedUser] = useState<any[]>([]);
-    const [groupedCompanies, setGroupedCompanies] = useState<Map<string, any[]>>(new Map());
-    const [modalData, setModalData] = useState<any[]>([]); // To store companies for modal
-    const [searchTerm, setSearchTerm] = useState<string>("");
+  const [updatedUser, setUpdatedUser] = useState<any[]>([]);
+  const [groupedCompanies, setGroupedCompanies] = useState<Map<string, any[]>>(new Map());
+  const [modalData, setModalData] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
-    useEffect(() => {
-        setUpdatedUser(posts);
-    }, [posts]);
+  useEffect(() => {
+    setUpdatedUser(posts);
+  }, [posts]);
 
-    useEffect(() => {
-        // Group companies by companygroup and count the companies in each group
-        const grouped = new Map<string, any[]>();
+  useEffect(() => {
+    const grouped = new Map<string, any[]>();
+    posts.forEach((post) => {
+      if (post.companygroup) {
+        grouped.set(post.companygroup, [...(grouped.get(post.companygroup) || []), post]);
+      }
+    });
+    setGroupedCompanies(grouped);
+  }, [posts]);
 
-        posts.forEach((post) => {
-            // Skip posts with null or empty companygroup
-            if (post.companygroup) {
-                if (grouped.has(post.companygroup)) {
-                    grouped.get(post.companygroup)?.push(post);
-                } else {
-                    grouped.set(post.companygroup, [post]);
-                }
-            }
-        });
+  const handleViewCompanies = (companygroup: string) => {
+    setSearchTerm("");
+    setCurrentPage(1);
+    setModalData(groupedCompanies.get(companygroup) || []);
+  };
 
-        setGroupedCompanies(grouped);
-    }, [posts]);
+  const handleCloseModal = () => {
+    setModalData([]);
+    setSearchTerm("");
+  };
 
+  const filteredCompanies = modalData.filter((company) =>
+    company.companyname.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-    const handleRefresh = async () => {
-        try {
-            const response = await axios.get(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`);
+  const totalPages = Math.ceil(filteredCompanies.length / itemsPerPage);
+  const paginatedCompanies = filteredCompanies.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
-            if (response.data.success) {
-                setUpdatedUser(response.data.data); // Update the state with the new data
-            } else {
-                console.error("Failed to fetch accounts");
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
+  return (
+    <div className="mb-4">
+      {/* Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {Array.from(groupedCompanies.entries()).map(([companygroup, companies]) =>
+          companies.length ? (
+            <div key={companygroup} className="relative border rounded-md shadow-md p-4 bg-white">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-semibold uppercase">{companygroup}</h3>
+                <Menu as="div" className="relative">
+                  <Menu.Button>
+                    <CiMenuKebab />
+                  </Menu.Button>
+                  <Menu.Items className="absolute right-0 mt-2 min-w-[160px] bg-white shadow-md rounded-md z-10">
+                    <button
+                      className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left"
+                      onClick={() => handleViewCompanies(companygroup)}
+                    >
+                      View Companies
+                    </button>
+                  </Menu.Items>
+                </Menu>
+              </div>
+              <p className="mt-4 text-xs">
+                <strong>Number of Companies:</strong> {companies.length}
+              </p>
+            </div>
+          ) : null
+        )}
+        {!groupedCompanies.size && (
+          <div className="col-span-full text-center py-4 text-xs">No accounts available</div>
+        )}
+      </div>
 
-    const handleViewCompanies = (companygroup: string) => {
-        // Fetch the companies in the group and show the modal
-        const companies = groupedCompanies.get(companygroup) || [];
-        setModalData(companies);
-    };
+      {/* Modal */}
+      {modalData.length > 0 && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-md w-full max-w-5xl shadow-lg overflow-y-auto max-h-[90vh]">
+            <h2 className="text-lg font-semibold mb-2 text-center">Companies in Group</h2>
+            <p className="text-xs text-gray-600 mb-4 text-center">
+              Search and browse all companies under this group.
+            </p>
 
-    const filteredCompanies = modalData.filter((company) =>
-        company.companyname.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+            <input
+              type="text"
+              placeholder="Search by company name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md text-xs mb-4"
+            />
 
-    return (
-        <div className="mb-4">
-            {/* Bulk Action Buttons */}
-            <div className="flex gap-2 mb-3">
-                <button onClick={handleRefresh} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-gray-900 hover:text-white">
-                    <CiRepeat size={16} />
-                    Refresh
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left border-collapse">
+                <thead className="bg-gray-100 text-gray-700">
+                  <tr>
+                    <th className="px-4 py-2 border-b">Company Name</th>
+                    <th className="px-4 py-2 border-b">Contact Person</th>
+                    <th className="px-4 py-2 border-b">Contact Number</th>
+                    <th className="px-4 py-2 border-b">Email Address</th>
+                    <th className="px-4 py-2 border-b">Type of Client</th>
+                    <th className="px-4 py-2 border-b">Address</th>
+                    <th className="px-4 py-2 border-b">Area</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedCompanies.map((company) => (
+                    <tr key={company.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-2 border-b">{company.companyname}</td>
+                      <td className="px-4 py-2 border-b">{company.contactperson}</td>
+                      <td className="px-4 py-2 border-b">{company.contactnumber}</td>
+                      <td className="px-4 py-2 border-b">{company.emailaddress}</td>
+                      <td className="px-4 py-2 border-b">{company.typeclient}</td>
+                      <td className="px-4 py-2 border-b">{company.address}</td>
+                      <td className="px-4 py-2 border-b">{company.area}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="flex justify-between items-center mt-4 text-xs">
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+                >
+                  Prev
                 </button>
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
             </div>
 
-            {/* User Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {groupedCompanies.size > 0 ? (
-                    Array.from(groupedCompanies.keys()).map((companygroup) => {
-                        const companies = groupedCompanies.get(companygroup) || [];
-                        if (companies.length === 0) return null; // Skip if no companies in group
-                        return (
-                            <div key={companygroup} className="relative border rounded-md shadow-md p-4 flex flex-col bg-white">
-                                <div className="flex items-center gap-2">
-                                    <h3 className="text-xs font-semibold uppercase">{companygroup}</h3>
-                                </div>
-                                <div className="flex justify-between items-center mt-2">
-                                    <div className="mt-4 mb-4 text-xs">
-                                        <p><strong>Number of Companies:</strong> {companies.length}</p>
-                                    </div>
-                                    <Menu as="div" className="relative inline-block text-left">
-                                        <div>
-                                            <Menu.Button>
-                                                <CiMenuKebab />
-                                            </Menu.Button>
-                                        </div>
-                                        <Menu.Items className="absolute right-0 mt-2 min-w-[160px] bg-white shadow-md rounded-md z-10">
-                                            <button
-                                                className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left"
-                                                onClick={() => handleViewCompanies(companygroup)}
-                                            >
-                                                View Companies
-                                            </button>
-                                        </Menu.Items>
-                                    </Menu>
-                                </div>
-                            </div>
-                        );
-                    })
-                ) : (
-                    <div className="col-span-full text-center py-4 text-xs">No accounts available</div>
-                )}
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={handleCloseModal}
+                className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-blue-700 transition text-xs"
+              >
+                Close
+              </button>
             </div>
-
-            {/* Modal */}
-            {modalData.length > 0 && (
-                <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-8 rounded-lg shadow-lg w-3/4 md:w-1/2 lg:w-1/1">
-                        <h2 className="text-lg font-semibold mb-2 text-center">Companies in Group</h2>
-                        <p className="text-xs text-gray-600 mb-4">
-                            This modal displays a list of companies that are part of a specific group. You can search for companies by their name using the search bar. The table below provides key details about each company, including the contact person, contact number, email address, client type, company address, and area. The table is filterable by the company name, making it easier to locate specific companies within the group.
-                        </p>
-
-                        {/* Search Bar */}
-                        <div className="mb-4">
-                            <input
-                                type="text"
-                                placeholder="Search by company name"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-md text-xs"
-                            />
-                        </div>
-
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-xs text-left table-auto border-collapse">
-                                <thead>
-                                    <tr className="bg-gray-100 text-gray-700">
-                                        <th className="px-4 py-2 border-b whitespace-nowrap">Company Name</th>
-                                        <th className="px-4 py-2 border-b whitespace-nowrap">Contact Person</th>
-                                        <th className="px-4 py-2 border-b whitespace-nowrap">Contact Number</th>
-                                        <th className="px-4 py-2 border-b whitespace-nowrap">Email Address</th>
-                                        <th className="px-4 py-2 border-b whitespace-nowrap">Type of Client</th>
-                                        <th className="px-4 py-2 border-b whitespace-nowrap">Address</th>
-                                        <th className="px-4 py-2 border-b whitespace-nowrap">Area</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredCompanies.map((company) => (
-                                        <tr key={company.id} className="hover:bg-gray-50">
-                                            <td className="px-4 py-2 border-b capitalize">{company.companyname}</td>
-                                            <td className="px-4 py-2 border-b capitalize">{company.contactperson}</td>
-                                            <td className="px-4 py-2 border-b capitalize">{company.contactnumber}</td>
-                                            <td className="px-4 py-2 border-b">{company.emailaddress}</td>
-                                            <td className="px-4 py-2 border-b capitalize">{company.typeclient}</td>
-                                            <td className="px-4 py-2 border-b capitalize">{company.address}</td>
-                                            <td className="px-4 py-2 border-b capitalize">{company.area}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className="flex justify-center mt-6">
-                            <button
-                                onClick={() => setModalData([])}
-                                className="px-6 py-2 bg-gray-600 text-white font-semibold rounded-md hover:bg-blue-700 transition text-xs"
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+          </div>
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default UsersCard;

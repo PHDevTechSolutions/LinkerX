@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FaPlus, FaMinus } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa";
-import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiCalendarDate, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo, CiMail } from "react-icons/ci";
+import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo, CiMail, CiCalendar } from "react-icons/ci";
 import { RxCaretLeft, RxCaretDown } from "react-icons/rx";
 
 
@@ -191,15 +190,24 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ],
     },
     {
-      title: 'Task',
+      title: 'Activities',
       icon: CiMemoPad,
       subItems: [
-        { title: 'Automated Daily Task', href: `/ModuleSales/Sales/Task/DailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: '( Manual ) Daily Task', href: `/ModuleSales/Sales/Task/ManualDailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Automated Task', href: `/ModuleSales/Sales/Task/DailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Manual Task', href: `/ModuleSales/Sales/Task/ManualDailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Callbacks', href: `/ModuleSales/Sales/Task/Callback${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Client Coverage Guide', href: `/ModuleSales/Sales/Task/ClientCoverageGuide${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'CSR Inquiries', href: `/ModuleSales/Sales/Task/CSRInquiries${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         //{ title: 'Quotation', href: `/ModuleSales/Sales/Task/Quotation${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
+    {
+      title: 'My Projects',
+      icon: CiCalendar,
+      subItems: [
+        { title: 'List of Projects', href: `/ModuleSales/Sales/Projects/Projecct${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Project Categories', href: `/ModuleSales/Sales/Projects/ProjectCategory${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Type of Project/Business', href: `/ModuleSales/Sales/Projects/ProjectType${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
@@ -344,7 +352,8 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "Client Activity Board",
         "My Companies",
         "Email",
-        "Task",
+        "Activities",
+        "My Projects",
         "Announcements",
         "Global Employees",
         "Profile",
@@ -354,7 +363,8 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
     if (userDetails.Role === "Territory Sales Associate") {
       return [
         "My Companies",
-        "Task",
+        "Activities",
+        "My Projects",
         "Email",
         "Boards",
         "Announcements",
