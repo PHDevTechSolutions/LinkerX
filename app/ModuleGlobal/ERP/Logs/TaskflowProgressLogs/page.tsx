@@ -5,7 +5,7 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../../ModuleSales/components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../../ModuleSales/components/UserManagement/CompanyAccounts/AddUserForm";
+import AddPostForm from "../../../../ModuleSales/components/Taskflow/ProgressLogs/AddUserForm";
 import SearchFilters from "../../../../ModuleSales/components/Taskflow/ActivityLogs/SearchFilters";
 import UsersTable from "../../../../ModuleSales/components/Taskflow/ProgressLogs/ProgressTable";
 import Pagination from "../../../../ModuleSales/components/UserManagement/CompanyAccounts/Pagination";
@@ -14,7 +14,6 @@ import Pagination from "../../../../ModuleSales/components/UserManagement/Compan
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import ExcelJS from "exceljs";
-
 
 // Icons
 import { CiSquarePlus, CiImport, CiExport } from "react-icons/ci";
@@ -115,7 +114,6 @@ const ListofUser: React.FC = () => {
         };
         reader.readAsArrayBuffer(selectedFile);
     };
-
 
     const handleFileUpload = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -355,6 +353,7 @@ const ListofUser: React.FC = () => {
             // ✅ Check if the company name or status matches the search term
             const matchesSearchTerm =
                 post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                post?.referenceid?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 post?.activitystatus?.toLowerCase().includes(searchTerm.toLowerCase());
 
             // ✅ Parse the date_created field

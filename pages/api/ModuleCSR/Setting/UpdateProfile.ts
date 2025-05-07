@@ -3,7 +3,7 @@ import { connectToDatabase } from "@/lib/MongoDB";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
 
-export default async function updateProfile(req: NextApiRequest, res: NextApiResponse) {
+export default async function update(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
@@ -26,8 +26,8 @@ export default async function updateProfile(req: NextApiRequest, res: NextApiRes
   }
 
   try {
-    const db = await connectToDatabase();
-    const userCollection = db.collection("users");
+    const Xchire_db = await connectToDatabase();
+    const Xchire_Collection = Xchire_db.collection("users");
 
     const updatedUser: any = {
       Firstname,
@@ -45,7 +45,7 @@ export default async function updateProfile(req: NextApiRequest, res: NextApiRes
       updatedUser.Password = hashedPassword;
     }
 
-    await userCollection.updateOne(
+    await Xchire_Collection.updateOne(
       { _id: new ObjectId(id) },
       { $set: updatedUser }
     );
@@ -54,8 +54,8 @@ export default async function updateProfile(req: NextApiRequest, res: NextApiRes
       success: true,
       message: "Profile updated successfully",
     });
-  } catch (error) {
-    console.error("Error updating profile:", error);
+  } catch (Xchire_error) {
+    console.error("Error updating profile:", Xchire_error);
     return res.status(500).json({ error: "Failed to update profile" });
   }
 }

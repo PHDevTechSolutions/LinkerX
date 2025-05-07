@@ -317,8 +317,8 @@ const ListofUser: React.FC = () => {
                                                 </div>
                                             </div>
                                             <div className="flex gap-2">
-                                                <button type="submit" className="bg-blue-900 text-xs text-white px-4 py-2 rounded flex items-center gap-1"><CiSaveUp2 size={20} /> Upload</button>
-                                                <button type="button" className="bg-gray-500 text-xs text-white px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowImportForm(false)}><CiCircleRemove size={20} />Cancel</button>
+                                                <button type="submit" className="bg-blue-400 text-xs text-white px-4 py-2 rounded flex items-center gap-1"><CiSaveUp2 size={15} /> Upload</button>
+                                                <button type="button" className="border text-xs px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowImportForm(false)}><CiCircleRemove size={15} />Back</button>
                                             </div>
                                         </form>
 
@@ -360,12 +360,12 @@ const ListofUser: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
-                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
-                                                <CiSquarePlus size={20} /> Add Companies
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition" onClick={() => setShowForm(true)} >
+                                                <CiSquarePlus size={15} /> Add Companies
                                             </button>
                                             <div className="flex gap-2">
-                                                <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-800 hover:text-white transition" onClick={() => setShowImportForm(true)}>
-                                                    <CiImport size={20} /> Import Account
+                                                <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-600 hover:text-white transition" onClick={() => setShowImportForm(true)}>
+                                                    <CiImport size={15} /> Import Account
                                                 </button>
                                             </div>
                                         </div>

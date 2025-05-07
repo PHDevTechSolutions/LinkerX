@@ -14,7 +14,7 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 // Icons
-import { CiCircleRemove, CiSaveUp1, CiTrash } from "react-icons/ci";
+import { CiSaveUp1, CiTrash, CiTurnL1 } from "react-icons/ci";
 import { PiHandTapThin } from "react-icons/pi";
 import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
 import { FcManager, FcPhone, FcFeedback, FcHome } from "react-icons/fc";
@@ -1017,10 +1017,10 @@ const ListofUser: React.FC = () => {
                                         <div className="flex justify-between items-center mb-4">
                                             <div className="flex items-center gap-3">
                                                 <button
-                                                    className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
+                                                    className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition"
                                                     onClick={handleButtonClick}
                                                 >
-                                                    <PiHandTapThin size={20} /> Tap
+                                                    <PiHandTapThin size={15} /> Tap
                                                 </button>
                                             </div>
 
@@ -1078,8 +1078,8 @@ const ListofUser: React.FC = () => {
 
                                                             {/* Buttons */}
                                                             <div className="mt-6 flex justify-end">
-                                                                <button type="button" className="bg-gray-400 text-xs text-white px-5 py-2 rounded mr-2 flex items-center gap-1" onClick={closeForm} disabled={loading}><CiCircleRemove size={20} />Cancel</button>
-                                                                <button type="submit" className="bg-blue-900 text-white text-xs px-5 py-2 rounded flex items-center gap-1" disabled={loading}><CiSaveUp1 size={20} />{loading ? "Submitting..." : "Submit"}</button>
+                                                                <button type="button" className="border text-xs text-black px-5 py-2 rounded mr-2 flex items-center gap-1" onClick={closeForm} disabled={loading}><CiTurnL1 size={15} />Back</button>
+                                                                <button type="submit" className="bg-blue-400 text-white text-xs px-5 py-2 rounded flex items-center gap-1" disabled={loading}><CiSaveUp1 size={15} />{loading ? "Submitting..." : "Submit"}</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -1136,12 +1136,12 @@ const ListofUser: React.FC = () => {
 
                                             {/* Automated Task */}
                                             <div className="col-span-1 bg-white shadow-md rounded-lg p-4">
-                                                <div className="bg-blue-900 text-white shadow-md rounded-lg p-2 flex flex-col items-center justify-center">
-                                                    <h3 className="text-xs font-bold mb-1">My Overall Activity Count for Today</h3>
+                                                <div className="bg-blue-200 text-black shadow-md rounded-lg p-2 flex flex-col items-center justify-center">
+                                                    <h3 className="text-xs mb-1 font-light">My Overall Activity Count for Today</h3>
                                                     <p className="text-4xl font-light">{totalActivityCount.toLocaleString()}</p>
                                                 </div>
 
-                                                <div className="flex mb-4 border-b">
+                                                <div className="flex mb-4 mt-4 border-b">
                                                     <button
                                                         onClick={() => handleTabChange("Automated Task")}
                                                         className={`text-xs px-4 py-2 border-b-2 w-full ${activeTab === "Automated Task" ? "border-blue-500 font-semibold" : "text-gray-600"
@@ -1356,7 +1356,7 @@ const ListofUser: React.FC = () => {
                                             <p className="text-xs">Are you sure you want to delete this post?</p>
                                             <div className="mt-4 flex justify-end">
                                                 <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2 flex items-center gap-1" onClick={handleDelete}><CiTrash size={20} />Delete</button>
-                                                <button className="bg-gray-300 text-xs px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowDeleteModal(false)}><CiCircleRemove size={20} /> Cancel</button>
+                                                <button className="text-xs px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowDeleteModal(false)}><CiTurnL1 size={20} /> Back</button>
                                             </div>
                                         </div>
                                     </div>

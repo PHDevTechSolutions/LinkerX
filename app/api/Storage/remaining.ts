@@ -3,11 +3,11 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
-const filePath = path.resolve("remaining.json");
+const Xchire_filePath = path.resolve("remaining.json");
 
 export async function GET() {
   try {
-    const raw = fs.readFileSync(filePath, "utf-8");
+    const raw = fs.readFileSync(Xchire_filePath, "utf-8");
     const parsed = JSON.parse(raw);
     return NextResponse.json(parsed);
   } catch (error) {
@@ -16,14 +16,14 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const body = await req.json();
+  const Xchire_body = await req.json();
   const today = new Date().toISOString().slice(0, 10);
 
   const content = {
     date: today,
-    leftover: body.leftover || 0,
+    leftover: Xchire_body.leftover || 0,
   };
 
-  fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
+  fs.writeFileSync(Xchire_filePath, JSON.stringify(content, null, 2));
   return NextResponse.json({ message: "Saved successfully" });
 }

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectToDatabase
 
-export default async function fetchMetrics(req: NextApiRequest, res: NextApiResponse) {
+export default async function fetch(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
         res.setHeader("Allow", ["GET"]);
         res.status(405).end(`Method ${req.method} Not Allowed`);
@@ -20,8 +20,8 @@ export default async function fetchMetrics(req: NextApiRequest, res: NextApiResp
     const end = endDate ? new Date(endDate as string) : endOfMonth;
 
     try {
-        const db = await connectToDatabase();
-        const monitoringCollection = db.collection("monitoring");
+        const Xchire_db = await connectToDatabase();
+        const Xchire_Collection = Xchire_db.collection("monitoring");
 
         // Fixed list of channels
         const channels = [
@@ -45,7 +45,7 @@ export default async function fetchMetrics(req: NextApiRequest, res: NextApiResp
         }
 
         // Aggregating traffic count, amount, and createdAt per channel
-        const aggregatedMetrics = await monitoringCollection
+        const aggregatedMetrics = await Xchire_Collection
             .aggregate([
                 { $match: matchConditions }, // Apply the dynamic date range filter
                 {
@@ -63,7 +63,7 @@ export default async function fetchMetrics(req: NextApiRequest, res: NextApiResp
             .toArray();
 
         // Convert MongoDB result to expected format
-        const result = channels.map(channel => {
+        const Xchire_result = channels.map(channel => {
             const data = aggregatedMetrics.find(m => m._id === channel);
             return {
                 Role, // Include Role in the response
@@ -76,10 +76,10 @@ export default async function fetchMetrics(req: NextApiRequest, res: NextApiResp
             };
         });
 
-        console.log("Final Result:", result); // Debugging log
-        res.status(200).json(result);
-    } catch (error) {
-        console.error("Error fetching metrics:", error);
+        console.log("Final Result:", Xchire_result); // Debugging log
+        res.status(200).json(Xchire_result);
+    } catch (Xchire_error) {
+        console.error("Error fetching metrics:", Xchire_error);
         res.status(500).json({ error: "Failed to fetch metrics" });
     }
 }

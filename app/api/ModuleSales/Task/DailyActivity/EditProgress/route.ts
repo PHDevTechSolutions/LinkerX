@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
   throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+const Xchire_sql = neon(Xchire_databaseUrl);
 
-async function updateUser(userDetails: any) {
+async function update(userDetails: any) {
   try {
     const {
       id,
@@ -24,7 +24,7 @@ async function updateUser(userDetails: any) {
     } = userDetails;
 
     // ✅ Update only editable fields
-    const updateResult = await sql`
+    const Xchire_update = await Xchire_sql`
       UPDATE progress
       SET 
         callstatus = ${callstatus},
@@ -40,11 +40,11 @@ async function updateUser(userDetails: any) {
       RETURNING *;
     `;
 
-    if (updateResult.length === 0) {
+    if (Xchire_update.length === 0) {
       return { success: false, error: "Activity not found or already updated." };
     }
 
-    return { success: true, data: updateResult };
+    return { success: true, data: Xchire_update };
   } catch (error: any) {
     console.error("Error updating user:", error);
     return { success: false, error: error.message || "Failed to update activity." };
@@ -53,8 +53,8 @@ async function updateUser(userDetails: any) {
 
 export async function PUT(req: Request) {
   try {
-    const body = await req.json();
-    const { id } = body;
+    const Xchire_body = await req.json();
+    const { id } = Xchire_body;
 
     if (!id) {
       return NextResponse.json(
@@ -63,12 +63,12 @@ export async function PUT(req: Request) {
       );
     }
 
-    const result = await updateUser(body);
-    return NextResponse.json(result);
-  } catch (error: any) {
-    console.error("Error in PUT /api/ModuleSales/Task/EditProgress:", error);
+    const Xchire_result = await update(Xchire_body);
+    return NextResponse.json(Xchire_result);
+  } catch (Xchire_error: any) {
+    console.error("Error in PUT /api/ModuleSales/Task/EditProgress:", Xchire_error);
     return NextResponse.json(
-      { success: false, error: error.message || "Internal server error" },
+      { success: false, error: Xchire_error.message || "Internal server error" },
       { status: 500 }
     );
   }

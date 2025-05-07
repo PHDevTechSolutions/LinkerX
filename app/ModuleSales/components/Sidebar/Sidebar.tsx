@@ -388,13 +388,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
 
       {/* Sidebar Container */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 h-screen transition-all duration-300 flex flex-col shadow-lg 
+        className={`fixed inset-y-0 left-0 z-50 h-screen transition-all duration-300 flex flex-col border-r
       ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"} 
       ${collapsed ? "w-16" : "w-64"} 
       ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
         {/* Logo Section */}
-        <div className="flex items-center justify-between p-5 border-b">
+        <div className="flex items-center justify-between p-5">
           <div className="flex items-center">
             <img src="/taskflow.png" alt="Logo" className="h-8 mr-2" />
             <Link href={`/ModuleSales/Sales/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}>
@@ -417,13 +417,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
             <p className="italic">( {userDetails.Role} )</p>
             <span
               className={`text-white text-[8px] font-semibold px-3 py-1 rounded-full inline-block mt-2 ${userDetails.Status === "Active"
-                ? "bg-green-900"
+                ? "bg-green-600"
                 : userDetails.Status === "Inactive"
-                  ? "bg-red-700"
+                  ? "bg-red-400"
                   : userDetails.Status === "Locked"
-                    ? "bg-gray-500"
+                    ? "bg-gray-400"
                     : userDetails.Status === "Busy"
-                      ? "bg-yellow-500"
+                      ? "bg-yellow-400"
                       : userDetails.Status === "Do not Disturb"
                         ? "bg-gray-800"
                         : "bg-blue-500"
@@ -439,7 +439,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
           <div className="w-full">
             <Link
               href={`/ModuleSales/Sales/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}
-              className="flex items-center w-full p-4 bg-green-900 mb-1 text-white rounded transition-all duration-300 ease-in-out hover:shadow-md active:scale-95"
+              className="flex items-center w-full p-4 bg-orange-400 mb-1 text-white rounded transition-all duration-300 ease-in-out hover:shadow-md active:scale-95"
             >
               <CiGrid42 size={22} className="mr-1" />
               Dashboard
@@ -452,16 +452,16 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
               {/* Main Menu Button */}
               <button
                 onClick={() => handleToggle(item.title)}
-                className={`flex items-center w-full p-4 hover:bg-green-900 rounded hover:rounded-md hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""}`}
+                className={`flex items-center w-full p-4 hover:bg-orange-400 rounded hover:rounded-md hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""}`}
               >
                 <item.icon size={18} />
                 {!collapsed && <span className="ml-2">{item.title}</span>}
                 {/* Only show the count if it's greater than zero */}
                 {item.title === 'Task' && pendingInquiryCount > 0 && (
-                  <span className="ml-2 text-[8px] bg-red-700 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInquiryCount}</span>
+                  <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInquiryCount}</span>
                 )}
                 {item.title === 'My Companies' && pendingInactiveCount && pendingDeleteCount> 0 && (
-                  <span className="ml-2 text-[8px] bg-red-700 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount}</span>
+                  <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount}</span>
                 )}
                 {!collapsed && (
                   <span className="ml-auto">
@@ -479,18 +479,18 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
                         key={subIndex}
                         href={subItem.href}
                         prefetch={true}
-                        className="flex items-center w-full p-4 bg-gray-200 hover:bg-green-900 hover:text-white transition-all border-transparent duration-300 ease-in-out"
+                        className="flex items-center w-full p-4 bg-gray-200 hover:bg-orange-400 hover:text-white transition-all border-transparent duration-300 ease-in-out"
                       >
                         <FaRegCircle size={10} className="mr-2 ml-2" />
                         {subItem.title}
                         {subItem.title === 'CSR Inquiries' && pendingInquiryCount > 0 && (
-                          <span className="ml-2 text-[8px] bg-red-700 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInquiryCount}</span>
+                          <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInquiryCount}</span>
                         )}
                         {subItem.title === 'Inactive Companies' && pendingInactiveCount > 0 && (
-                          <span className="ml-2 text-[8px] bg-red-700 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount}</span>
+                          <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount}</span>
                         )}
                         {subItem.title === 'For Deletion' && pendingDeleteCount > 0 && (
-                          <span className="ml-2 text-[8px] bg-red-700 rounded-lg m-1 pl-2 pr-2 text-white">{pendingDeleteCount}</span>
+                          <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingDeleteCount}</span>
                         )}
                       </Link>
                     ))}

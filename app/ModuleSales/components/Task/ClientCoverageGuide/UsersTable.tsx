@@ -135,25 +135,25 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
           <div key={index} className="mb-6">
             <div className="text-xs uppercase font-semibold">{company}</div>
             <div className="overflow-x-auto mt-4">
-              <table className="min-w-full bg-white border border-gray-200 text-xs text-left">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="p-2 border">Week</th>
-                    <th className="p-2 border">Contact Person</th>
-                    <th className="p-2 border">Contact Number</th>
-                    <th className="p-2 border">Type of Activity</th>
-                    <th className="p-2 border">Date Created</th>
-                    <th className="p-2 border">Activity Remarks</th>
+              <table className="min-w-full table-auto">
+                <thead className="bg-gray-100">
+                  <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                    <th className="px-6 py-4 font-semibold text-gray-700">Week</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Type of Activity</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Date Created</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Activity Remarks</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-100">
                   {["Week 1", "Week 2", "Week 3", "Week 4"].map((week, weekIndex) => {
                     const weekPosts = companyData[week] || [];
                     return (
                       <React.Fragment key={weekIndex}>
                         {weekPosts.length > 0 && (
-                          <tr>
-                            <td colSpan={6} className="bg-gray-200 text-sm p-2 font-semibold">
+                          <tr className="border-b whitespace-nowrap">
+                            <td colSpan={6} className="px-6 py-4 text-xs font-bold">
                               {week}
                             </td>
                           </tr>
@@ -161,15 +161,15 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                         {weekPosts.map((post, postIndex) => {
                           const postDate = parseISO(post.date_created);
                           return (
-                            <tr key={postIndex} className="hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02]">
-                              <td className="p-2 border">-</td>
-                              <td className="p-2 border">{post.contactperson}</td>
-                              <td className="p-2 border">{post.contactnumber}</td>
-                              <td className="p-2 border">{post.typeactivity}</td>
-                              <td className="p-2 border">
+                            <tr key={postIndex} className="border-b whitespace-nowrap">
+                              <td className="px-6 py-4 text-xs">-</td>
+                              <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
+                              <td className="px-6 py-4 text-xs capitalize">{post.contactnumber}</td>
+                              <td className="px-6 py-4 text-xs">{post.typeactivity}</td>
+                              <td className="px-6 py-4 text-xs">
                                 {format(postDate, "yyyy-MM-dd HH:mm:ss a")}
                               </td>
-                              <td className="p-2 border">{post.remarks}</td>
+                              <td className="px-6 py-4 text-xs capitalize">{post.remarks}</td>
                             </tr>
                           );
                         })}

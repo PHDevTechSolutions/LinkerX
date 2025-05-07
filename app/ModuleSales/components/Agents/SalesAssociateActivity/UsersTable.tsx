@@ -42,6 +42,31 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
     new Set(updatedUser.map((user) => `${user.AgentFirstname} ${user.AgentLastname}`))
   );
 
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+
+    // Use UTC getters instead of local ones to prevent timezone shifting.
+    let hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert hours to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // if hour is 0, display as 12
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+
+    // Use toLocaleDateString with timeZone 'UTC' to format the date portion
+    const formattedDateStr = date.toLocaleDateString('en-US', {
+      timeZone: 'UTC',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+
+    // Return combined date and time string
+    return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
+  };
+
   return (
     <div className="overflow-x-auto">
       <div className="mb-4">
@@ -60,68 +85,75 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
         </select>
       </div>
 
-      <table className="bg-white border border-gray-200 text-xs">
-        <thead>
-          <tr className="bg-gray-100 text-left">
-            <th className="py-2 px-4 border whitespace-nowrap">Agent</th>
-            <th className="py-2 px-4 border whitespace-nowrap">Company Name</th>
-            <th className="py-2 px-4 border whitespace-nowrap">SO to DR</th>
-            <th className="py-2 px-4 border whitespace-nowrap">SO Amount</th>
-            <th className="py-2 px-4 border whitespace-nowrap">SO Number</th>
-            <th className="py-2 px-4 border whitespace-nowrap">Type of Client</th>
-            <th className="py-2 px-4 border whitespace-nowrap">Type of Call</th>
-            <th className="py-2 px-4 border whitespace-nowrap">Type of Activity</th>
-            <th className="py-2 px-4 border whitespace-nowrap">Call Type</th>
-            <th className="py-2 px-4 border whitespace-nowrap">Remarks</th>
-            <th className="py-2 px-4 border whitespace-nowrap">File</th>
-            <th className="py-2 px-4 border whitespace-nowrap">Status</th>
-            <th className="py-2 px-4 border whitespace-nowrap">Duration</th>
-            <th className="py-2 px-4 border whitespace-nowrap">Time Consumed</th>
+      <table className="min-w-full table-auto">
+        <thead className="bg-gray-100">
+          <tr className="text-xs text-left whitespace-nowrap">
+            <th className="px-4 py-2 font-semibold text-gray-700">Agent</th>
+            <th className="px-4 py-2 font-semibold text-gray-700">Company Information</th>
+            <th className="px-4 py-2 font-semibold text-gray-700">Activity Information</th>
+            <th className="px-4 py-2 font-semibold text-gray-700">Remarks</th>
+            <th className="px-4 py-2 font-semibold text-gray-700">File</th>
+            <th className="px-4 py-2 font-semibold text-gray-700">Duration</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-gray-100">
           {filteredUsers.length > 0 ? (
             filteredUsers.map((post) => (
-              <tr key={post.id} className="border-t">
-                <td className="py-2 px-4 border capitalize whitespace-nowrap ">
+              <tr key={post.id} className="border-b whitespace-nowrap">
+                <td className="px-5 py-2 text-xs">
                   {post.AgentFirstname} {post.AgentLastname}
                   <br />
                   <span className="text-gray-900 text-[8px]">({post.referenceid})</span>
                 </td>
-                <td className="py-2 px-4 border capitalize whitespace-nowrap ">{post.companyname}</td>
-                <td className="py-2 px-4 border capitalize whitespace-nowrap">{post.actualsales}</td>
-                <td className="py-2 px-4 border whitespace-nowrap">{post.soamount}</td>
-                <td className="py-2 px-4 border whitespace-nowrap ">{post.sonumber}</td>
-                <td className="py-2 px-4 border capitalize whitespace-nowrap ">{post.typeclient}</td>
-                <td className="py-2 px-4 border capitalize whitespace-nowrap ">{post.typecall}</td>
-                <td className="py-2 px-4 border uppercase whitespace-nowrap ">{post.typeactivity}</td>
-                <td className="py-2 px-4 border uppercase whitespace-nowrap ">{post.callstatus}</td>
-                <td className="py-2 px-4 border uppercase whitespace-nowrap">
+                <td className="px-4 py-2 text-xs align-top">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-black border p-2 rounded">Company Name: {post.companyname}</span>
+                    <span className="text-black border p-2 rounded">Contact Person: {post.contactperson}</span>
+                    <span className="text-black border p-2 rounded">Contact Number: {post.contactnumber}</span>
+                    <span className="text-black border p-2 rounded">Email Address: {post.emailaddress}</span>
+                    <span className="text-black border p-2 rounded">Address: {post.address}</span>
+                    <span className="text-black border p-2 rounded">Type of Client: {post.typeclient}</span>
+                    <span className={`px-4 py-2 rounded text-white text-xs font-bold 
+                    ${post.activitystatus === "Cold" ? "bg-blue-400" : post.activitystatus === "Hot" ? "bg-red-400" :
+                        post.activitystatus === "Warm" ? "bg-yellow-400" : post.activitystatus === "Done" ? "bg-green-500" : "bg-gray-500"}`}>Status: {post.activitystatus}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-2 text-xs align-top">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-black border p-2 rounded">Type of Activity: {post.typeactivity}</span>
+                    <span className="text-black border p-2 rounded">Type of Call: {post.typecall}</span>
+                    <span className="text-black border p-2 rounded">Actual Sales: {post.actualsales}</span>
+                    <span className="text-black border p-2 rounded">SO Amount: {post.soamount}</span>
+                    <span className="text-black border p-2 rounded">Quotation Amount: {post.quotationamount}</span>
+                    <span className="text-black border p-2 rounded">SO Number: {post.sonumber}</span>
+                    <span className="text-black border p-2 rounded">Quotation Number: {post.quotationnumber}</span>
+                    <span className={`px-4 py-2 rounded text-white text-xs font-bold ${post.callstatus === "Successful"
+                        ? "bg-green-500"
+                        : post.callstatus === "Unsuccessful"
+                          ? "bg-red-400"
+                          : "bg-gray-400"
+                      }`}>Result: {post.callstatus}</span>
+                  </div>
+                </td>
+                <td className="px-5 py-2 text-xs capitalize">
                   {post.remarks ? post.remarks : post.activityremarks}
                 </td>
-
-                <td className="py-2 px-4 border uppercase whitespace-nowrap "></td>
-                <td className="py-2 px-4 border uppercase whitespace-nowrap ">
-                  <span className={`px-2 py-1 rounded-full text-white text-[8px] font-bold 
-                    ${post.activitystatus === "Cold" ? "bg-blue-800" : post.activitystatus === "Hot" ? "bg-red-700" :
-                      post.activitystatus === "Warm" ? "bg-yellow-500" : post.activitystatus === "Done" ? "bg-green-900" : "bg-gray-500"}`}>
-                    {post.activitystatus}
-                  </span>
+                <td className="px-5 py-2 text-xs"></td>
+                <td className="px-4 py-2 text-xs align-top">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-white bg-blue-400 p-2 rounded">Duration: {formatDate(new Date(post.startdate).getTime())} - {formatDate(new Date(post.enddate).getTime())}</span>
+                    <span className="text-black bg-orange-400 p-2 rounded">Callback: {formatDate(new Date(post.callback).getTime())}</span>
+                    <span className="text-black bg-red-400 p-2 flex items-center gap-1 rounded">
+                      <FcClock size={15} /> Time Consumed: {calculateTimeConsumed(post.startdate, post.enddate)}
+                    </span>
+                  </div>
                 </td>
 
-                <td className="py-2 px-4 border uppercase whitespace-nowrap ">
-                  {post.startdate ? new Date(post.startdate).toLocaleString() : "N/A"} -
-                  {post.enddate ? new Date(post.enddate).toLocaleString() : "N/A"}
-                </td>
-                <td className="py-2 px-4 uppercase whitespace-nowrap mt-2 truncate flex items-center gap-1">
-                  <FcClock className="text-lg shrink-0" />
-                  {calculateTimeConsumed(post.startdate, post.enddate)}
-                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={14} className="text-center py-4 border">No accounts available</td>
+              <td colSpan={14} className="text-center text-xs py-4 border">No record available</td>
             </tr>
           )}
         </tbody>

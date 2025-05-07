@@ -2,15 +2,15 @@ import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
 // Ensure TASKFLOW_DB_URL is defined
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
     throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
 // Create a reusable Neon database connection function
-const sql = neon(databaseUrl);
+const Xchire_sql = neon(Xchire_databaseUrl);
 
-async function addUser(data: any) {
+async function create(data: any) {
     try {
         const {
             referenceid, manager, tsm, companyname, contactperson,
@@ -27,14 +27,14 @@ async function addUser(data: any) {
         }
 
         // Fields for activity table
-        const activityColumns = [
+        const Xchire_activityColumns = [
             "referenceid", "manager", "tsm", "companyname", "contactperson",
             "contactnumber", "emailaddress", "typeclient", "address", "area",
             "projectname", "projectcategory", "projecttype", "source", 
             "activitystatus", "activitynumber", "targetquota",
         ];
 
-        const activityValues = [
+        const Xchire_activityValues = [
             referenceid, manager, tsm, companyname, contactperson,
             contactnumber, emailaddress, typeclient, address, area,
             projectname, projectcategory, projecttype, source,
@@ -42,54 +42,54 @@ async function addUser(data: any) {
         ];
 
         // Construct and execute the query for activity table
-        const activityPlaceholders = activityValues.map((_, index) => `$${index + 1}`).join(", ");
-        const activityQuery = `
-            INSERT INTO activity (${activityColumns.join(", ")}, date_created) 
-            VALUES (${activityPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') 
+        const Xchire_activityPlaceholders = Xchire_activityValues.map((_, index) => `$${index + 1}`).join(", ");
+        const Xchire_activityQuery = `
+            INSERT INTO activity (${Xchire_activityColumns.join(", ")}, date_created) 
+            VALUES (${Xchire_activityPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') 
             RETURNING *;
         `;
 
-        const activityResult = await sql(activityQuery, activityValues);
-        const insertedActivity = activityResult[0];
+        const Xchire_activityResult = await Xchire_sql(Xchire_activityQuery, Xchire_activityValues);
+        const Xchire_insertedActivity = Xchire_activityResult[0];
 
-        if (!insertedActivity) {
+        if (!Xchire_insertedActivity) {
             throw new Error("Failed to insert into activity table.");
         }
 
         // Use the returned activitynumber from the inserted activity
-        const newActivityNumber = insertedActivity.activitynumber;
+        const Xchire_newActivityNumber = Xchire_insertedActivity.activitynumber;
 
         // Fields for progress table
-        const progressColumns = [
-            ...activityColumns, "typeactivity", "callback", "callstatus", "typecall", 
+        const Xchire_progressColumns = [
+            ...Xchire_activityColumns, "typeactivity", "callback", "callstatus", "typecall", 
             "remarks", "quotationnumber", "quotationamount", "sonumber", "soamount", 
             "startdate", "enddate",
         ];
 
-        const progressValues = [
-            ...activityValues, typeactivity, callback || null, callstatus || null, typecall || null, 
+        const Xchire_progressValues = [
+            ...Xchire_activityValues, typeactivity, callback || null, callstatus || null, typecall || null, 
             remarks || null, quotationnumber || null, quotationamount || null, sonumber || null, 
             soamount || null, startdate || null, enddate || null, 
         ];
 
         // Update activitynumber in progressValues to use the returned one
-        progressValues[progressColumns.indexOf("activitynumber")] = newActivityNumber;
+        Xchire_progressValues[Xchire_progressColumns.indexOf("activitynumber")] = Xchire_newActivityNumber;
 
         // Construct and execute the query for progress table
-        const progressPlaceholders = progressValues.map((_, index) => `$${index + 1}`).join(", ");
-        const progressQuery = `
-            INSERT INTO progress (${progressColumns.join(", ")}, date_created) 
-            VALUES (${progressPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') 
+        const Xchire_progressPlaceholders = Xchire_progressValues.map((_, index) => `$${index + 1}`).join(", ");
+        const Xchire_progressQuery = `
+            INSERT INTO progress (${Xchire_progressColumns.join(", ")}, date_created) 
+            VALUES (${Xchire_progressPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') 
             RETURNING *;
         `;
 
-        const progressResult = await sql(progressQuery, progressValues);
+        const Xchire_progressResult = await Xchire_sql(Xchire_progressQuery, Xchire_progressValues);
 
-        if (!progressResult[0]) {
+        if (!Xchire_progressResult[0]) {
             throw new Error("Failed to insert into progress table.");
         }
 
-        return { success: true, activity: insertedActivity, progress: progressResult[0] };
+        return { success: true, activity: Xchire_insertedActivity, progress: Xchire_progressResult[0] };
     } catch (error: any) {
         console.error("Error inserting activity and progress:", error);
         return { success: false, error: error.message || "Failed to add activity and progress." };
@@ -98,16 +98,16 @@ async function addUser(data: any) {
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
+        const Xchire_body = await req.json();
 
         // Call the addUser function
-        const result = await addUser(body);
+        const Xchire_result = await create(Xchire_body);
 
-        return NextResponse.json(result);
-    } catch (error: any) {
-        console.error("Error in POST /api/addActivity:", error);
+        return NextResponse.json(Xchire_result);
+    } catch (Xchire_error: any) {
+        console.error("Error in POST /api/addActivity:", Xchire_error);
         return NextResponse.json(
-            { success: false, error: error.message || "Internal Server Error" },
+            { success: false, error: Xchire_error.message || "Internal Server Error" },
             { status: 500 }
         );
     }

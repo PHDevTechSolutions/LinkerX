@@ -1,24 +1,24 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
     throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+const Xchire_sql = neon(Xchire_databaseUrl);
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
-        console.log("Request body:", body);
+        const Xchire_body = await req.json();
+        console.log("Request body:", Xchire_body);
 
-        const { id, status } = body;
+        const { id, status } = Xchire_body;
         if (!id || !status) {
             throw new Error("Missing 'id' or 'status' in the request body.");
         }
 
-        const result = await sql`
+        const Xchire_update = await Xchire_sql`
             UPDATE accounts
             SET 
                 status = ${status},
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
             RETURNING *;
         `;
 
-        if (result.length === 0) {
+        if (Xchire_update.length === 0) {
             throw new Error("No rows were updated. Please check the company ID.");
         }
 
@@ -35,16 +35,16 @@ export async function POST(req: Request) {
             {
                 success: true,
                 message: "Company status updated successfully",
-                data: result[0],
+                data: Xchire_update[0],
             },
             { status: 200 }
         );
-    } catch (error: any) {
-        console.error("Error updating company status:", error);
+    } catch (Xchire_error: any) {
+        console.error("Error updating company status:", Xchire_error);
         return NextResponse.json(
             {
                 success: false,
-                error: error.message || "Failed to update company status.",
+                error: Xchire_error.message || "Failed to update company status.",
             },
             { status: 500 }
         );

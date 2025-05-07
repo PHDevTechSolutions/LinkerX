@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
   throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+const Xchire_sql = neon(Xchire_databaseUrl);
 
 export async function GET(req: Request) {
   try {
@@ -21,17 +21,17 @@ export async function GET(req: Request) {
     }
 
     // ✅ Fetch total sales order today
-    const salesResult = await sql`
+    const Xchire_fetch = await Xchire_sql`
       SELECT COALESCE(SUM(soamount), 0) AS totalSalesOrder
       FROM progress
       WHERE referenceid = ${referenceID}
       AND DATE_TRUNC('day', date_created) = CURRENT_DATE
     `;
 
-    const totalSalesOrder = salesResult.length > 0 ? salesResult[0].totalsalesorder : 0;
+    const totalSalesOrder = Xchire_fetch.length > 0 ? Xchire_fetch[0].totalsalesorder : 0;
 
     // ✅ Fetch all sales order data for filtering weekly and monthly
-    const salesOrderData = await sql`
+    const salesOrderData = await Xchire_sql`
       SELECT soamount AS amount, date_created
       FROM progress
       WHERE referenceid = ${referenceID}
@@ -46,10 +46,10 @@ export async function GET(req: Request) {
       },
       { status: 200 }
     );
-  } catch (error: any) {
-    console.error("Error fetching sales order data:", error);
+  } catch (Xchire_error: any) {
+    console.error("Error fetching sales order data:", Xchire_error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch sales order data." },
+      { success: false, error: Xchire_error.message || "Failed to fetch sales order data." },
       { status: 500 }
     );
   }

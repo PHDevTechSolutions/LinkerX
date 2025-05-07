@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectToDatabase
 import { ObjectId } from 'mongodb';
 
-export default async function deleteAccount(req: NextApiRequest, res: NextApiResponse) {
+export default async function remove(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'DELETE') {
         res.setHeader('Allow', ['DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);
@@ -12,13 +12,13 @@ export default async function deleteAccount(req: NextApiRequest, res: NextApiRes
     const { id } = req.body;
 
     try {
-        const db = await connectToDatabase();
-        const activityCollection = db.collection('monitoring');
+        const Xchire_db = await connectToDatabase();
+        const Xchire_Collection = Xchire_db.collection('monitoring');
 
-        await activityCollection.deleteOne({ _id: new ObjectId(id) });
+        await Xchire_Collection.deleteOne({ _id: new ObjectId(id) });
         res.status(200).json({ success: true, message: 'Post deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting post:', error);
+    } catch (Xchire_error) {
+        console.error('Error deleting post:', Xchire_error);
         res.status(500).json({ error: 'Failed to delete post' });
     }
 }

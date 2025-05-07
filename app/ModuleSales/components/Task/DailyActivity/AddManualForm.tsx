@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormFields from "./ManualFormFields";
-import { CiTrash, CiCircleRemove, CiSaveUp1, CiEdit } from "react-icons/ci";
+import { CiTrash, CiCircleRemove, CiSaveUp1, CiEdit, CiTurnL1 } from "react-icons/ci";
 
 interface AddUserFormProps {
   onCancel: () => void;
@@ -276,11 +276,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     <>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
         <div className="flex justify-end gap-2">
-          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
-            {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
+          <button type="submit" className="bg-blue-400 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
+            {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}
             {editUser ? "Update" : "Submit"}
           </button>
-          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} /> Cancel</button>
+          <button type="button" className="border text-black px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiTurnL1 size={15} /> Back</button>
         </div>
         <h2 className="text-xs font-bold mb-4">
           {editUser ? "Edit Account Information" : "Add New Account"}
@@ -338,30 +338,30 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           </p>
 
           {/* Desktop View */}
-          <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-xs border-collapse border border-gray-300">
-              <thead className="bg-gray-200">
-                <tr>
-                  <th className="text-left px-4 py-2 border">Type of Activity</th>
-                  <th className="text-left px-4 py-2 border">Callback</th>
-                  <th className="text-left px-4 py-2 border">Call Status</th>
-                  <th className="text-left px-4 py-2 border">Type of Call</th>
-                  <th className="text-left px-4 py-2 border">Q# Number</th>
-                  <th className="text-left px-4 py-2 border">Q-Amount</th>
-                  <th className="text-left px-4 py-2 border">SO-Amount</th>
-                  <th className="text-left px-4 py-2 border">SO-Number</th>
-                  <th className="text-left px-4 py-2 border">Actual Sales (Final Amount)</th>
-                  <th className="text-left px-4 py-2 border">Remarks</th>
-                  <th className="text-left px-4 py-2 border">Status</th>
-                  <th className="text-left px-4 py-2 border">Actions</th>
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto">
+              <thead className="bg-gray-100">
+                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                  <th className="px-6 py-4 font-semibold text-gray-700">Type of Activity</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700">Callback</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700">Call Status</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700">Type of Call</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700">Q# Number</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700">Q-Amount</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700">SO-Amount</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700">SO-Number</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700">Actual Sales (Final Amount)</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-100">
                 {currentRecords.length > 0 ? (
                   currentRecords.map((activity, index) => (
-                    <tr key={index} className="odd:bg-white even:bg-gray-100 capitalize">
-                      <td className="px-4 py-2 border">{activity.typeactivity}</td>
-                      <td className="px-4 py-2 border">
+                    <tr key={index} className="border-b whitespace-nowrap">
+                      <td className="px-6 py-4 text-xs">{activity.typeactivity}</td>
+                      <td className="px-6 py-4 text-xs">
                         {activity.callback
                           ? new Date(activity.callback).toLocaleString("en-US", {
                             year: "numeric",
@@ -374,23 +374,38 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                           : ""}
                       </td>
 
-                      <td className="px-4 py-2 border">{activity.callstatus}</td>
-                      <td className="px-4 py-2 border">{activity.typecall}</td>
-                      <td className="px-4 py-2 border uppercase">{activity.quotationnumber}</td>
-                      <td className="px-4 py-2 border">{activity.quotationamount}</td>
-                      <td className="px-4 py-2 border">{activity.soamount}</td>
-                      <td className="px-4 py-2 border uppercase">{activity.sonumber}</td>
-                      <td className="px-4 py-2 border">{activity.actualsales}</td>
-                      <td className="px-4 py-2 border break-words truncate max-w-xs cursor-pointer" onClick={() => handleShowRemarks(activity.remarks)}>
+                      <td className="px-6 py-4 text-xs">{activity.callstatus}</td>
+                      <td className="px-6 py-4 text-xs">{activity.typecall}</td>
+                      <td className="px-6 py-4 text-xs uppercase">{activity.quotationnumber}</td>
+                      <td className="px-6 py-4 text-xs">{activity.quotationamount}</td>
+                      <td className="px-6 py-4 text-xs">{activity.soamount}</td>
+                      <td className="px-6 py-4 text-xs uppercase">{activity.sonumber}</td>
+                      <td className="px-6 py-4 text-xs">{activity.actualsales}</td>
+                      <td className="px-6 py-4 border break-words truncate max-w-xs cursor-pointer" onClick={() => handleShowRemarks(activity.remarks)}>
                         {activity.remarks}
                       </td>
-                      <td className="px-4 py-2 border">{activity.activitystatus}</td>
-                      <td className="px-4 py-2 flex justify-center item-center">
-                        <button onClick={() => handleDeleteClick(activity.id.toString())} className="bg-white p-2 rounded-md flex mr-1 shadow-md text-red-600">
-                          <CiTrash size={16} /> Delete
+                      <td className="px-6 py-4 text-xs">
+                        <span
+                          className={`px-2 py-1 text-[8px] font-semibold rounded-full whitespace-nowrap ${activity.activitystatus === "Cold"
+                            ? "bg-blue-200 text-black"
+                            : activity.activitystatus === "Warm"
+                              ? "bg-yellow-200 text-black"
+                            : activity.activitystatus === "Hot"
+                              ? "bg-red-200 text-black" 
+                            : activity.activitystatus === "Done"
+                              ? "bg-green-200 text-black"   
+                              : "bg-green-100 text-green-700"
+                            }`}
+                        >
+                          {activity.activitystatus}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-xs flex">
+                        <button onClick={() => handleDeleteClick(activity.id.toString())} className="bg-white p-2 rounded-md flex mr-1 text-red-600">
+                          <CiTrash size={15} />
                         </button>
-                        <button onClick={() => handleEditClick(activity.id)} className="bg-white p-2 rounded-md flex shadow-md text-blue-900">
-                          <CiEdit size={16} /> Edit
+                        <button onClick={() => handleEditClick(activity.id)} className="bg-white p-2 rounded-md flex text-blue-900">
+                          <CiEdit size={15} /> 
                         </button>
                       </td>
                     </tr>
@@ -549,40 +564,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                   </button>
                 </div>
               </div>
-            )}
-          </div>
-
-          {/* Mobile View */}
-          <div className="md:hidden">
-            {currentRecords.length > 0 ? (
-              currentRecords.map((activity, index) => (
-                <div key={index} className="bg-white text-xs shadow-md rounded-lg p-4 mb-2">
-                  <p><strong>Type of Activity:</strong> {activity.typeactivity}</p>
-                  {activity.callback && (
-                    <p><strong>Callback:</strong> {new Date(activity.callback).toLocaleString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                      hour12: true
-                    })}</p>
-                  )}
-                  <p><strong>Call Status:</strong> {activity.callstatus}</p>
-                  <p><strong>Type of Call:</strong> {activity.typecall}</p>
-                  <p><strong>Q# Number:</strong> {activity.quotationnumber}</p>
-                  <p><strong>Q-Amount:</strong> {activity.quotationamount}</p>
-                  <p><strong>Remarks:</strong> {activity.remarks}</p>
-                  <div className="flex justify-center item-center mt-2">
-                    <button onClick={() => handleDeleteClick(activity.id.toString())} className="text-red-600">
-                      <CiTrash size={16} />
-                    </button>
-
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-center py-2">No activities found.</p>
             )}
           </div>
 

@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
 // Get database URL from environment variable
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
   throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+const Xchire_sql = neon(Xchire_databaseUrl);
 
 // Update multiple emails
 async function updateMultipleEmails(ids: string[], status: string) {
@@ -16,7 +16,7 @@ async function updateMultipleEmails(ids: string[], status: string) {
       throw new Error("Email IDs and status are required.");
     }
 
-    const result = await sql`
+    const Xchire_update = await Xchire_sql`
       UPDATE email
       SET
         status = ${status},
@@ -25,25 +25,25 @@ async function updateMultipleEmails(ids: string[], status: string) {
       RETURNING *;
     `;
 
-    return { success: true, data: result };
-  } catch (error: any) {
-    console.error("Error updating emails:", error);
-    return { success: false, error: error.message || "Failed to update email statuses." };
+    return { success: true, data: Xchire_update };
+  } catch (Xchire_error: any) {
+    console.error("Error updating emails:", Xchire_error);
+    return { success: false, error: Xchire_error.message || "Failed to update email statuses." };
   }
 }
 
 // Handle PUT request
 export async function PUT(req: Request) {
   try {
-    const body = await req.json();
-    const { ids, status } = body;
+    const Xchire_body = await req.json();
+    const { ids, status } = Xchire_body;
 
-    const result = await updateMultipleEmails(ids, status);
-    return NextResponse.json(result);
-  } catch (error: any) {
-    console.error("Error in PUT /api/ModuleSales/Email/UpdateStatus:", error);
+    const Xchire_result = await updateMultipleEmails(ids, status);
+    return NextResponse.json(Xchire_result);
+  } catch (Xchire_error: any) {
+    console.error("Error in PUT /api/ModuleSales/Email/UpdateStatus:", Xchire_error);
     return NextResponse.json(
-      { success: false, error: error.message || "Internal Server Error" },
+      { success: false, error: Xchire_error.message || "Internal Server Error" },
       { status: 500 }
     );
   }

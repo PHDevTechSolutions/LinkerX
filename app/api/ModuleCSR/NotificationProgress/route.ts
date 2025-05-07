@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+// Ensure TASKFLOW_DB_URL is defined
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
     throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+// Create a reusable Neon database connection function
+const Xchire_sql = neon(Xchire_databaseUrl);
 
 export async function GET(req: Request) {
     try {
@@ -18,13 +20,13 @@ export async function GET(req: Request) {
         }
 
         // ✅ Updated Query: Check both referenceId and tsm
-        const progressData = await sql`
+        const Xchire_progressData = await Xchire_sql`
         SELECT ticketreferencenumber, typeactivity, callstatus, typecall, remarks, startdate, id
         FROM progress 
         WHERE csragent = ${referenceId};
         `;
 
-        return NextResponse.json({ success: true, data: progressData }, { status: 200 });
+        return NextResponse.json({ success: true, data: Xchire_progressData }, { status: 200 });
     } catch (error: any) {
         console.error("Error fetching notifications:", error);
         return NextResponse.json(
@@ -34,4 +36,4 @@ export async function GET(req: Request) {
     }
 }
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"; // Ensure fresh data fetch

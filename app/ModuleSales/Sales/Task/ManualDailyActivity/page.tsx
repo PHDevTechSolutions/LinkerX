@@ -14,7 +14,7 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 // Icons
-import { CiSquarePlus, CiCircleRemove, CiSaveUp1, CiTrash, CiRepeat } from "react-icons/ci";
+import { CiSquarePlus, CiCircleRemove, CiSaveUp1, CiTrash, CiTurnL1 } from "react-icons/ci";
 import { PiHandTapThin } from "react-icons/pi";
 
 // Function to get formatted Manila timestamp
@@ -860,14 +860,11 @@ const ListofUser: React.FC = () => {
                                     <div className="flex justify-between items-center mb-4">
                                         <div className="flex items-center gap-3">
                                             <button
-                                                className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
-                                                onClick={handleButtonClick}
-                                            >
-                                                <PiHandTapThin size={20} /> Tap
-                                            </button>
-                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)} >
-                                                                                            <CiSquarePlus size={20} /> Add
-                                                                    </button>
+                                                className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition"
+                                                onClick={handleButtonClick}>
+                                                <PiHandTapThin size={15} /> Tap</button>
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition" onClick={() => setShowForm(true)} >
+                                                <CiSquarePlus size={15} /> Add</button>
                                         </div>
 
                                         {showPersonalForm && (
@@ -924,8 +921,8 @@ const ListofUser: React.FC = () => {
 
                                                         {/* Buttons */}
                                                         <div className="mt-6 flex justify-end">
-                                                            <button type="button" className="bg-gray-400 text-xs text-white px-5 py-2 rounded mr-2 flex items-center gap-1" onClick={closeForm} disabled={loading}><CiCircleRemove size={20} />Cancel</button>
-                                                            <button type="submit" className="bg-blue-900 text-white text-xs px-5 py-2 rounded flex items-center gap-1" disabled={loading}><CiSaveUp1 size={20} />{loading ? "Submitting..." : "Submit"}</button>
+                                                            <button type="button" className="border text-xs text-black px-5 py-2 rounded mr-2 flex items-center gap-1" onClick={closeForm} disabled={loading}><CiTurnL1 size={15} />Back</button>
+                                                            <button type="submit" className="bg-blue-400 text-white text-xs px-5 py-2 rounded flex items-center gap-1" disabled={loading}><CiSaveUp1 size={15} />{loading ? "Submitting..." : "Submit"}</button>
                                                         </div>
                                                     </form>
                                                 </div>

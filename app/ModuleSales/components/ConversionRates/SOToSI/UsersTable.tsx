@@ -152,19 +152,19 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                 </nav>
             </div>
 
-            <table className="min-w-full bg-white border border-gray-200 text-xs">
-                <thead>
-                    <tr className="bg-gray-100 text-left">
-                        <th className="py-2 px-4 border">Agent</th>
-                        <th className="py-2 px-4 border">{activeTab === "MTD" ? "Month" : "Year"}</th>
-                        <th className="py-2 px-4 border">Target</th>
-                        <th className="py-2 px-4 border">(MTD) # of SO</th>
-                        <th className="py-2 px-4 border">(MTD) # of SI</th>
-                        <th className="py-2 px-4 border">% SO to SI</th>
-                        <th className="py-2 px-4 border">Target</th>
+            <table className="min-w-full table-auto">
+                <thead className="bg-gray-100">
+                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                        <th className="px-6 py-4 font-semibold text-gray-700">Agent</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">{activeTab === "MTD" ? "Month" : "Year"}</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Target</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">(MTD) # of SO</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">(MTD) # of SI</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">% SO to SI</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Target</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-100">
                     {Object.keys(groupedData).length > 0 ? (
                         Object.values(groupedData).map((group) => {
                             const percentageCalls = group.preparationQuoteCount > 0
@@ -172,14 +172,14 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                                 : 0;
 
                             return (
-                                <tr key={group.ReferenceID + group.date_created} className="border-t">
-                                    <td className="py-2 px-4 border capitalize font-bold bg-gray-100">{group.AgentFirstname} {group.AgentLastname}<br /><span className="text-gray-900 text-[8px]">({group.ReferenceID})</span></td>
-                                    <td className="py-2 px-4 border capitalize">{group.date_created}</td>
-                                    <td className="py-2 px-4 border">₱{formatCurrency(group.targetQuota)}</td>
-                                    <td className="py-2 px-4 border">{group.salesorderCount}</td>
-                                    <td className="py-2 px-4 border">{group.siCount}</td>
-                                    <td className="py-2 px-4 border">{percentageCalls.toFixed(2)}%</td>
-                                    <td className="py-2 px-4 border font-semibold">
+                                <tr key={group.ReferenceID + group.date_created} className="border-b whitespace-nowrap">
+                                    <td className="px-6 py-4 text-xs capitalize font-bold">{group.AgentFirstname} {group.AgentLastname}<br /><span className="text-gray-900 text-[8px]">({group.ReferenceID})</span></td>
+                                    <td className="px-6 py-4 text-xs">{group.date_created}</td>
+                                    <td className="px-6 py-4 text-xs">₱{formatCurrency(group.targetQuota)}</td>
+                                    <td className="px-6 py-4 text-xs">{group.salesorderCount}</td>
+                                    <td className="px-6 py-4 text-xs">{group.siCount}</td>
+                                    <td className="px-6 py-4 text-xs">{percentageCalls.toFixed(2)}%</td>
+                                    <td className="px-6 py-4 text-xs">
                                         {percentageCalls > 70 ? (
                                             <span className="text-green-600 ml-2 mr-2">&#8593;</span>
                                         ) : (

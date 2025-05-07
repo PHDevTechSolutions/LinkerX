@@ -1,35 +1,37 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+// Ensure database URL is defined
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
   throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+// Create a reusable Neon database connection function
+const Xchire_sql = neon(Xchire_databaseUrl);
 
 // Update multiple progress csrremarks
-async function updateMultipleProgress(ids: string[], csrremarks: string) {
+async function update(ids: string[], csrremarks: string) {
   try {
     if (!ids || ids.length === 0 || !csrremarks) {
       throw new Error("IDs and csrremarks are required.");
     }
 
-    const result = await sql`
+    const Xchire_result = await Xchire_sql`
       UPDATE progress
       SET csrremarks = ${csrremarks}
       WHERE id = ANY(${ids})
       RETURNING *;
     `;
 
-    if (result.length === 0) {
+    if (Xchire_result.length === 0) {
       throw new Error("No records found to update.");
     }
 
-    return { success: true, data: result };
-  } catch (error: any) {
-    console.error("Error updating progress csrremarks:", error);
-    return { success: false, error: error.message || "Failed to update csrremarks." };
+    return { success: true, data: Xchire_result };
+  } catch (Xchire_error: any) {
+    console.error("Error updating progress csrremarks:", Xchire_error);
+    return { success: false, error: Xchire_error.message || "Failed to update csrremarks." };
   }
 }
 
@@ -41,12 +43,12 @@ export async function PUT(req: Request) {
 
     console.log("Received PUT request to update progress:", { ids, csrremarks });
 
-    const result = await updateMultipleProgress(ids, csrremarks);
-    return NextResponse.json(result);
-  } catch (error: any) {
-    console.error("Error in PUT /api/ModuleCSR/Task/Progress/UpdateProgress:", error);
+    const Xchire_result = await update(ids, csrremarks);
+    return NextResponse.json(Xchire_result);
+  } catch (Xchire_error: any) {
+    console.error("Error in PUT /api/ModuleCSR/Task/Progress/UpdateProgress:", Xchire_error);
     return NextResponse.json(
-      { success: false, error: error.message || "Internal Server Error" },
+      { success: false, error: Xchire_error.message || "Internal Server Error" },
       { status: 500 }
     );
   }

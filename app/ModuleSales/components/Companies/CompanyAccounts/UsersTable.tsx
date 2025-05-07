@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { CiEdit, CiRepeat, CiTrash } from "react-icons/ci";
+import { CiEdit, CiTrash } from "react-icons/ci";
 
 import axios from "axios";
 import { toast } from 'react-toastify';
@@ -17,7 +17,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
   const [bulkEditMode, setBulkEditMode] = useState(false);
   const [bulkEditStatusMode, setBulkEditStatusMode] = useState(false);
-  const [newStatusUpdate, setnewStatusUpdate] = useState("");
   const [bulkRemoveMode, setBulkRemoveMode] = useState(false);
   const [bulkTransferMode, setBulkTransferMode] = useState(false);
   const [bulkTransferTSAMode, setBulkTransferTSAMode] = useState(false);
@@ -128,11 +127,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
     }
   }, [bulkTransferTSAMode]);
 
-  const toggleBulkDeleteMode = useCallback(() => {
-    setBulkDeleteMode((prev) => !prev);
-    setSelectedUsers(new Set());
-  }, []);
-
   const toggleBulkEditMode = useCallback(() => {
     setBulkEditMode((prev) => !prev);
     setSelectedUsers(new Set());
@@ -144,24 +138,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
     setSelectedUsers(new Set());
     setNewStatus("");
     setNewRemarks("");
-  }, []);
-
-  const toggleBulkTransferMode = useCallback(() => {
-    setBulkTransferMode((prev) => !prev);
-    setSelectedUsers(new Set());
-    setSelectedTsm("");
-  }, []);
-
-  const toggleBulkTransferTSAMode = useCallback(() => {
-    setBulkTransferTSAMode((prev) => !prev);
-    setSelectedUsers(new Set());
-    setSelectedTsa("");
-  }, []);
-
-  const toggleBulkEditStatusMode = useCallback(() => {
-    setBulkEditStatusMode((prev) => !prev);
-    setSelectedUsers(new Set());
-    setnewStatusUpdate("");
   }, []);
 
   const handleSelectUser = useCallback((userId: string) => {
@@ -246,25 +222,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
     }
   }, [selectedUsers, updatedUser]);
 
-  const handleBulkTransfer = useCallback(async () => {
-    if (selectedUsers.size === 0 || !selectedTsm) return;
-    try {
-      const response = await fetch(`/api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Transfer`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userIds: Array.from(selectedUsers), tsmReferenceID: selectedTsm }),
-      });
-      if (response.ok) {
-        setSelectedUsers(new Set());
-        setBulkTransferMode(false);
-      } else {
-        console.error("Failed to transfer users");
-      }
-    } catch (error) {
-      console.error("Error transferring users:", error);
-    }
-  }, [selectedUsers, selectedTsm]);
-
   const handleBulkTSATransfer = useCallback(async () => {
     if (selectedUsers.size === 0 || !selectedTsa) return;
     try {
@@ -286,18 +243,29 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
     }
   }, [selectedUsers, selectedTsa, fetchAccount]);
 
-  const handleRefresh = async () => {
-    try {
-      const response = await axios.get(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`);
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
 
-      if (response.data.success) {
-        setUpdatedUser(response.data.data); // Update the state with the new data
-      } else {
-        console.error("Failed to fetch accounts");
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    // Use UTC getters instead of local ones to prevent timezone shifting.
+    let hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert hours to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // if hour is 0, display as 12
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+
+    // Use toLocaleDateString with timeZone 'UTC' to format the date portion
+    const formattedDateStr = date.toLocaleDateString('en-US', {
+      timeZone: 'UTC',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+
+    // Return combined date and time string
+    return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
   };
 
   return (
@@ -305,19 +273,14 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
       {/* Bulk Action Buttons */}
 
       <div className="flex gap-2 mb-3 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
-        <button onClick={toggleBulkEditMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-900 hover:text-white">
+        <button onClick={toggleBulkEditMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-400 hover:text-white">
           <CiEdit size={16} />
           {bulkEditMode ? "Cancel Bulk Edit" : "Bulk Edit"}
         </button>
 
-        <button onClick={toggleBulkRemoveMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-900 hover:text-white">
+        <button onClick={toggleBulkRemoveMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-400 hover:text-white">
           <CiTrash size={16} />
           {bulkRemoveMode ? "Cancel Remove Edit" : "Bulk Remove"}
-        </button>
-
-        <button onClick={handleRefresh} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-gray-900 hover:text-white">
-          <CiRepeat size={16} />
-          Refresh
         </button>
       </div>
 
@@ -363,7 +326,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                   <option value="New Account - Client Development">New Account - Client Development</option>
                   <option value="Transfer Account">Transfer Account</option>
                 </select>
-                <button onClick={handleBulkEdit} className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs" disabled={!newTypeClient}>Apply Changes</button>
+                <button onClick={handleBulkEdit} className="px-3 py-1 bg-blue-400 text-white rounded-md hover:bg-blue-500 text-xs" disabled={!newTypeClient}>Apply Changes</button>
               </div>
             )}
 
@@ -377,7 +340,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                 <input type="text" value={newRemarks} onChange={(e) => setNewRemarks(e.target.value)} placeholder="Reason/Remarks..." className="px-2 py-1 border rounded-md" />
                 <button
                   onClick={handleBulkRemove}
-                  className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs"
+                  className="px-3 py-1 bg-blue-400 text-white rounded-md hover:bg-blue-500 text-xs"
                   disabled={!newStatus} // Prevent click if no status or remarks
                 >
                   Apply Changes
@@ -397,64 +360,96 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
       )}
 
       {/* Users Table */}
-      <table className="w-full bg-white border border-gray-200 text-xs overflow-x-auto">
-        <thead>
-          <tr className="bg-gray-100 text-left">
-            <th className="p-2 border"></th>
-            <th className="p-2 border">Company Name</th>
-            <th className="p-2 border">Contact Person</th>
-            <th className="p-2 border">Contact Number</th>
-            <th className="p-2 border">Email Address</th>
-            <th className="p-2 border">Address</th>
-            <th className="p-2 border">Area</th>
-            <th className="p-2 border">Type of Client</th>
-            <th className="p-2 border">Status</th>
-            <th className="p-2 border">Actions</th>
+      <table className="min-w-full table-auto">
+        <thead className="bg-gray-100">
+          <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+            <th className="px-6 py-4 font-semibold text-gray-700"></th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Email Address</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Address</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Area</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-gray-100">
           {updatedUser.length > 0 ? (
-            updatedUser.map((post) => (
-              <tr key={post.id} className="hover:bg-gray-50 capitalize">
-                <td className="p-2 border text-center">
-                  {(bulkDeleteMode || bulkEditMode || bulkEditStatusMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
-                    <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4" />
-                  )}
-                </td>
-                <td className="p-2 border whitespace-nowrap">{post.companyname}</td>
-                <td className="p-2 border whitespace-nowrap">{post.contactperson}</td>
-                <td className="p-2 border whitespace-nowrap">{post.contactnumber}</td>
-                <td className="p-2 border lowercase whitespace-nowrap">{post.emailaddress}</td>
-                <td className="p-2 border whitespace-nowrap">{post.address}</td>
-                <td className="p-2 border whitespace-nowrap">{post.area}</td>
-                <td className="p-2 border whitespace-nowrap">{post.typeclient}</td>
-                <td className="p-2 border whitespace-nowrap">
-                  <span
-                    className={`px-2 py-1 text-[8px] font-semibold rounded-full whitespace-nowrap ${post.status === "Active"
-                      ? "bg-green-900 text-gray-100"
-                      : post.status === "Used"
-                        ? "bg-blue-900 text-gray-100"
-                        : "bg-green-100 text-green-700"
-                      }`}
-                  >
-                    {post.status}
-                  </span>
-                </td>
-                <td className="p-2 border">
-                  <button className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left flex items-center gap-1" onClick={() => handleEdit(post)}>
-                    <CiEdit />
-                  </button>
-                </td>
-              </tr>
-            ))
+            updatedUser.map((post) => {
+              const borderLeftClass =
+                post.status === "Active"
+                  ? "border-l-4 border-green-400"
+                  : post.status === "Used"
+                    ? "border-l-4 border-blue-400"
+                    : "";
+
+              const hoverClass =
+                post.status === "Active"
+                  ? "hover:bg-green-100 hover:text-green-900"
+                  : post.status === "Used"
+                    ? "hover:bg-blue-100 hover:text-blue-900"
+                    : "";
+
+              return (
+                <tr key={post.id} className={`border-b whitespace-nowrap ${hoverClass}`}>
+                  <td className={`px-6 py-4 text-xs ${borderLeftClass}`}>
+                    {(bulkDeleteMode || bulkEditMode || bulkEditStatusMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.has(post.id)}
+                        onChange={() => handleSelectUser(post.id)}
+                        className="w-4 h-4"
+                      />
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
+                  <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
+                  <td className="px-6 py-4 text-xs capitalize">{post.contactnumber}</td>
+                  <td className="px-6 py-4 text-xs">{post.emailaddress}</td>
+                  <td className="px-6 py-4 text-xs capitalize">{post.address}</td>
+                  <td className="px-6 py-4 text-xs capitalize">{post.area}</td>
+                  <td className="px-6 py-4 text-xs">{post.typeclient}</td>
+                  <td className="px-6 py-4 text-xs">
+                    <span
+                      className={`px-2 py-1 text-[8px] font-semibold rounded-full whitespace-nowrap ${post.status === "Active"
+                        ? "bg-green-400 text-gray-100"
+                        : post.status === "Used"
+                          ? "bg-blue-400 text-gray-100"
+                          : "bg-green-100 text-green-700"
+                        }`}
+                    >
+                      {post.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2 text-xs align-top">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-white bg-blue-400 p-2 rounded">Uploaded: {formatDate(new Date(post.date_created).getTime())}</span>
+                      <span className="text-white bg-green-500 p-2 rounded">Updated: {formatDate(new Date(post.date_updated).getTime())}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-xs">
+                    <button
+                      className="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-300 hover:rounded-full w-full text-left flex items-center gap-1"
+                      onClick={() => handleEdit(post)}
+                    >
+                      <CiEdit /> Edit
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
           ) : (
             <tr>
-              <td colSpan={10} className="p-4 text-center text-gray-500">No accounts available</td>
+              <td colSpan={11} className="text-center text-xs py-4 text-gray-500">
+                No record available
+              </td>
             </tr>
           )}
         </tbody>
       </table>
-
     </div>
   );
 };

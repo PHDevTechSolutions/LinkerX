@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CiMenuKebab, CiRepeat } from "react-icons/ci";
+import { CiMenuKebab, CiRead } from "react-icons/ci";
 import { Menu } from "@headlessui/react";
 import axios from "axios";
 
@@ -55,40 +55,47 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
   return (
     <div className="mb-4">
       {/* Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {Array.from(groupedCompanies.entries()).map(([companygroup, companies]) =>
-          companies.length ? (
-            <div key={companygroup} className="relative border rounded-md shadow-md p-4 bg-white">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold uppercase">{companygroup}</h3>
-                <Menu as="div" className="relative">
-                  <Menu.Button>
-                    <CiMenuKebab />
-                  </Menu.Button>
-                  <Menu.Items className="absolute right-0 mt-2 min-w-[160px] bg-white shadow-md rounded-md z-10">
+      <div className="overflow-x-auto">
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+              <th className="px-6 py-4 font-semibold text-gray-700">Group</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Number of Companies</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {Array.from(groupedCompanies.entries()).map(([companygroup, companies]) =>
+              companies.length ? (
+                <tr key={companygroup} className="bg-white border-b hover:bg-gray-50">
+                  <td className="px-6 py-4 text-xs uppercase">{companygroup}</td>
+                  <td className="px-6 py-4 text-xs uppercase">{companies.length}</td>
+                  <td className="px-6 py-4 text-xs">
                     <button
-                      className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left"
+                      className="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-300 hover:rounded-full w-full text-left flex items-center gap-1"
                       onClick={() => handleViewCompanies(companygroup)}
                     >
-                      View Companies
+                      <CiRead /> View Companies
                     </button>
-                  </Menu.Items>
-                </Menu>
-              </div>
-              <p className="mt-4 text-xs">
-                <strong>Number of Companies:</strong> {companies.length}
-              </p>
-            </div>
-          ) : null
-        )}
-        {!groupedCompanies.size && (
-          <div className="col-span-full text-center py-4 text-xs">No accounts available</div>
-        )}
+                  </td>
+
+                </tr>
+              ) : null
+            )}
+            {!groupedCompanies.size && (
+              <tr>
+                <td colSpan={3} className="text-center text-xs py-4 text-gray-500">
+                  No record available
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* Modal */}
       {modalData.length > 0 && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[999]">
           <div className="bg-white p-6 rounded-md w-full max-w-5xl shadow-lg overflow-y-auto max-h-[90vh]">
             <h2 className="text-lg font-semibold mb-2 text-center">Companies in Group</h2>
             <p className="text-xs text-gray-600 mb-4 text-center">
@@ -104,28 +111,28 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
             />
 
             <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left border-collapse">
-                <thead className="bg-gray-100 text-gray-700">
-                  <tr>
-                    <th className="px-4 py-2 border-b">Company Name</th>
-                    <th className="px-4 py-2 border-b">Contact Person</th>
-                    <th className="px-4 py-2 border-b">Contact Number</th>
-                    <th className="px-4 py-2 border-b">Email Address</th>
-                    <th className="px-4 py-2 border-b">Type of Client</th>
-                    <th className="px-4 py-2 border-b">Address</th>
-                    <th className="px-4 py-2 border-b">Area</th>
+              <table className="min-w-full table-auto">
+                <thead className="bg-gray-100">
+                  <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                    <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Email Address</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Address</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Area</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-100">
                   {paginatedCompanies.map((company) => (
-                    <tr key={company.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-2 border-b">{company.companyname}</td>
-                      <td className="px-4 py-2 border-b">{company.contactperson}</td>
-                      <td className="px-4 py-2 border-b">{company.contactnumber}</td>
-                      <td className="px-4 py-2 border-b">{company.emailaddress}</td>
-                      <td className="px-4 py-2 border-b">{company.typeclient}</td>
-                      <td className="px-4 py-2 border-b">{company.address}</td>
-                      <td className="px-4 py-2 border-b">{company.area}</td>
+                    <tr key={company.id} className="border-b whitespace-nowrap">
+                      <td className="px-6 py-4 text-xs uppercase">{company.companyname}</td>
+                      <td className="px-6 py-4 text-xs capitalize">{company.contactperson}</td>
+                      <td className="px-6 py-4 text-xs capitalize">{company.contactnumber}</td>
+                      <td className="px-6 py-4 text-xs">{company.emailaddress}</td>
+                      <td className="px-6 py-4 text-xs">{company.typeclient}</td>
+                      <td className="px-6 py-4 text-xs capitalize">{company.address}</td>
+                      <td className="px-6 py-4 text-xs capitalize">{company.area}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -156,12 +163,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
             </div>
 
             <div className="flex justify-center mt-6">
-              <button
-                onClick={handleCloseModal}
-                className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-blue-700 transition text-xs"
-              >
-                Close
-              </button>
+              <button onClick={handleCloseModal} className="px-6 py-2 border rounded-md transition text-xs">Close</button>
             </div>
           </div>
         </div>

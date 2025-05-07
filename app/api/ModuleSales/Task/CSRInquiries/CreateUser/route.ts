@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
 // Ensure DATABASE_URL is defined
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
     throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
 // Create a reusable Neon database connection function
-const sql = neon(databaseUrl);
+const Xchire_sql = neon(Xchire_databaseUrl);
 
 const generateActivityNumber = (companyname: string, referenceid: string) => {
     const firstLetter = companyname.charAt(0).toUpperCase();
@@ -28,7 +28,7 @@ const generateActivityNumber = (companyname: string, referenceid: string) => {
     return generatedNumber;
 };
 
-async function addUser(data: any) {
+async function create(data: any) {
     try {
         const {
             ticketreferencenumber,
@@ -98,8 +98,8 @@ async function addUser(data: any) {
             RETURNING *;
         `;
 
-        const activityResult = await sql(activityQuery, activityValues);
-        if (!activityResult || activityResult.length === 0) {
+        const Xchire_activityResult = await Xchire_sql(activityQuery, activityValues);
+        if (!Xchire_activityResult || Xchire_activityResult.length === 0) {
             return { success: false, error: "Failed to insert into activity table." };
         }
 
@@ -151,21 +151,21 @@ async function addUser(data: any) {
             RETURNING *;
         `;
 
-        const progressResult = await sql(progressQuery, progressValues);
-        if (!progressResult || progressResult.length === 0) {
+        const Xchire_progressResult = await Xchire_sql(progressQuery, progressValues);
+        if (!Xchire_progressResult || Xchire_progressResult.length === 0) {
             return { success: false, error: "Failed to insert into progress table." };
         }
 
         // ✅ Update inquiries table status to "Used"
-        const updateQuery = `
+        const Xchire_updateQuery = `
             UPDATE inquiries 
             SET status = 'Used', date_updated = CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila' 
             WHERE ticketreferencenumber = $1
         `;
 
-        await sql(updateQuery, [ticketreferencenumber]);
+        await Xchire_sql(Xchire_updateQuery, [ticketreferencenumber]);
 
-        return { success: true, data: { activity: activityResult[0], progress: progressResult[0] } };
+        return { success: true, data: { activity: Xchire_activityResult[0], progress: Xchire_progressResult[0] } };
     } catch (error: any) {
         console.error("Error inserting activity, progress, and updating inquiries:", error);
         return { success: false, error: error.message || "Failed to process request." };
@@ -174,10 +174,10 @@ async function addUser(data: any) {
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
-        const result = await addUser(body);
+        const Xchire_body = await req.json();
+        const Xchire_result = await create(Xchire_body);
 
-        return NextResponse.json(result, { status: result.success ? 200 : 400 });
+        return NextResponse.json(Xchire_result, { status: Xchire_result.success ? 200 : 400 });
     } catch (error: any) {
         console.error("Error in POST /api/addActivity:", error);
         return NextResponse.json(

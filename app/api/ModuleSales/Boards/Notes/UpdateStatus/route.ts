@@ -1,17 +1,22 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+// Load and validate database URL
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
     throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+// Initialize Neon SQL client
+const Xchire_sql = neon(Xchire_databaseUrl);
 
-// Handler for updating the status of a post
+/**
+ * PUT /api/updateStatus
+ * Updates the status of a note/post in the `notes` table.
+ */
 export async function PUT(req: Request) {
     try {
-        const { id, status } = await req.json(); // Extract ID and new status from the request body
+        const { id, status } = await req.json(); // Parse request body
 
         if (!id || !status) {
             return NextResponse.json(
@@ -20,33 +25,41 @@ export async function PUT(req: Request) {
             );
         }
 
-        // Update the post's status in the database
-        const result = await sql`
+        // Perform the update query
+        const Xchire_update = await Xchire_sql`
             UPDATE notes 
             SET status = ${status}, date_updated = CURRENT_TIMESTAMP 
             WHERE id = ${id} 
             RETURNING *;
         `;
 
-        if (result.length === 0) {
+        if (Xchire_update.length === 0) {
             return NextResponse.json(
                 { success: false, message: "Post not found" },
                 { status: 404 }
             );
         }
 
-        // Return success response with updated post details
+        // Respond with the updated post
         return NextResponse.json(
-            { success: true, message: "Status updated successfully", updatedPost: result[0] },
+            {
+                success: true,
+                message: "Status updated successfully",
+                updatedPost: Xchire_update[0]
+            },
             { status: 200 }
         );
-    } catch (error: any) {
-        console.error("Error updating post status:", error);
+    } catch (Xchire_error: any) {
+        console.error("Error updating post status:", Xchire_error);
         return NextResponse.json(
-            { success: false, error: error.message || "Failed to update status" },
+            {
+                success: false,
+                error: Xchire_error.message || "Failed to update status"
+            },
             { status: 500 }
         );
     }
 }
 
-export const dynamic = "force-dynamic"; // Ensure fresh data fetch
+// Ensure fresh data every request
+export const dynamic = "force-dynamic";

@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb";
 import { ObjectId } from 'mongodb';
 
-export default async function editAccount(req: NextApiRequest, res: NextApiResponse) {
+export default async function update(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'PUT') {
     res.setHeader('Allow', ['PUT']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
@@ -53,10 +53,10 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
   } = req.body;
 
   try {
-    const db = await connectToDatabase();
-    const accountCollection = db.collection('monitoring');
+    const Xchire_db = await connectToDatabase();
+    const Xchire_Collection = Xchire_db.collection('monitoring');
 
-    const updatedAccount = { 
+    const Xchire_update = { 
       UserId, 
       userName, 
       Role, 
@@ -99,19 +99,19 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
     };
 
     // Update the record in the "monitoring" collection
-    await accountCollection.updateOne({ _id: new ObjectId(id) }, { $set: updatedAccount });
+    await Xchire_Collection.updateOne({ _id: new ObjectId(id) }, { $set: Xchire_update });
     
     // Use TicketReferenceNumber if provided; otherwise, fallback to ReferenceID
     const ticketRef = TicketReferenceNumber ? TicketReferenceNumber : ReferenceID;
     const message = `${userName} has been updated ticket - ${ticketRef} on ${createdAt.toLocaleString()}`;
 
     // Insert into the "MonitoringRecords" collection including the message field
-    const monitoringRecordsCollection = db.collection("MonitoringRecords");
-    await monitoringRecordsCollection.insertOne({ ...updatedAccount, message });
+    const monitoringRecordsCollection = Xchire_db.collection("MonitoringRecords");
+    await monitoringRecordsCollection.insertOne({ ...Xchire_update, message });
 
     res.status(200).json({ success: true, message: 'Account updated successfully' });
-  } catch (error) {
-    console.error('Error updating account:', error);
+  } catch (Xchire_error) {
+    console.error('Error updating account:', Xchire_error);
     res.status(500).json({ error: 'Failed to update account' });
   }
 }

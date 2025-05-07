@@ -823,7 +823,7 @@ const DashboardPage: React.FC = () => {
               <h3 className="text-xs font-semibold mb-2">My Team's Activity</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                 {/* Total Inbound Calls */}
-                <div className="bg-green-900 text-white shadow-md rounded-lg p-6 flex items-center">
+                <div className="bg-green-500 text-white shadow-md rounded-lg p-6 flex items-center">
                   <CiInboxIn className="text-4xl mr-4" />
                   <div>
                     <h3 className="text-xs font-bold mb-1">Total Inbound Calls</h3>
@@ -831,7 +831,7 @@ const DashboardPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-yellow-600 text-white shadow-md rounded-lg p-6 flex items-center">
+                <div className="bg-yellow-400 text-white shadow-md rounded-lg p-6 flex items-center">
                   <CiInboxOut className="text-4xl mr-4" />
                   <div>
                     <h3 className="text-xs font-bold mb-1">Total Outbound Calls / Touchbase</h3>
@@ -839,7 +839,7 @@ const DashboardPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-red-700 text-white shadow-md rounded-lg p-6 flex items-center">
+                <div className="bg-red-400 text-white shadow-md rounded-lg p-6 flex items-center">
                   <BsBuildings className="text-4xl mr-4" />
                   <div>
                     <h3 className="text-xs font-bold mb-1">Total Company Accounts</h3>
@@ -908,7 +908,7 @@ const DashboardPage: React.FC = () => {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                 {/* Total Work Hours */}
-                <div className="bg-blue-900 text-white shadow-md rounded-lg p-6 flex items-center">
+                <div className="bg-blue-400 text-white shadow-md rounded-lg p-6 flex items-center">
                   <CiTimer className="text-4xl mr-4" />
                   <div>
                     <h3 className="text-xs font-bold mb-1">Total Work Hours</h3>
@@ -917,7 +917,7 @@ const DashboardPage: React.FC = () => {
                 </div>
 
                 {/* Total Inbound Calls */}
-                <div className="bg-green-900 text-white shadow-md rounded-lg p-6 flex items-center">
+                <div className="bg-green-500 text-white shadow-md rounded-lg p-6 flex items-center">
                   <CiInboxIn className="text-4xl mr-4" />
                   <div>
                     <h3 className="text-xs font-bold mb-1">Total Inbound Calls</h3>
@@ -926,7 +926,7 @@ const DashboardPage: React.FC = () => {
                 </div>
 
                 {/* Total Outbound Calls */}
-                <div className="bg-yellow-600 text-white shadow-md rounded-lg p-6 flex items-center">
+                <div className="bg-yellow-400 text-white shadow-md rounded-lg p-6 flex items-center">
                   <CiInboxOut className="text-4xl mr-4" />
                   <div>
                     <h3 className="text-xs font-bold mb-1">Total Outbound Calls / Touchbase</h3>
@@ -935,7 +935,7 @@ const DashboardPage: React.FC = () => {
                 </div>
 
                 {/* Total Company Accounts */}
-                <div className="bg-red-700 text-white shadow-md rounded-lg p-6 flex items-center">
+                <div className="bg-red-400 text-white shadow-md rounded-lg p-6 flex items-center">
                   <BsBuildings className="text-4xl mr-4" />
                   <div>
                     <h3 className="text-xs font-bold mb-1">Total Company Accounts</h3>
@@ -1128,7 +1128,7 @@ const DashboardPage: React.FC = () => {
                 <div className="rounded-lg flex flex-col gap-4 lg:col-span-1">
                   {/* Cards inside Placeholder 2 */}
                   <div className="grid gap-4 w-full">
-                    <div className="bg-green-700 text-white shadow-md rounded-lg p-6 flex items-center">
+                    <div className="bg-emerald-400 text-white shadow-md rounded-lg p-6 flex items-center">
                       <CiMoneyBill className="text-4xl mr-4" />
                       <div>
                         <h3 className="text-xs font-bold mb-1">Actual Sales</h3>
@@ -1136,7 +1136,7 @@ const DashboardPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="bg-red-600 text-white shadow-md rounded-lg p-6 flex items-center">
+                    <div className="bg-teal-400 text-white shadow-md rounded-lg p-6 flex items-center">
                       <CiReceipt className="text-4xl mr-4" />
                       <div>
                         <h3 className="text-xs font-bold mb-1">Sales Order</h3>
@@ -1144,7 +1144,7 @@ const DashboardPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="bg-yellow-500 text-white shadow-md rounded-lg p-6 flex items-center">
+                    <div className="bg-cyan-400 text-white shadow-md rounded-lg p-6 flex items-center">
                       <CiWallet className="text-4xl mr-4" />
                       <div>
                         <h3 className="text-xs font-bold mb-1">Quotation Amount</h3>
@@ -1152,7 +1152,7 @@ const DashboardPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="bg-blue-900 text-white shadow-md rounded-lg p-6 flex items-center">
+                    <div className="bg-stone-400 text-white shadow-md rounded-lg p-6 flex items-center">
                       <CiStopwatch className="text-4xl mr-4" />
                       <div>
                         <h3 className="text-xs font-bold mb-1">Total Activities</h3>

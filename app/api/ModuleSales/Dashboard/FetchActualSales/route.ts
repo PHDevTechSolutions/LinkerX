@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
   throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+const Xchire_sql = neon(Xchire_databaseUrl);
 
 export async function GET(req: Request) {
   try {
@@ -21,18 +21,18 @@ export async function GET(req: Request) {
     }
 
     // ✅ Fetch total actual sales today
-    const salesResult = await sql`
-      SELECT COALESCE(SUM(actualsales), 0) AS totalActualSales
+    const Xchire_fetch = await Xchire_sql`
+      SELECT COALESCE(SUM(actualsales), 0) AS Xchire_totalActualSales
       FROM progress
       WHERE referenceid = ${referenceID}
       AND DATE_TRUNC('day', date_created) = CURRENT_DATE
     `;
 
-    const totalActualSales =
-      salesResult.length > 0 ? salesResult[0].totalactualsales : 0;
+    const totalactualsales =
+      Xchire_fetch.length > 0 ? Xchire_fetch[0].totalactualsales : 0;
 
     // ✅ Fetch all actual sales data for filtering weekly and monthly
-    const actualSalesData = await sql`
+    const actualSalesData = await Xchire_sql`
       SELECT actualsales AS amount, date_created
       FROM progress
       WHERE referenceid = ${referenceID}
@@ -42,17 +42,17 @@ export async function GET(req: Request) {
     return NextResponse.json(
       {
         success: true,
-        totalActualSales,
+        totalactualsales,
         data: actualSalesData,
       },
       { status: 200 }
     );
-  } catch (error: any) {
-    console.error("Error fetching actual sales data:", error);
+  } catch (Xchire_error: any) {
+    console.error("Xchire error fetching actual sales data:", Xchire_error);
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to fetch actual sales data.",
+        error: Xchire_error.message || "Failed to fetch actual sales data.",
       },
       { status: 500 }
     );

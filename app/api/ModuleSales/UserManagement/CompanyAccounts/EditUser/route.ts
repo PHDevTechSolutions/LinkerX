@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
     throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+const Xchire_sql = neon(Xchire_databaseUrl);
 
-async function editUser(
+async function update(
     id: string, 
     referenceid: string, 
     manager: string, 
@@ -28,7 +28,7 @@ async function editUser(
             throw new Error("ID and company name are required.");
         }
 
-        const result = await sql`
+        const Xchire_update = await Xchire_sql`
             UPDATE accounts 
             SET 
                 referenceid = ${referenceid},
@@ -48,16 +48,16 @@ async function editUser(
             RETURNING *;
         `;
 
-        return { success: true, data: result };
-    } catch (error: any) {
-        console.error("Error updating user:", error);
-        return { success: false, error: error.message || "Failed to update user." };
+        return { success: true, data: Xchire_update };
+    } catch (Xchire_error: any) {
+        console.error("Error updating user:", Xchire_error);
+        return { success: false, error: Xchire_error.message || "Failed to update user." };
     }
 }
 
 export async function PUT(req: Request) {
     try {
-        const body = await req.json();
+        const Xchire_body = await req.json();
         const { 
             id, 
             referenceid, 
@@ -72,18 +72,18 @@ export async function PUT(req: Request) {
             address, 
             area, 
             status 
-        } = body;
+        } = Xchire_body;
 
-        const result = await editUser(
+        const Xchire_result = await update(
             id, referenceid, manager, tsm, companyname, contactperson, 
             contactnumber, emailaddress, typeclient, companygroup, address, area, status
         );
 
-        return NextResponse.json(result);
-    } catch (error: any) {
-        console.error("Error in PUT /api/edituser:", error);
+        return NextResponse.json(Xchire_result);
+    } catch (Xchire_error: any) {
+        console.error("Error in PUT /api/edituser:", Xchire_error);
         return NextResponse.json(
-            { success: false, error: error.message || "Internal server error" },
+            { success: false, error: Xchire_error.message || "Internal server error" },
             { status: 500 }
         );
     }

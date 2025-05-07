@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormFields from "./UserFormFields";
-import { CiSaveUp1, CiEdit, CiCircleRemove } from "react-icons/ci";
+import { CiSaveUp1, CiEdit, CiTurnL1  } from "react-icons/ci";
 
 interface AddUserFormProps {
   onCancel: () => void;
@@ -101,12 +101,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           status={status} setstatus={setstatus}
         />
         <div className="flex justify-between">
-          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
-            {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
+          <button type="submit" className="bg-blue-400 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
+            {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}
             {editUser ? "Update" : "Submit"}
           </button>
 
-          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} /> Cancel</button>
+          <button type="button" className="px-4 py-2 border rounded text-xs flex items-center gap-1" onClick={onCancel}><CiTurnL1  size={15} /> Back</button>
         </div>
       </form>
       <ToastContainer className="text-xs" autoClose={1000} />

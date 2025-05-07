@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectToDatabase
 
-export default async function fetchAccounts(req: NextApiRequest, res: NextApiResponse) {
+export default async function fetch(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
@@ -9,12 +9,12 @@ export default async function fetchAccounts(req: NextApiRequest, res: NextApiRes
   }
 
   try {
-    const db = await connectToDatabase();
-    const activityCollection = db.collection('monitoring');
-    const activities = await activityCollection.find({}).toArray();
-    res.status(200).json(activities);
-  } catch (error) {
-    console.error('Error fetching accounts:', error);
+    const Xchire_db = await connectToDatabase();
+    const Xchire_Collection = Xchire_db.collection('monitoring');
+    const Xchire_fetch = await Xchire_Collection.find({}).toArray();
+    res.status(200).json(Xchire_fetch);
+  } catch (Xchire_error) {
+    console.error('Error fetching accounts:', Xchire_error);
     res.status(500).json({ error: 'Failed to fetch activities' });
   }
 }

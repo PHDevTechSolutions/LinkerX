@@ -193,6 +193,31 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
         }
     };
 
+    const formatDate = (timestamp: number) => {
+        const date = new Date(timestamp);
+
+        // Use UTC getters instead of local ones to prevent timezone shifting.
+        let hours = date.getUTCHours();
+        const minutes = date.getUTCMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+
+        // Convert hours to 12-hour format
+        hours = hours % 12;
+        hours = hours ? hours : 12; // if hour is 0, display as 12
+        const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+
+        // Use toLocaleDateString with timeZone 'UTC' to format the date portion
+        const formattedDateStr = date.toLocaleDateString('en-US', {
+            timeZone: 'UTC',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        });
+
+        // Return combined date and time string
+        return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
+    };
+
     return (
         <div className="mb-4">
             {/* Bulk Action Buttons */}
@@ -207,11 +232,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                 </button>
                 <button onClick={toggleBulkTransferMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
                     <BiTransfer size={16} />
-                    {bulkTransferMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Territory Sales Manager"}
+                    {bulkTransferMode ? "Cancel Bulk Transfer" : "Bulk Transfer to TSM"}
                 </button>
                 <button onClick={toggleBulkTransferTSAMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
                     <BiTransfer size={16} />
-                    {bulkTransferTSAMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Another Agent"}
+                    {bulkTransferTSAMode ? "Cancel Bulk Transfer" : "Bulk Transfer to TSA"}
                 </button>
                 <button onClick={handleRefresh} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-gray-900 hover:text-white">
                     <BiRefresh size={16} />
@@ -289,121 +314,113 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                 </div>
             )}
 
-            {/* User Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {updatedUser.length > 0 ? (
-                    updatedUser.map((post) => (
-                        <div
-                            key={post.id}
-                            className="relative border rounded-md shadow-md p-4 flex flex-col bg-white"
-                        >
-                            <div className="flex items-center gap-2">
-                                {/* Checkbox will show if any bulk mode is active */}
-                                {bulkDeleteMode && (
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedUsers.has(post.id)}
-                                        onChange={() => handleSelectUser(post.id)}
-                                        className="w-4 h-4 text-red-600"
-                                    />
-                                )}
-                                {bulkEditMode && (
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedUsers.has(post.id)}
-                                        onChange={() => handleSelectUser(post.id)}
-                                        className="w-4 h-4 text-blue-600"
-                                    />
-                                )}
-                                {bulkTransferMode && (
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedUsers.has(post.id)}
-                                        onChange={() => handleSelectUser(post.id)}
-                                        className="w-4 h-4 text-purple-600"
-                                    />
-                                )}
-                                {bulkTransferTSAMode && (
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedUsers.has(post.id)}
-                                        onChange={() => handleSelectUser(post.id)}
-                                        className="w-4 h-4 text-purple-600"
-                                    />
-                                )}
-                                <h3 className="text-xs font-semibold uppercase">{post.companyname}</h3>
-                            </div>
-
-                            <div className="flex justify-between items-center mt-2">
-                                <div className="mt-4 mb-4 text-xs">
-                                    <p>
-                                        <strong>Contact Person:</strong>{" "}
-                                        <span className="capitalize">{post.contactperson}</span>
-                                    </p>
-                                    <p>
-                                        <strong>Contact Number:</strong> {post.contactnumber}
-                                    </p>
-                                    <p>
-                                        <strong>Email Address:</strong> {post.emailaddress}
-                                    </p>
-                                    <div className="border-t border-gray-800 pb-4 mt-4"></div>
-                                    <p className="mt-2">
-                                        <strong>Address:</strong>
-                                        <span className="capitalize">{post.address}</span>
-                                    </p>
-                                    <p>
-                                        <strong>Area:</strong>
-                                        <span className="capitalize">{post.area}</span>
-                                    </p>
-                                    <p className="mt-2">
-                                        <strong>Type of Client:</strong>
-                                        <span className="uppercase"> {post.typeclient}</span>
-                                    </p>
-                                </div>
-                                <Menu as="div" className="relative inline-block text-left">
-                                    <div>
-                                        <Menu.Button>
-                                            <BsThreeDotsVertical />
-                                        </Menu.Button>
-                                    </div>
-                                    <Menu.Items className="absolute right-0 mt-2 w-29 bg-white shadow-md rounded-md z-10">
-                                        <button
-                                            className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left"
-                                            onClick={() => handleEdit(post)}
+            <div className="overflow-x-auto">
+                <table className="min-w-full table-auto">
+                    <thead className="bg-gray-100">
+                        <tr className="text-xs text-left whitespace-nowrap">
+                            {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode) && (
+                                <th className="px-2 py-2 text-left">Select</th>
+                            )}
+                            <th className="px-4 py-2 font-semibold text-gray-700">#</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Company</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Contact Person</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Contact Number</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Email Address</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Address</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Area</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Type of Client</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Project Name</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Project Category</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Project Type</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Source</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Target Quota</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Activity Remarks</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Ticket Reference Number</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Wrap Up</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Inquiries</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">CSR Agent</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">TSA | TSM</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Status</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Dates</th>
+                            <th className="px-4 py-2 font-semibold text-gray-700">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                        {updatedUser.length > 0 ? (
+                            updatedUser.map((post) => (
+                                <tr key={post.id} className="border-b whitespace-nowrap">
+                                    {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode) && (
+                                        <td className="px-2 py-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedUsers.has(post.id)}
+                                                onChange={() => handleSelectUser(post.id)}
+                                                className={`w-4 h-4 ${bulkDeleteMode ? 'text-red-600' :
+                                                    bulkEditMode ? 'text-blue-600' :
+                                                        (bulkTransferMode || bulkTransferTSAMode) ? 'text-purple-600' : ''}`}
+                                            />
+                                        </td>
+                                    )}
+                                    <td className="px-4 py-2 text-xs">{post.activitynumber}</td>
+                                    <td className="px-4 py-2 text-xs uppercase">{post.companyname}</td>
+                                    <td className="px-4 py-2 text-xs capitalize">{post.contactperson}</td>
+                                    <td className="px-4 py-2 text-xs capitalize">{post.contactnumber}</td>
+                                    <td className="px-4 py-2 text-xs capitalize">{post.emailaddress}</td>
+                                    <td className="px-4 py-2 text-xs capitalize">{post.address}</td>
+                                    <td className="px-4 py-2 text-xs capitalize">{post.area}</td>
+                                    <td className="px-4 py-2 text-xs capitalize">{post.typeclient}</td>
+                                    <td className="px-4 py-2 text-xs capitalize">{post.projectname}</td>
+                                    <td className="px-4 py-2 text-xs capitalize">{post.projectcategory}</td>
+                                    <td className="px-4 py-2 text-xs">{post.projecttype}</td>
+                                    <td className="px-4 py-2 text-xs">{post.source}</td>
+                                    <td className="px-4 py-2 text-xs">{post.targetquota}</td>
+                                    <td className="px-4 py-2 text-xs">{post.activityremarks}</td>
+                                    <td className="px-4 py-2 text-xs">{post.ticketreferencenumber}</td>
+                                    <td className="px-4 py-2 text-xs capitalize">{post.wrapup}</td>
+                                    <td className="px-4 py-2 text-xs capitalize">{post.inquiries}</td>
+                                    <td className="px-4 py-2 text-xs">{post.csragent}</td>
+                                    <td className="px-4 py-2 text-xs">
+                                        <strong>{post.referenceid}</strong> | {post.tsm}
+                                    </td>
+                                    <td className="px-4 py-2 text-xs">
+                                        <span
+                                            className={`text-[10px] px-2 py-1 rounded-full ${post.activitystatus === "Cold"
+                                                ? "bg-blue-900 text-white"
+                                                : post.activitystatus === "Warm"
+                                                    ? "bg-yellow-600 text-white"
+                                                    : post.activitystatus === "Hot"
+                                                        ? "bg-red-600 text-white"
+                                                        : post.activitystatus === "Done"
+                                                            ? "bg-green-600 text-white"
+                                                            : post.activitystatus === "Cancelled"
+                                                                ? "bg-red-900 text-white"
+                                                                : post.activitystatus === "Loss"
+                                                                    ? "bg-gray-600 text-white"
+                                                                    : "bg-gray-300 text-black"
+                                                }`}
                                         >
-                                            Edit
-                                        </button>
-                                    </Menu.Items>
-                                </Menu>
-                            </div>
-
-                            <div className="mt-auto border-t pt-2 text-xs text-gray-900 flex justify-between items-center">
-                                <p>
-                                    <strong>TSA:</strong> {post.referenceid} | <strong>TSM:</strong> {post.tsm}
-                                </p>
-                                {/* Status Badge */}
-                                <span
-                                    className={`text-[10px] px-2 py-1 rounded-full ${post.activitystatus === "Cold" ? "bg-blue-900 text-white" :
-                                        post.activitystatus === "Warm" ? "bg-yellow-600 text-white" :
-                                            post.activitystatus === "Hot" ? "bg-red-600 text-white" :
-                                                post.activitystatus === "Done" ? "bg-green-600 text-white" :
-                                                    post.activitystatus === "Cancelled" ? "bg-red-900 text-white" :
-                                                        post.activitystatus === "Loss" ? "bg-gray-600 text-white" :
-                                                            "bg-gray-300 text-black" // Default if no match
-                                        }`}
-                                >
-                                    {post.activitystatus}
-                                </span>
-
-                            </div>
-
-                        </div>
-                    ))
-                ) : (
-                    <div className="col-span-full text-center py-4 text-xs">
-                        No accounts available
-                    </div>
-                )}
+                                            {post.activitystatus}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-2 text-xs align-top">
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-black bg-blue-300 p-2 rounded">Created: {formatDate(new Date(post.date_created).getTime())}</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-2 text-xs">
+                                        <button className="px-3 py-1 ml-2 text-white bg-green-900 rounded-md hover:bg-green-600" onClick={() => handleEdit(post)}>Edit</button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={19} className="text-center text-xs py-4">
+                                    No accounts available
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </div>
 
         </div>

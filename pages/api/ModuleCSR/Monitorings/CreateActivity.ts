@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectToDatabase
 
 // Function to add an account directly in this file
-async function addMonitoring({ UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, 
+async function create({ UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, 
   CustomerType, CustomerStatus, Status, Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
   TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, PONumber, SODate, PaymentTerms, PaymentDate, 
   DeliveryDate, POStatus, POSource, SOAmount, QuotationNumber, QuotationAmount, createdAt,
@@ -56,22 +56,22 @@ async function addMonitoring({ UserId, TicketReferenceNumber, userName, Role, Re
   createdAt: string;
 
 }) {
-  const db = await connectToDatabase();
-  const accountsCollection = db.collection("monitoring");
-  const newMonitoring = { UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
+  const Xchire_db = await connectToDatabase();
+  const Xchire_Collection = Xchire_db.collection("monitoring");
+  const Xchire_insert = { UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
     CustomerStatus, Status, Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate,
     TsmHandlingTime, TsaHandlingTime, Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, SOAmount, QuotationNumber, QuotationAmount, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource, createdAt, };
-  await accountsCollection.insertOne(newMonitoring);
+  await Xchire_Collection.insertOne(Xchire_insert);
 
   // Build the message for the MonitoringRecords collection
-  const message = `${userName} has been created ticket - ${TicketReferenceNumber} on ${createdAt.toLocaleString()}`;
+  const Xchire_message = `${userName} has been created ticket - ${TicketReferenceNumber} on ${createdAt.toLocaleString()}`;
 
   // Insert into the "MonitoringRecords" collection including the message field
-  await db.collection("MonitoringRecords").insertOne({ ...newMonitoring, message });
+  await Xchire_db.collection("MonitoringRecords").insertOne({ ...Xchire_insert, Xchire_message });
 
   // Broadcast logic if needed
   if (typeof io !== "undefined" && io) {
-    io.emit("newMonitoring", newMonitoring);
+    io.emit("newMonitoring", Xchire_insert);
   }
 
   return { success: true };
@@ -91,15 +91,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-      const result = await addMonitoring({ UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
+      const Xchire_result = await create({ UserId, TicketReferenceNumber, userName, Role, ReferenceID, CompanyName, CustomerName, Gender, ContactNumber, Email, CustomerSegment, CityAddress, Channel, WrapUp, Source, CustomerType, 
         CustomerStatus, Status, Amount, QtySold, SalesManager, SalesAgent, TicketReceived, TicketEndorsed, TsmAcknowledgeDate, TsaAcknowledgeDate, TsmHandlingTime, TsaHandlingTime, 
         Remarks, Traffic, Inquiries, Department, ItemCode, ItemDescription, SONumber, SOAmount, QuotationNumber, QuotationAmount, PONumber, SODate, PaymentTerms, PaymentDate, DeliveryDate, POStatus, POSource, createdAt});
-      res.status(200).json(result);
-    } catch (error) {
-      console.error("Error adding account:", error);
+      res.status(200).json(Xchire_result);
+    } catch (Xchire_error) {
+      console.error("Error adding account:", Xchire_error);
       res
         .status(500)
-        .json({ success: false, message: "Error adding account", error });
+        .json({ success: false, message: "Error adding account", Xchire_error });
     }
   } else {
     res

@@ -144,33 +144,33 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                 </div>
             </div>
 
-            <table className="min-w-full bg-white border border-gray-200 text-xs">
-                <thead>
-                    <tr className="bg-gray-100 text-left">
-                        <th className="py-2 px-4 border">Agent</th>
-                        <th className="py-2 px-4 border">{activeTab === "MTD" ? "Month" : "Year"}</th>
-                        <th className="py-2 px-4 border">Target</th>
-                        <th className="py-2 px-4 border">SO Amount</th>
-                        <th className="py-2 px-4 border">Actual Sales</th>
-                        <th className="py-2 px-4 border">Achievement</th>
-                        <th className="py-2 px-4 border">Par</th>
-                        <th className="py-2 px-4 border">Variance</th>
+            <table className="min-w-full table-auto">
+                <thead className="bg-gray-100">
+                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                        <th className="px-6 py-4 font-semibold text-gray-700">Agent</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">{activeTab === "MTD" ? "Month" : "Year"}</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Target</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">SO Amount</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Actual Sales</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Achievement</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Par</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Variance</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-100">
                     {Object.keys(groupedData).length > 0 ? (
                         Object.values(groupedData).map((group) => {
                             const achievement = group.targetQuota > 0 ? (group.totalActualSales / group.targetQuota) * 100 : 0;
                             return (
-                                <tr key={group.ReferenceID + group.date_created} className="border-t">
-                                    <td className="py-2 px-4 border capitalize font-bold bg-gray-100">{group.AgentFirstname} {group.AgentLastname}<br /><span className="text-gray-900 text-[8px]">({group.ReferenceID})</span></td>
-                                    <td className="py-2 px-4 border capitalize">{group.date_created}</td>
-                                    <td className="py-2 px-4 border">₱{formatCurrency(group.targetQuota)}</td>
-                                    <td className="py-2 px-4 border">₱{formatCurrency(group.totalSOAmount)}</td>
-                                    <td className="py-2 px-4 border">₱{formatCurrency(group.totalActualSales)}</td>
-                                    <td className="py-2 px-4 border">{achievement.toFixed(2)}%</td>
-                                    <td className="py-2 px-4 border">{group.parPercentage.toFixed(2)}%</td>
-                                    <td className="py-2 px-4 border text-red-700 font-semibold">₱{formatCurrency(group.mtdVariance)}</td>
+                                <tr key={group.ReferenceID + group.date_created} className="border-b whitespace-nowrap">
+                                    <td className="px-6 py-4 text-xs font-bold">{group.AgentFirstname} {group.AgentLastname}<br /><span className="text-gray-900 text-[8px]">({group.ReferenceID})</span></td>
+                                    <td className="px-6 py-4 text-xs">{group.date_created}</td>
+                                    <td className="px-6 py-4 text-xs">₱{formatCurrency(group.targetQuota)}</td>
+                                    <td className="px-6 py-4 text-xs">₱{formatCurrency(group.totalSOAmount)}</td>
+                                    <td className="px-6 py-4 text-xs">₱{formatCurrency(group.totalActualSales)}</td>
+                                    <td className="px-6 py-4 text-xs">{achievement.toFixed(2)}%</td>
+                                    <td className="px-6 py-4 text-xs">{group.parPercentage.toFixed(2)}%</td>
+                                    <td className="px-6 py-4 text-xs font-semibold text-red-700">₱{formatCurrency(group.mtdVariance)}</td>
                                 </tr>
                             );
                         })

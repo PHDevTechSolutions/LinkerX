@@ -6,12 +6,12 @@ const getFormattedDate = (timestamp: string): string => {
   return date.toISOString().split("T")[0]; // Returns YYYY-MM-DD
 };
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
   throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+const Xchire_sql = neon(Xchire_databaseUrl);
 
 export async function GET(req: Request) {
   try {
@@ -29,7 +29,7 @@ export async function GET(req: Request) {
     }
 
     // Fetch total actual sales filtered by selected month and year
-    const salesResult = await sql`
+    const Xchire_fetch = await Xchire_sql`
       SELECT DATE(date_created) AS date_created, COALESCE(SUM(actualsales), 0) AS totalActualSales
       FROM progress 
       WHERE manager = ${manager}
@@ -40,15 +40,15 @@ export async function GET(req: Request) {
     `;
 
     // Format results for frontend
-    const salesData = salesResult.map((sale) => ({
+    const salesData = Xchire_fetch.map((sale) => ({
       date_created: getFormattedDate(sale.date_created),
       actualsales: sale.totalactualsales,
     }));
 
     return NextResponse.json({ success: true, data: salesData }, { status: 200 });
-  } catch (error) {
-    console.error("Error fetching actual sales data:", error);
-    return NextResponse.json({ success: false, error: "Failed to fetch actual sales data." }, { status: 500 });
+  } catch (Xchire_error) {
+    console.error("Error fetching actual sales data:", Xchire_error);
+    return NextResponse.json({ success: false, Xchire_error: "Failed to fetch actual sales data." }, { status: 500 });
   }
 }
 

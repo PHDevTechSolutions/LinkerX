@@ -400,7 +400,9 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
               <strong>Account Status:</strong>
               <span
                 className={`ml-2 pb-1 px-3 py-1 font-semibold rounded-full text-[10px]
-                  ${Status === "Active" ? "bg-green-800 text-white" : ""}
+                  ${Status === "Active" ? "bg-green-500 text-white" : ""}
+                  ${Status === "Resigned" ? "bg-red-400 text-white" : ""}
+                  ${Status === "Terminated" ? "bg-red-500 text-white" : ""}
                   ${Status === "Inactive" ? "bg-red-100 text-red-800" : ""}
                   ${Status === "Locked" ? "bg-red-100 text-red-800" : ""}
                   ${!Status ? "bg-gray-100 text-gray-600" : ""}`}
@@ -489,25 +491,25 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           </div>
 
           {/* Touch Base Summary */}
-          <div className="border rounded-lg p-4 text-center">
+          <div className="border rounded-lg p-4 text-center overflow-x-auto">
             <h3 className="font-semibold text-sm mb-2">Client Engagement Overview</h3>
             <p className="text-gray-600 mt-1 mb-4 text-xs">
               This table provides a summary of client interactions, categorized by client type. It helps in tracking engagement levels and understanding communication patterns.
             </p>
-            <table className="w-full text-xs border-collapse border-gray-300">
-              <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="border border-gray-300 px-2 py-1">Type of Client</th>
-                  <th className="border border-gray-300 px-2 py-1 text-center">Counts</th>
+            <table className="min-w-full table-auto">
+              <thead className="bg-gray-100">
+                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                  <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700 text-center">Counts</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-100">
                 {Object.entries(touchbaseData).map(([key, count], index) => {
                   const [typeclient] = key.split("-");
                   return (
-                    <tr key={index}>
-                      <td className="border border-gray-300 px-2 py-1 text-left">{typeclient}</td>
-                      <td className="border border-gray-300 px-2 py-1 text-center">{count}</td>
+                    <tr key={index} className="border-b whitespace-nowrap">
+                      <td className="px-6 py-4 text-xs text-left">{typeclient}</td>
+                      <td className="px-6 py-4 px-2 py-1 text-center">{count}</td>
                     </tr>
                   );
                 })}
@@ -516,122 +518,122 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           </div>
 
           {/* Time Motion */}
-          <div className="border rounded-lg p-4 text-center">
+          <div className="border rounded-lg p-4 text-center overflow-x-auto">
             <h3 className="font-semibold text-sm mb-2">Daily Time and Motion Analysis</h3>
             <p className="text-gray-600 mt-1 mb-4 text-xs">
               This summary provides an overview of time spent on client interactions, outbound calls, and other activities. It helps in assessing productivity and optimizing workflow efficiency.
             </p>
-            <table className="w-full text-xs border-collapse border-gray-300">
-              <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="border border-gray-300 px-2 py-1">Client Engagement</th>
-                  <th className="border border-gray-300 px-2 py-1">Outbound Calls</th>
-                  <th className="border border-gray-300 px-2 py-1">Other Activities</th>
+            <table className="min-w-full table-auto">
+              <thead className="bg-gray-100">
+                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                  <th className="px-6 py-4 font-semibold text-gray-700">Client Engagement</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700">Outbound Calls</th>
+                  <th className="px-6 py-4 font-semibold text-gray-700">Other Activities</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td className="border border-gray-300 px-2 py-1">{formatDuration(timeMotionData.inbound)}</td>
-                  <td className="border border-gray-300 px-2 py-1">{formatDuration(timeMotionData.outbound)}</td>
-                  <td className="border border-gray-300 px-2 py-1">{formatDuration(timeMotionData.others)}</td>
+              <tbody className="divide-y divide-gray-100">
+                <tr className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs text-left">{formatDuration(timeMotionData.inbound)}</td>
+                  <td className="px-6 py-4 text-xs text-left">{formatDuration(timeMotionData.outbound)}</td>
+                  <td className="px-6 py-4 text-xs text-left">{formatDuration(timeMotionData.others)}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
           {/* Daily Productivity */}
-          <div className="border rounded-lg p-4 text-center">
+          <div className="border rounded-lg p-4 text-center overflow-x-auto">
             <h3 className="font-semibold text-sm mb-2">Daily Call Productivity Report</h3>
             <p className="text-gray-600 mt-1 mb-4 text-xs">
               This table provides an overview of daily and month-to-date (MTD) call productivity, including total outbound calls, successful and unsuccessful attempts, and inbound call volume.
             </p>
-            <table className="w-full text-xs border-collapse border-gray-300">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="border border-gray-300 px-2 py-1 text-left">Call Productivity</th>
-                  <th className="border border-gray-300 px-2 py-1 text-center">Daily</th>
-                  <th className="border border-gray-300 px-2 py-1 text-center">MTD</th>
+            <table className="min-w-full table-auto">
+              <thead className="bg-gray-100">
+                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                  <th className="px-6 py-4 text-xs text-left">Call Productivity</th>
+                  <th className="px-6 py-4 text-xs text-center">Daily</th>
+                  <th className="px-6 py-4 text-xs text-center">MTD</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr className="bg-white">
-                  <td className="border border-gray-300 px-2 py-1 text-left">Total Outbound Calls</td>
-                  <td className="border border-gray-300 px-2 py-1 font-semibold">{callData.dailyOutbound || 0}</td>
-                  <td className="border border-gray-300 px-2 py-1 font-semibold">{callData.mtdOutbound || 0}</td>
+              <tbody className="divide-y divide-gray-100">
+                <tr className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs text-left">Total Outbound Calls</td>
+                  <td className="px-6 py-4 text-xs font-semibold">{callData.dailyOutbound || 0}</td>
+                  <td className="px-6 py-4 text-xs font-semibold">{callData.mtdOutbound || 0}</td>
                 </tr>
-                <tr className="bg-gray-100">
-                  <td className="border border-gray-300 px-2 py-1 text-left">Successful Calls</td>
-                  <td className="border border-gray-300 px-2 py-1">{callData.dailySuccessful || 0}</td>
-                  <td className="border border-gray-300 px-2 py-1">{callData.mtdSuccessful || 0}</td>
+                <tr className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs text-left">Successful Calls</td>
+                  <td className="px-6 py-4 text-xs">{callData.dailySuccessful || 0}</td>
+                  <td className="px-6 py-4 text-xs">{callData.mtdSuccessful || 0}</td>
                 </tr>
-                <tr className="bg-white">
-                  <td className="border border-gray-300 px-2 py-1 text-left">Unsuccessful Calls</td>
-                  <td className="border border-gray-300 px-2 py-1">{callData.dailyUnsuccessful || 0}</td>
-                  <td className="border border-gray-300 px-2 py-1">{callData.mtdUnsuccessful || 0}</td>
+                <tr className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs text-left">Unsuccessful Calls</td>
+                  <td className="px-6 py-4 text-xs">{callData.dailyUnsuccessful || 0}</td>
+                  <td className="px-6 py-4 text-xs">{callData.mtdUnsuccessful || 0}</td>
                 </tr>
-                <tr className="bg-gray-100">
-                  <td className="border border-gray-300 px-2 py-1 text-left">Total Inbound Calls</td>
-                  <td className="border border-gray-300 px-2 py-1">{callData.dailyInbound || 0}</td>
-                  <td className="border border-gray-300 px-2 py-1">{callData.mtdInbound || 0}</td>
+                <tr className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs text-left">Total Inbound Calls</td>
+                  <td className="px-6 py-4 text-xs">{callData.dailyInbound || 0}</td>
+                  <td className="px-6 py-4 text-xs">{callData.mtdInbound || 0}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
           {/* Quote Productivity */}
-          <div className="border rounded-lg p-4 text-center">
+          <div className="border rounded-lg p-4 text-center overflow-x-auto">
             <h3 className="font-semibold text-sm mb-2">Quotation Productivity Overview</h3>
             <p className="text-gray-600 mt-1 mb-4 text-xs">
               This table presents a summary of quotation-related activities, including new account development and quotes prepared for existing clients. The data is categorized into daily and month-to-date (MTD) metrics.
             </p>
-            <table className="w-full text-xs border-collapse border-gray-300">
-              <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="border border-gray-300 px-2 py-1">Quotation Productivity</th>
-                  <th className="border border-gray-300 px-2 py-1">Daily</th>
-                  <th className="border border-gray-300 px-2 py-1">MTD</th>
+            <table className="min-w-full table-auto">
+              <thead className="bg-gray-100">
+                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                  <th className="px-6 py-4 text-xs text-left">Quotation Productivity</th>
+                  <th className="px-6 py-4 text-xs text-center">Daily</th>
+                  <th className="px-6 py-4 text-xs text-center">MTD</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr className="bg-white">
-                  <td className="border border-gray-300 px-2 py-1">New Account Development</td>
-                  <td className="border border-gray-300 px-2 py-1">{activityData["Account Development"] || 0}</td>
-                  <td className="border border-gray-300 px-2 py-1">{activityData["Account Development"] || 0}</td>
+              <tbody className="divide-y divide-gray-100">
+                <tr className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs text-left">New Account Development</td>
+                  <td className="px-6 py-4 text-xs text-center">{activityData["Account Development"] || 0}</td>
+                  <td className="px-6 py-4 text-xs text-center">{activityData["Account Development"] || 0}</td>
                 </tr>
-                <tr className="bg-gray-100">
-                  <td className="border border-gray-300 px-2 py-1">Existing Client</td>
-                  <td className="border border-gray-300 px-2 py-1">{activityData["Preparation: Preparation of Quote: Existing Client"] || 0}</td>
-                  <td className="border border-gray-300 px-2 py-1">{activityData["Preparation: Preparation of Quote: Existing Client"] || 0}</td>
+                <tr className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs text-left">Existing Client</td>
+                  <td className="px-6 py-4 text-xs text-center">{activityData["Preparation: Preparation of Quote: Existing Client"] || 0}</td>
+                  <td className="px-6 py-4 text-xs text-center">{activityData["Preparation: Preparation of Quote: Existing Client"] || 0}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
           {/* Performance */}
-          <div className="border rounded-lg p-4 text-center">
+          <div className="border rounded-lg p-4 text-center overflow-x-auto">
             <h3 className="font-semibold text-sm mb-2">Sales Performance Summary</h3>
             <p className="text-gray-600 mt-1 mb-4 text-xs">
               This table provides an overview of sales performance, tracking actual sales from Sales Orders (SO) to Delivery Receipts (DR). Metrics include Month-to-Date (MTD) and Year-to-Date (YTD) sales figures.
             </p>
-            <table className="w-full text-xs border-collapse border-gray-300">
-              <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="border border-gray-300 px-2 py-1">Sales Performance</th>
-                  <th className="border border-gray-300 px-2 py-1">SO to DR (Actual Sales)</th>
+            <table className="min-w-full table-auto">
+              <thead className="bg-gray-100">
+                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                  <th className="px-6 py-4 text-xs text-left">Sales Performance</th>
+                  <th className="px-6 py-4 text-xs text-center">SO to DR (Actual Sales)</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr className="bg-white">
-                  <td className="border border-gray-300 px-2 py-1">Month to Date</td>
-                  <td className="border border-gray-300 px-2 py-1">{formatCurrency(countsales["MonthToDateSales"] || 0)}</td>
+              <tbody className="divide-y divide-gray-100">
+                <tr className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs text-left">Month to Date</td>
+                  <td className="px-6 py-4 text-xs text-center">{formatCurrency(countsales["MonthToDateSales"] || 0)}</td>
                 </tr>
-                <tr className="bg-gray-100">
-                  <td className="border border-gray-300 px-2 py-1">Year to Date</td>
-                  <td className="border border-gray-300 px-2 py-1">{formatCurrency(countsales["YearToDateSales"] || 0)}</td>
+                <tr className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs text-left">Year to Date</td>
+                  <td className="px-6 py-4 text-xs text-center">{formatCurrency(countsales["YearToDateSales"] || 0)}</td>
                 </tr>
-                <tr className="bg-white font-semibold">
-                  <td className="border border-gray-300 px-2 py-1">Total Actual Sales</td>
-                  <td className="border border-gray-300 px-2 py-1">{formatCurrency(countsales["TotalActualSales"] || 0)}</td>
+                <tr className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs text-left font-bold">Total Actual Sales</td>
+                  <td className="px-6 py-4 text-xs text-center font-bold">{formatCurrency(countsales["TotalActualSales"] || 0)}</td>
                 </tr>
               </tbody>
             </table>
@@ -639,26 +641,26 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           {/* Large Card - Full Width */}
         </div>
 
-        <div className="border rounded-lg p-6 col-span-3 mt-6">
+        <div className="border rounded-lg p-6 col-span-3 mt-6 overflow-x-auto">
           <h3 className="font-semibold text-sm mb-2">Daily Activity Summary</h3>
           <p className="text-gray-600 mt-1 mb-4 text-xs">
             A detailed breakdown of time spent on various daily activities, providing insights into productivity and task distribution.
           </p>
-          <table className="w-full text-xs border-collapse border-gray-300">
-            <thead>
-              <tr className="bg-gray-200 text-left">
-                <th className="border border-gray-300 px-2 py-1">Daily Activities Breakdown</th>
-                <th className="border border-gray-300 px-2 py-1 text-center">Time Spent</th>
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-100">
+              <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                <th className="px-6 py-4 text-xs text-left">Daily Activities Breakdown</th>
+                <th className="px-6 py-4 text-xs text-left">Time Spent</th>
               </tr>
             </thead>
-            <tbody className="capitalize">
+            <tbody className="divide-y divide-gray-100">
               {Object.entries(timeMotionData)
                 .filter(([activity]) => validActivities.has(activity)) // Filter only valid activities
                 .sort(([a], [b]) => a.localeCompare(b)) // Sort activities alphabetically
                 .map(([activity, duration]) => (
-                  <tr key={activity} className="bg-white">
-                    <td className="px-2 py-1">{activity}</td>
-                    <td className="text-center">{formatDuration(duration)}</td>
+                  <tr key={activity} className="border-b whitespace-nowrap">
+                    <td className="px-6 py-4 text-xs text-left">{activity}</td>
+                    <td className="px-6 py-4 text-xs text-left font-bold">{formatDuration(duration)}</td>
                   </tr>
                 ))}
             </tbody>

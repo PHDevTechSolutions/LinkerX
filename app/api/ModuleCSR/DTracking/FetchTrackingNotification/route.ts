@@ -1,20 +1,24 @@
+// API route for fetching tracking tickets based on referenceId
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb";
 
-export async function GET(req: NextRequest) {
+// Handle GET request to fetch tracking tickets based on referenceId
+export async function GET(Xchire_req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(Xchire_req.url);
     const referenceId = searchParams.get("referenceId");
 
+    // Ensure referenceId is provided
     if (!referenceId) {
       return NextResponse.json({ error: "Missing referenceId" }, { status: 400 });
     }
 
-    const db = await connectToDatabase();
-    const collection = db.collection("Tracking");
+    // Connect to the MongoDB database
+    const Xchire_db = await connectToDatabase();
+    const Xchire_collection = Xchire_db.collection("Tracking");
 
-    // Only fetch where TrackingStatus is Open
-    const tickets = await collection
+    // Fetch tickets where TrackingStatus is "Open" and TicketConcern matches specific types
+    const Xchire_fetch = await Xchire_collection
       .find({
         ReferenceID: referenceId,
         TrackingStatus: "Open", // exclude Closed
@@ -40,9 +44,9 @@ export async function GET(req: NextRequest) {
       })
       .toArray();
 
-    return NextResponse.json(tickets);
-  } catch (error) {
-    console.error("FetchTracking Error:", error);
+    return NextResponse.json(Xchire_fetch);
+  } catch (Xchire_error) {
+    console.error("FetchTracking Error:", Xchire_error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

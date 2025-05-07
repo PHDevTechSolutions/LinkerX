@@ -51,37 +51,62 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, userDetails }) => {
     setCurrentPage(pageNumber);
   };
 
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+
+    // Use UTC getters instead of local ones to prevent timezone shifting.
+    let hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert hours to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // if hour is 0, display as 12
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+
+    // Use toLocaleDateString with timeZone 'UTC' to format the date portion
+    const formattedDateStr = date.toLocaleDateString('en-US', {
+      timeZone: 'UTC',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+
+    // Return combined date and time string
+    return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
+  };
+
   return (
     <div className="mb-4">
       {/* Table Wrapper */}
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 text-xs">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-2 border">Date Received</th>
-              <th className="p-2 border">Message</th>
-              <th className="p-2 border">Callback</th>
-              <th className="p-2 border">Type</th>
-              <th className="p-2 border">Status</th>
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+              <th className="px-6 py-4 font-semibold text-gray-700">Date Received</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Message</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Callback</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Type</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100">
             {currentItems.length > 0 ? (
               currentItems.map((post) => (
-                <tr key={post.id} className="hover:bg-gray-50 capitalize">
-                  <td className="p-2 border">
+                <tr key={post.id} className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs">
                     {new Date(post.date_created).toLocaleString()}
                   </td>
-                  <td className="p-2 border">{post.message || "N/A"}</td>
-                  <td className="p-2 border">
+                  <td className="px-6 py-4 text-xs">{post.message || "N/A"}</td>
+                  <td className="px-6 py-4 text-xs">
                     {post.callback ? (
                       <span className="text-blue-500">Yes</span>
                     ) : (
                       <span className="text-gray-500">No</span>
                     )}
                   </td>
-                  <td className="p-2 border">{post.type || "N/A"}</td>
-                  <td className="p-2 border">{post.status}</td>
+                  <td className="px-6 py-4 text-xs">{post.type || "N/A"}</td>
+                  <td className="px-6 py-4 text-xs">{post.status}</td>
                 </tr>
               ))
             ) : (
@@ -95,40 +120,32 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, userDetails }) => {
         </table>
       </div>
 
-      {/* Pagination Controls */}
+      {/* ✅ Pagination Controls - Simplified */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center mt-4 space-x-1 text-xs">
+        <div className="flex justify-center items-center mt-4 space-x-2 text-xs">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className={`px-3 py-1 rounded border ${
               currentPage === 1
-                ? "bg-gray-200 cursor-not-allowed"
-                : "bg-blue-500 text-white hover:bg-blue-600"
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "bg-blue-400 text-white hover:bg-blue-600"
             }`}
           >
             Prev
           </button>
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index + 1}
-              onClick={() => handlePageChange(index + 1)}
-              className={`px-3 py-1 rounded border ${
-                currentPage === index + 1
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-100 hover:bg-gray-200"
-              }`}
-            >
-              {index + 1}
-            </button>
-          ))}
+
+          <span className="px-3 py-1 border rounded bg-gray-100 text-gray-700">
+            Page {currentPage} of {totalPages}
+          </span>
+
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className={`px-3 py-1 rounded border ${
               currentPage === totalPages
-                ? "bg-gray-200 cursor-not-allowed"
-                : "bg-blue-500 text-white hover:bg-blue-600"
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "bg-blue-400 text-white hover:bg-blue-600"
             }`}
           >
             Next

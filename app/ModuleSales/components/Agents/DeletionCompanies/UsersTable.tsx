@@ -103,35 +103,35 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
 
       {/* Users Table */}
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 text-xs">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-2 border">Agent </th>
-              <th className="p-2 border">Company Name</th>
-              <th className="p-2 border">Contact Person</th>
-              <th className="p-2 border">Contact Number</th>
-              <th className="p-2 border">Email Address</th>
-              <th className="p-2 border">Address</th>
-              <th className="p-2 border">Area</th>
-              <th className="p-2 border">Type of Client</th>
-              <th className="p-2 border">Status</th>
-              <th className="p-2 border">Remarks / Reason</th>
-              <th className="p-2 border">Actions</th>
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+              <th className="px-6 py-4 font-semibold text-gray-700">Agent </th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Email Address</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Address</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Area</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Remarks / Reason</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100">
             {updatedUser.length > 0 ? (
               updatedUser.map((post) => (
-                <tr key={post.id} className="hover:bg-gray-50 capitalize">
-                  <td className="p-2 border">{getFullname(post.referenceid)}</td>
-                  <td className="p-2 border">{post.companyname}</td>
-                  <td className="p-2 border">{post.contactperson}</td>
-                  <td className="p-2 border">{post.contactnumber}</td>
-                  <td className="p-2 border lowercase">{post.emailaddress}</td>
-                  <td className="p-2 border">{post.address}</td>
-                  <td className="p-2 border">{post.area}</td>
-                  <td className="p-2 border">{post.typeclient}</td>
-                  <td className="p-2 border">
+                <tr key={post.id} className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs">{getFullname(post.referenceid)}</td>
+                  <td className="px-6 py-4 text-xs">{post.companyname}</td>
+                  <td className="px-6 py-4 text-xs">{post.contactperson}</td>
+                  <td className="px-6 py-4 text-xs">{post.contactnumber}</td>
+                  <td className="px-6 py-4 text-xs">{post.emailaddress}</td>
+                  <td className="px-6 py-4 text-xs">{post.address}</td>
+                  <td className="px-6 py-4 text-xs">{post.area}</td>
+                  <td className="px-6 py-4 text-xs">{post.typeclient}</td>
+                  <td className="px-6 py-4 text-xs">
                     <span
                       className={`px-2 py-1 text-[8px] font-semibold rounded-full ${post.status === "For Deletion"
                           ? "bg-yellow-400 text-gray-900"
@@ -145,12 +145,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                       {post.status}
                     </span>
                   </td>
-                  <td className="p-2 border">{post.remarks}</td>
-                  <td className="p-2 border text-center">
+                  <td className="px-6 py-4 text-xs">{post.remarks}</td>
+                  <td className="px-6 py-4 text-xs">
                     {post.status !== "Approve For Deletion" && (
                       <button
                         onClick={() => confirmUpdate(post.id)}
-                        className="px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                        className="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-300 hover:rounded-full w-full text-left flex items-center gap-1"
                       >
                         Approve
                       </button>
@@ -160,7 +160,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
               ))
             ) : (
               <tr>
-                <td colSpan={10} className="p-4 text-center text-gray-500">
+                <td colSpan={12} className="p-4 text-xs text-center text-gray-500">
                   No accounts available
                 </td>
               </tr>

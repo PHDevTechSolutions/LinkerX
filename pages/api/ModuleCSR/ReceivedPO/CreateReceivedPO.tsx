@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectToDatabase
 
 // Function to add an account directly in this file
-async function AddReceivedPO({ 
+async function create({ 
   ReferenceID, userName, DateTime, CompanyName, ContactNumber, 
   PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, 
   PaymentDate, DeliveryPickupDate, POStatus, POSource, Remarks }: {
@@ -24,10 +24,10 @@ async function AddReceivedPO({
   POSource: string;
   Remarks: string;
 }) {
-  const db = await connectToDatabase();
-  const accountsCollection = db.collection("monitoring");
+  const Xchire_db = await connectToDatabase();
+  const Xchire_Collection = Xchire_db.collection("monitoring");
   const newAccount = { ReferenceID, userName, DateTime, CompanyName, ContactNumber, PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, PaymentDate, DeliveryPickupDate, POStatus, POSource, Remarks, createdAt: new Date(), };
-  await accountsCollection.insertOne(newAccount);
+  await Xchire_Collection.insertOne(newAccount);
 
   // Broadcast logic if needed
   if (typeof io !== "undefined" && io) {
@@ -49,13 +49,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-      const result = await AddReceivedPO({ ReferenceID, userName, DateTime, CompanyName, ContactNumber, PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, PaymentDate, DeliveryPickupDate, POStatus, POSource, Remarks });
-      res.status(200).json(result);
-    } catch (error) {
-      console.error("Error adding account:", error);
+      const Xchire_result = await create({ ReferenceID, userName, DateTime, CompanyName, ContactNumber, PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, PaymentDate, DeliveryPickupDate, POStatus, POSource, Remarks });
+      res.status(200).json(Xchire_result);
+    } catch (Xchire_error) {
+      console.error("Error adding account:", Xchire_error);
       res
         .status(500)
-        .json({ success: false, message: "Error adding account", error });
+        .json({ success: false, message: "Error adding account", Xchire_error });
     }
   } else {
     res

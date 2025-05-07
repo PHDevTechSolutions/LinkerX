@@ -2,13 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb";
 import { ObjectId } from "mongodb"; // Import ObjectId
 
-// Handle PUT request to update notification status
+/**
+ * Handles the PUT request to update the notification status.
+ * It updates the notification status to "Read" or the status provided in the request.
+ *
+ * @param req - The incoming PUT request containing notifId and NotificationStatus.
+ * @returns A JSON response indicating the success or failure of the update.
+ */
 export async function PUT(req: NextRequest) {
   try {
-    const requestBody = await req.json();
-    const { notifId, NotificationStatus } = requestBody;
+    const Xchire_requestBody = await req.json();
+    const { notifId, NotificationStatus } = Xchire_requestBody;
 
-    // Validate notifId
+    // Validate notificationId
     if (!notifId) {
       return NextResponse.json(
         { success: false, message: "notifId is required." },
@@ -16,22 +22,22 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Convert notifId to ObjectId for MongoDB query
+    // Convert notificationId to ObjectId for MongoDB query
     const notificationId = new ObjectId(notifId); 
 
     // Set default status if missing
     const updatedStatus = NotificationStatus || "Read";
 
-    const db = await connectToDatabase();
-    const collection = db.collection("monitoring");
+    const Xchire_db = await connectToDatabase();
+    const Xchire_collection = Xchire_db.collection("monitoring");
 
-    // Update notification status in the MongoDB database
-    const result = await collection.updateOne(
+    // Update Xchire_notificationStatus in the MongoDB database
+    const Xchire_result = await Xchire_collection.updateOne(
       { _id: notificationId },
       { $set: { NotificationStatus: updatedStatus } }
     );
 
-    if (result.matchedCount === 0) {
+    if (Xchire_result.matchedCount === 0) {
       return NextResponse.json(
         { success: false, message: "Notification not found or already updated." },
         { status: 404 }
@@ -42,11 +48,11 @@ export async function PUT(req: NextRequest) {
       { success: true, message: "Notification marked as read" },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (Xchire_error: any) {
     // Enhanced error logging
-    console.error("Error updating notification status:", error.message, error.stack);
+    console.error("Xchire_Error updating notification status:", Xchire_error.message, Xchire_error.stack);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to update notification." },
+      { success: false, error: Xchire_error.message || "Failed to update notification." },
       { status: 500 }
     );
   }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import FormFields from "./UserFormFields";
-import { CiEdit, CiSaveUp1, CiCircleRemove } from "react-icons/ci";
+import { CiEdit, CiSaveUp1, CiTurnL1 } from "react-icons/ci";
 
 interface AddPostFormProps {
   userDetails: { id: string; };
@@ -62,11 +62,11 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
         <h2 className="text-xs font-bold mb-4">{editUser ? "Edit User Information" : "Add New User"}</h2>
         <div className="flex justify-end gap-2 mb-4">
-          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
-            {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
+          <button type="submit" className="bg-blue-400 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
+            {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}
             {editUser ? "Update" : "Submit"}
           </button>
-          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} /> Cancel</button>
+          <button type="button" className="border px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiTurnL1 size={15} /> Back</button>
         </div>
         <FormFields
           ReferenceID={ReferenceID} setReferenceID={setReferenceID}

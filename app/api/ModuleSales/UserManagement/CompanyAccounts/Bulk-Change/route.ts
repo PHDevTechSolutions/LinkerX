@@ -1,45 +1,45 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
     throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+const Xchire_sql = neon(Xchire_databaseUrl);
 
-async function bulkEditUsers(userIds: string[], status: string) {
+async function bulkupdate(userIds: string[], status: string) {
     try {
         if (!userIds || userIds.length === 0 || !status) {
             throw new Error("User IDs and status are required.");
         }
 
-        const result = await sql`
+        const Xchire_update = await Xchire_sql`
             UPDATE accounts
             SET status = ${status}
             WHERE id = ANY(${userIds})
             RETURNING *;
         `;
 
-        return { success: true, data: result };
-    } catch (error: any) {
-        console.error("Error updating users:", error);
-        return { success: false, error: error.message || "Failed to update users." };
+        return { success: true, data: Xchire_update };
+    } catch (Xchire_error: any) {
+        console.error("Error updating users:", Xchire_error);
+        return { success: false, error: Xchire_error.message || "Failed to update users." };
     }
 }
 
 export async function PUT(req: Request) {
     try {
-        const body = await req.json();
-        const { userIds, status } = body;
+        const Xchire_body = await req.json();
+        const { userIds, status } = Xchire_body;
 
-        const result = await bulkEditUsers(userIds, status);
+        const Xchire_result = await bulkupdate(userIds, status);
 
-        return NextResponse.json(result);
-    } catch (error: any) {
-        console.error("Error in PUT /api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Change:", error);
+        return NextResponse.json(Xchire_result);
+    } catch (Xchire_error: any) {
+        console.error("Error in PUT /api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Change:", Xchire_error);
         return NextResponse.json(
-            { success: false, error: error.message || "Internal server error" },
+            { success: false, error: Xchire_error.message || "Internal server error" },
             { status: 500 }
         );
     }

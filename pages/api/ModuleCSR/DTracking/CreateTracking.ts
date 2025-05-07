@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectToDatabase
 
 // Function to add an account directly in this file
-async function AddTracking({ ReferenceID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, 
+async function create({ ReferenceID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, 
   TicketType, TicketConcern, TrackingStatus, TrackingRemarks, Department, EndorsedDate, ClosedDate, SalesAgent, SalesManager, NatureConcern, }: {
 
   ReferenceID: string;
@@ -22,11 +22,11 @@ async function AddTracking({ ReferenceID, userName, DateRecord, CompanyName, Cus
   SalesManager:  string;
   NatureConcern: string;
 }) {
-  const db = await connectToDatabase();
-  const accountsCollection = db.collection("Tracking");
+  const Xchire_db = await connectToDatabase();
+  const Xchire_Collection = Xchire_db.collection("Tracking");
   const newAccount = { ReferenceID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, TicketType, TicketConcern, TrackingStatus, 
     TrackingRemarks, Department, EndorsedDate, ClosedDate, SalesAgent, SalesManager, NatureConcern, createdAt: new Date(), };
-  await accountsCollection.insertOne(newAccount);
+  await Xchire_Collection.insertOne(newAccount);
 
   // Broadcast logic if needed
   if (typeof io !== "undefined" && io) {
@@ -49,14 +49,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-      const result = await AddTracking({ ReferenceID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, TicketType, TicketConcern, TrackingStatus, 
+      const Xchire_insert = await create({ ReferenceID, userName, DateRecord, CompanyName, CustomerName, ContactNumber, TicketType, TicketConcern, TrackingStatus, 
         TrackingRemarks, Department, EndorsedDate, ClosedDate, SalesAgent, SalesManager, NatureConcern });
-      res.status(200).json(result);
-    } catch (error) {
-      console.error("Error adding account:", error);
+      res.status(200).json(Xchire_insert);
+    } catch (Xchire_error) {
+      console.error("Error adding account:", Xchire_error);
       res
         .status(500)
-        .json({ success: false, message: "Error adding account", error });
+        .json({ success: false, message: "Error adding account", Xchire_error });
     }
   } else {
     res

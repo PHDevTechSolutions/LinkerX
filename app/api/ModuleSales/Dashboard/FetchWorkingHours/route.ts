@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
     throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+const Xchire_sql = neon(Xchire_databaseUrl);
 
 export async function GET(req: Request) {
     try {
@@ -17,7 +17,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: false, error: "ReferenceID is required." }, { status: 400 });
         }
 
-        const accounts = await sql`
+        const Xchire_fetch = await Xchire_sql`
             SELECT startdate, enddate 
             FROM progress 
             WHERE referenceid = ${referenceID}; 
@@ -26,7 +26,7 @@ export async function GET(req: Request) {
         let totalHours = 0;
         const today = new Date().toISOString().split("T")[0]; // Get current date (YYYY-MM-DD)
 
-        accounts.forEach((entry: any) => {
+        Xchire_fetch.forEach((entry: any) => {
             const start = new Date(entry.startdate);
             const end = new Date(entry.enddate);
 
@@ -38,9 +38,9 @@ export async function GET(req: Request) {
         });
 
         return NextResponse.json({ success: true, totalHours }, { status: 200 });
-    } catch (error: any) {
+    } catch (Xchire_error: any) {
         return NextResponse.json(
-            { success: false, error: error.message || "Failed to fetch accounts." },
+            { success: false, error: Xchire_error.message || "Failed to fetch accounts." },
             { status: 500 }
         );
     }

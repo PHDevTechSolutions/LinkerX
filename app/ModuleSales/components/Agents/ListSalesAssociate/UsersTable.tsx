@@ -23,11 +23,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, userDetails })
   }, [posts]);
 
   const statusColors: { [key: string]: string } = {
-    Active: "bg-green-800",
-    Inactive: "bg-red-500",
-    Resigned: "bg-red-700",
-    Terminated: "bg-yellow-600",
-    Locked: "bg-gray-500",
+    Active: "bg-green-500",
+    Inactive: "bg-red-400",
+    Resigned: "bg-red-500",
+    Terminated: "bg-yellow-400",
+    Locked: "bg-gray-400",
   };
 
   return (

@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectToDatabase
 
 // Function to add an account directly in this file
-async function addAccount({ CompanyName, CustomerName, Gender, ContactNumber, Email, CityAddress, CustomerSegment, CustomerType }: {
+async function create({ CompanyName, CustomerName, Gender, ContactNumber, Email, CityAddress, CustomerSegment, CustomerType }: {
   CompanyName: string;
   CustomerName: string;
   Gender: string;
@@ -12,10 +12,10 @@ async function addAccount({ CompanyName, CustomerName, Gender, ContactNumber, Em
   CustomerSegment: string;
   CustomerType: string;
 }) {
-  const db = await connectToDatabase();
-  const accountsCollection = db.collection("accounts");
+  const Xchire_db = await connectToDatabase();
+  const Xchire_Collection = Xchire_db.collection("accounts");
   const newAccount = { CompanyName, CustomerName, Gender, ContactNumber, Email, CityAddress, CustomerSegment, CustomerType, createdAt: new Date(), };
-  await accountsCollection.insertOne(newAccount);
+  await Xchire_Collection.insertOne(newAccount);
 
   // Broadcast logic if needed
   if (typeof io !== "undefined" && io) {
@@ -37,13 +37,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-      const result = await addAccount({ CompanyName, CustomerName, Gender, ContactNumber, Email, CityAddress, CustomerSegment, CustomerType });
-      res.status(200).json(result);
-    } catch (error) {
-      console.error("Error adding account:", error);
+      const Xchire_result = await create({ CompanyName, CustomerName, Gender, ContactNumber, Email, CityAddress, CustomerSegment, CustomerType });
+      res.status(200).json(Xchire_result);
+    } catch (Xchire_error) {
+      console.error("Error adding account:", Xchire_error);
       res
         .status(500)
-        .json({ success: false, message: "Error adding account", error });
+        .json({ success: false, message: "Error adding account", Xchire_error });
     }
   } else {
     res

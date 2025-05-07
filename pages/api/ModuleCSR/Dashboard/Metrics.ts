@@ -16,8 +16,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // ✅ Connect to the database
-    const db = await connectToDatabase();
-    const monitoringCollection = db.collection("monitoring");
+    const Xchire_db = await connectToDatabase();
+    const Xchire_Collection = Xchire_db.collection("monitoring");
 
     // ✅ Create filter object for ReferenceID only
     const matchFilter: any = {};
@@ -28,12 +28,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // ✅ Fetch monitoring data without month/year filter
-    const data = await monitoringCollection.find(matchFilter).toArray();
+    const Xchire_data = await Xchire_Collection.find(matchFilter).toArray();
 
     // ✅ Return the dataset
-    return res.status(200).json(data);
-  } catch (error) {
-    console.error("Error fetching monitoring data:", error);
+    return res.status(200).json(Xchire_data);
+  } catch (Xchire_error) {
+    console.error("Error fetching monitoring data:", Xchire_error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 }

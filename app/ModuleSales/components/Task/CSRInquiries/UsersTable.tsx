@@ -105,57 +105,67 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit, fetchAccount,
       </div>
 
       {/* ✅ Table */}
-      <table className="min-w-full bg-white border border-gray-200 text-xs overflow-x">
-        <thead>
-          <tr className="bg-gray-100 border-b whitespace-nowrap">
-            <th className="px-4 py-2 text-left">Ticket Reference Number</th>
-            <th className="px-4 py-2 text-left">Assigned Agents</th>
-            <th className="px-4 py-2 text-left">Company Name</th>
-            <th className="px-4 py-2 text-left">Contact Person</th>
-            <th className="px-4 py-2 text-left">Contact Number</th>
-            <th className="px-4 py-2 text-left">Email</th>
-            <th className="px-4 py-2 text-left">Address</th>
-            <th className="px-4 py-2 text-left">Wrap Up</th>
-            <th className="px-4 py-2 text-left">Inquiries</th>
-            <th className="px-4 py-2 text-left">Status</th>
-            <th className="px-4 py-2 text-left">Date Posted</th>
-            {activeTab === "endorsed" && <th className="px-4 py-2 text-left">Actions</th>}
+      <table className="min-w-full table-auto">
+        <thead className="bg-gray-100">
+          <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+            <th className="px-6 py-4 font-semibold text-gray-700">CSR Ticket Details</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Company Information</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Inquiries</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+            {activeTab === "endorsed"}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-gray-100">
           {filteredPosts.length > 0 ? (
             filteredPosts.map((post) => (
-              <tr key={post.id} className="hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02] whitespace-nowrap">
-                <td className="px-4 py-2 capitalize">{post.ticketreferencenumber}</td>
-                <td className="px-4 py-2 capitalize">{post.referenceid}</td>
-                <td className="px-4 py-2 capitalize">{post.companyname}</td>
-                <td className="px-4 py-2">{post.contactperson}</td>
-                <td className="px-4 py-2">{post.contactnumber}</td>
-                <td className="px-4 py-2 lowercase">{post.emailaddress}</td>
-                <td className="px-4 py-2 capitalize">{post.address}</td>
-                <td className="px-4 py-2 uppercase">{post.wrapup}</td>
-                <td className="px-4 py-2 uppercase">{post.inquiries}</td>
-                <td className="px-4 py-2 uppercase">{post.status}</td>
-                <td className="px-4 py-2 uppercase">{formatDate(post.date_created)}</td>
+              <tr key={post.id} className="border-b whitespace-nowrap">
+                <td className="px-4 py-2 text-xs align-top">
+                  <div className="flex flex-col gap-1 border rounded shadow-md p-2">
+                    <span className="text-white bg-blue-400 p-2 rounded">Ticket Ref #: {post.ticketreferencenumber}</span>
+                    <span className="text-black border p-2 rounded">Wrap Up: {post.wrapup}</span>
+                    <span className="text-black border p-2 rounded">Assigned Agents: {post.referenceid}</span>
+                    <span className="text-black border p-2 rounded">Sender: {post.csragent}</span>
+                    <span className="text-black border p-2 rounded">Date Received: {formatDate(post.date_created)}</span>
+                    <span className="text-white rounded">
+                      {activeTab === "endorsed" && post.status !== "Used" && (
+                        <button
+                          onClick={() => confirmPost(post)}
+                          className="inline-flex items-center justify-center w-full rounded text-xs text-black font-semibold px-6 py-4 bg-yellow-400 hover:rounded hover:bg-orange-400 hover:text-white px-2 py-1 gap-1 shadow-md"
+                        >
+                          <CiLocationArrow1 size={20} /> Create Activity
+                        </button>
+                      )}
 
-                {/* ✅ Show actions only for "Endorsed" tab */}
-                {activeTab === "endorsed" && (
-                  <td className="px-4 py-2 flex gap-2">
-                    {post.status !== "Used" && (
-                      <button
-                        onClick={() => confirmPost(post)}
-                        className="bg-gray-200 text-dark px-3 py-1 rounded-md hover:bg-gray-600 hover:text-white flex items-center gap-2"
-                      >
-                        <CiLocationArrow1 className="text-sm" /> Post
-                      </button>
-                    )}
-                  </td>
-                )}
+                    </span>
+                  </div>
+                </td>
+                <td className="px-4 py-2 text-xs align-top">
+                  <div className="flex flex-col gap-1 border rounded p-2">
+                    <span className="text-black border p-2 rounded">Company Name: {post.companyname}</span>
+                    <span className="text-black border p-2 rounded">Contact Person: {post.contactperson}</span>
+                    <span className="text-black border p-2 rounded">Contact Number: {post.contactnumber}</span>
+                    <span className="text-black border p-2 rounded">Email Address: {post.emailaddress}</span>
+                    <span className="text-black border p-2 rounded">Address: {post.address}</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-xs capitalize">{post.inquiries}</td>
+                <td className="px-6 py-4 text-xs">
+                  <span
+                    className={`px-2 py-1 text-[10px] font-semibold rounded-full whitespace-nowrap ${post.status === "Endorsed"
+                      ? "bg-green-400 text-white"
+                      : post.status === "Used"
+                        ? "bg-blue-400 text-gray-100"
+                        : "bg-green-100 text-green-700"
+                      }`}
+                  >
+                    {post.status}
+                  </span>
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={activeTab === "endorsed" ? 12 : 11} className="text-center py-4">
+              <td colSpan={activeTab === "endorsed" ? 12 : 11} className="text-center text-xs py-4 text-gray-500">
                 No records available
               </td>
             </tr>

@@ -1,40 +1,46 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+// Initialize Neon connection
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
   throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
+const Xchire_sql = neon(Xchire_databaseUrl);
 
-const sql = neon(databaseUrl);
-
+/**
+ * GET /api/ModuleSales/UserManagement/CompanyAccounts/Progress
+ * Fetch accounts with status 'For Deletion' or 'Remove' by reference ID
+ */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const referenceId = searchParams.get("referenceId");
 
     if (!referenceId) {
-      return NextResponse.json({ success: false, error: "ReferenceID is required" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Reference ID is required." },
+        { status: 400 }
+      );
     }
 
-    // Fetch accounts where referenceid matches and status is 'For Deletion' OR 'Remove'
-    const progressData = await sql`
+    const Xchire_fetch = await Xchire_sql`
       SELECT *
       FROM accounts
       WHERE referenceid = ${referenceId}
       AND (status = 'For Deletion' OR status = 'Remove');
     `;
 
-    console.log("Fetched Accounts (For Deletion or Remove):", progressData);
+    console.log("Xchire fetched accounts (status = For Deletion/Remove):", Xchire_fetch);
 
-    return NextResponse.json({ success: true, data: progressData }, { status: 200 });
-  } catch (error: any) {
-    console.error("Error fetching accounts:", error);
+    return NextResponse.json({ success: true, data: Xchire_fetch }, { status: 200 });
+  } catch (Xchire_error: any) {
+    console.error("Xchire error fetching accounts:", Xchire_error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch accounts." },
+      { success: false, error: Xchire_error.message || "Failed to fetch accounts." },
       { status: 500 }
     );
   }
 }
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"; // Ensure fresh fetch

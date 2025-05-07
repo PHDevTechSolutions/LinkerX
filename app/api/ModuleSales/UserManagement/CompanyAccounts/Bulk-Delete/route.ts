@@ -1,26 +1,26 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
     throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+const Xchire_sql = neon(Xchire_databaseUrl);
 
-async function deleteUsers(userIds: string[]) {
+async function bulkdelete(userIds: string[]) {
     try {
         if (!userIds || userIds.length === 0) {
             throw new Error("No user IDs provided.");
         }
 
-        const result = await sql`
+        const Xchire_delete = await Xchire_sql`
             DELETE FROM accounts 
             WHERE id = ANY(${userIds})
             RETURNING *;
         `;
 
-        return { success: true, data: result };
+        return { success: true, data: Xchire_delete };
     } catch (error: any) {
         console.error("Error deleting users:", error);
         return { success: false, error: error.message || "Failed to delete users." };
@@ -29,16 +29,16 @@ async function deleteUsers(userIds: string[]) {
 
 export async function DELETE(req: Request) {
     try {
-        const body = await req.json();
-        const { userIds } = body;
+        const Xchire_body = await req.json();
+        const { userIds } = Xchire_body;
 
-        const result = await deleteUsers(userIds);
+        const Xchire_result = await bulkdelete(userIds);
 
-        return NextResponse.json(result);
-    } catch (error: any) {
-        console.error("Error in DELETE /api/bulk-delete:", error);
+        return NextResponse.json(Xchire_result);
+    } catch (Xchire_error: any) {
+        console.error("Error in DELETE /api/bulk-delete:", Xchire_error);
         return NextResponse.json(
-            { success: false, error: error.message || "Internal server error" },
+            { success: false, error: Xchire_error.message || "Internal server error" },
             { status: 500 }
         );
     }

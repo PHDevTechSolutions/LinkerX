@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb";
 
-export default async function fetchMetrics(
+export default async function fetch(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -19,8 +19,8 @@ export default async function fetchMetrics(
     }
 
     // ✅ Connect to database
-    const db = await connectToDatabase();
-    const monitoringCollection = db.collection("monitoring");
+    const Xchire_db = await connectToDatabase();
+    const Xchire_Collection = Xchire_db.collection("monitoring");
 
     // ✅ Role-based filtering
     const matchConditions: any = {};
@@ -31,18 +31,18 @@ export default async function fetchMetrics(
     }
 
     // ✅ Fetch documents from the monitoring collection
-    const allMetrics = await monitoringCollection
+    const Xchire_fetch = await Xchire_Collection
       .find(matchConditions)
       .project({ createdAt: 1, Channel: 1 })
       .toArray();
 
     // ✅ Return all data (filtering happens on frontend)
-    res.status(200).json(allMetrics);
-  } catch (error: any) {
-    console.error("Error fetching metrics:", error.message);
+    res.status(200).json(Xchire_fetch);
+  } catch (Xchire_error: any) {
+    console.error("Error fetching metrics:", Xchire_error.message);
     res.status(500).json({
       error: "Failed to fetch metrics",
-      details: error.message,
+      details: Xchire_error.message,
     });
   }
 }

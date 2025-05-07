@@ -69,49 +69,41 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
 
     return (
         <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200 text-xs">
-                <thead>
-                    <tr className="bg-gray-100 text-left">
-                        <th className="py-2 px-4 border">Company Name</th>
-                        <th className="py-2 px-4 border">Agent Name</th>
-                        <th className="py-2 px-4 border">Type of Client</th>
-                        <th className="py-2 px-4 border text-center">Number of Records</th>
-                        <th className="py-2 px-4 border text-center">Actions</th>
+            <table className="min-w-full table-auto">
+                <thead className="bg-gray-100">
+                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                        <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Agent Name</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Number of Records</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-100">
                     {Object.keys(groupedUsers).length > 0 ? (
                         currentUsers.map((users, index) => (
-                            <tr key={index} className="border-t">
-                                <td className="py-2 px-4 border capitalize">{users[0]?.companyname}</td>
-                                <td className="py-2 px-4 border capitalize">
+                            <tr key={index} className="border-b whitespace-nowrap">
+                                <td className="px-6 py-4 text-xs">{users[0]?.companyname}</td>
+                                <td className="px-6 py-4 text-xs">
                                     {users[0]?.AgentFirstname} {users[0]?.AgentLastname}
                                     <br />
                                     <span className="text-gray-900 text-[8px]">
                                         ({users[0]?.referenceid})
                                     </span>
                                 </td>
-                                <td className="py-2 px-4 border capitalize">
-                                    {users[0]?.typeclient}
-                                </td>
-                                <td className="py-2 px-4 border text-center">
-                                    {users.length}
-                                </td>
-                                <td className="py-2 px-4 border text-center">
-                                    <div className="flex justify-center items-center">
-                                        <button
-                                            onClick={() => openModal(users[0]?.companyname)}
-                                            className="px-4 py-2 text-gray-700"
-                                        >
-                                            <CiRead size={16} />
-                                        </button>
-                                    </div>
+                                <td className="px-6 py-4 text-xs">{users[0]?.typeclient}</td>
+                                <td className="px-6 py-4 text-xs">{users.length}</td>
+                                <td className="px-6 py-4 text-xs">
+                                    <button onClick={() => openModal(users[0]?.companyname)}
+                                        className="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-300 hover:rounded-full w-full text-left flex items-center gap-1">
+                                        <CiRead size={16} /> View Record
+                                    </button>
                                 </td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={4} className="text-center py-4 border">
+                            <td colSpan={5} className="text-center py-4 border">
                                 No accounts available
                             </td>
                         </tr>
@@ -158,7 +150,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
 
             {/* Modal Content */}
             {modalOpen && selectedCompany && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[999]">
                     <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
                         {/* Modal Header */}
                         <div className="bg-gray-100 px-6 py-4 border-b flex justify-between items-center">
@@ -208,7 +200,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                         <div className="px-6 py-4 bg-gray-100 border-t flex justify-end">
                             <button
                                 onClick={() => setModalOpen(false)}
-                                className="px-4 py-2 bg-gray-500 text-white text-xs rounded hover:bg-red-600 flex items-center gap-1"
+                                className="px-4 py-2 border text-xs rounded flex items-center gap-1"
                             >
                                 <CiCircleRemove size={20} /> Close
                             </button>

@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectToDatabase
 import { ObjectId } from 'mongodb';
 
-export default async function editAccount(req: NextApiRequest, res: NextApiResponse) {
+export default async function update(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'PUT') {
         res.setHeader('Allow', ['PUT']);
         res.status(405).end(`Method ${req.method} Not Allowed`);
@@ -13,10 +13,10 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
         Department, EndorsedDate, ClosedDate, SalesAgent, SalesManager, NatureConcern  } = req.body;
 
     try {
-        const db = await connectToDatabase();
-        const DTracking = db.collection('Tracking');
+        const Xchire_db = await connectToDatabase();
+        const Xchire_Collection = Xchire_db.collection('Tracking');
 
-        const updatedAccount = {
+        const Xchire_update = {
             UserID,
             userName,
             DateRecord,
@@ -36,7 +36,7 @@ export default async function editAccount(req: NextApiRequest, res: NextApiRespo
             updatedAt: new Date(),
         };
 
-        await DTracking.updateOne({ _id: new ObjectId(id) }, { $set: updatedAccount });
+        await Xchire_Collection.updateOne({ _id: new ObjectId(id) }, { $set: Xchire_update });
         res.status(200).json({ success: true, message: 'Tracking updated successfully' });
     } catch (error) {
         console.error('Error updating account:', error);

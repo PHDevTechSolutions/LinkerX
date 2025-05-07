@@ -1,51 +1,53 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+// Initialize database connection
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
     throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
+const Xchire_sql = neon(Xchire_databaseUrl);
 
-const sql = neon(databaseUrl);
-
+/**
+ * GET /api/ModuleSales/UserManagement/CompanyAccounts?referenceid=...
+ * Fetch accounts by reference ID, excluding those with 'Inactive' status.
+ */
 export async function GET(req: Request) {
     try {
         const url = new URL(req.url);
-        const referenceid = url.searchParams.get("referenceid"); // Get referenceid from query params
+        const referenceId = url.searchParams.get("referenceid");
 
-        console.log("Received referenceid:", referenceid); // Log the received referenceid
+        console.log("Xchire received reference ID:", referenceId);
 
-        if (!referenceid) {
+        if (!referenceId) {
             return NextResponse.json(
                 { success: false, error: "Missing reference ID." },
                 { status: 400 }
             );
         }
 
-        // Query PostgreSQL to fetch accounts where referenceid matches and exclude "Inactive" status
-        const accounts = await sql`
+        const Xchire_fetch = await Xchire_sql`
             SELECT * 
             FROM accounts 
-            WHERE referenceid = ${referenceid} 
+            WHERE referenceid = ${referenceId} 
             AND status != 'Inactive';
         `;
 
-        if (accounts.length === 0) {
+        if (Xchire_fetch.length === 0) {
             return NextResponse.json(
                 { success: false, error: "No accounts found with the provided reference ID." },
                 { status: 404 }
             );
         }
 
-        // Respond with the fetched accounts
-        return NextResponse.json({ success: true, data: accounts }, { status: 200 });
-    } catch (error: any) {
-        console.error("Error fetching accounts:", error);
+        return NextResponse.json({ success: true, data: Xchire_fetch }, { status: 200 });
+    } catch (Xchire_error: any) {
+        console.error("Xchire error fetching accounts:", Xchire_error);
         return NextResponse.json(
-            { success: false, error: error.message || "Failed to fetch accounts." },
+            { success: false, error: Xchire_error.message || "Failed to fetch accounts." },
             { status: 500 }
         );
     }
 }
 
-export const dynamic = "force-dynamic"; // Ensure fresh data fetch
+export const dynamic = "force-dynamic"; // Always serve fresh data

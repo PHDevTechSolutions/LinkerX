@@ -104,9 +104,17 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
 
                     return (
                         <div key={formattedDay} className="border rounded p-2 bg-white shadow-md">
+                            
                             <h4 className="text-center font-semibold text-xs mb-2 text-gray-700">
-                                {format(day, "dd")} | {format(day, "EEEE")}
+                                <div className="flex">
+                                    <span className="text-4xl mr-2 font-light">{format(day, "dd")}</span>
+                                    <div className="flex flex-col text-left">
+                                        <span className="text-sm">{format(day, "EEEE")}</span>
+                                        <span className="text-[10px] text-gray-500">{format(day, "yyyy")}</span>
+                                    </div>
+                                </div>
                             </h4>
+
                             <div>
                                 {usersForDate.length > 0 ? (
                                     usersForDate.map((user) => {
@@ -123,7 +131,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                                         return (
                                             <div
                                                 key={user.id}
-                                                className={`relative rounded-lg shadow p-4 mb-2 border transition-all ${isCallbackReached ? "bg-green-800 text-white" : "bg-white text-gray-800"
+                                                className={`relative rounded-lg shadow p-4 mb-2 border transition-all ${isCallbackReached ? "bg-green-500 text-white" : "bg-white text-gray-800"
                                                     }`}
                                             >
                                                 {/* Card Header - Company Name & Clock */}
@@ -143,7 +151,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                                                     {isValidCallback && !isCallbackReached && (
                                                         <div className="w-full bg-gray-200 rounded-full h-1 mt-2">
                                                             <div
-                                                                className="bg-green-800 h-1 rounded-full transition-all"
+                                                                className="bg-green-500 h-1 rounded-full transition-all"
                                                                 style={{ width: `${progress}%` }}
                                                             ></div>
                                                         </div>
@@ -164,7 +172,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                                         );
                                     })
                                 ) : (
-                                    <div className="text-center py-2 text-xs text-gray-500">No callback</div>
+                                    <div className="text-center text-[8px] py-2 text-xs text-gray-500">No callback</div>
                                 )}
                             </div>
                         </div>

@@ -41,8 +41,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log("Filtering by Date Range:", finalStartDate, finalEndDate);
 
-    const db = await connectToDatabase();
-    const monitoringCollection = db.collection("monitoring");
+    const Xchire_db = await connectToDatabase();
+    const Xchire_Collection = Xchire_db.collection("monitoring");
 
     // ✅ Define match filter with WrapUp and createdAt
     const matchFilter: any = {
@@ -70,7 +70,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // ✅ Aggregate Channel data
-    const result = await monitoringCollection
+    const Xchire_result = await Xchire_Collection
       .aggregate([
         { $match: matchFilter },
         {
@@ -82,16 +82,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ])
       .toArray();
 
-    console.log("Aggregated Channel Data:", result);
-    res.status(200).json(result);
-  } catch (error) {
-    console.error("Error fetching monitoring data:", error);
+    console.log("Aggregated Channel Data:", Xchire_result);
+    res.status(200).json(Xchire_result);
+  } catch (Xchire_error) {
+    console.error("Error fetching monitoring data:", Xchire_error);
     res
       .status(500)
       .json({
         success: false,
         message: "Error fetching monitoring data",
-        error,
+        Xchire_error,
       });
   }
 }

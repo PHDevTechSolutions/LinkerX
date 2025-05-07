@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 
-const databaseUrl = process.env.TASKFLOW_DB_URL;
-if (!databaseUrl) {
+const Xchire_databaseUrl = process.env.TASKFLOW_DB_URL;
+if (!Xchire_databaseUrl) {
   throw new Error("TASKFLOW_DB_URL is not set in the environment variables.");
 }
 
-const sql = neon(databaseUrl);
+const Xchire_sql = neon(Xchire_databaseUrl);
 
 /**
  * Updates an existing user in the database and inserts progress and notification.
  * @param userDetails - The updated details of the user.
  * @returns Success or error response.
  */
-async function updateUser(userDetails: any) {
+async function update(userDetails: any) {
   try {
     const {
       id, referenceid, manager,
@@ -27,11 +27,11 @@ async function updateUser(userDetails: any) {
       quotationamount, sonumber, soamount,
       callstatus, actualsales, targetquota,
       ticketreferencenumber, wrapup, inquiries,
-      csragent, // ✅ Added csragent
+      csragent, // Added csragent
     } = userDetails;
 
     // ✅ Update the activity table
-    const updateResult = await sql`
+    const Xchire_update = await Xchire_sql`
       UPDATE activity
       SET contactperson = ${contactperson}, contactnumber = ${contactnumber}, emailaddress = ${emailaddress},
       typeclient = ${typeclient}, address = ${address}, area = ${area}, projectname = ${projectname},
@@ -41,12 +41,12 @@ async function updateUser(userDetails: any) {
       RETURNING *;
     `;
 
-    if (updateResult.length === 0) {
+    if (Xchire_update.length === 0) {
       return { success: false, error: "User not found or already updated." };
     }
 
     // ✅ Insert all fields including ticketreferencenumber, wrapup, inquiries, and csragent into the progress table
-    await sql`
+    await Xchire_sql`
       INSERT INTO progress (
         ticketreferencenumber, wrapup, inquiries, referenceid, manager, tsm, companyname, contactperson,
         contactnumber, emailaddress, typeclient, address, area, projectname, projectcategory, projecttype,
@@ -67,13 +67,13 @@ async function updateUser(userDetails: any) {
     if ((typeactivity === "Outbound Call" || typeactivity === "Inbound Call") && callback) {
       const callbackMessage = `You have a callback in "${companyname}". Please make a call or activity.`;
 
-      await sql`
+      await Xchire_sql`
         INSERT INTO notification (
           referenceid, manager, tsm, csragent, message, callback, date_created, type
         )
         VALUES (
           ${referenceid}, ${manager}, ${tsm}, 
-          ${typeclient === "CSR Inquiries" ? csragent : null}, -- ✅ Check CSR Inquiries
+          ${typeclient === "CSR Inquiries" ? csragent : null}, -- Check CSR Inquiries
           ${callbackMessage}, ${callback}, 
           CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', 'Callback Notification'
         );
@@ -93,13 +93,13 @@ async function updateUser(userDetails: any) {
     ) {
       const followUpMessage = `You have a new follow-up from "${companyname}". The status is "${typecall}". Please make an update.`;
 
-      await sql`
+      await Xchire_sql`
         INSERT INTO notification (
           referenceid, manager, tsm, csragent, message, date_created, type
         )
         VALUES (
           ${referenceid}, ${manager}, ${tsm}, 
-          ${typeclient === "CSR Inquiries" ? csragent : null}, -- ✅ Check CSR Inquiries
+          ${typeclient === "CSR Inquiries" ? csragent : null}, -- Check CSR Inquiries
           ${followUpMessage}, 
           CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', 'Follow-Up Notification'
         );
@@ -110,7 +110,7 @@ async function updateUser(userDetails: any) {
     if (typeclient === "CSR Inquiries" && csragent) {
       const csrnotificationMessage = `The Ticket Number "${ticketreferencenumber}" of "${companyname}". and Status is "${typecall}" `;
 
-      await sql`
+      await Xchire_sql`
         INSERT INTO notification (
           referenceid, manager, tsm, csragent, message, date_created, type
         )
@@ -122,10 +122,10 @@ async function updateUser(userDetails: any) {
       `;
     }
 
-    return { success: true, data: updateResult };
-  } catch (error: any) {
-    console.error("Error updating user:", error);
-    return { success: false, error: error.message || "Failed to update user." };
+    return { success: true, data: Xchire_update };
+  } catch (Xchire_error: any) {
+    console.error("Error updating user:", Xchire_error);
+    return { success: false, error: Xchire_error.message || "Failed to update user." };
   }
 }
 
@@ -136,8 +136,8 @@ async function updateUser(userDetails: any) {
  */
 export async function PUT(req: Request) {
   try {
-    const body = await req.json();
-    const { id } = body;
+    const Xchire_body = await req.json();
+    const { id } = Xchire_body;
 
     // ✅ Ensure the ID is provided for the update operation
     if (!id) {
@@ -147,12 +147,12 @@ export async function PUT(req: Request) {
       );
     }
 
-    const result = await updateUser(body);
-    return NextResponse.json(result);
-  } catch (error: any) {
-    console.error("Error in PUT /api/ModuleSales/Task/DailyActivity/UpdateUser:", error);
+    const Xchire_result = await update(Xchire_body);
+    return NextResponse.json(Xchire_result);
+  } catch (Xchire_error: any) {
+    console.error("Error in PUT /api/ModuleSales/Task/DailyActivity/UpdateUser:", Xchire_error);
     return NextResponse.json(
-      { success: false, error: error.message || "Internal server error" },
+      { success: false, error: Xchire_error.message || "Internal server error" },
       { status: 500 }
     );
   }

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "@/lib/ModuleCSR/mongodb"; // Import connectToDatabase
 
-export default async function fetchMetrics(req: NextApiRequest, res: NextApiResponse) {
+export default async function fetch(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
         res.setHeader("Allow", ["GET"]);
         res.status(405).end(`Method ${req.method} Not Allowed`);
@@ -20,15 +20,15 @@ export default async function fetchMetrics(req: NextApiRequest, res: NextApiResp
     const end = endDate ? new Date(endDate as string) : endOfMonth;
 
     try {
-        const db = await connectToDatabase();
-        const monitoringCollection = db.collection("monitoring");
+        const Xchire_db = await connectToDatabase();
+        const Xchire_Collection = Xchire_db.collection("monitoring");
 
         const matchConditions: any = {
             createdAt: { $gte: start, $lte: end } // Always filter based on the selected or default date range
         };
 
         // Aggregating traffic count, total amount, and quantity sold per userName based on traffic type (Sales vs Non-Sales) and status "Converted Into Sales"
-        const aggregatedMetrics = await monitoringCollection
+        const aggregatedMetrics = await Xchire_Collection
             .aggregate([
                 { $match: matchConditions },
                 {
@@ -157,7 +157,7 @@ export default async function fetchMetrics(req: NextApiRequest, res: NextApiResp
             // Add more mappings here as needed
         };
 
-        const result = aggregatedMetrics.map((data) => {
+        const Xchire_result = aggregatedMetrics.map((data) => {
             // If the SalesAgent exists in the mapping, use the full name, otherwise fallback to the short code
             const salesAgentFormatted = agentMapping[data._id] || data._id;
 
@@ -182,9 +182,9 @@ export default async function fetchMetrics(req: NextApiRequest, res: NextApiResp
             };
         });
 
-        res.status(200).json(result);
-    } catch (error) {
-        console.error("Error fetching metrics:", error);
+        res.status(200).json(Xchire_result);
+    } catch (Xchire_error) {
+        console.error("Error fetching metrics:", Xchire_error);
         res.status(500).json({ error: "Failed to fetch metrics" });
     }
 }
