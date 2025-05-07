@@ -186,49 +186,49 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
           </div>
         </div>
       ) : (
-        <table className="min-w-full bg-white border border-gray-300 shadow-md">
-          <thead className="bg-gray-100 text-xs uppercase text-gray-700">
-            <tr>
-              <th className="border p-2">Agent Name</th>
-              <th className="border p-2">Sales</th>
-              <th className="border p-2">Non-Sales</th>
-              <th className="border p-2">Amount</th>
-              <th className="border p-2">QTY Sold</th>
-              <th className="border p-2">Conversion to Sale</th>
-              <th className="border p-2">Week 1</th>
-              <th className="border p-2">Week 2</th>
-              <th className="border p-2">Week 3</th>
-              <th className="border p-2">Week 4</th>
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+              <th className="px-6 py-4 font-semibold text-gray-700">Agent Name</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Sales</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Non-Sales</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Amount</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">QTY Sold</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Conversion to Sale</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Week 1</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Week 2</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Week 3</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Week 4</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100">
             {Object.keys(groupedMetrics).length > 0 ? (
               Object.keys(groupedMetrics).map((refId, index) => {
                 const agentMetrics = groupedMetrics[refId];
                 const totals = calculateAgentTotals(agentMetrics);
 
                 return (
-                  <tr key={index} className="text-center border-t text-xs">
-                    <td className="border p-2 whitespace-nowrap capitalize">
+                  <tr key={index} className="border-b whitespace-nowrap">
+                    <td className="px-6 py-4 text-xs whitespace-nowrap capitalize">
                       {referenceIdToNameMap[refId] || "-"}
                     </td>
-                    <td className="border p-2">{totals.sales}</td>
-                    <td className="border p-2">{totals.nonSales}</td>
-                    <td className="border p-2">
+                    <td className="px-6 py-4 text-xs">{totals.sales}</td>
+                    <td className="px-6 py-4 text-xs">{totals.nonSales}</td>
+                    <td className="px-6 py-4 text-xs">
                       {formatAmountWithPeso(totals.totalAmount)}
                     </td>
-                    <td className="border p-2">{totals.totalQtySold}</td>
-                    <td className="border p-2">{totals.totalConversionToSale}</td>
-                    <td className="border p-2">
+                    <td className="px-6 py-4 text-xs">{totals.totalQtySold}</td>
+                    <td className="px-6 py-4 text-xs">{totals.totalConversionToSale}</td>
+                    <td className="px-6 py-4 text-xs">
                       {formatAmountWithPeso(totals.week1)}
                     </td>
-                    <td className="border p-2">
+                    <td className="px-6 py-4 text-xs">
                       {formatAmountWithPeso(totals.week2)}
                     </td>
-                    <td className="border p-2">
+                    <td className="px-6 py-4 text-xs">
                       {formatAmountWithPeso(totals.week3)}
                     </td>
-                    <td className="border p-2">
+                    <td className="px-6 py-4 text-xs">
                       {formatAmountWithPeso(totals.week4)}
                     </td>
                   </tr>
@@ -243,26 +243,26 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
             )}
           </tbody>
           {/* Add tfoot for totals */}
-          <tfoot className="bg-gray-100 text-xs text-center font-bold">
+          <tfoot className="bg-gray-100 px-6 py-4 text-xs text-left font-bold">
             <tr>
-              <td className="border p-2">Total</td>
-              <td className="border p-2">{totalMetrics.sales}</td>
-              <td className="border p-2">{totalMetrics.nonSales}</td>
-              <td className="border p-2">
+              <td className="px-6 py-4 text-xs">Total</td>
+              <td className="px-6 py-4 text-xs">{totalMetrics.sales}</td>
+              <td className="px-6 py-4 text-xs">{totalMetrics.nonSales}</td>
+              <td className="px-6 py-4 text-xs">
                 {formatAmountWithPeso(totalMetrics.totalAmount)}
               </td>
-              <td className="border p-2">{totalMetrics.totalQtySold}</td>
-              <td className="border p-2">{totalMetrics.totalConversionToSale}</td>
-              <td className="border p-2">
+              <td className="px-6 py-4 text-xs">{totalMetrics.totalQtySold}</td>
+              <td className="px-6 py-4 text-xs">{totalMetrics.totalConversionToSale}</td>
+              <td className="px-6 py-4 text-xs">
                 {formatAmountWithPeso(totalMetrics.week1)}
               </td>
-              <td className="border p-2">
+              <td className="px-6 py-4 text-xs">
                 {formatAmountWithPeso(totalMetrics.week2)}
               </td>
-              <td className="border p-2">
+              <td className="px-6 py-4 text-xs">
                 {formatAmountWithPeso(totalMetrics.week3)}
               </td>
-              <td className="border p-2">
+              <td className="px-6 py-4 text-xs">
                 {formatAmountWithPeso(totalMetrics.week4)}
               </td>
             </tr>

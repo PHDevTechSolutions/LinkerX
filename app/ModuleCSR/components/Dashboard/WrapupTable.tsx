@@ -137,24 +137,24 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
           </div>
         </div>
       ) : (
-        <table className="w-full border-collapse border border-gray-200 text-xs">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2 text-left">Wrap-Up</th>
-              <th className="border p-2">Week 1</th>
-              <th className="border p-2">Week 2</th>
-              <th className="border p-2">Week 3</th>
-              <th className="border p-2">Week 4</th>
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+              <th className="px-6 py-4 font-semibold text-gray-700">Wrap-Up</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Week 1</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Week 2</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Week 3</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Week 4</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100">
             {wrapupLabels.map((label) => (
-              <tr key={label} className="text-center border-t">
-                <td className="border p-2 text-left">{label}</td>
-                <td className="border p-2">{weeklyCounts["Week 1"][label] || 0}</td>
-                <td className="border p-2">{weeklyCounts["Week 2"][label] || 0}</td>
-                <td className="border p-2">{weeklyCounts["Week 3"][label] || 0}</td>
-                <td className="border p-2">{weeklyCounts["Week 4"][label] || 0}</td>
+              <tr key={label} className="border-b whitespace-nowrap">
+                <td className="px-6 py-4 text-xs">{label}</td>
+                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 1"][label] || 0}</td>
+                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 2"][label] || 0}</td>
+                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 3"][label] || 0}</td>
+                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 4"][label] || 0}</td>
               </tr>
             ))}
           </tbody>

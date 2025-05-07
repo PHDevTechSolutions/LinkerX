@@ -404,27 +404,27 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
                         </button>
                     )}
 
-                    <table className="min-w-full bg-white border border-gray-300 shadow-md">
-                        <thead className="bg-gray-100 text-xs uppercase text-gray-700 whitespace-nowrap">
-                            <tr>
-                                <th className="border p-2">Agent Name</th>
-                                <th className="border p-2">Sales</th>
-                                <th className="border p-2">Non-Sales</th>
-                                <th className="border p-2">Amount</th>
-                                <th className="border p-2">QTY Sold</th>
-                                <th className="border p-2">Conversion to Sale</th>
-                                <th className="border p-2">% Conversion Inquiry to Sales</th>
-                                <th className="border p-2">New Client</th>
-                                <th className="border p-2">New Non-Buying</th>
-                                <th className="border p-2">Existing Active</th>
-                                <th className="border p-2">Existing Inactive</th>
-                                <th className="border p-2">New Client (Converted To Sales)</th>
-                                <th className="border p-2">New Non-Buying (Converted To Sales)</th>
-                                <th className="border p-2">Existing Active (Converted To Sales)</th>
-                                <th className="border p-2">Existing Inactive (Converted To Sales)</th>
+                    <table className="min-w-full table-auto">
+                        <thead className="bg-gray-100">
+                            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+                                <th className="px-6 py-4 font-semibold text-gray-700">Agent Name</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Sales</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Non-Sales</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Amount</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">QTY Sold</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Conversion to Sale</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">% Conversion Inquiry to Sales</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">New Client</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">New Non-Buying</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Existing Active</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Existing Inactive</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">New Client (Converted To Sales)</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">New Non-Buying (Converted To Sales)</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Existing Active (Converted To Sales)</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Existing Inactive (Converted To Sales)</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-gray-100">
                             {Object.keys(groupedMetrics).length > 0 ? (
                                 Object.keys(groupedMetrics).map((refId, index) => {
                                     const agentMetrics = groupedMetrics[refId];
@@ -437,26 +437,26 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
                                             : `${((totals.totalConversionToSale / totals.sales) * 100).toFixed(2)}%`;
 
                                     return (
-                                        <tr key={index} className="text-center border-t text-xs">
-                                            <td className="border p-2 whitespace-nowrap p-2 capitalize">
+                                        <tr key={index} className="border-b whitespace-nowrap">
+                                            <td className="px-6 py-4 text-xs capitalize">
                                                 {getSalesAgentName(agentMetrics[0].SalesAgent)}
                                             </td>
-                                            <td className="border p-2 whitespace-nowrap">{totals.sales}</td>
-                                            <td className="border p-2 whitespace-nowrap">{totals.nonSales}</td>
-                                            <td className="border p-2 whitespace-nowrap">
+                                            <td className="px-6 py-4 text-xs">{totals.sales}</td>
+                                            <td className="px-6 py-4 text-xs">{totals.nonSales}</td>
+                                            <td className="px-6 py-4 text-xs">
                                                 {formatAmountWithPeso(totals.totalAmount)}
                                             </td>
-                                            <td className="border p-2 whitespace-nowrap">{totals.totalQtySold}</td>
-                                            <td className="border p-2 whitespace-nowrap">{totals.totalConversionToSale}</td>
-                                            <td className="border p-2 whitespace-nowrap">{conversionPercentage}</td>
-                                            <td className="border p-2 whitespace-nowrap">{totals.newClientCount}</td>
-                                            <td className="border p-2 whitespace-nowrap">{totals.newNonBuyingCount}</td>
-                                            <td className="border p-2 whitespace-nowrap">{totals.existingActiveCount}</td>
-                                            <td className="border p-2 whitespace-nowrap">{totals.existingInactiveCount}</td>
-                                            <td className="border p-2 whitespace-nowrap">{formatAmountWithPeso(totals.newClientConvertedAmount)}</td>
-                                            <td className="border p-2 whitespace-nowrap">{formatAmountWithPeso(totals.newNonBuyingConvertedAmount)}</td>
-                                            <td className="border p-2 whitespace-nowrap">{formatAmountWithPeso(totals.existingActiveConvertedAmount)}</td>
-                                            <td className="border p-2 whitespace-nowrap">{formatAmountWithPeso(totals.existingInactiveConvertedAmount)}</td>
+                                            <td className="px-6 py-4 text-xs">{totals.totalQtySold}</td>
+                                            <td className="px-6 py-4 text-xs">{totals.totalConversionToSale}</td>
+                                            <td className="px-6 py-4 text-xs">{conversionPercentage}</td>
+                                            <td className="px-6 py-4 text-xs">{totals.newClientCount}</td>
+                                            <td className="px-6 py-4 text-xs">{totals.newNonBuyingCount}</td>
+                                            <td className="px-6 py-4 text-xs">{totals.existingActiveCount}</td>
+                                            <td className="px-6 py-4 text-xs">{totals.existingInactiveCount}</td>
+                                            <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totals.newClientConvertedAmount)}</td>
+                                            <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totals.newNonBuyingConvertedAmount)}</td>
+                                            <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totals.existingActiveConvertedAmount)}</td>
+                                            <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totals.existingInactiveConvertedAmount)}</td>
                                         </tr>
                                     );
                                 })
@@ -469,32 +469,32 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
                             )}
                         </tbody>
                         <tfoot>
-                            <tr className="bg-gray-200 text-xs font-bold text-center">
-                                <td className="border p-2">Total</td>
-                                <td className="border p-2">{totals.sales}</td>
-                                <td className="border p-2">{totals.nonSales}</td>
-                                <td className="border p-2">{formatAmountWithPeso(totals.totalAmount)}</td>
-                                <td className="border p-2">{totals.totalQtySold}</td>
-                                <td className="border p-2">{totals.totalConversionToSale}</td>
-                                <td className="border p-2">
+                            <tr className="bg-gray-200 text-xs font-bold text-left">
+                                <td className="px-6 py-4 text-xs">Total</td>
+                                <td className="px-6 py-4 text-xs">{totals.sales}</td>
+                                <td className="px-6 py-4 text-xs">{totals.nonSales}</td>
+                                <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totals.totalAmount)}</td>
+                                <td className="px-6 py-4 text-xs">{totals.totalQtySold}</td>
+                                <td className="px-6 py-4 text-xs">{totals.totalConversionToSale}</td>
+                                <td className="px-6 py-4 text-xs">
                                     {totals.sales === 0
                                         ? "0.00%"
                                         : `${((totals.totalConversionToSale / totals.sales) * 100).toFixed(2)}%`}
                                 </td>
-                                <td className="border p-2">{totals.newClientCount}</td>
-                                <td className="border p-2">{totals.newNonBuyingCount}</td>
-                                <td className="border p-2">{totals.existingActiveCount}</td>
-                                <td className="border p-2">{totals.existingInactiveCount}</td>
-                                <td className="border p-2">
+                                <td className="px-6 py-4 text-xs">{totals.newClientCount}</td>
+                                <td className="px-6 py-4 text-xs">{totals.newNonBuyingCount}</td>
+                                <td className="px-6 py-4 text-xs">{totals.existingActiveCount}</td>
+                                <td className="px-6 py-4 text-xs">{totals.existingInactiveCount}</td>
+                                <td className="px-6 py-4 text-xs">
                                     {formatAmountWithPeso(totals.newClientConvertedAmount)}
                                 </td>
-                                <td className="border p-2">
+                                <td className="px-6 py-4 text-xs">
                                     {formatAmountWithPeso(totals.newNonBuyingConvertedAmount)}
                                 </td>
-                                <td className="border p-2">
+                                <td className="px-6 py-4 text-xs">
                                     {formatAmountWithPeso(totals.existingActiveConvertedAmount)}
                                 </td>
-                                <td className="border p-2">
+                                <td className="px-6 py-4 text-xs">
                                     {formatAmountWithPeso(totals.existingInactiveConvertedAmount)}
                                 </td>
                             </tr>

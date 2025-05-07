@@ -108,30 +108,30 @@ const MetricTable: React.FC<MetricTableProps> = ({
   }, [filteredMetrics]);
 
   return (
-    <div className="bg-white">
+    <div className="bg-white overflow-x-auto">
       {loading ? (
         <div className="flex justify-center items-center h-full py-10">
           <RiRefreshLine size={30} className="animate-spin text-gray-600" />
         </div>
       ) : (
-        <table className="w-full border-collapse border border-gray-200 text-xs">
+        <table className="min-w-full table-auto">
           <thead className="bg-gray-100">
-            <tr>
-              <th className="border p-2">Channel</th>
-              <th className="border p-2">Week 1</th>
-              <th className="border p-2">Week 2</th>
-              <th className="border p-2">Week 3</th>
-              <th className="border p-2">Week 4</th>
+            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+              <th className="px-6 py-4 font-semibold text-gray-700">Channel</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Week 1</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Week 2</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Week 3</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Week 4</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100">
             {allChannels.map((channel) => (
-              <tr key={channel} className="text-center">
-                <td className="border p-2">{channel}</td>
-                <td className="border p-2">{weeklyCounts["Week 1"][channel] || 0}</td>
-                <td className="border p-2">{weeklyCounts["Week 2"][channel] || 0}</td>
-                <td className="border p-2">{weeklyCounts["Week 3"][channel] || 0}</td>
-                <td className="border p-2">{weeklyCounts["Week 4"][channel] || 0}</td>
+              <tr key={channel} className="border-b whitespace-nowrap">
+                <td className="px-6 py-4 text-xs">{channel}</td>
+                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 1"][channel] || 0}</td>
+                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 2"][channel] || 0}</td>
+                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 3"][channel] || 0}</td>
+                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 4"][channel] || 0}</td>
               </tr>
             ))}
           </tbody>

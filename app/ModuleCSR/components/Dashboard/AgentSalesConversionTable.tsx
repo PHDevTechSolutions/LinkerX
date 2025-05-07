@@ -228,26 +228,26 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
           </div>
         </div>
       ) : (
-        <table className="min-w-full bg-white border border-gray-300 shadow-md">
-          <thead className="bg-gray-100 text-xs uppercase text-gray-700">
-            <tr>
-              <th className="border p-2">Agent Name</th>
-              <th className="border p-2">Sales</th>
-              <th className="border p-2">Non-Sales</th>
-              <th className="border p-2">Amount</th>
-              <th className="border p-2">QTY Sold</th>
-              <th className="border p-2">Conversion to Sale</th>
-              <th className="border p-2">% Conversion Inquiry to Sales</th>
-              <th className="border p-2">Avg Transaction Unit</th>
-              <th className="border p-2">Avg Transaction Value</th>
-              <th className="border p-2">Sales Per (New Client)</th>
-              <th className="border p-2">Sales Per (New-Non Buying)</th>
-              <th className="border p-2">Sales Per (Existing Active)</th>
-              <th className="border p-2">Sales Per (Existing Inactive)</th>
-              <th className="border p-2">CSR Response Time</th>
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+              <th className="px-6 py-4 font-semibold text-gray-700">Agent Name</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Sales</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Non-Sales</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Amount</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">QTY Sold</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Conversion to Sale</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">% Conversion Inquiry to Sales</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Avg Transaction Unit</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Avg Transaction Value</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Sales Per (New Client)</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Sales Per (New-Non Buying)</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Sales Per (Existing Active)</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Sales Per (Existing Inactive)</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">CSR Response Time</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100">
             {Object.keys(groupedMetrics).length > 0 ? (
               Object.keys(groupedMetrics).map((refId, index) => {
                 const agentMetrics = groupedMetrics[refId];
@@ -283,33 +283,25 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
                     : "N/A";
 
                 return (
-                  <tr key={index} className="text-center border-t text-xs">
-                    <td className="border p-2 whitespace-nowrap capitalize">
+                  <tr key={index} className="border-b whitespace-nowrap">
+                    <td className="px-6 py-4 text-xs">
                       {referenceIdToNameMap[refId] || "Unknown"}
                     </td>
-                    <td className="border p-2">{totals.sales}</td>
-                    <td className="border p-2">{totals.nonSales}</td>
-                    <td className="border p-2">
+                    <td className="px-6 py-4 text-xs">{totals.sales}</td>
+                    <td className="px-6 py-4 text-xs">{totals.nonSales}</td>
+                    <td className="px-6 py-4 text-xs">
                       {formatAmountWithPeso(totals.totalAmount)}
                     </td>
-                    <td className="border p-2">{totals.totalQtySold}</td>
-                    <td className="border p-2">{totals.totalConversionToSale}</td>
-                    <td className="border p-2">{conversionPercentage}</td>
-                    <td className="border p-2">{avgTransactionUnit}</td>
-                    <td className="border p-2">{avgTransactionValue}</td>
-                    <td className="border p-2">
-                      {formatAmountWithPeso(totals.newClientAmount)}
-                    </td>
-                    <td className="border p-2">
-                      {formatAmountWithPeso(totals.newNonBuyingAmount)}
-                    </td>
-                    <td className="border p-2">
-                      {formatAmountWithPeso(totals.existingActiveAmount)}
-                    </td>
-                    <td className="border p-2">
-                      {formatAmountWithPeso(totals.existingInactiveAmount)}
-                    </td>
-                    <td className="border p-2">{csrResponseTime}</td>
+                    <td className="px-6 py-4 text-xs">{totals.totalQtySold}</td>
+                    <td className="px-6 py-4 text-xs">{totals.totalConversionToSale}</td>
+                    <td className="px-6 py-4 text-xs">{conversionPercentage}</td>
+                    <td className="px-6 py-4 text-xs">{avgTransactionUnit}</td>
+                    <td className="px-6 py-4 text-xs">{avgTransactionValue}</td>
+                    <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totals.newClientAmount)}</td>
+                    <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totals.newNonBuyingAmount)}</td>
+                    <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totals.existingActiveAmount)}</td>
+                    <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totals.existingInactiveAmount)}</td>
+                    <td className="px-6 py-4 text-xs">{csrResponseTime}</td>
                   </tr>
                 );
               })
@@ -323,37 +315,27 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
           </tbody>
 
           {/* ✅ TFOOT for Total Summary */}
-          <tfoot className="bg-gray-100 text-xs text-center font-bold">
+          <tfoot className="bg-gray-100 px-6 py-4 text-xs text-left font-bold">
             <tr>
-              <td className="border p-2">TOTAL</td>
-              <td className="border p-2">{totalMetrics.sales}</td>
-              <td className="border p-2">{totalMetrics.nonSales}</td>
-              <td className="border p-2">
-                {formatAmountWithPeso(totalMetrics.totalAmount)}
-              </td>
-              <td className="border p-2">{totalMetrics.totalQtySold}</td>
-              <td className="border p-2">{totalMetrics.totalConversionToSale}</td>
-              <td className="border p-2">-</td>
-              <td className="border p-2">-</td>
-              <td className="border p-2">
+              <td className="px-6 py-4 text-xs">TOTAL</td>
+              <td className="px-6 py-4 text-xs">{totalMetrics.sales}</td>
+              <td className="px-6 py-4 text-xs">{totalMetrics.nonSales}</td>
+              <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totalMetrics.totalAmount)}</td>
+              <td className="px-6 py-4 text-xs">{totalMetrics.totalQtySold}</td>
+              <td className="px-6 py-4 text-xs">{totalMetrics.totalConversionToSale}</td>
+              <td className="px-6 py-4 text-xs">-</td>
+              <td className="px-6 py-4 text-xs">-</td>
+              <td className="px-6 py-4 text-xs">
                 {totalMetrics.totalATV.toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
               </td>
-              <td className="border p-2">
-                {formatAmountWithPeso(totalMetrics.newClientAmount)}
-              </td>
-              <td className="border p-2">
-                {formatAmountWithPeso(totalMetrics.newNonBuyingAmount)}
-              </td>
-              <td className="border p-2">
-                {formatAmountWithPeso(totalMetrics.existingActiveAmount)}
-              </td>
-              <td className="border p-2">
-                {formatAmountWithPeso(totalMetrics.existingInactiveAmount)}
-              </td>
-              <td className="border p-2">-</td>
+              <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totalMetrics.newClientAmount)}</td>
+              <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totalMetrics.newNonBuyingAmount)}</td>
+              <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totalMetrics.existingActiveAmount)}</td>
+              <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totalMetrics.existingInactiveAmount)}</td>
+              <td className="px-6 py-4 text-xs">-</td>
             </tr>
           </tfoot>
         </table>
