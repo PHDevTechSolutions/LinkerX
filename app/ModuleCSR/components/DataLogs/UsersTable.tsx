@@ -193,17 +193,17 @@ const DataLogTable: React.FC<DataLogsTableProps> = ({ posts }) => {
             ))}
 
             {/* ✅ Total row at the bottom */}
-            <tr className="bg-gray-100 font-bold">
-              <td colSpan={15} className="p-3 border text-right">
+            <tr className="bg-gray-100 px-6 py-4 text-xs font-bold">
+              <td colSpan={15} className="px-6 py-4 text-xs text-right">
                 Total:
               </td>
-              <td className="p-3 border">
+              <td className="px-6 py-4 text-xs">
                 ₱{totalAmount.toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                 })}
               </td>
-              <td className="p-3 border">{totalQuantity}</td>
-              <td colSpan={2} className="p-3 border"></td>
+              <td className="px-6 py-4 text-xs">{totalQuantity}</td>
+              <td colSpan={3} className="px-6 py-4 text-xs"></td>
             </tr>
           </tbody>
         </table>
