@@ -64,28 +64,28 @@ const Inquirytable: React.FC<InquirytableProps> = ({ posts, handleEdit, handleDe
 
     return (
         <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300">
-                <thead>
-                    <tr className="bg-gray-100 text-left text-xs uppercase font-bold border-b">
-                        <th className="p-3 border">Customer Name</th>
-                        <th className="p-3 border">Company Name</th>
-                        <th className="p-3 border">Email Address</th>
-                        <th className="p-3 border">Contact Number</th>
-                        <th className="p-3 border">Message</th>
-                        <th className="p-3 border">Status</th>
-                        <th className="p-3 border">Date Submitted</th>
-                        <th className="p-3 border text-center">Actions</th>
+            <table className="min-w-full table-auto">
+                <thead className="bg-gray-100">
+                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+                        <th className="px-6 py-4 font-semibold text-gray-700">Customer Name</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Email Address</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Message</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Date Submitted</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-100">
                     {updatedPosts.map((post) => (
-                        <tr key={post._id} className="border-b text-xs capitalize hover:bg-gray-50 capitalize">
-                            <td className="p-3 border">{post.CustomerName}</td>
-                            <td className="p-3 border">{post.CompanyName}</td>
-                            <td className="p-3 border lowercase">{post.EmailAddress}</td>
-                            <td className="p-3 border">{post.ContactNumber}</td>
-                            <td className="p-3 border">{post.Message}</td>
-                            <td className="p-3 border">
+                        <tr key={post._id} className="border-b whitespace-nowrap">
+                            <td className="px-6 py-4 text-xs capitalize">{post.CustomerName}</td>
+                            <td className="px-6 py-4 text-xs uppercase">{post.CompanyName}</td>
+                            <td className="px-6 py-4 text-xs">{post.EmailAddress}</td>
+                            <td className="px-6 py-4 text-xs">{post.ContactNumber}</td>
+                            <td className="px-6 py-4 text-xs capitalize">{post.Message}</td>
+                            <td className="px-6 py-4 text-xs">
                                 <span
                                     className={`inline-flex items-center px-2 py-1 text-[10px] font-semibold rounded-full ${post.Status === "Pending"
                                         ? "bg-red-500 text-white"
@@ -121,8 +121,8 @@ const Inquirytable: React.FC<InquirytableProps> = ({ posts, handleEdit, handleDe
                             </td>
 
 
-                            <td className="p-3 border">{post?.createdAt ? new Date(post.createdAt).toLocaleString() : "N/A"}</td>
-                            <td className="p-3 border text-center">
+                            <td className="px-6 py-4 text-xs">{post?.createdAt ? new Date(post.createdAt).toLocaleString() : "N/A"}</td>
+                            <td className="px-6 py-4 text-xs">
                                 {/* Update Status Button */}
                                 <button onClick={() => updateStatus(post._id)} className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 transition">Read</button>
                             </td>

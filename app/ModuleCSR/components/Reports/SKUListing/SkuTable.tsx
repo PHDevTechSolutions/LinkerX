@@ -93,22 +93,22 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
 
       {filteredPosts.length > 0 ? (
         <>
-          <table className="min-w-full bg-white border border-gray-300 text-xs">
-            <thead>
-              <tr className="bg-gray-100 text-left uppercase font-bold border-b">
-                <th className="p-3 border">Date</th>
-                <th className="p-3 border">Company Name</th>
-                <th className="p-3 border">Remarks</th>
-                <th className="p-3 border text-center">Actions</th>
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-100">
+              <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+                <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100">
               {paginatedPosts.map((post) => (
-                <tr key={post._id} className="border-b capitalize hover:bg-gray-50 capitalize">
-                  <td className="border p-2">{new Date(post.createdAt).toLocaleString()}</td>
-                  <td className="p-3 border">{post.CompanyName}</td>
-                  <td className="p-3 border">{post.Remarks}</td>
-                  <td className="p-3 border text-center space-x-2">
+                <tr key={post._id} className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs">{new Date(post.createdAt).toLocaleString()}</td>
+                  <td className="px-6 py-4 text-xs">{post.CompanyName}</td>
+                  <td className="px-6 py-4 text-xs">{post.Remarks}</td>
+                  <td className="px-6 py-4 text-xs gap-1 flex">
                     <button
                       onClick={() => handleEdit(post)}
                       className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
@@ -140,7 +140,7 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
         >
           Previous
         </button>
-        <span className="text-sm">
+        <span className="text-xs">
           Page {currentPage} of {totalPages}
         </span>
         <button

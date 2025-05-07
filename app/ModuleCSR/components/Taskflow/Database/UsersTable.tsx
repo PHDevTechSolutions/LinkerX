@@ -48,13 +48,13 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
                 key={uniqueKey}
                 className={`grid grid-cols-7 text-xs bg-white border-b hover:bg-gray-50 ${getTypeOfClientColor(post?.typeclient)}`}
             >
-                <div className="p-3 border capitalize min-w-[200px]">{post?.companyname || "N/A"}</div>
-                <div className="p-3 border capitalize min-w-[200px]">{post?.contactperson || "N/A"}</div>
-                <div className="p-3 border min-w-[150px]">{post?.contactnumber || "N/A"}</div>
-                <div className="p-3 border min-w-[200px]">{post?.emailaddress || "N/A"}</div>
-                <div className="p-3 border capitalize min-w-[200px]">{post?.address || "N/A"}</div>
-                <div className="p-3 border font-bold capitalize min-w-[150px]">{post?.typeclient || "N/A"}</div>
-                <div className="p-3 border italic capitalize min-w-[250px]">
+                <div className="px-6 py-4 text-xs capitalize min-w-[200px]">{post?.companyname || "N/A"}</div>
+                <div className="px-6 py-4 text-xs capitalize min-w-[200px]">{post?.contactperson || "N/A"}</div>
+                <div className="px-6 py-4 text-xs min-w-[150px]">{post?.contactnumber || "N/A"}</div>
+                <div className="px-6 py-4 text-xs min-w-[200px]">{post?.emailaddress || "N/A"}</div>
+                <div className="px-6 py-4 text-xs capitalize min-w-[200px]">{post?.address || "N/A"}</div>
+                <div className="px-6 py-4 text-xs font-bold capitalize min-w-[150px]">{post?.typeclient || "N/A"}</div>
+                <div className="px-6 py-4 text-xs italic capitalize min-w-[250px]">
                     {post?.AgentFirstname} {post?.AgentLastname} / {post?.ManagerFirstname} {post?.ManagerLastname}
                 </div>
             </div>
@@ -66,14 +66,14 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
             {sortedPosts.length > 0 ? (
                 <div className="min-w-max">
                     {/* Table header */}
-                    <div className="grid grid-cols-7 bg-gray-100 text-left uppercase font-bold border-b text-xs">
-                        <div className="p-3 border min-w-[200px]">Account Name</div>
-                        <div className="p-3 border min-w-[200px]">Contact Person</div>
-                        <div className="p-3 border min-w-[150px]">Contact No.</div>
-                        <div className="p-3 border min-w-[200px]">Email</div>
-                        <div className="p-3 border min-w-[200px]">Address</div>
-                        <div className="p-3 border min-w-[150px]">Type of Client</div>
-                        <div className="p-3 border min-w-[250px]">Assigned To</div>
+                    <div className="grid grid-cols-7 bg-gray-100 text-left uppercase font-bold text-xs whitespace-nowrap border-l-4 border-emerald-400">
+                        <div className="px-6 py-4 font-semibold text-gray-700 min-w-[200px]">Account Name</div>
+                        <div className="px-6 py-4 font-semibold text-gray-700 min-w-[200px]">Contact Person</div>
+                        <div className="px-6 py-4 font-semibold text-gray-700 min-w-[150px]">Contact No.</div>
+                        <div className="px-6 py-4 font-semibold text-gray-700 min-w-[200px]">Email</div>
+                        <div className="px-6 py-4 font-semibold text-gray-700 min-w-[200px]">Address</div>
+                        <div className="px-6 py-4 font-semibold text-gray-700 min-w-[150px]">Type of Client</div>
+                        <div className="px-6 py-4 font-semibold text-gray-700 min-w-[250px]">Assigned To</div>
                     </div>
 
                     {/* Virtualized list */}

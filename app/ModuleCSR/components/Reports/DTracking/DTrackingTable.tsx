@@ -97,44 +97,44 @@ const DTrackingTable: React.FC<AccountsTableProps> = ({ posts, handleEdit }) => 
       </div>
 
       {/* ✅ Table */}
-      <table className="bg-white border border-gray-300 w-full">
-        <thead className="bg-gray-100 text-xs uppercase text-gray-700">
-          <tr>
-            <th className="px-4 py-2 border">Company</th>
-            <th className="px-4 py-2 border">Customer Name</th>
-            <th className="px-4 py-2 border">Contact Number</th>
-            <th className="px-4 py-2 border">Ticket Type</th>
-            <th className="px-4 py-2 border">Ticket Concern</th>
-            <th className="px-4 py-2 border">Nature of Concern</th>
-            <th className="px-4 py-2 border">TSA</th>
-            <th className="px-4 py-2 border">TSM</th>
-            <th className="px-4 py-2 border">Pending Days</th>
-            <th className="px-4 py-2 border">Endorsed</th>
-            <th className="px-4 py-2 border">Closed</th>
-            <th className="px-4 py-2 border">Status</th>
-            <th className="px-4 py-2 border">Remarks</th>
-            <th className="px-4 py-2 border">Actions</th>
+      <table className="min-w-full table-auto">
+        <thead className="bg-gray-100">
+          <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+            <th className="px-6 py-4 font-semibold text-gray-700">Company</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Customer Name</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Ticket Type</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Ticket Concern</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Nature of Concern</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">TSA</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">TSM</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Pending Days</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Endorsed</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Closed</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-gray-100">
           {currentPosts.length > 0 ? (
             currentPosts.map((post) => (
               <React.Fragment key={post._id}>
-                <tr className="text-xs text-gray-700 border hover:bg-gray-50 capitalize">
-                  <td className="px-4 py-2 border whitespace-nowrap">{post.CompanyName}</td>
-                  <td className="px-4 py-2 border whitespace-nowrap">{post.CustomerName}</td>
-                  <td className="px-4 py-2 border whitespace-nowrap">{post.ContactNumber}</td>
-                  <td className="px-4 py-2 border whitespace-nowrap">{post.TicketType}</td>
-                  <td className="px-4 py-2 border whitespace-nowrap">{post.TicketConcern}</td>
-                  <td className="px-4 py-2 border capitalize whitespace-nowrap">{post.NatureConcern}</td>
-                  <td className="px-4 py-2 border capitalize whitespace-nowrap">{post.SalesAgent}</td>
-                  <td className="px-4 py-2 border capitalize whitespace-nowrap">{post.SalesManager}</td>
-                  <td className="px-4 py-2 border whitespace-nowrap">{calculatePendingDays(post.ClosedDate)}</td>
-                  <td className="px-4 py-2 border whitespace-nowrap">{formatDate(post.EndorsedDate)}</td>
-                  <td className="px-4 py-2 border whitespace-nowrap">{formatDate(post.ClosedDate)}</td>
-                  <td className="px-4 py-2 border whitespace-nowrap">{post.TrackingStatus}</td>
-                  <td className="px-4 py-2 border whitespace-nowrap">{post.TrackingRemarks}</td>
-                  <td className="px-4 py-2 border text-center whitespace-nowrap">
+                <tr className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs">{post.CompanyName}</td>
+                  <td className="px-6 py-4 text-xs">{post.CustomerName}</td>
+                  <td className="px-6 py-4 text-xs">{post.ContactNumber}</td>
+                  <td className="px-6 py-4 text-xs">{post.TicketType}</td>
+                  <td className="px-6 py-4 text-xs">{post.TicketConcern}</td>
+                  <td className="px-6 py-4 text-xs capitalize">{post.NatureConcern}</td>
+                  <td className="px-6 py-4 text-xs">{post.SalesAgent}</td>
+                  <td className="px-6 py-4 text-xs">{post.SalesManager}</td>
+                  <td className="px-6 py-4 text-xs">{calculatePendingDays(post.ClosedDate)}</td>
+                  <td className="px-6 py-4 text-xs">{formatDate(post.EndorsedDate)}</td>
+                  <td className="px-6 py-4 text-xs">{formatDate(post.ClosedDate)}</td>
+                  <td className="px-6 py-4 text-xs">{post.TrackingStatus}</td>
+                  <td className="px-6 py-4 text-xs capitalize">{post.TrackingRemarks}</td>
+                  <td className="px-6 py-4 text-xs">
                     <button
                       onClick={() => handleEdit(post)}
                       className="bg-blue-500 text-white text-xs px-3 py-1 rounded hover:bg-blue-600 transition"

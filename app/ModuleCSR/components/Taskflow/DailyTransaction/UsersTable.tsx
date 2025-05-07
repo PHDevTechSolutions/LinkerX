@@ -66,26 +66,18 @@ const DailyTransactionTable: React.FC<DailyTransactionTableProps> = ({ posts }) 
   return (
     <div className="overflow-x-auto">
       {sortedPosts.length > 0 ? (
-        <table className="min-w-full bg-white border border-gray-300 text-xs">
-          <thead>
-            <tr className="bg-gray-100 text-left uppercase font-bold border-b">
-              <th className="p-3 border">Ticket Number</th>
-              <th className="p-3 border">Date</th>
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+              <th className="px-6 py-4 font-semibold text-gray-700">Ticket Number</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100">
             {sortedPosts.map((post, index) => (
-              <tr
-                key={post._id || `post-${index}`} // Fallback key if _id is missing
-                className="border-b hover:bg-gray-50 capitalize"
-              >
-                <td
-                  className="p-3 border cursor-pointer text-blue-500"
-                  onClick={() => handleTicketClick(post)}
-                >
-                  {post.ticketreferencenumber || "-"}
-                </td>
-                <td className="p-3 border">{formatDate(post.date_created)}</td>
+              <tr key={post._id || `post-${index}`} className="border-b whitespace-nowrap">
+                <td className="px-6 py-4 text-xs underline cursor-pointer" onClick={() => handleTicketClick(post)}>{post.ticketreferencenumber || "-"}</td>
+                <td className="px-6 py-4 text-xs">{formatDate(post.date_created)}</td>
               </tr>
             ))}
           </tbody>

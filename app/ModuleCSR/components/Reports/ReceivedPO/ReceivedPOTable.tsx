@@ -76,37 +76,37 @@ const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, han
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full bg-white border border-gray-300 shadow-md">
-        <thead className="bg-gray-100 text-xs uppercase text-gray-700 text-left">
-          <tr>
-            <th className="px-4 py-2 border">CSR Agent</th>
-            <th className="px-4 py-2 border">Company</th>
-            <th className="px-4 py-2 border">PO Number</th>
-            <th className="px-4 py-2 border">Amount</th>
-            <th className="px-4 py-2 border">SO Number</th>
-            <th className="px-4 py-2 border">SO Date</th>
-            <th className="px-4 py-2 border">Sales Agent</th>
-            <th className="px-4 py-2 border">Pending From SO Date</th>
-            <th className="px-4 py-2 border">Payment Terms</th>
-            <th className="px-4 py-2 border">Payment Date</th>
-            <th className="px-4 py-2 border">Delivery/Pick-Up Date</th>
-            <th className="px-4 py-2 border">Pending Days from Payment</th>
-            <th className="px-4 py-2 border">Status</th>
-            <th className="px-4 py-2 border">Source</th>
-            <th className="px-4 py-2 border">Created At</th>
-            <th className="px-4 py-2 border">Actions</th>
+      <table className="min-w-full table-auto">
+        <thead className="bg-gray-100">
+          <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+            <th className="px-6 py-4 font-semibold text-gray-700">CSR Agent</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Company</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">PO Number</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Amount</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">SO Number</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">SO Date</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Sales Agent</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Pending From SO Date</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Payment Terms</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Payment Date</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Delivery/Pick-Up Date</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Pending Days from Payment</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Source</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Created At</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-gray-100">
           {posts.length > 0 ? (
             posts.map((post) => (
-              <tr key={post._id} className="text-xs text-gray-700 capitalize border hover:bg-gray-50">
-                <td className="px-4 py-2 border whitespace-nowrap">
+              <tr key={post._id} className="border-b whitespace-nowrap">
+                <td className="px-6 py-4 text-xs">
                   {post.AgentLastname}, {post.AgentFirstname}
                 </td>
-                <td className="px-4 py-2 border uppercase whitespace-nowrap">{post.CompanyName}</td>
-                <td className="px-4 py-2 border italic uppercase whitespace-nowrap">{post.PONumber}</td>
-                <td className="px-4 py-2 border whitespace-nowrap">
+                <td className="px-6 py-4 text-xs uppercase">{post.CompanyName}</td>
+                <td className="px-6 py-4 text-xs">{post.PONumber}</td>
+                <td className="px-6 py-4 text-xs">
                   {isNaN(parseFloat(post.Amount?.toString() || "0"))
                     ? "0.00"
                     : parseFloat(post.Amount?.toString() || "0").toLocaleString("en-PH", {
@@ -114,22 +114,22 @@ const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, han
                         maximumFractionDigits: 2,
                       })}
                 </td>
-                <td className="px-4 py-2 border whitespace-nowrap">{post.SONumber}</td>
-                <td className="px-4 py-2 border whitespace-nowrap">{formatTimestamp(post.SODate)}</td>
-                <td className="px-4 py-2 border whitespace-nowrap">{post.SalesAgent}</td>
-                <td className="px-4 py-2 border whitespace-nowrap text-red-700 font-semibold">{calculatePendingDays(post.SODate)}</td>
-                <td className="px-4 py-2 border whitespace-nowrap">{post.PaymentTerms}</td>
-                <td className="px-4 py-2 border whitespace-nowrap">{formatTimestamp(post.PaymentDate)}</td>
-                <td className="px-4 py-2 border whitespace-nowrap">{formatTimestamp(post.DeliveryPickupDate)}</td>
-                <td className="px-4 py-2 border whitespace-nowrap text-red-700 font-semibold">
+                <td className="px-6 py-4 text-xs">{post.SONumber}</td>
+                <td className="px-6 py-4 text-xs">{formatTimestamp(post.SODate)}</td>
+                <td className="px-6 py-4 text-xs">{post.SalesAgent}</td>
+                <td className="px-6 py-4 text-xs text-red-700">{calculatePendingDays(post.SODate)}</td>
+                <td className="px-6 py-4 text-xs">{post.PaymentTerms}</td>
+                <td className="px-6 py-4 text-xs">{formatTimestamp(post.PaymentDate)}</td>
+                <td className="px-6 py-4 text-xs">{formatTimestamp(post.DeliveryPickupDate)}</td>
+                <td className="px-6 py-4 text-xs text-red-700 font-semibold">
                   {calculatePendingPaymentDays(post.PaymentDate, post.DeliveryPickupDate)}
                 </td>
-                <td className="px-4 py-2 border whitespace-nowrap">{post.POStatus}</td>
-                <td className="px-4 py-2 border whitespace-nowrap">{post.POSource}</td>
-                <td className="px-4 py-2 border whitespace-nowrap">{new Date(post.createdAt).toLocaleString()}</td>
+                <td className="px-6 py-4 text-xs">{post.POStatus}</td>
+                <td className="px-6 py-4 text-xs">{post.POSource}</td>
+                <td className="px-6 py-4 text-xs">{new Date(post.createdAt).toLocaleString()}</td>
 
                 {/* Actions Menu */}
-                <td className="px-4 py-2 border text-center">
+                <td className="px-6 py-4 text-xs">
                   <button onClick={() => toggleMenu(post._id)} className="text-gray-500 hover:text-gray-800">
                     <BsThreeDotsVertical size={14} />
                   </button>

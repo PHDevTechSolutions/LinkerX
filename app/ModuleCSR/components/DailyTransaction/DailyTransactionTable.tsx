@@ -30,36 +30,36 @@ const DailyTransactionTable: React.FC<DailyTransactionTableProps> = ({ posts }) 
   return (
     <div className="overflow-x-auto">
       {sortedPosts.length > 0 ? (
-        <table className="min-w-full bg-white border border-gray-300 text-xs">
-          <thead>
-            <tr className="bg-gray-100 text-left uppercase font-bold border-b">
-              <th className="p-3 border">Ticket Number</th>
-              <th className="p-3 border">Account Name</th>
-              <th className="p-3 border">Contact</th>
-              <th className="p-3 border">Email</th>
-              <th className="p-3 border">Wrap Up</th>
-              <th className="p-3 border">Inquiry / Concern</th>
-              <th className="p-3 border">Remarks</th>
-              <th className="p-3 border">Agent</th>
-              <th className="p-3 border">TSM</th>
-              <th className="p-3 border">Time Consumed</th>
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+              <th className="px-6 py-4 font-semibold text-gray-700">Ticket Number</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Account Name</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Contact</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Email</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Wrap Up</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Inquiry / Concern</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Agent</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">TSM</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Time Consumed</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100">
             {sortedPosts.map((post) => (
-              <tr key={post._id} className="border-b hover:bg-gray-50 capitalize transition-all duration-200 ease-in-out transform hover:scale-[1.02]">
-                <td className="p-3 border">{post.ticket_reference_number}</td>
-                <td className="p-3 border">{post.account_name}</td>
-                <td className="p-3 border">
+              <tr key={post._id} className="border-b whitespace-nowrap">
+                <td className="px-6 py-4 text-xs">{post.ticket_reference_number}</td>
+                <td className="px-6 py-4 text-xs">{post.account_name}</td>
+                <td className="px-6 py-4 text-xs">
                   {post.contact_person} / {post.contact_number}
                 </td>
-                <td className="p-3 border lowercase">{post.email}</td>
-                <td className="p-3 border">{post.wrapup}</td>
-                <td className="p-3 border">{post.inquiries}</td>
-                <td className="p-3 border">{post.remarks}</td>
-                <td className="p-3 border italic capitalize">{post.agent_fullname}</td>
-                <td className="p-3 border italic capitalize">{post.tsm_fullname}</td>
-                <td className="p-3 border">{calculateTimeConsumed(post.start_date, post.end_date)}</td>
+                <td className="px-6 py-4 text-xs">{post.email}</td>
+                <td className="px-6 py-4 text-xs">{post.wrapup}</td>
+                <td className="px-6 py-4 text-xs">{post.inquiries}</td>
+                <td className="px-6 py-4 text-xs">{post.remarks}</td>
+                <td className="px-6 py-4 text-xs">{post.agent_fullname}</td>
+                <td className="px-6 py-4 text-xs">{post.tsm_fullname}</td>
+                <td className="px-6 py-4 text-xs">{calculateTimeConsumed(post.start_date, post.end_date)}</td>
               </tr>
             ))}
           </tbody>

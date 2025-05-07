@@ -135,79 +135,58 @@ const DataLogTable: React.FC<DataLogsTableProps> = ({ posts }) => {
 
       {/* ✅ Data Table */}
       {filteredPosts.length > 0 ? (
-        <table className="min-w-full bg-white border border-gray-300 text-xs">
-          <thead>
-            <tr className="bg-gray-100 text-left uppercase font-bold border-b">
-              <th className="p-3 border whitespace-nowrap">Ticket Number</th>
-              <th className="p-3 border whitespace-nowrap">User Name</th>
-              <th className="p-3 border whitespace-nowrap">ReferenceID</th>
-              <th className="p-3 border whitespace-nowrap">Company Name</th>
-              <th className="p-3 border whitespace-nowrap">Customer Name</th>
-              <th className="p-3 border whitespace-nowrap">Gender</th>
-              <th className="p-3 border whitespace-nowrap">Contact Number</th>
-              <th className="p-3 border whitespace-nowrap">Email</th>
-              <th className="p-3 border whitespace-nowrap">Customer Segment</th>
-              <th className="p-3 border whitespace-nowrap">Channel</th>
-              <th className="p-3 border whitespace-nowrap">Wrap Up</th>
-              <th className="p-3 border whitespace-nowrap">Source</th>
-              <th className="p-3 border whitespace-nowrap">Customer Type</th>
-              <th className="p-3 border whitespace-nowrap">Customer Status</th>
-              <th className="p-3 border whitespace-nowrap">Status</th>
-              <th className="p-3 border whitespace-nowrap">Amount</th>
-              <th className="p-3 border whitespace-nowrap">Quantity</th>
-              <th className="p-3 border whitespace-nowrap">Traffic</th>
-              <th className="p-3 border whitespace-nowrap">Agent Name</th>
-              <th className="p-3 border whitespace-nowrap">Date Created</th>
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+              <th className="px-6 py-4 font-semibold text-gray-700">Ticket Number</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">User Name</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">ReferenceID</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Customer Name</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Gender</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Email</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Customer Segment</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Channel</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Wrap Up</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Source</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Customer Type</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Customer Status</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Amount</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Quantity</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Traffic</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Agent Name</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Date Created</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100">
             {filteredPosts.map((post, index) => (
-              <tr
-                key={post._id || `post-${index}`} // Fallback key if _id is missing
-                className="border-b hover:bg-gray-50 capitalize"
-              >
-                <td className="p-3 border whitespace-nowrap">
-                  {post.TicketReferenceNumber}
-                </td>
-                <td className="p-3 border whitespace-nowrap">
-                  {post.userName}
-                </td>
-                <td className="p-3 border whitespace-nowrap">
-                  {post.ReferenceID}
-                </td>
-                <td className="p-3 border whitespace-nowrap">
-                  {post.CompanyName}
-                </td>
-                <td className="p-3 border whitespace-nowrap">
-                  {post.CustomerName}
-                </td>
-                <td className="p-3 border whitespace-nowrap">{post.Gender}</td>
-                <td className="p-3 border whitespace-nowrap">
-                  {post.ContactNumber}
-                </td>
-                <td className="p-3 border whitespace-nowrap">{post.Email}</td>
-                <td className="p-3 border whitespace-nowrap">
-                  {post.CustomerSegment}
-                </td>
-                <td className="p-3 border whitespace-nowrap">{post.Channel}</td>
-                <td className="p-3 border whitespace-nowrap">{post.WrapUp}</td>
-                <td className="p-3 border whitespace-nowrap">{post.Source}</td>
-                <td className="p-3 border whitespace-nowrap">
-                  {post.CustomerType}
-                </td>
-                <td className="p-3 border whitespace-nowrap">
-                  {post.CustomerStatus}
-                </td>
-                <td className="p-3 border whitespace-nowrap">{post.Status}</td>
-                <td className="p-3 border whitespace-nowrap">
+              <tr key={post._id || `post-${index}`} className="border-b whitespace-nowrap">
+                <td className="px-6 py-4 text-xs">{post.TicketReferenceNumber}</td>
+                <td className="px-6 py-4 text-xs">{post.userName}</td>
+                <td className="px-6 py-4 text-xs">{post.ReferenceID}</td>
+                <td className="px-6 py-4 text-xs">{post.CompanyName}</td>
+                <td className="px-6 py-4 text-xs">{post.CustomerName}</td>
+                <td className="px-6 py-4 text-xs">{post.Gender}</td>
+                <td className="px-6 py-4 text-xs">{post.ContactNumber}</td>
+                <td className="px-6 py-4 text-xs">{post.Email}</td>
+                <td className="px-6 py-4 text-xs">{post.CustomerSegment}</td>
+                <td className="px-6 py-4 text-xs">{post.Channel}</td>
+                <td className="px-6 py-4 text-xs">{post.WrapUp}</td>
+                <td className="px-6 py-4 text-xs">{post.Source}</td>
+                <td className="px-6 py-4 text-xs">{post.CustomerType}</td>
+                <td className="px-6 py-4 text-xs">{post.CustomerStatus}</td>
+                <td className="px-6 py-4 text-xs">{post.Status}</td>
+                <td className="px-6 py-4 text-xs">
                   ₱{Number(post.Amount || 0).toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                   })}
                 </td>
-                <td className="p-3 border whitespace-nowrap">{post.QtySold}</td>
-                <td className="p-3 border whitespace-nowrap">{post.Traffic}</td>
-                <td className="p-3 border whitespace-nowrap">{post.SalesAgent}</td>
-                <td className="p-3 border whitespace-nowrap">
+                <td className="px-6 py-4 text-xs">{post.QtySold}</td>
+                <td className="px-6 py-4 text-xs">{post.Traffic}</td>
+                <td className="px-6 py-4 text-xs">{post.SalesAgent}</td>
+                <td className="px-6 py-4 text-xs">
                   {new Date(post.createdAt).toLocaleDateString()}
                 </td>
               </tr>

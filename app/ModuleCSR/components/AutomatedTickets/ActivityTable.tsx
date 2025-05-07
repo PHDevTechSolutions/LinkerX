@@ -13,20 +13,21 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const REMARKS_COLORS: Record<string, string> = {
-    "No Stocks / Insufficient Stocks": "border-gray-500",
-    "Item Not Carried": "border-black",
-    "Quotation For Approval": "border-orange-400",
-    "Customer Requested Cancellation": "border-red-500",
-    "Accreditation / Partnership": "border-blue-500",
-    "For Spf": "border-purple-500",
-    "No Response From Client": "border-yellow-500",
-    Assisted: "border-green-500",
-    "Disapproved Quotation": "border-red-600",
-    "For Site Visit": "border-indigo-500",
-    "Non Standard Item": "border-teal-500",
-    "PO Received": "border-green-600",
-    "Not Converted to Sales": "border-gray-700",
-    "For Occular Inspection": "border-blue-600",
+    "No Stocks / Insufficient Stocks": "bg-slate-200",
+    "Item Not Carried": "bg-zinc-200",
+    "Quotation For Approval": "bg-orange-200",
+    "Customer Requested Cancellation": "bg-amber-200",
+    "Accreditation / Partnership": "bg-lime-200",
+    "For Spf": "bg-green-200",
+    "No Response From Client": "bg-emerald-200",
+    Assisted: "bg-teal-500",
+    "Disapproved Quotation": "bg-cyan-600",
+    "For Site Visit": "bg-indigo-200",
+    "Non Standard Item": "bg-blue-200",
+    "PO Received": "bg-rose-200",
+    "Not Converted to Sales": "bg-fuchsia-200",
+    "For Occular Inspection": "bg-stone-600",
+    "Sold": "bg-sky-200",
 };
 
 interface Post {
@@ -209,95 +210,95 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                         </button>
                     </div>
                     <div className="overflow-x-auto">
-                        <table className="bg-white border border-gray-200 text-xs">
-                            <thead>
-                                <tr className="text-left whitespace-nowrap">
-                                    <th className="border p-2">Ticket No</th>
-                                    <th className="border p-2">Ticket Received</th>
-                                    <th className="border p-2">Ticket Endorsed</th>
-                                    <th className="border p-2">Company</th>
-                                    <th className="border p-2">Customer</th>
-                                    <th className="border p-2">Contact Number</th>
-                                    <th className="border p-2">Email</th>
-                                    <th className="border p-2">Gender</th>
-                                    <th className="border p-2">Client Segment</th>
-                                    <th className="border p-2">City Address</th>
-                                    <th className="border p-2">Traffic</th>
-                                    <th className="border p-2">Channel</th>
-                                    <th className="border p-2">Wrap-Up</th>
-                                    <th className="border p-2">Source</th>
-                                    <th className="border p-2">SO Number</th>
-                                    <th className="border p-2">SO Amount</th>
-                                    <th className="border p-2">QTY Sold</th>
-                                    <th className="border p-2">PO Number</th>
-                                    <th className="border p-2">SO Date</th>
-                                    <th className="border p-2">Payment Terms</th>
-                                    <th className="border p-2">PO Source</th>
-                                    <th className="border p-2">PO Status</th>
-                                    <th className="border p-2">Payment Date</th>
-                                    <th className="border p-2">Delivery Date</th>
-                                    <th className="border p-2">Customer Type</th>
-                                    <th className="border p-2">Customer Status</th>
-                                    <th className="border p-2">Status</th>
-                                    <th className="border p-2">Department</th>
-                                    <th className="border p-2">Sales Manager</th>
-                                    <th className="border p-2">Sales Agent</th>
-                                    <th className="border p-2">Remarks</th>
-                                    <th className="border p-2">Inquiry / Concern</th>
-                                    <th className="border p-2">Actions</th>
+                        <table className="min-w-full table-auto">
+                            <thead className="bg-gray-100">
+                                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Ticket No</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Ticket Received</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Ticket Endorsed</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Company</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Customer</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Email</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Gender</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Client Segment</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">City Address</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Traffic</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Channel</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Wrap-Up</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Source</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">SO Number</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">SO Amount</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">QTY Sold</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">PO Number</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">SO Date</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Payment Terms</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">PO Source</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">PO Status</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Payment Date</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Delivery Date</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Customer Type</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Customer Status</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Department</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Sales Manager</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Sales Agent</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Inquiry / Concern</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y divide-gray-100">
                                 {Object.keys(groupedPosts).map((day) =>
                                     day === currentFormattedDate ? (
                                         <React.Fragment key={day}>
                                             {Object.entries(groupedPosts[day]).map(([userName, userPosts]) => (
                                                 <React.Fragment key={userName}>
-                                                    <tr className="bg-gray-200">
-                                                        <td colSpan={23} className="text-left p-2 font-bold uppercase">
+                                                    <tr className="border-b whitespace-nowrap">
+                                                        <td colSpan={23} className="text-left px-6 py-4 text-xs font-bold uppercase">
                                                             {userName}
                                                         </td>
                                                     </tr>
                                                     {userPosts.map((post) => (
                                                         <React.Fragment key={post._id}>
-                                                            <tr className="border text-left whitespace-nowrap">
-                                                                <td className="border p-2">{post.TicketReferenceNumber}</td>
-                                                                <td className="border p-2">{new Date(post.TicketReceived).toLocaleString()}</td>
-                                                                <td className="border p-2">{new Date(post.TicketEndorsed).toLocaleString()}</td>
-                                                                <td className="border p-2">{post.CompanyName}</td>
-                                                                <td className="border p-2">{post.CustomerName}</td>
-                                                                <td className="border p-2">{post.ContactNumber}</td>
-                                                                <td className="border p-2">{post.Email}</td>
-                                                                <td className="border p-2">{post.Gender}</td>
-                                                                <td className="border p-2">{post.CustomerSegment}</td>
-                                                                <td className="border p-2">{post.CityAddress}</td>
-                                                                <td className="border p-2">{post.Traffic}</td>
-                                                                <td className="border p-2">{post.Channel}</td>
-                                                                <td className="border p-2">{post.WrapUp}</td>
-                                                                <td className="border p-2">{post.Source}</td>
-                                                                <td className="border p-2">{post.SONumber}</td>
-                                                                <td className="border p-2">{post.Amount}</td>
-                                                                <td className="border p-2">{post.QtySold}</td>
-                                                                <td className="border p-2">{post.PONumber}</td>
-                                                                <td className="border p-2">{post.SODate}</td>
-                                                                <td className="border p-2">{post.PaymentTerms}</td>
-                                                                <td className="border p-2">{post.POSource}</td>
-                                                                <td className="border p-2">{post.POStatus}</td>
-                                                                <td className="border p-2">{post.PaymentDate}</td>
-                                                                <td className="border p-2">{post.DeliveryDate}</td>
-                                                                <td className="border p-2">{post.CustomerType}</td>
-                                                                <td className="border p-2">{post.CustomerStatus}</td>
-                                                                <td className={`border p-2 ${STATUS_COLORS[post.Status]}`}>{post.Status}</td>
-                                                                <td className="border p-2">{post.Department}</td>
-                                                                <td className="border p-2">{post.SalesManager}</td>
-                                                                <td className="border p-2">{post.SalesAgent}</td>
-                                                                <td className={`border p-2 ${REMARKS_COLORS[post.Remarks]}`}>{post.Remarks}</td>
-                                                                <td className="border p-2">
+                                                            <tr className="border-b whitespace-nowrap">
+                                                                <td className="px-6 py-4 text-xs">{post.TicketReferenceNumber}</td>
+                                                                <td className="px-6 py-4 text-xs">{new Date(post.TicketReceived).toLocaleString()}</td>
+                                                                <td className="px-6 py-4 text-xs">{new Date(post.TicketEndorsed).toLocaleString()}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.CompanyName}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.CustomerName}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.ContactNumber}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.Email}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.Gender}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.CustomerSegment}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.CityAddress}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.Traffic}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.Channel}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.WrapUp}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.Source}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.SONumber}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.Amount}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.QtySold}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.PONumber}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.SODate}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.PaymentTerms}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.POSource}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.POStatus}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.PaymentDate}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.DeliveryDate}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.CustomerType}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.CustomerStatus}</td>
+                                                                <td className={`px-6 py-4 text-xs ${STATUS_COLORS[post.Status]}`}>{post.Status}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.Department}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.SalesManager}</td>
+                                                                <td className="px-6 py-4 text-xs">{post.SalesAgent}</td>
+                                                                <td className={`px-6 py-4 text-xs ${REMARKS_COLORS[post.Remarks]}`}>{post.Remarks}</td>
+                                                                <td className="px-6 py-4 text-xs capitalize">
                                                                     {post.Inquiries?.length > 20
                                                                         ? `${post.Inquiries.substring(0, 20)}...`
                                                                         : post.Inquiries}
                                                                 </td>
-                                                                <td className="border p-2">
+                                                                <td className="px-6 py-4 text-xs">
                                                                     <select
                                                                         onChange={(e) => handleDropdownAction(e.target.value, post)}
                                                                         className="text-xs px-2 py-1 border rounded text-gray-700 bg-white hover:bg-gray-100"
@@ -441,94 +442,94 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                         </div>
 
                         <div className="overflow-x-auto">
-                            <table className="min-w-full bg-white border border-gray-200 text-xs">
-                                <thead>
-                                    <tr className="text-left whitespace-nowrap bg-gray-100">
-                                        <th className="border p-2">Date Created</th>
-                                        <th className="border p-2">Date Last Touch / Updated</th>
-                                        <th className="border p-2">CSR Agent</th>
-                                        <th className="border p-2">Ticket No</th>
-                                        <th className="border p-2">Ticket Received</th>
-                                        <th className="border p-2">Ticket Endorsed</th>
-                                        <th className="border p-2">Company</th>
-                                        <th className="border p-2">Customer</th>
-                                        <th className="border p-2">Contact Number</th>
-                                        <th className="border p-2">Email</th>
-                                        <th className="border p-2">Gender</th>
-                                        <th className="border p-2">Client Segment</th>
-                                        <th className="border p-2">City Address</th>
-                                        <th className="border p-2">Traffic</th>
-                                        <th className="border p-2">Channel</th>
-                                        <th className="border p-2">Wrap-Up</th>
-                                        <th className="border p-2">Source</th>
-                                        <th className="border p-2">SO Number</th>
-                                        <th className="border p-2">SO Amount</th>
-                                        <th className="border p-2">QTY Sold</th>
-                                        <th className="border p-2">PO Number</th>
-                                        <th className="border p-2">SO Date</th>
-                                        <th className="border p-2">Payment Terms</th>
-                                        <th className="border p-2">PO Source</th>
-                                        <th className="border p-2">PO Status</th>
-                                        <th className="border p-2">Payment Date</th>
-                                        <th className="border p-2">Delivery Date</th>
-                                        <th className="border p-2">Customer Type</th>
-                                        <th className="border p-2">Customer Status</th>
-                                        <th className="border p-2">Status</th>
-                                        <th className="border p-2">Department</th>
-                                        <th className="border p-2">Sales Manager</th>
-                                        <th className="border p-2">Sales Agent</th>
-                                        <th className="border p-2">Remarks</th>
-                                        <th className="border p-2">Inquiry / Concern</th>
-                                        <th className="border p-2">Actions</th>
+                            <table className="min-w-full table-auto">
+                                <thead className="bg-gray-100">
+                                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Date Created</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Date Last Touch / Updated</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">CSR Agent</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Ticket No</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Ticket Received</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Ticket Endorsed</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Company</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Customer</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Email</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Gender</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Client Segment</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">City Address</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Traffic</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Channel</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Wrap-Up</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Source</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">SO Number</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">SO Amount</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">QTY Sold</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">PO Number</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">SO Date</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Payment Terms</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">PO Source</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">PO Status</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Payment Date</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Delivery Date</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Customer Type</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Customer Status</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Department</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Sales Manager</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Sales Agent</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Inquiry / Concern</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="divide-y divide-gray-100">
                                     {paginatedPosts.map((post) => (
-                                        <tr key={post._id} className="border text-left whitespace-nowrap">
-                                            <td className="border p-2">{new Date(post.createdAt).toLocaleString()}</td>
-                                            <td className="border p-2">
+                                        <tr key={post._id} className="border-b whitespace-nowrap">
+                                            <td className="px-6 py-4 text-xs">{new Date(post.createdAt).toLocaleString()}</td>
+                                            <td className="px-6 py-4 text-xs">
                                                 {isNaN(new Date(post.updatedAt).getTime())
                                                     ? " - "
                                                     : new Date(post.updatedAt).toLocaleString()}
                                             </td>
-                                            <td className="border p-2 capitalize">{post.userName}</td>
-                                            <td className="border p-2">{post.TicketReferenceNumber}</td>
-                                            <td className="border p-2">{new Date(post.TicketReceived).toLocaleString()}</td>
-                                            <td className="border p-2">{new Date(post.TicketEndorsed).toLocaleString()}</td>
-                                            <td className="border p-2">{post.CompanyName}</td>
-                                            <td className="border p-2">{post.CustomerName}</td>
-                                            <td className="border p-2">{post.ContactNumber}</td>
-                                            <td className="border p-2">{post.Email}</td>
-                                            <td className="border p-2">{post.Gender}</td>
-                                            <td className="border p-2">{post.CustomerSegment}</td>
-                                            <td className="border p-2">{post.CityAddress}</td>
-                                            <td className="border p-2">{post.Traffic}</td>
-                                            <td className="border p-2">{post.Channel}</td>
-                                            <td className="border p-2">{post.WrapUp}</td>
-                                            <td className="border p-2">{post.Source}</td>
-                                            <td className="border p-2">{post.SONumber}</td>
-                                            <td className="border p-2">{post.Amount}</td>
-                                            <td className="border p-2">{post.QtySold}</td>
-                                            <td className="border p-2">{post.PONumber}</td>
-                                            <td className="border p-2">{post.SODate}</td>
-                                            <td className="border p-2">{post.PaymentTerms}</td>
-                                            <td className="border p-2">{post.POSource}</td>
-                                            <td className="border p-2">{post.POStatus}</td>
-                                            <td className="border p-2">{post.PaymentDate}</td>
-                                            <td className="border p-2">{post.DeliveryDate}</td>
-                                            <td className="border p-2">{post.CustomerType}</td>
-                                            <td className="border p-2">{post.CustomerStatus}</td>
-                                            <td className={`border p-2 ${STATUS_COLORS[post.Status]}`}>{post.Status}</td>
-                                            <td className="border p-2">{post.Department}</td>
-                                            <td className="border p-2">{post.SalesManager}</td>
-                                            <td className="border p-2">{post.SalesAgent}</td>
-                                            <td className={`border p-2 ${REMARKS_COLORS[post.Remarks]}`}>{post.Remarks}</td>
-                                            <td className="border p-2">
+                                            <td className="px-6 py-4 text-xs capitalize">{post.userName}</td>
+                                            <td className="px-6 py-4 text-xs">{post.TicketReferenceNumber}</td>
+                                            <td className="px-6 py-4 text-xs">{new Date(post.TicketReceived).toLocaleString()}</td>
+                                            <td className="px-6 py-4 text-xs">{new Date(post.TicketEndorsed).toLocaleString()}</td>
+                                            <td className="px-6 py-4 text-xs">{post.CompanyName}</td>
+                                            <td className="px-6 py-4 text-xs">{post.CustomerName}</td>
+                                            <td className="px-6 py-4 text-xs">{post.ContactNumber}</td>
+                                            <td className="px-6 py-4 text-xs">{post.Email}</td>
+                                            <td className="px-6 py-4 text-xs">{post.Gender}</td>
+                                            <td className="px-6 py-4 text-xs">{post.CustomerSegment}</td>
+                                            <td className="px-6 py-4 text-xs">{post.CityAddress}</td>
+                                            <td className="px-6 py-4 text-xs">{post.Traffic}</td>
+                                            <td className="px-6 py-4 text-xs">{post.Channel}</td>
+                                            <td className="px-6 py-4 text-xs">{post.WrapUp}</td>
+                                            <td className="px-6 py-4 text-xs">{post.Source}</td>
+                                            <td className="px-6 py-4 text-xs">{post.SONumber}</td>
+                                            <td className="px-6 py-4 text-xs">{post.Amount}</td>
+                                            <td className="px-6 py-4 text-xs">{post.QtySold}</td>
+                                            <td className="px-6 py-4 text-xs">{post.PONumber}</td>
+                                            <td className="px-6 py-4 text-xs">{post.SODate}</td>
+                                            <td className="px-6 py-4 text-xs">{post.PaymentTerms}</td>
+                                            <td className="px-6 py-4 text-xs">{post.POSource}</td>
+                                            <td className="px-6 py-4 text-xs">{post.POStatus}</td>
+                                            <td className="px-6 py-4 text-xs">{post.PaymentDate}</td>
+                                            <td className="px-6 py-4 text-xs">{post.DeliveryDate}</td>
+                                            <td className="px-6 py-4 text-xs">{post.CustomerType}</td>
+                                            <td className="px-6 py-4 text-xs">{post.CustomerStatus}</td>
+                                            <td className={`px-6 py-4 text-xs ${STATUS_COLORS[post.Status]}`}>{post.Status}</td>
+                                            <td className="px-6 py-4 text-xs">{post.Department}</td>
+                                            <td className="px-6 py-4 text-xs">{post.SalesManager}</td>
+                                            <td className="px-6 py-4 text-xs">{post.SalesAgent}</td>
+                                            <td className={`px-6 py-4 text-xs ${REMARKS_COLORS[post.Remarks]}`}>{post.Remarks}</td>
+                                            <td className="px-6 py-4 text-xs">
                                                 {post.Inquiries?.length > 20
                                                     ? `${post.Inquiries.substring(0, 20)}...`
                                                     : post.Inquiries}
                                             </td>
-                                            <td className="border p-2">
+                                            <td className="px-6 py-4 text-xs">
                                                 <button onClick={() => handleEdit(post)} className="mr-2 text-blue-900">Edit</button>
                                                 <button onClick={() => handleDelete(post._id)} className="mr-2 text-red-900">Delete</button>
                                             </td>
