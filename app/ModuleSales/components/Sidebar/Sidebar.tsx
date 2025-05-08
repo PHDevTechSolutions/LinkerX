@@ -388,7 +388,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
 
       {/* Sidebar Container */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 h-screen transition-all duration-300 flex flex-col border-r
+        className={`fixed inset-y-0 left-0 z-50 h-screen transition-all duration-300 flex flex-col
       ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"} 
       ${collapsed ? "w-16" : "w-64"} 
       ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}

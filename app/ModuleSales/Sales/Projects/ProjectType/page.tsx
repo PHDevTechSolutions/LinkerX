@@ -20,8 +20,6 @@ const ListofUser: React.FC = () => {
     const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(10);
     const [selectedClientType, setSelectedClientType] = useState("");
     const [startDate, setStartDate] = useState(""); // Default to null
     const [endDate, setEndDate] = useState(""); // Default to null
@@ -29,7 +27,7 @@ const ListofUser: React.FC = () => {
     const [userDetails, setUserDetails] = useState({
         UserId: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "", TargetQuota: "", ReferenceID: "",
     });
-    const [TargetQuota, setTargetQuota] = useState("");
+  
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -122,11 +120,6 @@ const ListofUser: React.FC = () => {
             )
         : [];
 
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
-    const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
-
     // Handle editing a post
     const handleEdit = (post: any) => {
         setEditUser(post);
@@ -171,30 +164,17 @@ const ListofUser: React.FC = () => {
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
-                                                postsPerPage={postsPerPage}
-                                                setPostsPerPage={setPostsPerPage}
                                                 startDate={startDate}
                                                 setStartDate={setStartDate}
                                                 endDate={endDate}
                                                 setEndDate={setEndDate}
                                             />
                                             <UsersTable
-                                                posts={currentPosts}
+                                                posts={filteredAccounts}
                                                 handleEdit={handleEdit}
                                                 TargetQuota={userDetails.TargetQuota}
                                                 fetchAccount={fetchAccount}
                                             />
-                                            <Pagination
-                                                currentPage={currentPage}
-                                                totalPages={totalPages}
-                                                setCurrentPage={setCurrentPage}
-                                            />
-
-                                            <div className="text-xs mt-2">
-                                                Showing {indexOfFirstPost + 1} to{" "}
-                                                {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                                {filteredAccounts.length} entries
-                                            </div>
                                         </div>
                                     </>
                                 )}
