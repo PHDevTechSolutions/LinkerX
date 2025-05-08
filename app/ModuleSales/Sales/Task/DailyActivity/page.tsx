@@ -625,78 +625,6 @@ const ListofUser: React.FC = () => {
         }
     }, [post]);
 
-
-    //Existing Code
-    //const getFilteredCompanies = async (post: Company[]) => {
-    //const leftover = await fetchLeftover();
-    //let remaining = 35 + leftover;
-
-    //const today = new Date();
-    //const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    //const currentWeek = Math.ceil((today.getDate() + firstDayOfMonth.getDay()) / 7);
-
-    //const newAccountCompanies = post
-    //.filter(
-    //(company) =>
-    //(company.status === "Active" || company.status === "Used") &&
-    //company.typeclient === "New Account - Client Development"
-    //)
-    //.slice(0, 1);
-
-    //remaining -= newAccountCompanies.length;
-
-    //let usedCompanies: Company[] = [];
-    //let activeCompanies: Company[] = [];
-
-    //const usedPool = post.filter(
-    //(company) =>
-    //company.status === "Used" &&
-    //["Top 50", "Next 30", "Balance 20"].includes(company.typeclient)
-    //);
-
-    //const activePool = post.filter(
-    //(company) =>
-    //company.status === "Active" &&
-    //["Top 50", "Next 30", "Balance 20"].includes(company.typeclient)
-    //);
-
-    //if (usedPool.length >= remaining) {
-    //usedCompanies = usedPool.slice(0, remaining).map((company) => ({
-    //...company,
-    //date_assigned: today.toISOString().slice(0, 10),
-    //}));
-    //remaining = 0;
-    //} else {
-    // usedCompanies = usedPool.map((company) => ({
-    //...company,
-    //date_assigned: today.toISOString().slice(0, 10),
-    //}));
-    //remaining -= usedCompanies.length;
-
-    //activeCompanies = activePool.slice(0, remaining).map((company) => ({
-    //...company,
-    // date_assigned: today.toISOString().slice(0, 10),
-    //}));
-
-    // remaining -= activeCompanies.length;
-    //  }
-
-    //  const finalCompanies = [
-    //   ...newAccountCompanies,
-    //   ...usedCompanies,
-    //   ...activeCompanies,
-    //  ].slice(0, 35);
-
-    //  const updatedLeftover = 35 - finalCompanies.length;
-    // setRemainingBalance(updatedLeftover);
-    //  setTodayCompanies(finalCompanies);
-
-    // Save leftover to be used tomorrow
-    //  await saveLeftover(updatedLeftover);
-    // };
-
-    // Revised Code
-
     // Simulate an in-memory store for the example
     let newClientMeta = {
         lastGeneratedWeek: "",  // Track last week processed
@@ -715,21 +643,124 @@ const ListofUser: React.FC = () => {
         newClientMeta = meta;  // Update in-memory store for now
     };
 
+    // Revised Code 
+    //const getFilteredCompanies = async (post: Company[]) => {
+        //const leftover = await fetchLeftover();
+        //let remaining = 35 + leftover;
+
+        //const today = new Date().toISOString().slice(0, 10);
+
+        // Fetch the last generated week and last used status from the database
+        //const { lastGeneratedWeek, lastUsedStatus } = await fetchNewClientMeta(); // Fetch the meta data
+
+        //const currentDate = new Date();
+        //const currentWeek = `${currentDate.getFullYear()}-W${Math.ceil((currentDate.getDate() + 6 - currentDate.getDay()) / 7)}`;
+
+        //let newAccountCompanies: Company[] = [];
+
+        // If a new week starts, we process "New Account - Client Development"
+        //if (currentWeek !== lastGeneratedWeek) {
+            // Fetch the next client based on the current status (Used or Active)
+            //const candidate = post
+                //.filter(
+                    //(company) =>
+                        //company.status === lastUsedStatus &&
+                        //company.typeclient === "New Account - Client Development"
+                //)
+                //.slice(0, 1) // Only one company per week
+                //.map((company) => ({
+                    //...company,
+                    //date_assigned: today,
+                //}));
+
+            //newAccountCompanies = candidate;
+
+            // If a client is selected, toggle the status for the next week
+            //if (candidate.length > 0) {
+                //const nextStatus = lastUsedStatus === "Used" ? "Active" : "Used";
+                //await saveNewClientMeta({ lastGeneratedWeek: currentWeek, lastUsedStatus: nextStatus });
+            //}
+        //}
+
+        // Subtract the new account companies from the remaining count
+        //remaining -= newAccountCompanies.length;
+
+        //const finalCompanies: Company[] = [...newAccountCompanies];
+
+        //const typeClientPriority = ["Top 50", "Next 30", "Balance 20"];
+
+        // Function to fetch companies by status and type client (Used / Active)
+        //const getCompaniesByStatus = (status: "Used" | "Active", excludeIds: string[]) => {
+            //let result: Company[] = [];
+
+            //for (const type of typeClientPriority) {
+                //const filtered = post.filter(
+                    //(company) =>
+                        //company.status === status &&
+                        //company.typeclient === type &&
+                        //!excludeIds.includes(company.id?.toString() ?? "")
+                //);
+
+                //const toAdd = filtered.slice(0, remaining - result.length).map((company) => ({
+                    //...company,
+                    //date_assigned: today,
+                //}));
+
+                //result = [...result, ...toAdd];
+
+                //if (result.length >= remaining) break;
+            //}
+
+            //return result;
+        //};
+
+        // Looping: Try Used first, then Active, then Used again if needed
+        //const excludeIds = finalCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id);
+
+        // Fetch the used companies first
+        //const usedCompanies = getCompaniesByStatus("Used", excludeIds);
+        //finalCompanies.push(...usedCompanies);
+        //excludeIds.push(...usedCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id));
+
+        // If we still need more, add active companies
+        //if (finalCompanies.length < 35) {
+            //const activeCompanies = getCompaniesByStatus("Active", excludeIds);
+            //finalCompanies.push(...activeCompanies);
+            //excludeIds.push(...activeCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id));
+        //}
+
+        // If we still need more, add another round of used companies
+        //if (finalCompanies.length < 35) {
+            //const secondRoundUsed = getCompaniesByStatus("Used", excludeIds);
+            //finalCompanies.push(...secondRoundUsed);
+        //}
+
+        // Calculate how many companies remain for the next week
+        //const updatedLeftover = 35 - finalCompanies.length;
+
+        //setRemainingBalance(updatedLeftover);
+        //setTodayCompanies(finalCompanies);
+
+        // Save the leftover companies to be used in the next run (if applicable)
+        //await saveLeftover(updatedLeftover);
+    //};
+
+    // Current Code 
 
     const getFilteredCompanies = async (post: Company[]) => {
         const leftover = await fetchLeftover();
         let remaining = 35 + leftover;
-
+    
         const today = new Date().toISOString().slice(0, 10);
-
+    
         // Fetch the last generated week and last used status from the database
         const { lastGeneratedWeek, lastUsedStatus } = await fetchNewClientMeta(); // Fetch the meta data
-
+    
         const currentDate = new Date();
         const currentWeek = `${currentDate.getFullYear()}-W${Math.ceil((currentDate.getDate() + 6 - currentDate.getDay()) / 7)}`;
-
+    
         let newAccountCompanies: Company[] = [];
-
+    
         // If a new week starts, we process "New Account - Client Development"
         if (currentWeek !== lastGeneratedWeek) {
             // Fetch the next client based on the current status (Used or Active)
@@ -744,75 +775,76 @@ const ListofUser: React.FC = () => {
                     ...company,
                     date_assigned: today,
                 }));
-
+    
             newAccountCompanies = candidate;
-
+    
             // If a client is selected, toggle the status for the next week
             if (candidate.length > 0) {
                 const nextStatus = lastUsedStatus === "Used" ? "Active" : "Used";
                 await saveNewClientMeta({ lastGeneratedWeek: currentWeek, lastUsedStatus: nextStatus });
             }
         }
-
+    
         // Subtract the new account companies from the remaining count
         remaining -= newAccountCompanies.length;
-
+    
         const finalCompanies: Company[] = [...newAccountCompanies];
-
+    
         const typeClientPriority = ["Top 50", "Next 30", "Balance 20"];
-
-        // Function to fetch companies by status and type client (Used / Active)
+    
+        // Function to fetch companies by status and type client (Used / Active), sorted by date_created
         const getCompaniesByStatus = (status: "Used" | "Active", excludeIds: string[]) => {
             let result: Company[] = [];
-
+    
             for (const type of typeClientPriority) {
-                const filtered = post.filter(
-                    (company) =>
-                        company.status === status &&
-                        company.typeclient === type &&
-                        !excludeIds.includes(company.id?.toString() ?? "")
-                );
-
+                const filtered = post
+                    .filter(
+                        (company) =>
+                            company.status === status &&
+                            company.typeclient === type &&
+                            !excludeIds.includes(company.id?.toString() ?? "")
+                    )
+                    .sort((a, b) => (new Date(a.date_updated).getTime() - new Date(b.date_updated).getTime())); // Sort by date_created
+    
                 const toAdd = filtered.slice(0, remaining - result.length).map((company) => ({
                     ...company,
                     date_assigned: today,
                 }));
-
+    
                 result = [...result, ...toAdd];
-
+    
                 if (result.length >= remaining) break;
             }
-
+    
             return result;
         };
-
-        // Looping: Try Used first, then Active, then Used again if needed
+    
         const excludeIds = finalCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id);
-
+    
         // Fetch the used companies first
         const usedCompanies = getCompaniesByStatus("Used", excludeIds);
         finalCompanies.push(...usedCompanies);
         excludeIds.push(...usedCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id));
-
+    
         // If we still need more, add active companies
         if (finalCompanies.length < 35) {
             const activeCompanies = getCompaniesByStatus("Active", excludeIds);
             finalCompanies.push(...activeCompanies);
             excludeIds.push(...activeCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id));
         }
-
+    
         // If we still need more, add another round of used companies
         if (finalCompanies.length < 35) {
             const secondRoundUsed = getCompaniesByStatus("Used", excludeIds);
             finalCompanies.push(...secondRoundUsed);
         }
-
+    
         // Calculate how many companies remain for the next week
         const updatedLeftover = 35 - finalCompanies.length;
-
+    
         setRemainingBalance(updatedLeftover);
         setTodayCompanies(finalCompanies);
-
+    
         // Save the leftover companies to be used in the next run (if applicable)
         await saveLeftover(updatedLeftover);
     };

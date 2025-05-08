@@ -1022,7 +1022,7 @@ const DashboardPage: React.FC = () => {
                                     return (
                                       <tr key={index} className="border-b whitespace-nowrap">
                                         <td className="px-6 py-4 text-xs">{formatDate(new Date(activity.date_created).getTime())}</td>
-                                        <td className="px-6 py-4 text-xs">{activity.companyname}</td>
+                                        <td className="px-6 py-4 text-xs uppercase">{activity.companyname}</td>
                                         <td className="px-6 py-4 text-xs">{activity.typeactivity}</td>
                                         <td className="px-6 py-4 text-xs">
                                           <span
