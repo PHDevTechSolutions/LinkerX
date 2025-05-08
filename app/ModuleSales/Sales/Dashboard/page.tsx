@@ -140,6 +140,8 @@ const DashboardPage: React.FC = () => {
   const [totalActualSalesWeek, setTotalActualSalesWeek] = useState(0);
   const [totalActualSalesMonth, setTotalActualSalesMonth] = useState(0);
 
+  const [showAccessModal, setShowAccessModal] = useState(false);
+
   useEffect(() => {
     (async () => {
       const leaflet = await import("leaflet");
@@ -615,8 +617,6 @@ const DashboardPage: React.FC = () => {
 
         // Extract responses
         const [hoursRes, callsRes, accountRes, actualSalesRes, salesOrderRes, quotationAmountRes, activityRes] = commonRes;
-        const [tsmCallsRes, tsmAccountRes, tsmActualSalesRes] = tsmRes;
-        const [managerCallsRes, managerAccountRes, managerActualSalesRes] = managerRes;
 
         // Validate all responses
         const allCommonResponses = [hoursRes, callsRes, accountRes, actualSalesRes, salesOrderRes, quotationAmountRes, activityRes];
@@ -791,17 +791,17 @@ const DashboardPage: React.FC = () => {
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
-  
+
     // Use UTC getters instead of local ones to prevent timezone shifting.
     let hours = date.getUTCHours();
     const minutes = date.getUTCMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
-    
+
     // Convert hours to 12-hour format
     hours = hours % 12;
     hours = hours ? hours : 12; // if hour is 0, display as 12
     const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-  
+
     // Use toLocaleDateString with timeZone 'UTC' to format the date portion
     const formattedDateStr = date.toLocaleDateString('en-US', {
       timeZone: 'UTC',
@@ -809,10 +809,20 @@ const DashboardPage: React.FC = () => {
       day: 'numeric',
       year: 'numeric',
     });
-  
+
     // Return combined date and time string
     return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
   };
+
+  const isAllowedUser = userDetails?.Role === "Super Admin" ||
+    (userDetails?.Role === "Territory Sales Associate" && userDetails?.ReferenceID === "JG-NCR-920587");
+
+  const isRestrictedUser = !isAllowedUser;
+
+  // Automatically show modal if the user is restricted
+  useEffect(() => {
+    setShowAccessModal(isRestrictedUser);
+  }, [isRestrictedUser]);
 
   return (
     <SessionChecker>
@@ -965,6 +975,7 @@ const DashboardPage: React.FC = () => {
                         Activity Progress
                       </button>
                     </div>
+
                     {/* Table inside the card body */}
                     <div className="">
                       {activeTab === "recent" && (
@@ -976,51 +987,51 @@ const DashboardPage: React.FC = () => {
                             </p>
                           </div>
                           <div className="overflow-x-auto">
-                            <table className="w-full bg-white table-auto text-xs overflow-x">
-                              <thead>
-                                <tr>
-                                  <th className="py-3 px-4 text-left">Date</th>
-                                  <th className="py-3 px-4 text-left">Company Name</th>
-                                  <th className="py-3 px-4 text-left">Type of Activity</th>
-                                  <th className="py-3 px-4 text-left">Status</th>
-                                  <th className="py-3 px-4 text-left">Remarks</th>
+                            <table className="min-w-full table-auto">
+                              <thead className="bg-gray-100">
+                                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                                  <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
+                                  <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+                                  <th className="px-6 py-4 font-semibold text-gray-700">Type of Activity</th>
+                                  <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+                                  <th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
                                 </tr>
                               </thead>
-                              <tbody>
+                              <tbody className="divide-y divide-gray-100">
                                 {activityList && activityList.length > 0 ? (
                                   activityList.map((activity, index) => {
                                     // Define the badge color based on activity status
                                     let statusBadgeColor = "";
                                     switch (activity.activitystatus) {
                                       case "Cold":
-                                        statusBadgeColor = "bg-blue-500 text-white";
+                                        statusBadgeColor = "bg-blue-400 text-white";
                                         break;
                                       case "Warm":
-                                        statusBadgeColor = "bg-yellow-500 text-black";
+                                        statusBadgeColor = "bg-yellow-400 text-black";
                                         break;
                                       case "Hot":
-                                        statusBadgeColor = "bg-red-500 text-white";
+                                        statusBadgeColor = "bg-red-400 text-white";
                                         break;
                                       case "Done":
                                         statusBadgeColor = "bg-green-500 text-white";
                                         break;
                                       default:
-                                        statusBadgeColor = "bg-gray-300 text-black";
+                                        statusBadgeColor = "bg-gray-200 text-black";
                                     }
 
                                     return (
-                                      <tr key={index} className="border-t border-gray-100 capitalize whitespace-nowrap">
-                                        <td className="py-3 px-4 text-left">{formatDate(new Date(activity.date_created).getTime())}</td>
-                                        <td className="py-3 px-4 text-left">{activity.companyname}</td>
-                                        <td className="py-3 px-4 text-left">{activity.typeactivity}</td>
-                                        <td className="py-3 px-4 text-left">
+                                      <tr key={index} className="border-b whitespace-nowrap">
+                                        <td className="px-6 py-4 text-xs">{formatDate(new Date(activity.date_created).getTime())}</td>
+                                        <td className="px-6 py-4 text-xs">{activity.companyname}</td>
+                                        <td className="px-6 py-4 text-xs">{activity.typeactivity}</td>
+                                        <td className="px-6 py-4 text-xs">
                                           <span
                                             className={`inline-block px-2 py-1 rounded-full text-[8px] ${statusBadgeColor}`}
                                           >
                                             {activity.activitystatus}
                                           </span>
                                         </td>
-                                        <td className="py-3 px-4">
+                                        <td className="px-6 py-4 text-xs capitalize">
                                           {activity.remarks ? activity.remarks : activity.activityremarks}
                                         </td>
                                       </tr>
@@ -1028,7 +1039,7 @@ const DashboardPage: React.FC = () => {
                                   })
                                 ) : (
                                   <tr>
-                                    <td colSpan={5} className="text-center py-4 px-6">
+                                    <td colSpan={5} className="text-center text-xs py-4 px-6">
                                       No data available
                                     </td>
                                   </tr>
@@ -1042,77 +1053,88 @@ const DashboardPage: React.FC = () => {
 
                       {/* Activity Progress Table */}
                       {activeTab === "progress" && (
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                          {/* Date Range Inputs */}
-                          <div className="flex items-center space-x-2 md:col-span-2">
-                            <select
-                              value={month}
-                              onChange={(e) => setMonth(e.target.value)}
-                              className="border border-gray-300 rounded-lg p-2 text-xs w-full md:w-1/2"
-                            >
-                              <option value="January">January</option>
-                              <option value="February">February</option>
-                              <option value="March">March</option>
-                              <option value="April">April</option>
-                              <option value="May">May</option>
-                              <option value="June">June</option>
-                              <option value="July">July</option>
-                              <option value="August">August</option>
-                              <option value="September">September</option>
-                              <option value="October">October</option>
-                              <option value="November">November</option>
-                              <option value="December">December</option>
-                            </select>
-                            <select
-                              value={week}
-                              onChange={(e) => setWeek(e.target.value)}
-                              className="border border-gray-300 rounded-lg p-2 text-xs w-full md:w-1/2"
-                            >
-                              <option value="Week 1">Week 1</option>
-                              <option value="Week 2">Week 2</option>
-                              <option value="Week 3">Week 3</option>
-                              <option value="Week 4">Week 4</option>
-                            </select>
-                          </div>
+                        <div className="relative grid grid-cols-1 gap-4 md:grid-cols-2">
+                          {isRestrictedUser ? (
+                            <div className="absolute inset-0 z-10 mt-4 bg-opacity-90 flex flex-col items-center justify-center p-6 rounded-xl ">
+                              <h2 className="text-xl font-bold text-red-600 mb-2">🚧 Under Maintenance</h2>
+                              <p className="text-sm text-gray-700 text-center max-w-xs">
+                                This section is temporarily unavailable for your access level. Please contact your system administrator or try again later.
+                              </p>
+                            </div>
+                          ) : (
+                            <>
+                              {/* Date Range Inputs */}
+                              <div className="flex items-center space-x-2 md:col-span-2">
+                                <select
+                                  value={month}
+                                  onChange={(e) => setMonth(e.target.value)}
+                                  className="border border-gray-300 rounded-lg p-2 text-xs w-full md:w-1/2"
+                                >
+                                  <option value="January">January</option>
+                                  <option value="February">February</option>
+                                  <option value="March">March</option>
+                                  <option value="April">April</option>
+                                  <option value="May">May</option>
+                                  <option value="June">June</option>
+                                  <option value="July">July</option>
+                                  <option value="August">August</option>
+                                  <option value="September">September</option>
+                                  <option value="October">October</option>
+                                  <option value="November">November</option>
+                                  <option value="December">December</option>
+                                </select>
+                                <select
+                                  value={week}
+                                  onChange={(e) => setWeek(e.target.value)}
+                                  className="border border-gray-300 rounded-lg p-2 text-xs w-full md:w-1/2"
+                                >
+                                  <option value="Week 1">Week 1</option>
+                                  <option value="Week 2">Week 2</option>
+                                  <option value="Week 3">Week 3</option>
+                                  <option value="Week 4">Week 4</option>
+                                </select>
+                              </div>
 
-                          {/* Sales Order Card */}
-                          <div className="bg-gradient-to-r from-blue-50 to-blue-100 shadow-lg rounded-xl p-5 flex flex-col justify-between hover:shadow-xl transition-shadow duration-300 ease-in-out">
-                            <h3 className="text-sm font-bold text-blue-700 mb-2">📈 Sales Order Today</h3>
-                            <p className="text-md font-extrabold text-blue-900">
-                              ₱{Number(totalSalesOrder).toLocaleString("en-PH")}
-                            </p>
+                              {/* Sales Order Card */}
+                              <div className="bg-gradient-to-r from-blue-50 to-blue-100 shadow-lg rounded-xl p-5 flex flex-col justify-between hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                                <h3 className="text-sm font-bold text-blue-700 mb-2">📈 Sales Order Today</h3>
+                                <p className="text-md font-extrabold text-blue-900">
+                                  ₱{Number(totalSalesOrder).toLocaleString("en-PH")}
+                                </p>
 
-                            <h3 className="text-sm font-bold text-blue-700 mb-1 mt-2">📅 Sales Order Week</h3>
-                            <p className="text-md font-semibold text-blue-800">
-                              ₱{Number(totalSalesOrderWeek).toLocaleString("en-PH")}
-                            </p>
+                                <h3 className="text-sm font-bold text-blue-700 mb-1 mt-2">📅 Sales Order Week</h3>
+                                <p className="text-md font-semibold text-blue-800">
+                                  ₱{Number(totalSalesOrderWeek).toLocaleString("en-PH")}
+                                </p>
 
-                            <h3 className="text-sm font-bold text-blue-700 mb-1 mt-2">🗓️ Sales Order Month</h3>
-                            <p className="text-md font-extrabold text-blue-800">
-                              ₱{Number(totalSalesOrderMonth).toLocaleString("en-PH")}
-                            </p>
-                          </div>
+                                <h3 className="text-sm font-bold text-blue-700 mb-1 mt-2">🗓️ Sales Order Month</h3>
+                                <p className="text-md font-extrabold text-blue-800">
+                                  ₱{Number(totalSalesOrderMonth).toLocaleString("en-PH")}
+                                </p>
+                              </div>
 
-                          {/* Actual Sales Card */}
-                          <div className="bg-gradient-to-r from-green-50 to-green-100 shadow-lg rounded-xl p-5 flex flex-col justify-between hover:shadow-xl transition-shadow duration-300 ease-in-out">
-                            <h3 className="text-sm font-bold text-green-700 mb-2">💰 Actual Sales Today</h3>
-                            <p className="text-lg font-extrabold text-green-900">
-                              ₱{Number(totalActualSales).toLocaleString("en-PH")}
-                            </p>
+                              {/* Actual Sales Card */}
+                              <div className="bg-gradient-to-r from-green-50 to-green-100 shadow-lg rounded-xl p-5 flex flex-col justify-between hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                                <h3 className="text-sm font-bold text-green-700 mb-2">💰 Actual Sales Today</h3>
+                                <p className="text-lg font-extrabold text-green-900">
+                                  ₱{Number(totalActualSales).toLocaleString("en-PH")}
+                                </p>
 
-                            <h3 className="text-sm font-bold text-green-700 mb-1 mt-2">📅 Actual Sales Week</h3>
-                            <p className="text-md font-semibold text-green-800">
-                              ₱{Number(totalActualSalesWeek).toLocaleString("en-PH")}
-                            </p>
+                                <h3 className="text-sm font-bold text-green-700 mb-1 mt-2">📅 Actual Sales Week</h3>
+                                <p className="text-md font-semibold text-green-800">
+                                  ₱{Number(totalActualSalesWeek).toLocaleString("en-PH")}
+                                </p>
 
-                            <h3 className="text-sm font-bold text-green-700 mb-1 mt-2">🗓️ Actual Sales Month</h3>
-                            <p className="text-md font-extrabold text-green-800">
-                              ₱{Number(totalActualSalesMonth).toLocaleString("en-PH")}
-                            </p>
-                          </div>
-
+                                <h3 className="text-sm font-bold text-green-700 mb-1 mt-2">🗓️ Actual Sales Month</h3>
+                                <p className="text-md font-extrabold text-green-800">
+                                  ₱{Number(totalActualSalesMonth).toLocaleString("en-PH")}
+                                </p>
+                              </div>
+                            </>
+                          )}
                         </div>
                       )}
+
 
                     </div>
                   </div>

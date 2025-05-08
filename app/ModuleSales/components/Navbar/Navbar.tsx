@@ -748,7 +748,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                     handleMarkAsRead(selectedNotif.id);
                     setShowModal(false);
                   }}
-                  className="px-4 py-2 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center space-x-1"
+                  className="px-4 py-2 text-xs bg-blue-400 text-white rounded hover:bg-blue-700 flex items-center space-x-1"
                 >
                   <FaCheckCircle className="text-white" /> {/* Check Icon */}
                   <span>Mark as Read</span>
