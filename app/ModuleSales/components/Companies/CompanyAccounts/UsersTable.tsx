@@ -76,8 +76,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
       const now = Date.now();
 
       updatedUser.forEach((user) => {
-        const dateUpdated = new Date(user.date_updated).getTime(); // Convert to timestamp
-        const timeElapsed = now - dateUpdated; // Time difference from creation
+        const dateCreated = new Date(user.date_created).getTime(); // Convert to timestamp
+        const timeElapsed = now - dateCreated; // Time difference from creation
 
         // Check if the user is not already inactive and if time conditions are met
         if (user.status !== "Inactive") {
