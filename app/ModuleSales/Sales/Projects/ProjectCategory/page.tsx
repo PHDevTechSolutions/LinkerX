@@ -6,9 +6,9 @@ import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
 import AddPostForm from "../../../components/UserManagement/CompanyAccounts/AddUserForm";
-import SearchFilters from "../../../components/Projects/Project/SearchFilters";
-import UsersTable from "../../../components/Projects/Project/UsersTable";
-import Pagination from "../../../components/Projects/Project/Pagination";
+import SearchFilters from "../../../components/Projects/ProjectCategory/SearchFilters";
+import UsersTable from "../../../components/Projects/ProjectCategory/UsersTable";
+import Pagination from "../../../components/Projects/ProjectCategory/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -164,9 +164,9 @@ const ListofUser: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">My Projects</h2>
+                                            <h2 className="text-lg font-bold mb-2">Project Category</h2>
                                             <p className="text-xs text-gray-600 mb-4">
-                                                The table below displays a comprehensive list of <strong>Projects</strong> that have been endorsed by the Sales department. These projects originate from various sources, including the company website and other channels. This section provides a detailed overview of allowing users to monitor progress, track interactions, and effectively manage each project's milestones and outcomes.
+                                                The table under <strong>Project Category</strong> presents a detailed list of company accounts organized by their respective categories. These accounts, endorsed by the Sales department, originate from diverse channels, including the company website and other outreach platforms. This section provides a structured overview, allowing users to efficiently track, manage, and categorize client interactions, ensuring streamlined monitoring of project-related inquiries and activities.
                                             </p>
                                             <SearchFilters
                                                 searchTerm={searchTerm}

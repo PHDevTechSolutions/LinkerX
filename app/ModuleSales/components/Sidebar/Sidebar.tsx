@@ -147,26 +147,26 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       try {
         // Fetch accounts and pass ReferenceID from MongoDB
         const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchDeleteCount?referenceId=${userDetails.ReferenceID}`);
-  
+
         if (!response.ok) throw new Error("Failed to fetch accounts for deletion or removal");
-  
+
         const result = await response.json();
-  
+
         if (!result.success) {
           console.error(result.error);
           return;
         }
-  
+
         const data = result.data; // Access the accounts array
         setDeleteAccount(data); // Set the fetched data to state
-  
+
         // Count accounts where status is "For Deletion" or "Remove"
         const deleteCount = data.filter(
-          (account: any) => 
-            account.status?.toLowerCase() === "for deletion" || 
+          (account: any) =>
+            account.status?.toLowerCase() === "for deletion" ||
             account.status?.toLowerCase() === "remove"
         ).length;
-  
+
         setPendingDeleteCount(deleteCount); // Update state with the count
       } catch (error) {
         console.error("Error fetching accounts for deletion or removal:", error);
@@ -174,7 +174,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         setLoading(false);
       }
     };
-  
+
     if (userDetails.ReferenceID) fetchAccountDeletion();
   }, [userDetails.ReferenceID]);
 
@@ -202,7 +202,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ],
     },
     {
-      title: 'My Projects',
+      title: 'Projects',
       icon: CiCalendar,
       subItems: [
         { title: 'List of Projects', href: `/ModuleSales/Sales/Projects/Project${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
@@ -211,7 +211,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ],
     },
     {
-      title: 'Email',
+      title: 'Xend Mail',
       icon: CiMail,
       subItems: [
         { title: 'Compose Email', href: `/ModuleSales/Sales/Email/ComposeEmail${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
@@ -338,7 +338,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "My Team",
         "Client Activity Board",
         "Announcements",
-        "Email",
+        "Xend Mail",
         "Global Employees",
         "Profile",
         "What is Taskflow?"
@@ -351,9 +351,9 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "My Team",
         "Client Activity Board",
         "My Companies",
-        "Email",
+        "Xend Mail",
         "Activities",
-        "My Projects",
+        "Projects",
         "Announcements",
         "Global Employees",
         "Profile",
@@ -364,8 +364,8 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       return [
         "My Companies",
         "Activities",
-        "My Projects",
-        "Email",
+        "Projects",
+        "Xend Mail",
         "Boards",
         "Announcements",
         "Global Employees",
@@ -398,7 +398,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
           <div className="flex items-center">
             <img src="/taskflow.png" alt="Logo" className="h-8 mr-2" />
             <Link href={`/ModuleSales/Sales/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}>
-            <h1 className={`text-md font-bold transition-opacity ${collapsed ? "opacity-0" : "opacity-100"}`}>
+              <h1 className={`text-md font-bold transition-opacity ${collapsed ? "opacity-0" : "opacity-100"}`}>
                 <span>TASK - </span>
                 <span className="inline-block transform scale-x-[-1]">FLOW</span>
               </h1>
@@ -458,11 +458,17 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
                 {!collapsed && <span className="ml-2">{item.title}</span>}
                 {/* Only show the count if it's greater than zero */}
                 {item.title === 'Task' && pendingInquiryCount > 0 && (
-                  <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInquiryCount}</span>
+                  <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">
+                    {pendingInquiryCount}
+                  </span>
                 )}
-                {item.title === 'My Companies' && pendingInactiveCount && pendingDeleteCount> 0 && (
-                  <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount}</span>
+
+                {item.title === 'My Companies' && pendingInactiveCount > 0 && pendingDeleteCount > 0 && (
+                  <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">
+                    {pendingInactiveCount}
+                  </span>
                 )}
+
                 {!collapsed && (
                   <span className="ml-auto">
                     {openSections[item.title] ? <RxCaretDown size={15} /> : <RxCaretLeft size={15} />}

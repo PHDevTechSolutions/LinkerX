@@ -156,6 +156,43 @@ async function create(data: any) {
             return { success: false, error: "Failed to insert into progress table." };
         }
 
+        // ✅ Insert into accounts table with specific fields and 'status' set to 'Used'
+        const accountsColumns = [
+            "referenceid",
+            "tsm",
+            "companyname",
+            "contactperson",
+            "contactnumber",
+            "emailaddress",
+            "address",
+            "typeclient",
+            "status", // ✅ Added status field
+        ];
+
+        const accountsValues = [
+            referenceid,
+            tsm,
+            companyname,
+            contactperson,
+            contactnumber,
+            emailaddress,
+            address,
+            "New Account - Client Development",
+            "Active", // ✅ Setting status to 'Used'
+        ];
+
+        const accountsPlaceholders = accountsValues.map((_, index) => `$${index + 1}`).join(", ");
+        const accountsQuery = `
+            INSERT INTO accounts (${accountsColumns.join(", ")}, date_created) 
+            VALUES (${accountsPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') 
+            RETURNING *;
+        `;
+
+        const Xchire_accountsResult = await Xchire_sql(accountsQuery, accountsValues);
+        if (!Xchire_accountsResult || Xchire_accountsResult.length === 0) {
+            return { success: false, error: "Failed to insert into accounts table." };
+        }
+
         // ✅ Update inquiries table status to "Used"
         const Xchire_updateQuery = `
             UPDATE inquiries 
@@ -165,7 +202,7 @@ async function create(data: any) {
 
         await Xchire_sql(Xchire_updateQuery, [ticketreferencenumber]);
 
-        return { success: true, data: { activity: Xchire_activityResult[0], progress: Xchire_progressResult[0] } };
+        return { success: true, data: { activity: Xchire_activityResult[0], progress: Xchire_progressResult[0], accounts: Xchire_accountsResult[0] } };
     } catch (error: any) {
         console.error("Error inserting activity, progress, and updating inquiries:", error);
         return { success: false, error: error.message || "Failed to process request." };
