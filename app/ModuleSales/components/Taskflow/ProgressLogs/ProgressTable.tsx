@@ -410,17 +410,17 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                                         <td className="px-6 py-4 text-xs">
                                             <span
                                                 className={`text-[10px] px-2 py-1 rounded-full ${post.activitystatus === "Cold"
-                                                    ? "bg-blue-900 text-white"
+                                                    ? "bg-blue-400 text-white"
                                                     : post.activitystatus === "Warm"
-                                                        ? "bg-yellow-600 text-white"
+                                                        ? "bg-yellow-400 text-white"
                                                     : post.activitystatus === "Hot"
-                                                        ? "bg-red-600 text-white"
+                                                        ? "bg-red-400 text-white"
                                                     : post.activitystatus === "Done"
-                                                        ? "bg-green-600 text-white"
+                                                        ? "bg-green-500 text-white"
                                                     : post.activitystatus === "Cancelled"
-                                                        ? "bg-red-900 text-white"
+                                                        ? "bg-rose-500 text-white"
                                                     : post.activitystatus === "Loss"
-                                                        ? "bg-gray-600 text-white"
+                                                        ? "bg-stone-400 text-white"
                                                     : "bg-gray-300 text-black"
                                                     }`}
                                             >
