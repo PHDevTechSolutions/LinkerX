@@ -369,30 +369,30 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                   ? "border-l-4 border-green-400"
                   : post.status === "Used"
                     ? "border-l-4 border-blue-400"
-                  : post.status === "Inactive"
-                    ? "border-l-4 border-red-400"  
-                  : post.status === "For Deletion"
-                    ? "border-l-4 border-rose-400"  
-                  : post.status === "Remove"
-                    ? "border-l-4 border-rose-900"
-                  : post.status === "Approve For Deletion"
-                    ? "border-l-4 border-sky-400"
-                    : "";
+                    : post.status === "Inactive"
+                      ? "border-l-4 border-red-400"
+                      : post.status === "For Deletion"
+                        ? "border-l-4 border-rose-400"
+                        : post.status === "Remove"
+                          ? "border-l-4 border-rose-900"
+                          : post.status === "Approve For Deletion"
+                            ? "border-l-4 border-sky-400"
+                            : "";
 
               const hoverClass =
                 post.status === "Active"
                   ? "hover:bg-green-100 hover:text-green-900"
                   : post.status === "Used"
                     ? "hover:bg-blue-100 hover:text-blue-900"
-                  : post.status === "Inactive"
-                    ? "hover:bg-red-100 hover:text-red-900"
-                  : post.status === "For Deletion"
-                    ? "hover:bg-rose-100 hover:text-rose-900"
-                  : post.status === "Remove"
-                    ? "hover:bg-rose-200 hover:text-rose-900"
-                  : post.status === "Approve For Deletion"
-                    ? "hover:bg-sky-100 hover:text-sky-900" 
-                    : "";
+                    : post.status === "Inactive"
+                      ? "hover:bg-red-100 hover:text-red-900"
+                      : post.status === "For Deletion"
+                        ? "hover:bg-rose-100 hover:text-rose-900"
+                        : post.status === "Remove"
+                          ? "hover:bg-rose-200 hover:text-rose-900"
+                          : post.status === "Approve For Deletion"
+                            ? "hover:bg-sky-100 hover:text-sky-900"
+                            : "";
 
               return (
                 <tr key={post.id} className={`border-b whitespace-nowrap ${hoverClass}`}>
@@ -425,15 +425,15 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                         ? "bg-green-400 text-white"
                         : post.status === "Used"
                           ? "bg-blue-400 text-white"
-                        : post.status === "Inactive"
-                          ? "bg-red-400 text-white"
-                        : post.status === "For Deletion"
-                          ? "bg-rose-400 text-white" 
-                        : post.status === "Remove"
-                          ? "bg-rose-800 text-white"
-                        : post.status === "Approve For Deletion"
-                          ? "bg-sky-400 text-white"        
-                          : "bg-green-100 text-green-700"
+                          : post.status === "Inactive"
+                            ? "bg-red-400 text-white"
+                            : post.status === "For Deletion"
+                              ? "bg-rose-400 text-white"
+                              : post.status === "Remove"
+                                ? "bg-rose-800 text-white"
+                                : post.status === "Approve For Deletion"
+                                  ? "bg-sky-400 text-white"
+                                  : "bg-green-100 text-green-700"
                         }`}
                     >
                       {post.status}

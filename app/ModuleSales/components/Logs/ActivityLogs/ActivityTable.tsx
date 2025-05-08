@@ -138,8 +138,33 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
         setPostsPerPage(Number(event.target.value));
     };
 
+    const formatDate = (timestamp: number) => {
+        const date = new Date(timestamp);
+
+        // Use UTC getters instead of local ones to prevent timezone shifting.
+        let hours = date.getUTCHours();
+        const minutes = date.getUTCMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+
+        // Convert hours to 12-hour format
+        hours = hours % 12;
+        hours = hours ? hours : 12; // if hour is 0, display as 12
+        const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+
+        // Use toLocaleDateString with timeZone 'UTC' to format the date portion
+        const formattedDateStr = date.toLocaleDateString('en-US', {
+            timeZone: 'UTC',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        });
+
+        // Return combined date and time string
+        return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
+    };
+
     return (
-        <div className="overflow-x-auto">
+        <div>
             {/* Filters */}
             <div className="flex gap-4 pb-2">
                 <select
@@ -252,52 +277,108 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
                 {`Showing ${currentPosts.length} of ${sortedPosts.length} entries`}
             </div>
 
-
-            {/* Table */}
-            <table className="min-w-full bg-white border border-gray-300 text-xs">
-                <thead>
-                    <tr className="bg-gray-100 text-left uppercase font-bold border-b">
-                        <th className="p-3 border">Reference ID</th>
-                        <th className="p-3 border">TSM ID</th>
-                        <th className="p-3 border">Company Name</th>
-                        <th className="p-3 border">Contact Person</th>
-                        <th className="p-3 border">Contact Number</th>
-                        <th className="p-3 border">Email Address</th>
-                        <th className="p-3 border">Type Client</th>
-                        <th className="p-3 border">Address</th>
-                        <th className="p-3 border">Area</th>
-                        <th className="p-3 border">Project Name</th>
-                        <th className="p-3 border">Project Category</th>
-                        <th className="p-3 border">Project Type</th>
-                        <th className="p-3 border">Source</th>
-                        <th className="p-3 border">Date Created</th>
-                        <th className="p-3 border">Activity Status</th>
-                        <th className="p-3 border">Activity Number</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {currentPosts.map((post, index) => (
-                        <tr key={post._id || index} className={`border-b hover:bg-gray-50`}>
-                            <td className="p-3 border whitespace-nowrap">{post.agent_number}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.id_number}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.account_name}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.contact_person}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.contact_number}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.email}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.type_of_client}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.address}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.area}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.project_name}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.product_category}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.project_type}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.source}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.date_finished}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.status}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.activity_id}</td>
+            <div className="overflow-x-auto">
+                {/* Table */}
+                <table className="min-w-full table-auto">
+                    <thead className="bg-gray-100">
+                        <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                            <th className="px-6 py-4 font-semibold text-gray-700">Reference ID</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">TSM ID</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Email Address</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Type Client</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Address</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Area</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Project Name</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Project Category</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Project Type</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Source</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Date Created</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Activity Status</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Activity Number</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                        {currentPosts.map((post, index) => {
+                            const borderLeftClass =
+                                post.status === "Cold"
+                                    ? "border-l-4 border-blue-400"
+                                    : post.status === "Warm"
+                                        ? "border-l-4 border-yellow-400"
+                                        : post.status === "Hot"
+                                            ? "border-l-4 border-red-400"
+                                            : post.status === "Done"
+                                                ? "border-l-4 border-green-500"
+                                                : post.status === "Loss"
+                                                    ? "border-l-4 border-stone-400"
+                                                    : post.status === "Cancelled"
+                                                        ? "border-l-4 border-rose-500"
+                                                        : "";
+
+                            const hoverClass =
+                                post.status === "Active"
+                                    ? "hover:bg-green-100 hover:text-green-900"
+                                    : post.status === "Used"
+                                        ? "hover:bg-blue-100 hover:text-blue-900"
+                                        : post.status === "Inactive"
+                                            ? "hover:bg-red-100 hover:text-red-900"
+                                            : post.status === "For Deletion"
+                                                ? "hover:bg-rose-100 hover:text-rose-900"
+                                                : post.status === "Remove"
+                                                    ? "hover:bg-rose-200 hover:text-rose-900"
+                                                    : post.status === "Approve For Deletion"
+                                                        ? "hover:bg-sky-100 hover:text-sky-900"
+                                                        : "";
+
+                            return (
+                                <tr key={post._id || index} className={`border-b whitespace-nowrap ${hoverClass}`}>
+                                    <td className={`px-6 py-4 text-xs ${borderLeftClass}`}>{post.agent_number}</td>
+                                    <td className="px-6 py-4 text-xs">{post.id_number}</td>
+                                    <td className="px-6 py-4 text-xs">{post.account_name}</td>
+                                    <td className="px-6 py-4 text-xs">{post.contact_person}</td>
+                                    <td className="px-6 py-4 text-xs">{post.contact_number}</td>
+                                    <td className="px-6 py-4 text-xs">{post.email}</td>
+                                    <td className="px-6 py-4 text-xs">{post.type_of_client}</td>
+                                    <td className="px-6 py-4 text-xs">{post.address}</td>
+                                    <td className="px-6 py-4 text-xs">{post.area}</td>
+                                    <td className="px-6 py-4 text-xs capitalize">{post.project_name}</td>
+                                    <td className="px-6 py-4 text-xs">{post.product_category}</td>
+                                    <td className="px-6 py-4 text-xs">{post.project_type}</td>
+                                    <td className="px-6 py-4 text-xs">{post.source}</td>
+                                    <td className="px-6 py-4 text-xs align-top">
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-black bg-blue-300 p-2 rounded">Created: {formatDate(new Date(post.date_finished).getTime())}</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 text-xs">
+                                        <span
+                                            className={`text-[10px] px-2 py-1 rounded-full ${post.status === "Cold"
+                                                ? "bg-blue-400 text-white"
+                                                : post.status === "Warm"
+                                                    ? "bg-yellow-400 text-white"
+                                                    : post.status === "Hot"
+                                                        ? "bg-red-400 text-white"
+                                                        : post.status === "Done"
+                                                            ? "bg-green-500 text-white"
+                                                            : post.status === "Cancelled"
+                                                                ? "bg-rose-500 text-white"
+                                                                : post.status === "Loss"
+                                                                    ? "bg-stone-400 text-white"
+                                                                    : "bg-gray-300 text-black"
+                                                }`}
+                                        >
+                                            {post.status}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-xs">{post.activity_id}</td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };

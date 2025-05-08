@@ -276,70 +276,103 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
 
 
             {/* Table */}
-            <table className="min-w-full bg-white border border-gray-300 text-xs">
-                <thead>
-                    <tr className="bg-gray-100 text-left uppercase font-bold border-b">
-                        <th className="p-3 border">Reference Number</th>
-                        <th className="p-3 border">Agent Name</th>
-                        <th className="p-3 border">TSM Name</th>
-                        <th className="p-3 border">Company Name</th>
-                        <th className="p-3 border">Contact Person</th>
-                        <th className="p-3 border">Contact Number</th>
-                        <th className="p-3 border">Email Address</th>
-                        <th className="p-3 border">Type Client</th>
-                        <th className="p-3 border">Address</th>
-                        <th className="p-3 border">Area</th>
-                        <th className="p-3 border">Project Name</th>
-                        <th className="p-3 border">Project Category</th>
-                        <th className="p-3 border">Project Type</th>
-                        <th className="p-3 border">Source</th>
-                        <th className="p-3 border">Type Activity</th>
-                        <th className="p-3 border">Callback</th>
-                        <th className="p-3 border">Call Status</th>
-                        <th className="p-3 border">Type Call</th>
-                        <th className="p-3 border">Remarks</th>
-                        <th className="p-3 border">Quotation Number</th>
-                        <th className="p-3 border">Quotation Amount</th>
-                        <th className="p-3 border">SO Number</th>
-                        <th className="p-3 border">SO Amount</th>
-                        <th className="p-3 border">Start Date</th>
-                        <th className="p-3 border">End Date</th>
-                        <th className="p-3 border">Activity Status</th>
-                        <th className="p-3 border">Actual Sales</th>
+            <table className="min-w-full table-auto">
+                <thead className="bg-gray-100">
+                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                        <th className="px-6 py-4 font-semibold text-gray-700">Reference Number</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Agent Name</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">TSM Name</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Email Address</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Type Client</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Address</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Area</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Project Name</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Project Category</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Project Type</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Source</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Type Activity</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Callback</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Call Status</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Type Call</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Quotation Number</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Quotation Amount</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">SO Number</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">SO Amount</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Start Date</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">End Date</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Activity Status</th>
+                        <th className="px-6 py-4 font-semibold text-gray-700">Actual Sales</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {currentPosts.map((post, index) => (
-                        <tr key={post._id || index} className={`border-b hover:bg-gray-50`}>
-                            <td className="p-3 border whitespace-nowrap">{post.activity_id}</td>
-                            <td className="p-3 border whitespace-nowrap capitalize">{post.agent_fullname}</td>
-                            <td className="p-3 border whitespace-nowrap capitalize">{post.tsm_fullname}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.account_name}</td>
-                            <td className="p-3 border whitespace-nowrap"></td>
-                            <td className="p-3 border whitespace-nowrap"></td>
-                            <td className="p-3 border whitespace-nowrap"></td>
-                            <td className="p-3 border whitespace-nowrap capitalize">{post.type_of_client}</td>
-                            <td className="p-3 border whitespace-nowrap"></td>
-                            <td className="p-3 border whitespace-nowrap"></td>
-                            <td className="p-3 border whitespace-nowrap"></td>
-                            <td className="p-3 border whitespace-nowrap"></td>
-                            <td className="p-3 border whitespace-nowrap"></td>
-                            <td className="p-3 border whitespace-nowrap"></td>
-                            <td className="p-3 border whitespace-nowrap">{post.type_of_activity}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.callback}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.call_status}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.type_of_call}</td>
-                            <td className="p-3 border whitespace-nowrap capitalize">{post.remarks}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.quotation_number}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.project_estimate}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.sales_order_number}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.sales_order_amount}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.start_date}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.end_date}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.status}</td>
-                            <td className="p-3 border whitespace-nowrap">{post.actual_sales}</td>
-                        </tr>
-                    ))}
+                <tbody className="divide-y divide-gray-100">
+                    {currentPosts.map((post, index) => {
+                        const borderLeftClass =
+                            post.status === "Active"
+                                ? "border-l-4 border-green-400"
+                                : post.status === "Used"
+                                    ? "border-l-4 border-blue-400"
+                                    : post.status === "Inactive"
+                                        ? "border-l-4 border-red-400"
+                                        : post.status === "For Deletion"
+                                            ? "border-l-4 border-rose-400"
+                                            : post.status === "Remove"
+                                                ? "border-l-4 border-rose-900"
+                                                : post.status === "Approve For Deletion"
+                                                    ? "border-l-4 border-sky-400"
+                                                    : "";
+
+                        const hoverClass =
+                            post.status === "Active"
+                                ? "hover:bg-green-100 hover:text-green-900"
+                                : post.status === "Used"
+                                    ? "hover:bg-blue-100 hover:text-blue-900"
+                                    : post.status === "Inactive"
+                                        ? "hover:bg-red-100 hover:text-red-900"
+                                        : post.status === "For Deletion"
+                                            ? "hover:bg-rose-100 hover:text-rose-900"
+                                            : post.status === "Remove"
+                                                ? "hover:bg-rose-200 hover:text-rose-900"
+                                                : post.status === "Approve For Deletion"
+                                                    ? "hover:bg-sky-100 hover:text-sky-900"
+                                                    : "";
+
+                        return (
+
+                            <tr key={post._id || index} className={`border-b whitespace-nowrap ${hoverClass}`}>
+                                <td className="p-3 border whitespace-nowrap">{post.activity_id}</td>
+                                <td className="p-3 border whitespace-nowrap capitalize">{post.agent_fullname}</td>
+                                <td className="p-3 border whitespace-nowrap capitalize">{post.tsm_fullname}</td>
+                                <td className="p-3 border whitespace-nowrap">{post.account_name}</td>
+                                <td className="p-3 border whitespace-nowrap"></td>
+                                <td className="p-3 border whitespace-nowrap"></td>
+                                <td className="p-3 border whitespace-nowrap"></td>
+                                <td className="p-3 border whitespace-nowrap capitalize">{post.type_of_client}</td>
+                                <td className="p-3 border whitespace-nowrap"></td>
+                                <td className="p-3 border whitespace-nowrap"></td>
+                                <td className="p-3 border whitespace-nowrap"></td>
+                                <td className="p-3 border whitespace-nowrap"></td>
+                                <td className="p-3 border whitespace-nowrap"></td>
+                                <td className="p-3 border whitespace-nowrap"></td>
+                                <td className="p-3 border whitespace-nowrap">{post.type_of_activity}</td>
+                                <td className="p-3 border whitespace-nowrap">{post.callback}</td>
+                                <td className="p-3 border whitespace-nowrap">{post.call_status}</td>
+                                <td className="p-3 border whitespace-nowrap">{post.type_of_call}</td>
+                                <td className="p-3 border whitespace-nowrap capitalize">{post.remarks}</td>
+                                <td className="p-3 border whitespace-nowrap">{post.quotation_number}</td>
+                                <td className="p-3 border whitespace-nowrap">{post.project_estimate}</td>
+                                <td className="p-3 border whitespace-nowrap">{post.sales_order_number}</td>
+                                <td className="p-3 border whitespace-nowrap">{post.sales_order_amount}</td>
+                                <td className="p-3 border whitespace-nowrap">{post.start_date}</td>
+                                <td className="p-3 border whitespace-nowrap">{post.end_date}</td>
+                                <td className="p-3 border whitespace-nowrap">{post.status}</td>
+                                <td className="p-3 border whitespace-nowrap">{post.actual_sales}</td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
         </div>
