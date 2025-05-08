@@ -133,15 +133,15 @@ const ListofUser: React.FC = () => {
         setShowForm(true);
     };
 
-    const isAllowedUser = userDetails?.Role === "Super Admin" ||
-        (userDetails?.Role === "Territory Sales Associate" && userDetails?.ReferenceID === "JG-NCR-920587");
+    //const isAllowedUser = userDetails?.Role === "Super Admin" ||
+        //(userDetails?.Role === "Territory Sales Associate" && userDetails?.ReferenceID === "JG-NCR-920587");
 
-    const isRestrictedUser = !isAllowedUser;
+    //const isRestrictedUser = !isAllowedUser;
 
     // Automatically show modal if the user is restricted
-    useEffect(() => {
-        setShowAccessModal(isRestrictedUser);
-    }, [isRestrictedUser]);
+    //useEffect(() => {
+        //setShowAccessModal(isRestrictedUser);
+    //}, [isRestrictedUser]);
 
     return (
         <SessionChecker>
