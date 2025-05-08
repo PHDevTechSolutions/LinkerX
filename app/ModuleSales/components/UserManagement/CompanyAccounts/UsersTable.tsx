@@ -210,6 +210,31 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
     }
   }, [selectedUsers, selectedTsa]);
 
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+
+    // Use UTC getters instead of local ones to prevent timezone shifting.
+    let hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert hours to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // if hour is 0, display as 12
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+
+    // Use toLocaleDateString with timeZone 'UTC' to format the date portion
+    const formattedDateStr = date.toLocaleDateString('en-US', {
+      timeZone: 'UTC',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+
+    // Return combined date and time string
+    return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
+  };
+
   return (
     <div className="mb-4 overflow-x-auto">
       {/* Bulk Action Buttons */}
@@ -332,6 +357,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
             <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
             <th className="px-6 py-4 font-semibold text-gray-700">TSA | TSM</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
           </tr>
         </thead>
@@ -343,6 +369,14 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                   ? "border-l-4 border-green-400"
                   : post.status === "Used"
                     ? "border-l-4 border-blue-400"
+                  : post.status === "Inactive"
+                    ? "border-l-4 border-red-400"  
+                  : post.status === "For Deletion"
+                    ? "border-l-4 border-rose-400"  
+                  : post.status === "Remove"
+                    ? "border-l-4 border-rose-900"
+                  : post.status === "Approve For Deletion"
+                    ? "border-l-4 border-sky-400"
                     : "";
 
               const hoverClass =
@@ -350,6 +384,14 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                   ? "hover:bg-green-100 hover:text-green-900"
                   : post.status === "Used"
                     ? "hover:bg-blue-100 hover:text-blue-900"
+                  : post.status === "Inactive"
+                    ? "hover:bg-red-100 hover:text-red-900"
+                  : post.status === "For Deletion"
+                    ? "hover:bg-rose-100 hover:text-rose-900"
+                  : post.status === "Remove"
+                    ? "hover:bg-rose-200 hover:text-rose-900"
+                  : post.status === "Approve For Deletion"
+                    ? "hover:bg-sky-100 hover:text-sky-900" 
                     : "";
 
               return (
@@ -380,14 +422,28 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                   <td className="px-6 py-4 text-xs">
                     <span
                       className={`px-2 py-1 text-[8px] font-semibold rounded-full whitespace-nowrap ${post.status === "Active"
-                        ? "bg-green-400 text-gray-100"
+                        ? "bg-green-400 text-white"
                         : post.status === "Used"
-                          ? "bg-blue-400 text-gray-100"
+                          ? "bg-blue-400 text-white"
+                        : post.status === "Inactive"
+                          ? "bg-red-400 text-white"
+                        : post.status === "For Deletion"
+                          ? "bg-rose-400 text-white" 
+                        : post.status === "Remove"
+                          ? "bg-rose-800 text-white"
+                        : post.status === "Approve For Deletion"
+                          ? "bg-sky-400 text-white"        
                           : "bg-green-100 text-green-700"
                         }`}
                     >
                       {post.status}
                     </span>
+                  </td>
+                  <td className="px-4 py-2 text-xs align-top">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-white bg-blue-400 p-2 rounded">Uploaded: {formatDate(new Date(post.date_created).getTime())}</span>
+                      <span className="text-white bg-green-500 p-2 rounded">Updated: {formatDate(new Date(post.date_updated).getTime())}</span>
+                    </div>
                   </td>
                   <td className="px-6 py-4 text-xs">
                     <Menu as="div" className="relative inline-block text-left">
