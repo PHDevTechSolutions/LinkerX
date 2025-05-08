@@ -33,6 +33,9 @@ const ListofUser: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    const [showAccessModal, setShowAccessModal] = useState(false);
+
+
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
         const fetchUserData = async () => {
@@ -89,35 +92,35 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-  ? posts
-      .filter((post) => {
-        // Check if the company name matches the search term
-        const matchesSearchTerm = post?.companyname
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase());
+        ? posts
+            .filter((post) => {
+                // Check if the company name matches the search term
+                const matchesSearchTerm = post?.companyname
+                    ?.toLowerCase()
+                    .includes(searchTerm.toLowerCase());
 
-        // Parse the date_created field
-        const postDate = post.date_created ? new Date(post.date_created) : null;
+                // Parse the date_created field
+                const postDate = post.date_created ? new Date(post.date_created) : null;
 
-        // Check if the post's date is within the selected date range
-        const isWithinDateRange =
-          (!startDate || (postDate && postDate >= new Date(startDate))) &&
-          (!endDate || (postDate && postDate <= new Date(endDate)));
+                // Check if the post's date is within the selected date range
+                const isWithinDateRange =
+                    (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                    (!endDate || (postDate && postDate <= new Date(endDate)));
 
-        // Check if the post's reference ID matches the current user's ReferenceID
-        const matchesReferenceID =
-          post?.referenceid === userDetails.ReferenceID ||
-          post?.ReferenceID === userDetails.ReferenceID;
+                // Check if the post's reference ID matches the current user's ReferenceID
+                const matchesReferenceID =
+                    post?.referenceid === userDetails.ReferenceID ||
+                    post?.ReferenceID === userDetails.ReferenceID;
 
-        // Return the filtered result
-        return matchesSearchTerm && isWithinDateRange && matchesReferenceID;
-      })
-      .sort(
-        (a, b) =>
-          new Date(b.date_created).getTime() -
-          new Date(a.date_created).getTime()
-      )
-  : [];
+                // Return the filtered result
+                return matchesSearchTerm && isWithinDateRange && matchesReferenceID;
+            })
+            .sort(
+                (a, b) =>
+                    new Date(b.date_created).getTime() -
+                    new Date(a.date_created).getTime()
+            )
+        : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -129,6 +132,16 @@ const ListofUser: React.FC = () => {
         setEditUser(post);
         setShowForm(true);
     };
+
+    const isAllowedUser = userDetails?.Role === "Super Admin" ||
+        (userDetails?.Role === "Territory Sales Associate" && userDetails?.ReferenceID === "JG-NCR-920587");
+
+    const isRestrictedUser = !isAllowedUser;
+
+    // Automatically show modal if the user is restricted
+    useEffect(() => {
+        setShowAccessModal(isRestrictedUser);
+    }, [isRestrictedUser]);
 
     return (
         <SessionChecker>
@@ -184,6 +197,17 @@ const ListofUser: React.FC = () => {
                                             </div>
                                         </div>
                                     </>
+                                )}
+
+                                {showAccessModal && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20 h-screen w-full">
+                                        <div className="bg-white p-6 rounded shadow-lg w-96 max-h-full overflow-y-auto">
+                                            <h2 className="text-lg font-bold text-red-600 mb-4">🚧 Under Maintenance</h2>
+                                            <p className="text-sm text-gray-700 mb-4">
+                                                This section is temporarily unavailable for your access level. Please contact your system administrator or try again later.
+                                            </p>
+                                        </div>
+                                    </div>
                                 )}
 
                                 <ToastContainer className="text-xs" autoClose={1000} />
