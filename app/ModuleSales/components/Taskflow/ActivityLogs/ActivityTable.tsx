@@ -317,32 +317,32 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
             <div className="overflow-x-auto">
                 <table className="min-w-full table-auto">
                     <thead className="bg-gray-100">
-                        <tr className="text-xs text-left whitespace-nowrap">
+                        <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
                             {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode) && (
-                                <th className="px-2 py-2 text-left">Select</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Select</th>
                             )}
-                            <th className="px-4 py-2 font-semibold text-gray-700">#</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Company</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Contact Person</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Contact Number</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Email Address</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Address</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Area</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Type of Client</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Project Name</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Project Category</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Project Type</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Source</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Target Quota</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Activity Remarks</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Ticket Reference Number</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Wrap Up</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Inquiries</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">CSR Agent</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">TSA | TSM</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Status</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Dates</th>
-                            <th className="px-4 py-2 font-semibold text-gray-700">Actions</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">#</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Company</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Email Address</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Address</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Area</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Project Name</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Project Category</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Project Type</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Source</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Target Quota</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Activity Remarks</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Ticket Reference Number</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Wrap Up</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Inquiries</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">CSR Agent</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">TSA | TSM</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Dates</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">

@@ -210,21 +210,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
     }
   }, [selectedUsers, selectedTsa]);
 
-  const handleRefresh = async () => {
-    try {
-      const response = await axios.get("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
-      if (response.data.success) {
-        setUpdatedUser(response.data.data); // Update the state with the new data
-      } else {
-        console.error("Failed to fetch accounts");
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
   return (
-    <div className="mb-4">
+    <div className="mb-4 overflow-x-auto">
       {/* Bulk Action Buttons */}
       <div className="flex grid grid-cols-2 md:grid-cols-1 lg:grid-cols-5 gap-2 mb-3">
         <button onClick={toggleBulkDeleteMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-red-700 hover:text-white">
@@ -241,15 +228,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
         </button>
         <button onClick={toggleBulkTransferMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
           <BiTransfer size={16} />
-          {bulkTransferMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Territory Sales Manager"}
+          {bulkTransferMode ? "Cancel Bulk Transfer" : "Bulk Transfer to TSM"}
         </button>
         <button onClick={toggleBulkTransferTSAMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
           <BiTransfer size={16} />
-          {bulkTransferTSAMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Another Agent"}
-        </button>
-        <button onClick={handleRefresh} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-gray-900 hover:text-white">
-          <BiRefresh size={16} />
-          Refresh
+          {bulkTransferTSAMode ? "Cancel Bulk Transfer" : "Bulk Transfer to TSA"}
         </button>
       </div>
 
@@ -334,128 +317,107 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
         </div>
       )}
 
-      {/* User Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {updatedUser.length > 0 ? (
-          updatedUser.map((post) => (
-            <div
-              key={post.id}
-              className="relative border rounded-md shadow-md p-4 flex flex-col bg-white"
-            >
-              <div className="flex items-center gap-2">
-                {/* Checkbox will show if any bulk mode is active */}
-                {bulkDeleteMode && (
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.has(post.id)}
-                    onChange={() => handleSelectUser(post.id)}
-                    className="w-4 h-4 text-red-600"
-                  />
-                )}
-                {bulkEditMode && (
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.has(post.id)}
-                    onChange={() => handleSelectUser(post.id)}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                )}
-                {bulkChangeMode && (
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.has(post.id)}
-                    onChange={() => handleSelectUser(post.id)}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                )}
-                {bulkTransferMode && (
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.has(post.id)}
-                    onChange={() => handleSelectUser(post.id)}
-                    className="w-4 h-4 text-purple-600"
-                  />
-                )}
-                {bulkTransferTSAMode && (
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.has(post.id)}
-                    onChange={() => handleSelectUser(post.id)}
-                    className="w-4 h-4 text-purple-600"
-                  />
-                )}
-                <h3 className="text-xs font-semibold uppercase">{post.companyname}</h3>
-              </div>
+      <table className="min-w-full table-auto">
+        <thead className="bg-gray-100">
+          <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+            {(bulkDeleteMode || bulkEditMode || bulkChangeMode || bulkTransferMode || bulkTransferTSAMode) && (
+              <th className="px-6 py-4 font-semibold text-gray-700">Select</th>
+            )}
+            <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Email Address</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Address</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Area</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">TSA | TSM</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {updatedUser.length > 0 ? (
+            updatedUser.map((post) => {
+              const borderLeftClass =
+                post.status === "Active"
+                  ? "border-l-4 border-green-400"
+                  : post.status === "Used"
+                    ? "border-l-4 border-blue-400"
+                    : "";
 
-              <div className="flex justify-between items-center mt-2">
-                <div className="mt-4 mb-4 text-xs">
-                  <p>
-                    <strong>Contact Person:</strong>{" "}
-                    <span className="capitalize">{post.contactperson}</span>
-                  </p>
-                  <p>
-                    <strong>Contact Number:</strong> {post.contactnumber}
-                  </p>
-                  <p>
-                    <strong>Email Address:</strong> {post.emailaddress}
-                  </p>
-                  <div className="border-t border-gray-800 pb-4 mt-4"></div>
-                  <p className="mt-2">
-                    <strong>Address:</strong>
-                    <span className="capitalize">{post.address}</span>
-                  </p>
-                  <p>
-                    <strong>Area:</strong>
-                    <span className="capitalize">{post.area}</span>
-                  </p>
-                  <p className="mt-2">
-                    <strong>Type of Client:</strong>
-                    <span className="uppercase"> {post.typeclient}</span>
-                  </p>
-                </div>
-                <Menu as="div" className="relative inline-block text-left">
-                  <div>
-                    <Menu.Button>
-                      <BsThreeDotsVertical />
-                    </Menu.Button>
-                  </div>
-                  <Menu.Items className="absolute right-0 mt-2 w-29 bg-white shadow-md rounded-md z-10">
-                    <button
-                      className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left"
-                      onClick={() => handleEdit(post)}
+              const hoverClass =
+                post.status === "Active"
+                  ? "hover:bg-green-100 hover:text-green-900"
+                  : post.status === "Used"
+                    ? "hover:bg-blue-100 hover:text-blue-900"
+                    : "";
+
+              return (
+                <tr key={post.id} className={`border-b whitespace-nowrap ${hoverClass}`}>
+                  {(bulkDeleteMode || bulkEditMode || bulkChangeMode || bulkTransferMode || bulkTransferTSAMode) && (
+                    <td className={`px-6 py-4 text-xs ${borderLeftClass}`}>
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.has(post.id)}
+                        onChange={() => handleSelectUser(post.id)}
+                        className={`w-4 h-4 ${bulkDeleteMode ? 'text-red-600' :
+                          bulkEditMode || bulkChangeMode ? 'text-blue-600' :
+                            'text-purple-600'
+                          }`}
+                      />
+                    </td>
+                  )}
+                  <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
+                  <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
+                  <td className="px-6 py-4 text-xs">{post.contactnumber}</td>
+                  <td className="px-6 py-4 text-xs">{post.emailaddress}</td>
+                  <td className="px-6 py-4 text-xs capitalize">{post.address}</td>
+                  <td className="px-6 py-4 text-xs capitalize">{post.area}</td>
+                  <td className="px-6 py-4 text-xs">{post.typeclient}</td>
+                  <td className="px-6 py-4 text-xs">
+                    <strong>{post.referenceid}</strong> | {post.tsm}
+                  </td>
+                  <td className="px-6 py-4 text-xs">
+                    <span
+                      className={`px-2 py-1 text-[8px] font-semibold rounded-full whitespace-nowrap ${post.status === "Active"
+                        ? "bg-green-400 text-gray-100"
+                        : post.status === "Used"
+                          ? "bg-blue-400 text-gray-100"
+                          : "bg-green-100 text-green-700"
+                        }`}
                     >
-                      Edit
-                    </button>
-                  </Menu.Items>
-                </Menu>
-              </div>
-
-              <div className="mt-auto border-t pt-2 text-xs text-gray-900 flex justify-between items-center">
-                <p>
-                  <strong>TSA:</strong> {post.referenceid} | <strong>TSM:</strong> {post.tsm}
-                </p>
-                {/* Status Badge */}
-                <span
-                  className={`text-[10px] px-2 py-1 rounded-full ${post.status === "Active"
-                    ? "bg-green-900 text-white"
-                    : post.status === "Used"
-                      ? "bg-blue-900 text-white"
-                      : "bg-red-600 text-white"
-                    }`}
-                >
-                  {post.status}
-                </span>
-              </div>
-
-            </div>
-          ))
-        ) : (
-          <div className="col-span-full text-center py-4 text-xs">
-            No accounts available
-          </div>
-        )}
-      </div>
-
+                      {post.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-xs">
+                    <Menu as="div" className="relative inline-block text-left">
+                      <div>
+                        <Menu.Button>
+                          <BsThreeDotsVertical />
+                        </Menu.Button>
+                      </div>
+                      <Menu.Items className="absolute right-0 mt-2 w-29 bg-white shadow-md rounded-md z-10">
+                        <button
+                          className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-left"
+                          onClick={() => handleEdit(post)}
+                        >
+                          Edit
+                        </button>
+                      </Menu.Items>
+                    </Menu>
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan={11} className="text-center py-4 text-xs">
+                No accounts available
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };

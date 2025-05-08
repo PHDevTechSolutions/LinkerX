@@ -254,16 +254,14 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
                 const totals = calculateAgentTotals(agentMetrics);
 
                 // ✅ Calculate Conversion %
-                const conversionPercentage =
-                  totals.sales === 0
-                    ? "0.00%"
-                    : `${((totals.totalConversionToSale / totals.sales) * 100).toFixed(2)}%`;
+                const conversionPercentage = totals.sales === 0
+                  ? "0.00" : (totals.totalConversionToSale / totals.sales).toFixed(2);
 
                 // ✅ Calculate Avg Transaction Unit (ATU)
                 const avgTransactionUnit =
                   totals.totalConversionToSale === 0
-                    ? "0.00"
-                    : (totals.totalQtySold / totals.totalConversionToSale).toFixed(2);
+                    ? "0.00%"
+                    : `${((totals.totalQtySold / totals.totalConversionToSale) * 100).toFixed(2)}%`;
 
                 // ✅ Calculate Avg Transaction Value (ATV)
                 const avgTransactionValue =
