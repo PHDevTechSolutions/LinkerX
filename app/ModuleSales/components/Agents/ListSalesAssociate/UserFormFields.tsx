@@ -159,35 +159,45 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         return;
       }
 
+      const today = new Date();
+      const startOfMonth = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1));
+      const startOfYear = new Date(Date.UTC(today.getUTCFullYear(), 0, 1));
+      const endOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 59, 59));
+
+      // ⬇️ 1. Filter based on selected date range
       const filteredData = data.data.filter((item: any) => {
-        const itemDate = new Date(item.date_created).toISOString().split("T")[0];
-        return (!startdate || itemDate >= startdate) && (!enddate || itemDate <= enddate);
+        const itemDate = new Date(item.date_created);
+        const itemDateStr = itemDate.toISOString().split("T")[0];
+
+        return (!startdate || itemDateStr >= startdate) &&
+          (!enddate || itemDateStr <= enddate);
       });
 
+      // ⬇️ 2. Process filtered data for charts, tables, etc.
       setTimeMotionData(computeTimeSpent(filteredData));
       setTouchbaseData(countTouchBase(filteredData));
       setCallData(computeCallSummary(filteredData));
       setActivityData(countActivities(filteredData));
 
+      // ⬇️ 3. Compute month-to-date and year-to-date based on filtered data
       let totalActualSales = 0;
       let monthToDateSales = 0;
       let yearToDateSales = 0;
 
-      const currentMonth = new Date().getMonth() + 1;
-      const currentYear = new Date().getFullYear();
-
       filteredData.forEach((item: any) => {
-        // Convert 'actualsales' to number safely using a helper function
-        const actualSales = isNaN(Number(item.actualsales)) ? 0 : Number(item.actualsales);
+        const actualSales = parseFloat(item.actualsales);
+        if (isNaN(actualSales) || actualSales === 0) return;
+
+        const itemDate = new Date(item.date_created);
 
         totalActualSales += actualSales;
 
-        if (new Date(item.date_created).getMonth() + 1 === currentMonth) {
-          monthToDateSales += actualSales;
+        if (itemDate >= startOfYear && itemDate <= endOfToday) {
+          yearToDateSales += actualSales;
         }
 
-        if (new Date(item.date_created).getFullYear() === currentYear) {
-          yearToDateSales += actualSales;
+        if (itemDate >= startOfMonth && itemDate <= endOfToday) {
+          monthToDateSales += actualSales;
         }
       });
 
@@ -196,6 +206,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         YearToDateSales: yearToDateSales,
         TotalActualSales: totalActualSales,
       });
+
     } catch (error) {
       console.error("Error fetching progress data:", error);
     }

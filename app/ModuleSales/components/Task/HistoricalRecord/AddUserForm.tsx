@@ -90,6 +90,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails }) => {
 
     const today = new Date().toISOString().split("T")[0];
     const currentMonth = new Date().toISOString().slice(0, 7);
+    const [showModal, setShowModal] = useState(true);
 
     const chartData = {
         labels: ["Outbound Call", "Inbound Call"],
@@ -198,7 +199,6 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails }) => {
         }
     };
     
-
     const formatCurrency = (amount: number) => {
         return amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
@@ -365,31 +365,53 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails }) => {
         return `${hours}h ${minutes}m ${secs}s`;
     };
 
+    const handleApplyFilter = () => {
+        if (startdate && enddate) {
+            setShowModal(false); // Close modal
+            // Trigger fetch here if needed
+        } else {
+            alert("Please select both start and end dates.");
+        }
+    };
+
     return (
-        <>
-            <form className="bg-white shadow-md rounded-lg p-4 text-xs">
-                {/* Date Range */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                    <div>
-                        <label className="text-xs font-medium text-gray-600">Start Date</label>
-                        <input
-                            type="date"
-                            value={startdate}
-                            onChange={(e) => setStartdate(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                        />
-                    </div>
-                    <div>
-                        <label className="text-xs font-medium text-gray-600">End Date</label>
-                        <input
-                            type="date"
-                            value={enddate}
-                            onChange={(e) => setEnddate(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                        />
+        <>  
+            {showModal && (
+                <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                        <h2 className="text-sm font-semibold mb-4">Filter the date to generate data</h2>
+                        <div className="grid grid-cols-1 gap-4 mb-4">
+                            <div>
+                                <label className="text-xs font-medium text-gray-600">Start Date</label>
+                                <input
+                                    type="date"
+                                    value={startdate}
+                                    onChange={(e) => setStartdate(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded text-xs bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-xs font-medium text-gray-600">End Date</label>
+                                <input
+                                    type="date"
+                                    value={enddate}
+                                    onChange={(e) => setEnddate(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded text-xs bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                />
+                            </div>
+                        </div>
+                        <button
+                            onClick={handleApplyFilter}
+                            className="w-full bg-blue-500 text-white py-2 rounded text-xs hover:bg-blue-600"
+                        >
+                            Apply Filter
+                        </button>
                     </div>
                 </div>
+            )}
 
+            {!showModal && (
+            <form className="bg-white shadow-md rounded-lg p-4 text-xs">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                     {/* Chart Doughnut */}
                     <div className="border rounded-lg p-4 text-center">
@@ -576,6 +598,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails }) => {
                     </table>
                 </div>
             </form>
+            )}
 
             <ToastContainer className="text-xs" autoClose={1000} />
         </>
