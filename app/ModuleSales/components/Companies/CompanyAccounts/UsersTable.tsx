@@ -74,13 +74,13 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now();
-
+  
       updatedUser.forEach((user) => {
-        const dateCreated = new Date(user.date_updated).getTime(); // Convert to timestamp
-        const timeElapsed = now - dateCreated; // Time difference from creation
-
-        // Check if the user is not already inactive and if time conditions are met
-        if (user.status !== "Inactive") {
+        const dateUpdated = new Date(user.date_updated).getTime(); // Convert to timestamp
+        const timeElapsed = now - dateUpdated; // Time difference from last updated time
+  
+        // Check if the user is on hold and status conditions are met to change to inactive
+        if (user.status === "On Hold") {
           if (user.typeclient === "Top 50" && timeElapsed >= 14 * 24 * 60 * 60 * 1000) { // 14 days in milliseconds
             handleUpdateStatusToInactive(user.id, user.companyname);
           } else if (user.typeclient === "Next 30" && timeElapsed >= 1 * 24 * 60 * 60 * 1000) { // 1 day in milliseconds
@@ -91,9 +91,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
         }
       });
     }, 30000); // Check every 30 seconds
-
+  
     return () => clearInterval(interval);
-  }, [updatedUser]);
+  }, [updatedUser]);  
 
   useEffect(() => {
     if (bulkTransferMode) {
