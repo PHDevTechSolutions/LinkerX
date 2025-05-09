@@ -165,12 +165,12 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails }) => {
             setCallData(computeCallSummary(filteredData));
             setActivityData(countActivities(filteredData));
     
-            // ⬇️ 3. Compute month-to-date and year-to-date from full dataset, not filtered
+            // ⬇️ 3. Compute month-to-date and year-to-date based on filtered data
             let totalActualSales = 0;
             let monthToDateSales = 0;
             let yearToDateSales = 0;
     
-            data.data.forEach((item: any) => {
+            filteredData.forEach((item: any) => {
                 const actualSales = parseFloat(item.actualsales);
                 if (isNaN(actualSales) || actualSales === 0) return;
     
@@ -197,7 +197,6 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails }) => {
             console.error("Error fetching progress data:", error);
         }
     };
-    
     
 
     const formatCurrency = (amount: number) => {
@@ -369,20 +368,6 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails }) => {
     return (
         <>
             <form className="bg-white shadow-md rounded-lg p-4 text-xs">
-                {/* User Information Fields */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {/* Reference ID */}
-                    <div className="flex flex-col">
-                        <label className="mb-2 text-sm font-semibold">Reference ID</label>
-                        <input
-                            type="text"
-                            value={ReferenceID}
-                            onChange={(e) => setReferenceID(e.target.value)}
-                            className="p-2 border rounded-lg"
-                        />
-                    </div>
-                </div>
-
                 {/* Date Range */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                     <div>

@@ -29,7 +29,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
 
     useEffect(() => {
         if (bulkTransferMode) {
-            fetch("/api/tsm?Role=Territory Sales Manager")
+            fetch("/api/fetchtsm?Role=Territory Sales Manager")
                 .then((res) => res.json())
                 .then((data) => {
                     if (Array.isArray(data)) {
@@ -45,7 +45,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
 
     useEffect(() => {
         if (bulkTransferTSAMode) {
-            fetch("/api/tsa?Role=Territory Sales Associate")
+            fetch("/api/fetchtsa?Role=Territory Sales Associate")
                 .then((res) => res.json())
                 .then((data) => {
                     if (Array.isArray(data)) {
@@ -218,6 +218,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
         return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
     };
 
+    const totalQuotation = updatedUser.reduce((acc, post) => acc + (parseFloat(post.quotationamount) || 0), 0);
+    const totalSOAmount = updatedUser.reduce((acc, post) => acc + (parseFloat(post.soamount) || 0), 0);
+    const totalActualSales = updatedUser.reduce((acc, post) => acc + (parseFloat(post.actualsales) || 0), 0);
+
     return (
         <div className="mb-4">
             {/* Bulk Action Buttons */}
@@ -349,30 +353,30 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                                         ? "border-l-4 border-blue-400"
                                         : post.activitystatus === "Warm"
                                             ? "border-l-4 border-yellow-400"
-                                        : post.activitystatus === "Hot"
-                                            ? "border-l-4 border-red-400"
-                                        : post.activitystatus === "Done"
-                                            ? "border-l-4 border-green-500"  
-                                        : post.activitystatus === "Loss"
-                                            ? "border-l-4 border-stone-500" 
-                                        : post.activitystatus === "Cancelled"
-                                            ? "border-l-4 border-rose-500"                   
-                                            : "";
+                                            : post.activitystatus === "Hot"
+                                                ? "border-l-4 border-red-400"
+                                                : post.activitystatus === "Done"
+                                                    ? "border-l-4 border-green-500"
+                                                    : post.activitystatus === "Loss"
+                                                        ? "border-l-4 border-stone-500"
+                                                        : post.activitystatus === "Cancelled"
+                                                            ? "border-l-4 border-rose-500"
+                                                            : "";
 
                                 const hoverClass =
                                     post.activitystatus === "Cold"
                                         ? "hover:bg-blue-100 hover:text-blue-900"
                                         : post.activitystatus === "Warm"
                                             ? "hover:bg-yellow-100 hover:text-yellow-900"
-                                        : post.activitystatus === "Hot"
-                                            ? "hover:bg-red-100 hover:text-red-900"  
-                                        : post.activitystatus === "Done"
-                                            ? "hover:bg-green-100 hover:text-green-900" 
-                                        : post.activitystatus === "Cancelled"
-                                            ? "hover:bg-rose-100 hover:text-rose-900"
-                                        : post.activitystatus === "Loss"
-                                            ? "hover:bg-stone-100 hover:text-stone-900"                
-                                            : "";
+                                            : post.activitystatus === "Hot"
+                                                ? "hover:bg-red-100 hover:text-red-900"
+                                                : post.activitystatus === "Done"
+                                                    ? "hover:bg-green-100 hover:text-green-900"
+                                                    : post.activitystatus === "Cancelled"
+                                                        ? "hover:bg-rose-100 hover:text-rose-900"
+                                                        : post.activitystatus === "Loss"
+                                                            ? "hover:bg-stone-100 hover:text-stone-900"
+                                                            : "";
 
                                 return (
                                     <tr key={post.id} className={`border-b whitespace-nowrap ${hoverClass}`}>
@@ -413,15 +417,15 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                                                     ? "bg-blue-400 text-white"
                                                     : post.activitystatus === "Warm"
                                                         ? "bg-yellow-400 text-white"
-                                                    : post.activitystatus === "Hot"
-                                                        ? "bg-red-400 text-white"
-                                                    : post.activitystatus === "Done"
-                                                        ? "bg-green-500 text-white"
-                                                    : post.activitystatus === "Cancelled"
-                                                        ? "bg-rose-500 text-white"
-                                                    : post.activitystatus === "Loss"
-                                                        ? "bg-stone-400 text-white"
-                                                    : "bg-gray-300 text-black"
+                                                        : post.activitystatus === "Hot"
+                                                            ? "bg-red-400 text-white"
+                                                            : post.activitystatus === "Done"
+                                                                ? "bg-green-500 text-white"
+                                                                : post.activitystatus === "Cancelled"
+                                                                    ? "bg-rose-500 text-white"
+                                                                    : post.activitystatus === "Loss"
+                                                                        ? "bg-stone-400 text-white"
+                                                                        : "bg-gray-300 text-black"
                                                     }`}
                                             >
                                                 {post.activitystatus}
@@ -449,6 +453,23 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                             </tr>
                         )}
                     </tbody>
+                    
+                    <tfoot className="bg-gray-100 text-xs font-semibold">
+                        <tr>
+                            {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode) && (
+                                <td className="px-6 py-3 text-gray-700">Total</td>
+                            )}
+                            {/* Offset cells before total columns */}
+                            <td colSpan={8} className="px-6 py-3 text-gray-700">Totals</td>
+                            <td className="px-6 py-3 text-gray-700">{totalQuotation.toLocaleString()}</td>
+                            <td></td>
+                            <td className="px-6 py-3 text-gray-700">{totalSOAmount.toLocaleString()}</td>
+                            <td className="px-6 py-3 text-gray-700">{totalActualSales.toLocaleString()}</td>
+                            {/* Empty cells for remaining columns */}
+                            <td colSpan={8}></td>
+                        </tr>
+                    </tfoot>
+
                 </table>
             </div>
         </div>
