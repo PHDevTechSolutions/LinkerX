@@ -43,7 +43,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete, 
   // Fetch TSM list when bulk transfer mode is enabled
   useEffect(() => {
     if (bulkTransferMode) {
-      fetch("/api/tsm?Role=Territory Sales Manager")
+      fetch("/api/fetchtsm?Role=Territory Sales Manager")
         .then((res) => res.json())
         .then((data) => {
           if (Array.isArray(data)) {

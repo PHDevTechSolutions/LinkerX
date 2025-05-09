@@ -333,6 +333,7 @@ const ListofUser: React.FC = () => {
             // ✅ Check if the company name or status matches the search term
             const matchesSearchTerm =
                 post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                post?.referenceid?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 post?.activitystatus?.toLowerCase().includes(searchTerm.toLowerCase());
 
             // ✅ Parse the date_created field

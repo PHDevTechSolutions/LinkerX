@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { format, parseISO, addDays, startOfWeek, startOfMonth, endOfMonth } from "date-fns";
-import { CiSquareChevLeft, CiSquareChevRight, CiViewBoard, CiViewColumn, CiViewTable, CiEdit, CiMapPin, CiTrash, CiMenuKebab, CiBookmarkPlus, CiBookmarkMinus, CiRepeat } from "react-icons/ci";
+import { CiSquareChevLeft, CiSquareChevRight, CiViewBoard, CiViewColumn, CiViewTable, CiEdit, CiMapPin, CiTrash, CiMenuKebab, CiBookmarkPlus, CiBookmarkMinus, CiRepeat, CiClock1 } from "react-icons/ci";
 import { FcAssistant, FcCollaboration, FcBullish, FcPaid, FcAddressBook, FcFullTrash, FcAlarmClock, FcPodiumWithAudience, FcConferenceCall, FcReading } from "react-icons/fc";
 import { FaMapLocationDot } from "react-icons/fa6";
 import { MdLocationCity } from "react-icons/md";
@@ -171,6 +171,26 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
         return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
     };
 
+    const formatDateWithHours = (timestamp: number) => {
+        const date = new Date(timestamp);
+    
+        // Use UTC getters to prevent timezone shifting.
+        let hours = date.getUTCHours();
+        const minutes = date.getUTCMinutes();
+        const seconds = date.getUTCSeconds();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+        // Convert hours to 12-hour format
+        hours = hours % 12;
+        hours = hours ? hours : 12; // if hour is 0, display as 12
+    
+        // Pad minutes and seconds with leading zeros if needed
+        const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+        const secondsStr = seconds < 10 ? '0' + seconds : seconds;
+    
+        // Return the formatted time with hours, minutes, and seconds
+        return `${hours}:${minutesStr}:${secondsStr} ${ampm}`;
+    };
 
     return (
         <div className="mb-4">
@@ -389,7 +409,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                         {!["Client Visit", "On Site", "On Field", "Assisting other Agents Client", "Updating Reports", "Coordination of SO to Warehouse", "Coordination of SO to Orders", "Email and Viber Checking", "1st Break", "Client Meeting", "Coffee Break", "Group Meeting", "Last Break", "Lunch Break", "TSM Coaching"].includes(user.activitystatus) && (
                                             <div className="card-footer text-xs flex justify-between items-center mt-2 pt-2">
 
-                                                <p className="text-[10px]"><strong>Date Created:</strong> {formatDate(user.date_created)}</p>
+                                                <p className="text-[10px] flex gap-1"><strong><CiClock1 size={15}/></strong> {formatDateWithHours(user.date_created)}</p>
 
                                                 {/* Status Badge with Glow Effect */}
                                                 <span

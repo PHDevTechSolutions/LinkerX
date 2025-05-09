@@ -72,16 +72,6 @@ const ListofUser: React.FC = () => {
         fetchUserData();
     }, []);
 
-    const isAllowedUser = userDetails?.Role === "Super Admin" ||
-        (userDetails?.Role === "Territory Sales Associate" && userDetails?.ReferenceID === "JG-NCR-920587");
-
-    const isRestrictedUser = !isAllowedUser;
-
-    // Automatically show modal if the user is restricted
-    useEffect(() => {
-        setShowAccessModal(isRestrictedUser);
-    }, [isRestrictedUser]);
-
     return (
         <SessionChecker>
             <ParentLayout>
