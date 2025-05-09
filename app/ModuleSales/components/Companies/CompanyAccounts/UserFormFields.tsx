@@ -205,10 +205,10 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <label className="block text-xs font-bold mb-2" htmlFor="area">Status</label>
           <select id="status" value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
             <option value="">Select Status</option>
-            <option value="Used">Used</option>
+            <option value="On Hold">On Hold</option>
           </select>
           <p className="text-xs text-gray-600 mt-4">
-            Select the <strong>Status</strong> of the account to indicate its current state (Active, Used, or Inactive).
+            Select the <strong>Status</strong> of the account to indicate its current state (On Hold).
           </p>
         </div>
       </div>

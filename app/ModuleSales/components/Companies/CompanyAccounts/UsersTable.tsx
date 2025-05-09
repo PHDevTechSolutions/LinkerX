@@ -16,6 +16,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
   // Bulk
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
   const [bulkEditMode, setBulkEditMode] = useState(false);
+  const [bulkChangeMode, setBulkChangeMode] = useState(false);
   const [bulkEditStatusMode, setBulkEditStatusMode] = useState(false);
   const [bulkRemoveMode, setBulkRemoveMode] = useState(false);
   const [bulkTransferMode, setBulkTransferMode] = useState(false);
@@ -74,11 +75,11 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now();
-  
+
       updatedUser.forEach((user) => {
         const dateUpdated = new Date(user.date_updated).getTime(); // Convert to timestamp
         const timeElapsed = now - dateUpdated; // Time difference from last updated time
-  
+
         // Check if the user is on hold and status conditions are met to change to inactive
         if (user.status === "On Hold") {
           if (user.typeclient === "Top 50" && timeElapsed >= 14 * 24 * 60 * 60 * 1000) { // 14 days in milliseconds
@@ -91,9 +92,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
         }
       });
     }, 30000); // Check every 30 seconds
-  
+
     return () => clearInterval(interval);
-  }, [updatedUser]);  
+  }, [updatedUser]);
 
   useEffect(() => {
     if (bulkTransferMode) {
@@ -138,6 +139,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
     setSelectedUsers(new Set());
     setNewStatus("");
     setNewRemarks("");
+  }, []);
+
+  const toggleBulkChangeMode = useCallback(() => {
+    setBulkChangeMode((prev) => !prev);
+    setSelectedUsers(new Set());
+    setNewStatus("");
   }, []);
 
   const handleSelectUser = useCallback((userId: string) => {
@@ -191,6 +198,28 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
       console.error("Error updating users:", error);
     }
   }, [selectedUsers, newTypeClient]);
+
+  const handleBulkChange = useCallback(async () => {
+    if (selectedUsers.size === 0 || !newStatus) return;
+    try {
+      const response = await fetch(`/api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Change`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userIds: Array.from(selectedUsers), status: newStatus }),
+      });
+      if (response.ok) {
+        setUpdatedUser((prev) => prev.map((user) =>
+          selectedUsers.has(user.id) ? { ...user, status: newStatus } : user
+        ));
+        setSelectedUsers(new Set());
+        setBulkChangeMode(false);
+      } else {
+        console.error("Failed to update users");
+      }
+    } catch (error) {
+      console.error("Error updating users:", error);
+    }
+  }, [selectedUsers, newStatus]);
 
   const handleBulkRemove = useCallback(async () => {
     if (selectedUsers.size === 0 || !newStatus || !newRemarks) return;
@@ -282,10 +311,15 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
           <CiTrash size={16} />
           {bulkRemoveMode ? "Cancel Remove Edit" : "Bulk Remove"}
         </button>
+
+        <button onClick={toggleBulkChangeMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-blue-900 hover:text-white">
+          <CiEdit size={16} />
+          {bulkChangeMode ? "Cancel Bulk Change" : "Bulk Change"}
+        </button>
       </div>
 
       {/* Bulk Action Panel */}
-      {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
+      {(bulkDeleteMode || bulkEditMode || bulkChangeMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
         <div className="mb-4 p-3 bg-gray-100 rounded-md text-xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -348,14 +382,24 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
 
               </div>
             )}
+
+            {bulkChangeMode && (
+              <div className="flex items-center gap-2">
+                <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="px-2 py-1 border rounded-md">
+                  <option value="">Select Status</option>
+                  <option value="Used">Used</option>
+                </select>
+                <button onClick={handleBulkChange} className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs" disabled={!newStatus}>Apply Changes</button>
+              </div>
+            )}
           </div>
 
           <p className="text-xs mt-2 text-gray-600">
-            This section allows you to perform a <strong>Bulk Transfer</strong> of selected records to a <strong>Territory Sales Associate (TSA)</strong>.
-            First, choose the appropriate TSA from the dropdown list, which displays the names of all available TSAs. After selecting the TSA,
-            click the <strong>Transfer</strong> button to assign the records to the selected TSA.
-            This is useful for batch handling of records to specific sales associates efficiently.
+            This section allows you to perform a <strong>Bulk Status Change</strong> on selected records. You can easily update the status of multiple records from <strong>On Hold</strong> to either <strong>Active</strong> or <strong>Used</strong>.
+            To begin, select the appropriate status from the dropdown list. Once the status is chosen, click the <strong>Apply Changes</strong> button to apply the update to all selected records.
+            This feature simplifies the process of managing multiple records at once, saving time and ensuring consistency.
           </p>
+
         </div>
       )}
 
@@ -384,19 +428,23 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                   ? "border-l-4 border-green-400"
                   : post.status === "Used"
                     ? "border-l-4 border-blue-400"
-                    : "";
+                    : post.status === "On Hold"
+                      ? "border-l-4 border-yellow-400"
+                      : "";
 
               const hoverClass =
                 post.status === "Active"
                   ? "hover:bg-green-100 hover:text-green-900"
                   : post.status === "Used"
                     ? "hover:bg-blue-100 hover:text-blue-900"
-                    : "";
+                    : post.status === "On Hold"
+                      ? "hover:bg-yellow-100 hover:text-yellow-900"
+                      : "";
 
               return (
                 <tr key={post.id} className={`border-b whitespace-nowrap ${hoverClass}`}>
                   <td className={`px-6 py-4 text-xs ${borderLeftClass}`}>
-                    {(bulkDeleteMode || bulkEditMode || bulkEditStatusMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
+                    {(bulkDeleteMode || bulkEditMode || bulkChangeMode || bulkEditStatusMode || bulkTransferMode || bulkTransferTSAMode || bulkRemoveMode) && (
                       <input
                         type="checkbox"
                         checked={selectedUsers.has(post.id)}
@@ -418,7 +466,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                         ? "bg-green-400 text-gray-100"
                         : post.status === "Used"
                           ? "bg-blue-400 text-gray-100"
-                          : "bg-green-100 text-green-700"
+                          : post.status === "On Hold"
+                            ? "bg-yellow-400 text-black"
+                            : "bg-green-100 text-green-700"
                         }`}
                     >
                       {post.status}

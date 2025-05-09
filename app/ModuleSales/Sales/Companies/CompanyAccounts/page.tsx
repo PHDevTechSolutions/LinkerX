@@ -217,7 +217,7 @@ const ListofUser: React.FC = () => {
                         : false; // Default to false if no role matches
 
             // Check if the post's status is either 'Active' or 'Used'
-            const isActiveOrUsed = post?.status === "Active" || post?.status === "Used";
+            const isActiveOrUsed = post?.status === "Active" || post?.status === "On Hold" || post?.status === "Used";
 
             // Return the final filtered result with all conditions applied
             return (
@@ -302,10 +302,10 @@ const ListofUser: React.FC = () => {
                                                     <label className="block text-xs font-bold mb-2" htmlFor="referenceid">Status</label>
                                                     <select value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                                         <option value="">Select Status</option>
-                                                        <option value="Used">Used</option>
+                                                        <option value="On Hold">On Hold</option>
                                                     </select>
                                                     <p className="text-xs text-gray-600 mt-4">
-                                                        Select the <strong>Status</strong> of the account to indicate its current state (Active, Used, or Inactive).
+                                                        Select the <strong>Status</strong> of the account to indicate its current state (On Hold).
                                                     </p>
                                                 </div>
                                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
