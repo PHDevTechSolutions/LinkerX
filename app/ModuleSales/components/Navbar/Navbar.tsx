@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { CiClock2, CiMenuBurger, CiUser, CiBellOn, CiDark, CiSun, CiSearch } from "react-icons/ci";
+import { CiClock2, CiUser, CiBellOn, CiDark, CiSun, CiSearch } from "react-icons/ci";
+import { BsMenuButtonWideFill } from "react-icons/bs";
 import { FaExclamationCircle, FaCheckCircle } from "react-icons/fa";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { motion } from "framer-motion";
@@ -531,8 +532,8 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"}`}>
       <div className="flex items-center space-x-4">
-        <button onClick={onToggleSidebar} className="p-2">
-          <CiMenuBurger />
+        <button onClick={onToggleSidebar} title="Show Sidebar" className="p-2 border rounded-full shadow-md block sm:hidden">
+          <BsMenuButtonWideFill />
         </button>
 
         <span className="flex items-center border shadow-md text-xs font-medium px-3 py-1 rounded-full">
