@@ -91,6 +91,8 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails }) => {
     const today = new Date().toISOString().split("T")[0];
     const currentMonth = new Date().toISOString().slice(0, 7);
     const [showModal, setShowModal] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+
 
     const chartData = {
         labels: ["Outbound Call", "Inbound Call"],
@@ -128,72 +130,72 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails }) => {
     useEffect(() => {
         fetchProgressData();
     }, [ReferenceID]);
-    
+
     const fetchProgressData = async () => {
         try {
             const response = await fetch(
                 `/api/ModuleSales/Task/Historical/FetchActualSales?referenceid=${encodeURIComponent(ReferenceID)}`
             );
             const data = await response.json();
-    
+
             if (!data.success) {
                 console.error("Failed to fetch progress data:", data.error);
                 return;
             }
-    
+
             const today = new Date();
             const startOfMonth = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1));
             const startOfYear = new Date(Date.UTC(today.getUTCFullYear(), 0, 1));
             const endOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 59, 59));
-    
+
             // ⬇️ 1. Filter based on selected date range
             const filteredData = data.data.filter((item: any) => {
                 const itemDate = new Date(item.date_created);
                 const itemDateStr = itemDate.toISOString().split("T")[0];
-    
+
                 return (!startdate || itemDateStr >= startdate) &&
-                       (!enddate || itemDateStr <= enddate);
+                    (!enddate || itemDateStr <= enddate);
             });
-    
+
             // ⬇️ 2. Process filtered data for charts, tables, etc.
             setTimeMotionData(computeTimeSpent(filteredData));
             setTouchbaseData(countTouchBase(filteredData));
             setCallData(computeCallSummary(filteredData));
             setActivityData(countActivities(filteredData));
-    
+
             // ⬇️ 3. Compute month-to-date and year-to-date based on filtered data
             let totalActualSales = 0;
             let monthToDateSales = 0;
             let yearToDateSales = 0;
-    
+
             filteredData.forEach((item: any) => {
                 const actualSales = parseFloat(item.actualsales);
                 if (isNaN(actualSales) || actualSales === 0) return;
-    
+
                 const itemDate = new Date(item.date_created);
-    
+
                 totalActualSales += actualSales;
-    
+
                 if (itemDate >= startOfYear && itemDate <= endOfToday) {
                     yearToDateSales += actualSales;
                 }
-    
+
                 if (itemDate >= startOfMonth && itemDate <= endOfToday) {
                     monthToDateSales += actualSales;
                 }
             });
-    
+
             setCountsales({
                 MonthToDateSales: monthToDateSales,
                 YearToDateSales: yearToDateSales,
                 TotalActualSales: totalActualSales,
             });
-    
+
         } catch (error) {
             console.error("Error fetching progress data:", error);
         }
     };
-    
+
     const formatCurrency = (amount: number) => {
         return amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
@@ -362,15 +364,21 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails }) => {
 
     const handleApplyFilter = async () => {
         if (startdate && enddate) {
-            setShowModal(false); // Close modal
-            await fetchProgressData(); // Trigger the fetch after modal closes
+            setShowModal(false);   // Close modal
+            setIsLoading(true);    // Show loading animation
+
+            // Wait 5 seconds, then fetch data and stop loading
+            setTimeout(async () => {
+                await fetchProgressData();
+                setIsLoading(false);  // Stop loading
+            }, 3000);
         } else {
             alert("Please select both start and end dates.");
         }
-    };    
+    };
 
     return (
-        <>  
+        <>
             {showModal && (
                 <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -405,194 +413,204 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails }) => {
                 </div>
             )}
 
-            {!showModal && (
-            <form className="bg-white shadow-md rounded-lg p-4 text-xs">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                    {/* Chart Doughnut */}
-                    <div className="border rounded-lg p-4 text-center">
-                        <h3 className="font-semibold text-sm mb-2">Call Activity Chart</h3>
-                        <p className="text-xs text-gray-600 mb-4">
-                            This chart provides a visual representation of daily call activities, categorized into outbound calls, inbound calls, and other related activities. It helps in analyzing call distribution and performance trends over time.
-                        </p>
-                        <Doughnut data={chartData} options={chartOptions} />
-                    </div>
-
-                    {/* Touch Base Summary */}
-                    <div className="border rounded-lg p-4 text-center overflow-x-auto">
-                        <h3 className="font-semibold text-sm mb-2">Client Engagement Overview</h3>
-                        <p className="text-gray-600 mt-1 mb-4 text-xs">
-                            This table provides a summary of client interactions, categorized by client type. It helps in tracking engagement levels and understanding communication patterns.
-                        </p>
-                        <table className="min-w-full table-auto">
-                            <thead className="bg-gray-100">
-                                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-                                    <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
-                                    <th className="px-6 py-4 font-semibold text-gray-700 text-center">Counts</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {Object.entries(touchbaseData).map(([key, count], index) => {
-                                    const [typeclient] = key.split("-");
-                                    return (
-                                        <tr key={index} className="border-b whitespace-nowrap">
-                                            <td className="px-6 py-4 text-xs text-left">{typeclient}</td>
-                                            <td className="px-6 py-4 px-2 py-1 text-center">{count}</td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Time Motion */}
-                    <div className="border rounded-lg p-4 text-center overflow-x-auto">
-                        <h3 className="font-semibold text-sm mb-2">Daily Time and Motion Analysis</h3>
-                        <p className="text-gray-600 mt-1 mb-4 text-xs">
-                            This summary provides an overview of time spent on client interactions, outbound calls, and other activities. It helps in assessing productivity and optimizing workflow efficiency.
-                        </p>
-                        <table className="min-w-full table-auto">
-                            <thead className="bg-gray-100">
-                                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-                                    <th className="px-6 py-4 font-semibold text-gray-700">Client Engagement</th>
-                                    <th className="px-6 py-4 font-semibold text-gray-700">Outbound Calls</th>
-                                    <th className="px-6 py-4 font-semibold text-gray-700">Other Activities</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                <tr className="border-b whitespace-nowrap">
-                                    <td className="px-6 py-4 text-xs text-left">{formatDuration(timeMotionData.inbound)}</td>
-                                    <td className="px-6 py-4 text-xs text-left">{formatDuration(timeMotionData.outbound)}</td>
-                                    <td className="px-6 py-4 text-xs text-left">{formatDuration(timeMotionData.others)}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Daily Productivity */}
-                    <div className="border rounded-lg p-4 text-center overflow-x-auto">
-                        <h3 className="font-semibold text-sm mb-2">Daily Call Productivity Report</h3>
-                        <p className="text-gray-600 mt-1 mb-4 text-xs">
-                            This table provides an overview of daily and month-to-date (MTD) call productivity, including total outbound calls, successful and unsuccessful attempts, and inbound call volume.
-                        </p>
-                        <table className="min-w-full table-auto">
-                            <thead className="bg-gray-100">
-                                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-                                    <th className="px-6 py-4 text-xs text-left">Call Productivity</th>
-                                    <th className="px-6 py-4 text-xs text-center">Daily</th>
-                                    <th className="px-6 py-4 text-xs text-center">MTD</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                <tr className="border-b whitespace-nowrap">
-                                    <td className="px-6 py-4 text-xs text-left">Total Outbound Calls</td>
-                                    <td className="px-6 py-4 text-xs font-semibold">{callData.dailyOutbound || 0}</td>
-                                    <td className="px-6 py-4 text-xs font-semibold">{callData.mtdOutbound || 0}</td>
-                                </tr>
-                                <tr className="border-b whitespace-nowrap">
-                                    <td className="px-6 py-4 text-xs text-left">Successful Calls</td>
-                                    <td className="px-6 py-4 text-xs">{callData.dailySuccessful || 0}</td>
-                                    <td className="px-6 py-4 text-xs">{callData.mtdSuccessful || 0}</td>
-                                </tr>
-                                <tr className="border-b whitespace-nowrap">
-                                    <td className="px-6 py-4 text-xs text-left">Unsuccessful Calls</td>
-                                    <td className="px-6 py-4 text-xs">{callData.dailyUnsuccessful || 0}</td>
-                                    <td className="px-6 py-4 text-xs">{callData.mtdUnsuccessful || 0}</td>
-                                </tr>
-                                <tr className="border-b whitespace-nowrap">
-                                    <td className="px-6 py-4 text-xs text-left">Total Inbound Calls</td>
-                                    <td className="px-6 py-4 text-xs">{callData.dailyInbound || 0}</td>
-                                    <td className="px-6 py-4 text-xs">{callData.mtdInbound || 0}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Quote Productivity */}
-                    <div className="border rounded-lg p-4 text-center overflow-x-auto">
-                        <h3 className="font-semibold text-sm mb-2">Quotation Productivity Overview</h3>
-                        <p className="text-gray-600 mt-1 mb-4 text-xs">
-                            This table presents a summary of quotation-related activities, including new account development and quotes prepared for existing clients. The data is categorized into daily and month-to-date (MTD) metrics.
-                        </p>
-                        <table className="min-w-full table-auto">
-                            <thead className="bg-gray-100">
-                                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-                                    <th className="px-6 py-4 text-xs text-left">Quotation Productivity</th>
-                                    <th className="px-6 py-4 text-xs text-center">Daily</th>
-                                    <th className="px-6 py-4 text-xs text-center">MTD</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                <tr className="border-b whitespace-nowrap">
-                                    <td className="px-6 py-4 text-xs text-left">New Account Development</td>
-                                    <td className="px-6 py-4 text-xs text-center">{activityData["Account Development"] || 0}</td>
-                                    <td className="px-6 py-4 text-xs text-center">{activityData["Account Development"] || 0}</td>
-                                </tr>
-                                <tr className="border-b whitespace-nowrap">
-                                    <td className="px-6 py-4 text-xs text-left">Existing Client</td>
-                                    <td className="px-6 py-4 text-xs text-center">{activityData["Preparation: Preparation of Quote: Existing Client"] || 0}</td>
-                                    <td className="px-6 py-4 text-xs text-center">{activityData["Preparation: Preparation of Quote: Existing Client"] || 0}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Performance */}
-                    <div className="border rounded-lg p-4 text-center overflow-x-auto">
-                        <h3 className="font-semibold text-sm mb-2">Sales Performance Summary</h3>
-                        <p className="text-gray-600 mt-1 mb-4 text-xs">
-                            This table provides an overview of sales performance, tracking actual sales from Sales Orders (SO) to Delivery Receipts (DR). Metrics include Month-to-Date (MTD) and Year-to-Date (YTD) sales figures.
-                        </p>
-                        <table className="min-w-full table-auto">
-                            <thead className="bg-gray-100">
-                                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-                                    <th className="px-6 py-4 text-xs text-left">Sales Performance</th>
-                                    <th className="px-6 py-4 text-xs text-center">SO to DR (Actual Sales)</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                <tr className="border-b whitespace-nowrap">
-                                    <td className="px-6 py-4 text-xs text-left">Month to Date</td>
-                                    <td className="px-6 py-4 text-xs text-center">{formatCurrency(countsales["MonthToDateSales"] || 0)}</td>
-                                </tr>
-                                <tr className="border-b whitespace-nowrap">
-                                    <td className="px-6 py-4 text-xs text-left">Year to Date</td>
-                                    <td className="px-6 py-4 text-xs text-center">{formatCurrency(countsales["YearToDateSales"] || 0)}</td>
-                                </tr>
-                                <tr className="border-b whitespace-nowrap">
-                                    <td className="px-6 py-4 text-xs text-left font-bold">Total Actual Sales</td>
-                                    <td className="px-6 py-4 text-xs text-center font-bold">{formatCurrency(countsales["TotalActualSales"] || 0)}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+            {isLoading && (
+                <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white bg-opacity-70">
+                    <div className="flex flex-col items-center">
+                        <span className="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-blue-500"></span>
+                        <p className="mt-3 text-sm text-blue-600">Loading data...</p>
                     </div>
                 </div>
+            )}
 
-                <div className="border rounded-lg p-6 col-span-3 mt-6 overflow-x-auto">
-                    <h3 className="font-semibold text-sm mb-2">Daily Activity Summary</h3>
-                    <p className="text-gray-600 mt-1 mb-4 text-xs">
-                        A detailed breakdown of time spent on various daily activities, providing insights into productivity and task distribution.
-                    </p>
-                    <table className="min-w-full table-auto">
-                        <thead className="bg-gray-100">
-                            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-                                <th className="px-6 py-4 text-xs text-left">Daily Activities Breakdown</th>
-                                <th className="px-6 py-4 text-xs text-left">Time Spent</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {Object.entries(timeMotionData)
-                                .filter(([activity]) => validActivities.has(activity)) // Filter only valid activities
-                                .sort(([a], [b]) => a.localeCompare(b)) // Sort activities alphabetically
-                                .map(([activity, duration]) => (
-                                    <tr key={activity} className="border-b whitespace-nowrap">
-                                        <td className="px-6 py-4 text-xs text-left">{activity}</td>
-                                        <td className="px-6 py-4 text-xs text-left font-bold">{formatDuration(duration)}</td>
+
+            {!isLoading && !showModal && (
+                <form className="bg-white shadow-md rounded-lg p-4 text-xs">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                        {/* Chart Doughnut */}
+                        <div className="border rounded-lg p-4 text-center">
+                            <h3 className="font-semibold text-sm mb-2">Call Activity Chart</h3>
+                            <p className="text-xs text-gray-600 mb-4">
+                                This chart provides a visual representation of daily call activities, categorized into outbound calls, inbound calls, and other related activities. It helps in analyzing call distribution and performance trends over time.
+                            </p>
+                            <Doughnut data={chartData} options={chartOptions} />
+                        </div>
+
+                        {/* Touch Base Summary */}
+                        <div className="border rounded-lg p-4 text-center overflow-x-auto">
+                            <h3 className="font-semibold text-sm mb-2">Client Engagement Overview</h3>
+                            <p className="text-gray-600 mt-1 mb-4 text-xs">
+                                This table provides a summary of client interactions, categorized by client type. It helps in tracking engagement levels and understanding communication patterns.
+                            </p>
+                            <table className="min-w-full table-auto">
+                                <thead className="bg-gray-100">
+                                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700 text-center">Counts</th>
                                     </tr>
-                                ))}
-                        </tbody>
-                    </table>
-                </div>
-            </form>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {Object.entries(touchbaseData).map(([key, count], index) => {
+                                        const [typeclient] = key.split("-");
+                                        return (
+                                            <tr key={index} className="border-b whitespace-nowrap">
+                                                <td className="px-6 py-4 text-xs text-left">{typeclient}</td>
+                                                <td className="px-6 py-4 px-2 py-1 text-center">{count}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Time Motion */}
+                        <div className="border rounded-lg p-4 text-center overflow-x-auto">
+                            <h3 className="font-semibold text-sm mb-2">Daily Time and Motion Analysis</h3>
+                            <p className="text-gray-600 mt-1 mb-4 text-xs">
+                                This summary provides an overview of time spent on client interactions, outbound calls, and other activities. It helps in assessing productivity and optimizing workflow efficiency.
+                            </p>
+                            <table className="min-w-full table-auto">
+                                <thead className="bg-gray-100">
+                                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Client Engagement</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Outbound Calls</th>
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Other Activities</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    <tr className="border-b whitespace-nowrap">
+                                        <td className="px-6 py-4 text-xs text-left">{formatDuration(timeMotionData.inbound)}</td>
+                                        <td className="px-6 py-4 text-xs text-left">{formatDuration(timeMotionData.outbound)}</td>
+                                        <td className="px-6 py-4 text-xs text-left">{formatDuration(timeMotionData.others)}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Daily Productivity */}
+                        <div className="border rounded-lg p-4 text-center overflow-x-auto">
+                            <h3 className="font-semibold text-sm mb-2">Daily Call Productivity Report</h3>
+                            <p className="text-gray-600 mt-1 mb-4 text-xs">
+                                This table provides an overview of daily and month-to-date (MTD) call productivity, including total outbound calls, successful and unsuccessful attempts, and inbound call volume.
+                            </p>
+                            <table className="min-w-full table-auto">
+                                <thead className="bg-gray-100">
+                                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                                        <th className="px-6 py-4 text-xs text-left">Call Productivity</th>
+                                        <th className="px-6 py-4 text-xs text-center">Daily</th>
+                                        <th className="px-6 py-4 text-xs text-center">MTD</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    <tr className="border-b whitespace-nowrap">
+                                        <td className="px-6 py-4 text-xs text-left">Total Outbound Calls</td>
+                                        <td className="px-6 py-4 text-xs font-semibold">{callData.dailyOutbound || 0}</td>
+                                        <td className="px-6 py-4 text-xs font-semibold">{callData.mtdOutbound || 0}</td>
+                                    </tr>
+                                    <tr className="border-b whitespace-nowrap">
+                                        <td className="px-6 py-4 text-xs text-left">Successful Calls</td>
+                                        <td className="px-6 py-4 text-xs">{callData.dailySuccessful || 0}</td>
+                                        <td className="px-6 py-4 text-xs">{callData.mtdSuccessful || 0}</td>
+                                    </tr>
+                                    <tr className="border-b whitespace-nowrap">
+                                        <td className="px-6 py-4 text-xs text-left">Unsuccessful Calls</td>
+                                        <td className="px-6 py-4 text-xs">{callData.dailyUnsuccessful || 0}</td>
+                                        <td className="px-6 py-4 text-xs">{callData.mtdUnsuccessful || 0}</td>
+                                    </tr>
+                                    <tr className="border-b whitespace-nowrap">
+                                        <td className="px-6 py-4 text-xs text-left">Total Inbound Calls</td>
+                                        <td className="px-6 py-4 text-xs">{callData.dailyInbound || 0}</td>
+                                        <td className="px-6 py-4 text-xs">{callData.mtdInbound || 0}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Quote Productivity */}
+                        <div className="border rounded-lg p-4 text-center overflow-x-auto">
+                            <h3 className="font-semibold text-sm mb-2">Quotation Productivity Overview</h3>
+                            <p className="text-gray-600 mt-1 mb-4 text-xs">
+                                This table presents a summary of quotation-related activities, including new account development and quotes prepared for existing clients. The data is categorized into daily and month-to-date (MTD) metrics.
+                            </p>
+                            <table className="min-w-full table-auto">
+                                <thead className="bg-gray-100">
+                                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                                        <th className="px-6 py-4 text-xs text-left">Quotation Productivity</th>
+                                        <th className="px-6 py-4 text-xs text-center">Daily</th>
+                                        <th className="px-6 py-4 text-xs text-center">MTD</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    <tr className="border-b whitespace-nowrap">
+                                        <td className="px-6 py-4 text-xs text-left">New Account Development</td>
+                                        <td className="px-6 py-4 text-xs text-center">{activityData["Account Development"] || 0}</td>
+                                        <td className="px-6 py-4 text-xs text-center">{activityData["Account Development"] || 0}</td>
+                                    </tr>
+                                    <tr className="border-b whitespace-nowrap">
+                                        <td className="px-6 py-4 text-xs text-left">Existing Client</td>
+                                        <td className="px-6 py-4 text-xs text-center">{activityData["Preparation: Preparation of Quote: Existing Client"] || 0}</td>
+                                        <td className="px-6 py-4 text-xs text-center">{activityData["Preparation: Preparation of Quote: Existing Client"] || 0}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Performance */}
+                        <div className="border rounded-lg p-4 text-center overflow-x-auto">
+                            <h3 className="font-semibold text-sm mb-2">Sales Performance Summary</h3>
+                            <p className="text-gray-600 mt-1 mb-4 text-xs">
+                                This table provides an overview of sales performance, tracking actual sales from Sales Orders (SO) to Delivery Receipts (DR). Metrics include Month-to-Date (MTD) and Year-to-Date (YTD) sales figures.
+                            </p>
+                            <table className="min-w-full table-auto">
+                                <thead className="bg-gray-100">
+                                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                                        <th className="px-6 py-4 text-xs text-left">Sales Performance</th>
+                                        <th className="px-6 py-4 text-xs text-center">SO to DR (Actual Sales)</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    <tr className="border-b whitespace-nowrap">
+                                        <td className="px-6 py-4 text-xs text-left">Month to Date</td>
+                                        <td className="px-6 py-4 text-xs text-center">{formatCurrency(countsales["MonthToDateSales"] || 0)}</td>
+                                    </tr>
+                                    <tr className="border-b whitespace-nowrap">
+                                        <td className="px-6 py-4 text-xs text-left">Year to Date</td>
+                                        <td className="px-6 py-4 text-xs text-center">{formatCurrency(countsales["YearToDateSales"] || 0)}</td>
+                                    </tr>
+                                    <tr className="border-b whitespace-nowrap">
+                                        <td className="px-6 py-4 text-xs text-left font-bold">Total Actual Sales</td>
+                                        <td className="px-6 py-4 text-xs text-center font-bold">{formatCurrency(countsales["TotalActualSales"] || 0)}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div className="border rounded-lg p-6 col-span-3 mt-6 overflow-x-auto">
+                        <h3 className="font-semibold text-sm mb-2">Daily Activity Summary</h3>
+                        <p className="text-gray-600 mt-1 mb-4 text-xs">
+                            A detailed breakdown of time spent on various daily activities, providing insights into productivity and task distribution.
+                        </p>
+                        <table className="min-w-full table-auto">
+                            <thead className="bg-gray-100">
+                                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                                    <th className="px-6 py-4 text-xs text-left">Daily Activities Breakdown</th>
+                                    <th className="px-6 py-4 text-xs text-left">Time Spent</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {Object.entries(timeMotionData)
+                                    .filter(([activity]) => validActivities.has(activity)) // Filter only valid activities
+                                    .sort(([a], [b]) => a.localeCompare(b)) // Sort activities alphabetically
+                                    .map(([activity, duration]) => (
+                                        <tr key={activity} className="border-b whitespace-nowrap">
+                                            <td className="px-6 py-4 text-xs text-left">{activity}</td>
+                                            <td className="px-6 py-4 text-xs text-left font-bold">{formatDuration(duration)}</td>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
             )}
 
             <ToastContainer className="text-xs" autoClose={1000} />
