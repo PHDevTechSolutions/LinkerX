@@ -128,11 +128,6 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails }) => {
     useEffect(() => {
         fetchProgressData();
     }, [ReferenceID]);
-
-    // Fetch data when date range changes
-    useEffect(() => {
-        fetchProgressData();
-    }, [startdate, enddate]);
     
     const fetchProgressData = async () => {
         try {
@@ -365,14 +360,14 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails }) => {
         return `${hours}h ${minutes}m ${secs}s`;
     };
 
-    const handleApplyFilter = () => {
+    const handleApplyFilter = async () => {
         if (startdate && enddate) {
             setShowModal(false); // Close modal
-            // Trigger fetch here if needed
+            await fetchProgressData(); // Trigger the fetch after modal closes
         } else {
             alert("Please select both start and end dates.");
         }
-    };
+    };    
 
     return (
         <>  
