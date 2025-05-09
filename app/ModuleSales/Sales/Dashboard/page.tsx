@@ -551,38 +551,25 @@ const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     if (!userDetails.ReferenceID) return;
-
+  
     const fetchDashboardData = async () => {
       try {
         const baseURL = "/api/ModuleSales/Dashboard/";
         const tsmBaseURL = "/api/ModuleSales/Dashboard/TSM/";
         const managerBaseURL = "/api/ModuleSales/Dashboard/Manager/";
-
+  
         const encodeID = encodeURIComponent(userDetails.ReferenceID);
-
+  
         // ✅ Fetch Sales Order and Actual Sales with date_created for filtering
         const [salesOrderMainRes, actualSalesMainRes] = await Promise.all([
           fetch(baseURL + `FetchSalesOrder?referenceID=${encodeID}`),
           fetch(baseURL + `FetchActualSales?referenceID=${encodeID}`),
         ]);
-
+  
         if (!salesOrderMainRes.ok || !actualSalesMainRes.ok) {
           throw new Error("Failed to fetch sales data.");
         }
-
-        const salesOrderMainData = await salesOrderMainRes.json();
-        const actualSalesMainData = await actualSalesMainRes.json();
-
-        if (salesOrderMainData.success) {
-          setTotalSalesOrder(salesOrderMainData.totalSalesOrder);
-          computeWeeklyAndMonthlyTotals(salesOrderMainData.data, "SalesOrder");
-        }
-
-        if (actualSalesMainData.success) {
-          setTotalActualSales(actualSalesMainData.totalActualSales);
-          computeWeeklyAndMonthlyTotals(actualSalesMainData.data, "ActualSales");
-        }
-
+  
         // Common API calls
         const commonEndpoints = [
           `FetchWorkingHours?referenceID=${encodeID}`,
@@ -593,104 +580,104 @@ const DashboardPage: React.FC = () => {
           `FetchQuotationAmount?referenceID=${encodeID}`,
           `FetchTotalActivity?referenceID=${encodeID}`,
         ].map((endpoint) => fetch(baseURL + endpoint));
-
+  
         // TSM API calls
         const tsmEndpoints = [
           `FetchCalls?tsm=${encodeID}`,
           `FetchAccount?tsm=${encodeID}`,
           `FetchActualSales?tsm=${encodeID}`,
         ].map((endpoint) => fetch(tsmBaseURL + endpoint));
-
+  
         // Manager API calls
         const managerEndpoints = [
           `FetchCalls?manager=${encodeID}`,
           `FetchAccount?manager=${encodeID}`,
           `FetchActualSales?manager=${encodeID}`,
         ].map((endpoint) => fetch(managerBaseURL + endpoint));
-
+  
         // Fetch all data concurrently
         const [commonRes, tsmRes, managerRes] = await Promise.all([
           Promise.all(commonEndpoints),
           Promise.all(tsmEndpoints),
           Promise.all(managerEndpoints),
         ]);
-
+  
         // Extract responses
         const [hoursRes, callsRes, accountRes, actualSalesRes, salesOrderRes, quotationAmountRes, activityRes] = commonRes;
-
+  
         // Validate all responses
         const allCommonResponses = [hoursRes, callsRes, accountRes, actualSalesRes, salesOrderRes, quotationAmountRes, activityRes];
         if (!allCommonResponses.every((res) => res.ok)) {
           throw new Error("Failed to fetch common dashboard data");
         }
-
+  
         // Convert responses to JSON
         const [hoursData, callsData, accountData, actualSalesData, salesOrderData, quotationAmountData, activityData] = await Promise.all(
           allCommonResponses.map((res) => res.json())
         );
-
+  
         // Update state for common data
         if (hoursData.success) {
           setTotalHours(hoursData.totalHours);
           convertToHMS(hoursData.totalHours);
         }
-
+  
         if (callsData.success) {
           setTotalInbound(callsData.totalInbound);
           setTotalOutbound(callsData.totalOutbound);
         }
-
+  
         if (accountData.success) {
           setTotalAccounts(accountData.totalAccounts);
         }
-
+  
         if (actualSalesData.success) {
-          setTotalActualSales(actualSalesData.totalActualSales);
+          setTotalActualSales(actualSalesData.totalActualSales); // Set the aggregated actual sales
         }
-
+  
         if (salesOrderData.success) {
-          setTotalSalesOrder(salesOrderData.totalSalesOrder);
+          setTotalSalesOrder(salesOrderData.totalSalesOrder); // Set the aggregated sales order
         }
-
+  
         if (quotationAmountData.success) {
           setTotalQuotationAmount(quotationAmountData.totalQuotationAmount);
         }
-
+  
         if (activityData.success) {
           setTotalActivityCount(activityData.totalActivityCount);
         }
-
+  
         // Fetch and update TSM data
         if (tsmRes.every((res) => res.ok)) {
           const [tsmCallsData, tsmAccountData, tsmActualSalesData] = await Promise.all(tsmRes.map((res) => res.json()));
-
+  
           if (tsmCallsData.success) {
             setTsmTotalInbound(tsmCallsData.totalInbound);
             setTsmTotalOutbound(tsmCallsData.totalOutbound);
           }
-
+  
           if (tsmAccountData.success) {
             setTsmTotalAccounts(tsmAccountData.totalAccounts);
           }
-
+  
           if (tsmActualSalesData.success) {
             setTsmTotalActualSales(tsmActualSalesData.totalActualSales);
           }
         }
-
+  
         // Fetch and update Manager data
         if (managerRes.every((res) => res.ok)) {
           const [managerCallsData, managerAccountData, managerActualSalesData] = await Promise.all(managerRes.map((res) => res.json()));
-
+  
           if (managerCallsData.success) {
             setManagerTotalInbound(managerCallsData.totalInbound);
             setManagerTotalOutbound(managerCallsData.totalOutbound);
           }
-
+  
           if (managerAccountData.success) {
             setManagerTotalAccounts(managerAccountData.totalAccounts);
           }
-
+  
           if (managerActualSalesData.success) {
             setManagerTotalActualSales(managerActualSalesData.totalActualSales);
           }
@@ -699,58 +686,10 @@ const DashboardPage: React.FC = () => {
         console.error("Error fetching dashboard data:", error);
       }
     };
-
+  
     fetchDashboardData();
   }, [userDetails.ReferenceID, month, week]);
-
-  const computeWeeklyAndMonthlyTotals = (
-    data: any[] | undefined,
-    type: "SalesOrder" | "ActualSales"
-  ) => {
-    // ✅ Check if data is valid
-    if (!data || !Array.isArray(data)) {
-      console.warn(`No data available for ${type}`);
-      return;
-    }
-
-    const filteredData = data.filter((item) => {
-      const createdDate = new Date(item.date_created);
-      return (
-        createdDate.toLocaleString("default", { month: "long" }) === month
-      );
-    });
-
-    let weeklyTotal = 0;
-    let monthlyTotal = 0;
-
-    filteredData.forEach((item) => {
-      const createdDate = new Date(item.date_created);
-      const weekNumber = getWeekNumber(createdDate);
-
-      // ✅ Compute weekly sales
-      if (week === `Week ${weekNumber}`) {
-        weeklyTotal += item.amount || 0;
-      }
-
-      // ✅ Compute monthly sales
-      monthlyTotal += item.amount || 0;
-    });
-
-    if (type === "SalesOrder") {
-      setTotalSalesOrderWeek(weeklyTotal);
-      setTotalSalesOrderMonth(monthlyTotal);
-    } else if (type === "ActualSales") {
-      setTotalActualSalesWeek(weeklyTotal);
-      setTotalActualSalesMonth(monthlyTotal);
-    }
-  };
-
-  // ✅ Function to calculate week number from date
-  const getWeekNumber = (date: Date) => {
-    const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-    const diff = date.getDate() + startOfMonth.getDay() - 1;
-    return Math.floor(diff / 7) + 1;
-  };
+  
 
   const convertToHMS = (hours: number) => {
     const totalSeconds = Math.floor(hours * 3600);
@@ -967,13 +906,6 @@ const DashboardPage: React.FC = () => {
                       >
                         Recently
                       </button>
-                      <button
-                        className={`py-2 px-4 text-xs ${activeTab === "progress" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-500"
-                          }`}
-                        onClick={() => setActiveTab("progress")}
-                      >
-                        Activity Progress
-                      </button>
                     </div>
 
                     {/* Table inside the card body */}
@@ -1050,92 +982,6 @@ const DashboardPage: React.FC = () => {
 
                         </>
                       )}
-
-                      {/* Activity Progress Table */}
-                      {activeTab === "progress" && (
-                        <div className="relative grid grid-cols-1 gap-4 md:grid-cols-2">
-                          {isRestrictedUser ? (
-                            <div className="absolute inset-0 z-10 mt-4 bg-opacity-90 flex flex-col items-center justify-center p-6 rounded-xl ">
-                              <h2 className="text-xl font-bold text-red-600 mb-2">🚧 Under Maintenance</h2>
-                              <p className="text-sm text-gray-700 text-center max-w-xs">
-                                This section is temporarily unavailable for your access level. Please contact your system administrator or try again later.
-                              </p>
-                            </div>
-                          ) : (
-                            <>
-                              {/* Date Range Inputs */}
-                              <div className="flex items-center space-x-2 md:col-span-2">
-                                <select
-                                  value={month}
-                                  onChange={(e) => setMonth(e.target.value)}
-                                  className="border border-gray-300 rounded-lg p-2 text-xs w-full md:w-1/2"
-                                >
-                                  <option value="January">January</option>
-                                  <option value="February">February</option>
-                                  <option value="March">March</option>
-                                  <option value="April">April</option>
-                                  <option value="May">May</option>
-                                  <option value="June">June</option>
-                                  <option value="July">July</option>
-                                  <option value="August">August</option>
-                                  <option value="September">September</option>
-                                  <option value="October">October</option>
-                                  <option value="November">November</option>
-                                  <option value="December">December</option>
-                                </select>
-                                <select
-                                  value={week}
-                                  onChange={(e) => setWeek(e.target.value)}
-                                  className="border border-gray-300 rounded-lg p-2 text-xs w-full md:w-1/2"
-                                >
-                                  <option value="Week 1">Week 1</option>
-                                  <option value="Week 2">Week 2</option>
-                                  <option value="Week 3">Week 3</option>
-                                  <option value="Week 4">Week 4</option>
-                                </select>
-                              </div>
-
-                              {/* Sales Order Card */}
-                              <div className="bg-gradient-to-r from-blue-50 to-blue-100 shadow-lg rounded-xl p-5 flex flex-col justify-between hover:shadow-xl transition-shadow duration-300 ease-in-out">
-                                <h3 className="text-sm font-bold text-blue-700 mb-2">📈 Sales Order Today</h3>
-                                <p className="text-md font-extrabold text-blue-900">
-                                  ₱{Number(totalSalesOrder).toLocaleString("en-PH")}
-                                </p>
-
-                                <h3 className="text-sm font-bold text-blue-700 mb-1 mt-2">📅 Sales Order Week</h3>
-                                <p className="text-md font-semibold text-blue-800">
-                                  ₱{Number(totalSalesOrderWeek).toLocaleString("en-PH")}
-                                </p>
-
-                                <h3 className="text-sm font-bold text-blue-700 mb-1 mt-2">🗓️ Sales Order Month</h3>
-                                <p className="text-md font-extrabold text-blue-800">
-                                  ₱{Number(totalSalesOrderMonth).toLocaleString("en-PH")}
-                                </p>
-                              </div>
-
-                              {/* Actual Sales Card */}
-                              <div className="bg-gradient-to-r from-green-50 to-green-100 shadow-lg rounded-xl p-5 flex flex-col justify-between hover:shadow-xl transition-shadow duration-300 ease-in-out">
-                                <h3 className="text-sm font-bold text-green-700 mb-2">💰 Actual Sales Today</h3>
-                                <p className="text-lg font-extrabold text-green-900">
-                                  ₱{Number(totalActualSales).toLocaleString("en-PH")}
-                                </p>
-
-                                <h3 className="text-sm font-bold text-green-700 mb-1 mt-2">📅 Actual Sales Week</h3>
-                                <p className="text-md font-semibold text-green-800">
-                                  ₱{Number(totalActualSalesWeek).toLocaleString("en-PH")}
-                                </p>
-
-                                <h3 className="text-sm font-bold text-green-700 mb-1 mt-2">🗓️ Actual Sales Month</h3>
-                                <p className="text-md font-extrabold text-green-800">
-                                  ₱{Number(totalActualSalesMonth).toLocaleString("en-PH")}
-                                </p>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      )}
-
-
                     </div>
                   </div>
 

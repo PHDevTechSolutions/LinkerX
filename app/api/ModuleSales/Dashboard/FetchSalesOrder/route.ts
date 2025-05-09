@@ -14,10 +14,7 @@ export async function GET(req: Request) {
     const referenceID = searchParams.get("referenceID");
 
     if (!referenceID) {
-      return NextResponse.json(
-        { success: false, error: "ReferenceID is required." },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: "ReferenceID is required." }, { status: 400 });
     }
 
     // ✅ Fetch total sales order today
@@ -30,22 +27,7 @@ export async function GET(req: Request) {
 
     const totalSalesOrder = Xchire_fetch.length > 0 ? Xchire_fetch[0].totalsalesorder : 0;
 
-    // ✅ Fetch all sales order data for filtering weekly and monthly
-    const salesOrderData = await Xchire_sql`
-      SELECT soamount AS amount, date_created
-      FROM progress
-      WHERE referenceid = ${referenceID}
-      AND date_created >= DATE_TRUNC('month', CURRENT_DATE)
-    `;
-
-    return NextResponse.json(
-      {
-        success: true,
-        totalSalesOrder,
-        data: salesOrderData,
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: true, totalSalesOrder }, { status: 200 });
   } catch (Xchire_error: any) {
     console.error("Error fetching sales order data:", Xchire_error);
     return NextResponse.json(

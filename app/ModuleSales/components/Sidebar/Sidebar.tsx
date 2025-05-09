@@ -409,7 +409,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
 
         {/* User Details Section */}
         {!collapsed && (
-          <div className="p-6 text-xs text-left border-b">
+          <div className="p-6 text-xs text-left">
             <img src={selectedAvatar} alt="Avatar" className="w-12 h-12 object-cover rounded-full mb-2" />
             <p className="font-bold uppercase text-sm">
               {userDetails.Firstname}, {userDetails.Lastname}
@@ -440,7 +440,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
           <div className="w-full">
             <Link
               href={`/ModuleSales/Sales/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}
-              className="flex items-center w-full p-4 bg-orange-400 mb-1 text-white rounded transition-all duration-300 ease-in-out hover:shadow-md active:scale-95"
+              className="flex items-center w-full p-4 bg-orange-400 mb-1 text-white rounded-md transition-all duration-300 ease-in-out hover:shadow-md active:scale-95"
             >
               <CiGrid42 size={22} className="mr-1" />
               Dashboard
