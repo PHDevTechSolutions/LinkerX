@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { IoIosMenu } from "react-icons/io";
-import { CiClock2, CiMenuBurger, CiUser, CiSettings, CiBellOn, CiCircleRemove, CiDark, CiSun, CiSearch } from "react-icons/ci";
+import { CiClock2, CiUser, CiSettings, CiBellOn, CiCircleRemove, CiDark, CiSun, CiSearch } from "react-icons/ci";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { motion } from "framer-motion";
 import axios from "axios";
@@ -930,12 +930,13 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
 
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
-      <div className="flex items-center">
-        <button onClick={onToggleSidebar} className="p-2">
-          <IoIosMenu size={24} />
+      <div className="flex items-center space-x-4">
+        <button onClick={onToggleSidebar} title="Show Sidebar" className="rounded-full shadow-lg block sm:hidden">
+          <img src="/ecodesk.png" alt="Logo" className="h-8" />
         </button>
-        <span className="flex items-center text-gray-900 border text-sm shadow-md text-xs font-medium bg-gray-50 px-3 py-1 rounded-full">
-          <CiClock2 className="mr-1" /> {currentTime}
+        
+        <span className="flex items-center border shadow-md text-xs font-medium px-3 py-1 rounded-full">
+          <CiClock2 size={15} className="mr-1" /> {currentTime}
         </span>
       </div>
 
