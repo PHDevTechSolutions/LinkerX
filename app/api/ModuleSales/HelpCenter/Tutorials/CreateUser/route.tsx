@@ -19,7 +19,8 @@ const Xchire_sql = neon(Xchire_databaseUrl);
 async function create(
     title: string,
     description: string,
-    link: string
+    link: string,
+    type: string
 ) {
     try {
         if (!title) {
@@ -28,8 +29,8 @@ async function create(
 
         // Insert the note/task into the database
         const Xchire_result = await Xchire_sql`
-            INSERT INTO tutorials (title, description, link, date_created) 
-            VALUES (${title}, ${description}, ${link}, NOW()) 
+            INSERT INTO tutorials (title, description, link, type, date_created) 
+            VALUES (${title}, ${description}, ${link}, ${type} NOW()) 
             RETURNING *;
         `;
 
@@ -53,9 +54,9 @@ export async function POST(req: Request) {
         const Xchire_body = await req.json();
         console.log("Received body:", Xchire_body);
 
-        const {title, description, link } = Xchire_body;
+        const {title, description, link, type } = Xchire_body;
 
-        const Xchire_result = await create(title, description, link);
+        const Xchire_result = await create(title, description, link, type);
         return NextResponse.json(Xchire_result);
     } catch (Xchire_error: any) {
         console.error("Error in POST /api/addTask:", Xchire_error);

@@ -21,7 +21,8 @@ async function updateTask(
     id: string,
     title: string,
     description: string,
-    link: string
+    link: string,
+    type: string
 ) {
     try {
         if (!id) {
@@ -35,7 +36,7 @@ async function updateTask(
         // Update the task/note in the database
         const result = await taskflowSql`
             UPDATE tutorials
-            SET title = ${title}, description = ${description}, link = ${link}, date_updated = NOW()
+            SET title = ${title}, description = ${description}, link = ${link}, type = ${type}, date_updated = NOW()
             WHERE id = ${id}
             RETURNING *;
         `;
@@ -60,10 +61,10 @@ export async function PUT(req: Request) {
         const requestBody = await req.json();
         console.log("Received body:", requestBody);
 
-        const { id, title, description, link } = requestBody;
+        const { id, title, description, link, type } = requestBody;
 
         // Validate input
-        if (!id || !title || !description || !link) {
+        if (!id || !title || !description || !link || !type) {
             return NextResponse.json(
                 { success: false, error: "ID, title, description, and link are required." },
                 { status: 400 }
@@ -71,7 +72,7 @@ export async function PUT(req: Request) {
         }
 
         // Update task in the database
-        const result = await updateTask(id, title, description, link);
+        const result = await updateTask(id, title, description, link, type);
         return NextResponse.json(result);
     } catch (error: any) {
         console.error("Error in PUT /api/updateTask:", error);

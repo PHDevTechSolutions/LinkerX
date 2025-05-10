@@ -20,6 +20,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete, 
         <thead className="bg-gray-100">
           <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
             <th className="px-6 py-4 font-semibold text-gray-700">Title</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Type</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Description</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Date Created</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
@@ -30,6 +31,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete, 
             posts.map((post) => (
               <tr key={post.id} className="border-b whitespace-nowrap">
                 <td className="px-6 py-4 text-xs">{post.title}</td>
+                <td className="px-6 py-4 text-xs">{post.type}</td>
                 <td className="px-6 py-4 text-xs">{post.description}</td>
                 <td className="px-6 py-4 text-xs">
                   {post.date_created

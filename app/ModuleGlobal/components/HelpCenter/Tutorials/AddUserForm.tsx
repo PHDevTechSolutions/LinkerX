@@ -18,6 +18,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
     const [title, settitle] = useState(editUser ? editUser.title : "");
     const [description, setdescription] = useState(editUser ? editUser.description : "");
     const [link, setlink] = useState(editUser ? editUser.link : "");
+    const [type, settype] = useState(editUser ? editUser.type : "");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,7 +32,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
         const response = await fetch(url, {
             method,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: editUser?.id, title, description, link }),
+            body: JSON.stringify({ id: editUser?.id, title, description, link, type }),
         });
 
         if (response.ok) {
@@ -59,6 +60,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
                     title={title} settitle={settitle}
                     description={description} setdescription={setdescription}
                     link={link} setlink={setlink}
+                    type={type} settype={settype}
                 />
                 <div className="flex justify-between">
                     <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
