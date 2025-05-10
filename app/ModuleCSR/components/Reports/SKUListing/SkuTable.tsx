@@ -11,6 +11,7 @@ interface Post {
   QtySold: string;
   SalesAgent: string;
   ItemCategory: string;
+  Inquiries: string;
 }
 
 interface AccountsTableProps {
@@ -98,6 +99,10 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
               <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
                 <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
                 <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Item Category</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Item Code</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Item Description</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Quantity</th>
                 <th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
                 <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
               </tr>
@@ -108,6 +113,10 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
                   <td className="px-6 py-4 text-xs">{new Date(post.createdAt).toLocaleString()}</td>
                   <td className="px-6 py-4 text-xs">{post.CompanyName}</td>
                   <td className="px-6 py-4 text-xs">{post.Remarks}</td>
+                  <td className="px-6 py-4 text-xs">{post.ItemCode}</td>
+                  <td className="px-6 py-4 text-xs">{post.ItemDescription}</td>
+                  <td className="px-6 py-4 text-xs">{post.QtySold}</td>
+                  <td className="px-6 py-4 text-xs capitalize">{post.Inquiries}</td>
                   <td className="px-6 py-4 text-xs gap-1 flex">
                     <button
                       onClick={() => handleEdit(post)}
