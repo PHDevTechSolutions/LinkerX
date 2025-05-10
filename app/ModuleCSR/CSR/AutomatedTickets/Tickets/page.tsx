@@ -199,7 +199,7 @@ const ActivityPage: React.FC = () => {
             { header: 'Customer Name', key: 'CustomerName', width: 30 },
             { header: 'Contact Number', key: 'ContactNumber', width: 20 },
             { header: 'Email Address', key: 'Email', width: 30 },
-            { header: 'Gender', key: 'gender', width: 15 },
+            { header: 'Gender', key: 'Gender', width: 15 },
             { header: 'Client Segment', key: 'CustomerSegment', width: 20 },
             { header: 'City Address', key: 'CityAddress', width: 25 },
             { header: 'Traffic', key: 'Traffic', width: 15 },
