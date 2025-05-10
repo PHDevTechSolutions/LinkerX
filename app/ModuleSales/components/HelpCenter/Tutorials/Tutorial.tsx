@@ -115,7 +115,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
               <div key={post.id} className="border rounded-xl shadow-sm p-4 flex flex-col justify-between">
                 <div className="text-sm font-semibold text-gray-800 mb-2">{post.title}</div>
                 <div className="flex-1 mb-3">
-                  <p className="text-xs text-gray-600 mt-2">{post.description}</p>
                   {post.link.includes("youtube.com") && (
                     <div className="mt-4">
                       <iframe
@@ -130,6 +129,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                       ></iframe>
                     </div>
                   )}
+                  <p className="text-xs text-gray-600 mt-2">{post.description}</p>
                 </div>
                 <div className="text-xs text-gray-500 border-t pt-2 mt-auto flex gap-1">
                   <LuClock size={15}/> {post.date_created ? new Date(post.date_created).toLocaleDateString() : "No date"}

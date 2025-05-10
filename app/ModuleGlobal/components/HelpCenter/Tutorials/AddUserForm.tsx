@@ -24,7 +24,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
         e.preventDefault();
 
         // Log form data to ensure it is being correctly set
-        console.log({ title, description, link });
+        console.log({ title, description, link, type });
 
         const url = editUser ? `/api/ModuleSales/HelpCenter/Tutorials/EditUser` : `/api/ModuleSales/HelpCenter/Tutorials/CreateUser`;
         const method = editUser ? "PUT" : "POST";

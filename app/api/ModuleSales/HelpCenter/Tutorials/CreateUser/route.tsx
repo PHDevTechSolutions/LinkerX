@@ -30,7 +30,7 @@ async function create(
         // Insert the note/task into the database
         const Xchire_result = await Xchire_sql`
             INSERT INTO tutorials (title, description, link, type, date_created) 
-            VALUES (${title}, ${description}, ${link}, ${type} NOW()) 
+            VALUES (${title}, ${description}, ${link}, ${type}, NOW()) 
             RETURNING *;
         `;
 
