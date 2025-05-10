@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect, useState, useMemo } from "react";
 import { RiRefreshLine } from "react-icons/ri";
 
@@ -125,7 +124,9 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
         totalAmount,
         totalQtySold,
         totalConversionToSale: totalConverted,
+        totalATU,
         totalATV,
+        avgATU: (channelCount ? totalATU / channelCount : 0).toFixed(2),
         avgATV: (channelCount ? totalATV / channelCount : 0).toFixed(2),
       },
     };
@@ -171,9 +172,13 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
               <td className="px-6 py-4 text-xs">{formatAmount(totalMetrics.totalAmount)}</td>
               <td className="px-6 py-4 text-xs">{totalMetrics.totalQtySold}</td>
               <td className="px-6 py-4 text-xs">{totalMetrics.totalConversionToSale}</td>
-              <td className="px-6 py-4 text-xs">-</td>
+              <td className="px-6 py-4 text-xs">{parseFloat(totalMetrics.avgATU).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })}</td>
               <td className="px-6 py-4 text-xs">{parseFloat(totalMetrics.avgATV).toLocaleString("en-US", {
-                minimumFractionDigits: 2, maximumFractionDigits: 2
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
               })}</td>
             </tr>
           </tfoot>
