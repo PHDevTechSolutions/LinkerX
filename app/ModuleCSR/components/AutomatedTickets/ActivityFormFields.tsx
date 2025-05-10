@@ -113,64 +113,6 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
         setQtySold(parsedValue); // Update Amount with parsed value (could be number or empty string)
     };
 
-    useEffect(() => {
-        const fetchCompanies = async () => {
-            try {
-                const response = await fetch('/api/ModuleCSR/companies');
-                const data = await response.json();
-                setCompanies(data);
-            } catch (error) {
-                console.error('Error fetching companies:', error);
-            }
-        };
-        fetchCompanies();
-    }, []);
-
-    const CompanyOptions = companies.map((company) => ({
-        value: company.CompanyName,
-        label: company.CompanyName,
-    }));
-
-    const handleCompanyChange = async (selectedOption: any) => {
-        const selectedCompany = selectedOption ? selectedOption.value : '';
-        setCompanyName(selectedCompany);
-
-        if (selectedCompany) {
-            try {
-                const response = await fetch(`/api/ModuleCSR/companies?CompanyName=${encodeURIComponent(selectedCompany)}`);
-                if (response.ok) {
-                    const companyDetails = await response.json();
-                    setCustomerName(companyDetails.CustomerName || '');
-                    setGender(companyDetails.Gender || '');
-                    setContactNumber(companyDetails.ContactNumber || '');
-                    setEmail(companyDetails.Email || '');
-                    setCustomerSegment(companyDetails.CustomerSegment || '');
-                    setCityAddress(companyDetails.CityAddress || '');
-                    setCustomerType(companyDetails.CustomerType || '');
-                } else {
-                    console.error(`Company not found: ${selectedCompany}`);
-                    resetFields();
-                }
-            } catch (error) {
-                console.error('Error fetching company details:', error);
-                resetFields();
-            }
-        } else {
-            resetFields();
-        }
-    };
-
-    const resetFields = () => {
-        setCustomerName('');
-        setGender('');
-        setContactNumber('');
-        setEmail('');
-        setCustomerSegment('');
-        setCityAddress('');
-    };
-
-    const [isEditing, setIsEditing] = useState(false);
-
     const generateTicketReferenceNumber = () => {
         const randomNumber = Math.floor(100000000 + Math.random() * 1000000000); // Ensures a 9-digit number
         return `CSR-TICKET-${randomNumber}`;
@@ -178,10 +120,8 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
 
     useEffect(() => {
         if (editPost) {
-            setIsEditing(true);
             setTicketReferenceNumber(editPost.TicketReferenceNumber); // Set the existing value in edit mode
         } else {
-            setIsEditing(false);
             setTicketReferenceNumber(generateTicketReferenceNumber()); // Generate only in create mode
         }
     }, [editPost, setTicketReferenceNumber]);
@@ -248,8 +188,6 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
         setcreatedAt(formatted);
     }, []);
 
-
-
     return (
         <>
             <div className="flex flex-wrap -mx-4">
@@ -278,25 +216,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                         <input type="hidden" id="Username" value={userName || ""} onChange={(e) => setuserName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                         <input type="hidden" id="ReferenceID" value={ReferenceID || ""} onChange={(e) => setReferenceID(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" disabled />
                         <label className="block text-xs font-bold mb-2" htmlFor="CompanyName">Company Name</label>
-                        {editPost ? (
-                            <input
-                                type="text"
-                                id="CompanyName"
-                                value={CompanyName}  // Ensure CompanyName is set as the value here
-                                onChange={(e) => setCompanyName(e.target.value)}  // Updates the CompanyName when editing
-                                className="w-full px-3 py-2 border rounded text-xs"
-                            />
-                        ) : (
-                            <Select
-                                id="CompanyName"
-                                options={CompanyOptions}
-                                onChange={handleCompanyChange}  // Keeps the original onChange handler for the Select component
-                                className="w-full text-xs capitalize"
-                                placeholder="Select Company"
-                                isClearable
-                            />
-                        )}
-
+                        <input type="text" id="CompanyName" value={CompanyName || ""} onChange={(e) => setCompanyName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
                     </div>
                     <div className="w-full sm:w-1/2 md:w-1/3 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2" htmlFor="CustomerName">Customer Name</label>
@@ -304,7 +224,11 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </div>
                     <div className="w-full sm:w-1/2 md:w-1/3 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2" htmlFor="Gender">Gender</label>
-                        <input type="text" id="Gender" value={Gender || ""} onChange={(e) => setGender(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+                        <select id="Gender" value={Gender || ""} onChange={(e) => setGender(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
                     </div>
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-2">
                         <label className="block text-xs font-bold mb-2" htmlFor="ContactNumber">Contact Number</label>
@@ -316,7 +240,25 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </div>
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2" htmlFor="ClientSegment">Client Segment</label>
-                        <input type="text" id="CustomerSegment" value={CustomerSegment || ""} onChange={(e) => setCustomerSegment(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                        <select id="CustomerSegment" value={CustomerSegment} onChange={(e) => setCustomerSegment(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" required>
+                            <option value="">Select Segment</option>
+                            <option value="Agriculture, Hunting and Forestry">Agriculture, Hunting and Forestry</option>
+                            <option value="Fishing">Fishing</option>
+                            <option value="Mining">Mining</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Electricity, Gas and Water">Electricity, Gas and Water</option>
+                            <option value="Construction">Construction</option>
+                            <option value="Wholesale and Retail">Wholesale and Retail</option>
+                            <option value="Hotels and Restaurants">Hotels and Restaurants</option>
+                            <option value="Transport, Storage and Communication">Transport, Storage and Communication</option>
+                            <option value="Finance and Insurance">Finance and Insurance</option>
+                            <option value="Real State and Rentings">Real State and Rentings</option>
+                            <option value="Education">Education</option>
+                            <option value="Health and Social Work">Health and Social Work</option>
+                            <option value="Personal Services">Personal Services</option>
+                            <option value="Government Offices">Government Offices</option>
+                            <option value="Data Center">Data Center</option>
+                        </select>
                     </div>
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2" htmlFor="CityAddress">City Address</label>
