@@ -116,11 +116,6 @@ const AccountListPage: React.FC = () => {
                                     />
                                 ) : (
                                     <>
-                                        <div className="flex justify-between items-center mb-4">
-                                            <button className="bg-blue-800 text-white px-4 text-xs py-2 rounded flex items-center gap-1" onClick={() => setShowForm(true)}>
-                                                <CiCirclePlus size={20} />Add Account
-                                            </button>
-                                        </div>
                                         <h2 className="text-lg font-bold mb-2">Client Account Management</h2>
                                         <p className="text-xs mb-4">
                                             This section provides an overview of client accounts, allowing users to search, filter, and manage records efficiently. Users can refine the results by entering a search term, selecting a city address, or adjusting the number of records displayed per page.
