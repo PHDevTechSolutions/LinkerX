@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { LuVideo, LuLayoutList, LuFolderKanban } from "react-icons/lu";
+import { LuVideo, LuLayoutList, LuFolderKanban, LuClock } from "react-icons/lu";
 
 interface UsersCardProps {
   posts: any[];
@@ -131,8 +131,8 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                     </div>
                   )}
                 </div>
-                <div className="text-xs text-gray-500 border-t pt-2 mt-auto">
-                  {post.date_created ? new Date(post.date_created).toLocaleDateString() : "No date"}
+                <div className="text-xs text-gray-500 border-t pt-2 mt-auto flex gap-1">
+                  <LuClock size={15}/> {post.date_created ? new Date(post.date_created).toLocaleDateString() : "No date"}
                 </div>
               </div>
             ))
