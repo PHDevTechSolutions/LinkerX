@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { RiRefreshLine } from "react-icons/ri";
 
@@ -128,6 +127,24 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
     return counts;
   }, [metrics]);
 
+  // Calculate totals for each week
+  const weekTotals = useMemo(() => {
+    const totals = {
+      "Week 1": 0,
+      "Week 2": 0,
+      "Week 3": 0,
+      "Week 4": 0,
+    };
+
+    wrapupLabels.forEach((label) => {
+      Object.keys(totals).forEach((week) => {
+        totals[week as keyof typeof totals] += weeklyCounts[week as keyof typeof weeklyCounts][label] || 0;
+      });
+    });
+
+    return totals;
+  }, [weeklyCounts, wrapupLabels]);
+
   return (
     <div className="bg-white">
       {loading ? (
@@ -158,6 +175,15 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
               </tr>
             ))}
           </tbody>
+          <tfoot className="bg-gray-100">
+            <tr className="text-xs font-semibold text-gray-700">
+              <td className="px-6 py-4">Total</td>
+              <td className="px-6 py-4">{weekTotals["Week 1"]}</td>
+              <td className="px-6 py-4">{weekTotals["Week 2"]}</td>
+              <td className="px-6 py-4">{weekTotals["Week 3"]}</td>
+              <td className="px-6 py-4">{weekTotals["Week 4"]}</td>
+            </tr>
+          </tfoot>
         </table>
       )}
     </div>
