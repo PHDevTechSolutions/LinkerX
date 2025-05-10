@@ -116,10 +116,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
                 <div className="text-sm font-semibold text-gray-800 mb-2">{post.title}</div>
                 <div className="flex-1 mb-3">
                   {post.link.includes("youtube.com") && (
-                    <div className="mt-4">
+                    <div className="mt-4 text-xs">
                       <iframe
                         width="100%"
-                        height="315"
+                        height="200"
                         src={`https://www.youtube.com/embed/${extractVideoId(post.link)}`}
                         title={post.title}
                         frameBorder="0"
