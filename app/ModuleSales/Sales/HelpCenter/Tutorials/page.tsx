@@ -166,7 +166,7 @@ const ListofUser: React.FC = () => {
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                             <h2 className="text-lg font-bold mb-2">Tutorials</h2>
                                             <p className="text-xs text-gray-600 mb-4">
-                                                The <strong>Tutorials</strong> here is used to manage and track the progress of various tasks or activities. It helps in organizing the workflow and provides a clear visual representation of task status. The board is divided into different columns such as "Backlogs," "Priority," "Important", and "Finished," allowing users to move tasks across these stages. This system enhances collaboration by allowing team members to easily update and track the status of each task, making it an effective tool for managing tasks, improving productivity, and ensuring smoother coordination within the team.
+                                                The <strong>Tutorials</strong> section provides a step-by-step guide for managing and tracking various tasks within the TaskFlow system. It helps users stay organized by categorizing tasks into columns like "Backlogs," "Priority," "Important," and "Finished." This visual workflow makes it easier to monitor progress, update task statuses, and improve team collaboration and productivity.
                                             </p>
                                             <SearchFilters
                                                 searchTerm={searchTerm}
