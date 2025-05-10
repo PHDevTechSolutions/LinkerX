@@ -107,6 +107,25 @@ const MetricTable: React.FC<MetricTableProps> = ({
     return counts;
   }, [filteredMetrics]);
 
+  const weeklyTotals = useMemo(() => {
+    const totals: Record<string, number> = {
+      "Week 1": 0,
+      "Week 2": 0,
+      "Week 3": 0,
+      "Week 4": 0,
+    };
+
+    Object.entries(weeklyCounts).forEach(([week, channels]) => {
+      totals[week] = Object.values(channels).reduce((sum, count) => sum + count, 0);
+    });
+
+    return totals;
+  }, [weeklyCounts]);
+
+  const grandTotal = useMemo(() => {
+    return Object.values(weeklyTotals).reduce((sum, count) => sum + count, 0);
+  }, [weeklyTotals]);
+
   return (
     <div className="bg-white overflow-x-auto">
       {loading ? (
@@ -135,6 +154,19 @@ const MetricTable: React.FC<MetricTableProps> = ({
               </tr>
             ))}
           </tbody>
+          <tfoot className="bg-gray-50 font-semibold text-xs text-gray-700">
+            <tr className="border-t">
+              <td className="px-6 py-3">Total</td>
+              <td className="px-6 py-3">{weeklyTotals["Week 1"] || 0}</td>
+              <td className="px-6 py-3">{weeklyTotals["Week 2"] || 0}</td>
+              <td className="px-6 py-3">{weeklyTotals["Week 3"] || 0}</td>
+              <td className="px-6 py-3">{weeklyTotals["Week 4"] || 0}</td>
+            </tr>
+            <tr className="border-t bg-emerald-50 text-emerald-700">
+              <td className="px-6 py-3">Grand Total</td>
+              <td className="px-6 py-3" colSpan={4}>{grandTotal}</td>
+            </tr>
+          </tfoot>
         </table>
       )}
     </div>
