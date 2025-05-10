@@ -166,7 +166,7 @@ const ListofUser: React.FC = () => {
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                                             <h2 className="text-lg font-bold mb-2">Tutorials</h2>
                                             <p className="text-xs text-gray-600 mb-4">
-                                                The <strong>Tutorials</strong> section provides a step-by-step guide for managing and tracking various tasks within the TaskFlow system. It helps users stay organized by categorizing tasks into columns like "Backlogs," "Priority," "Important," and "Finished." This visual workflow makes it easier to monitor progress, update task statuses, and improve team collaboration and productivity.
+                                                The <strong>Tutorials</strong> section provides a step-by-step guide for managing and tracking various tasks within the TaskFlow system.
                                             </p>
                                             <SearchFilters
                                                 searchTerm={searchTerm}
