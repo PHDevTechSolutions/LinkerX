@@ -161,7 +161,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
     return Object.values(groupedMetrics).reduce(
       (acc, agentMetrics) => {
         const totals = calculateAgentTotals(agentMetrics);
-
+  
         acc.sales += totals.sales;
         acc.nonSales += totals.nonSales;
         acc.totalAmount += totals.totalAmount;
@@ -170,18 +170,18 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
         acc.newClientAmount += totals.newClientAmount;
         acc.newNonBuyingAmount += totals.newNonBuyingAmount;
         acc.existingActiveAmount += totals.existingActiveAmount;
-
+  
         acc.totalATU += totals.totalConversionToSale > 0
           ? totals.totalQtySold / totals.totalConversionToSale
           : 0;
         acc.totalATV += totals.totalConversionToSale > 0
           ? totals.totalAmount / totals.totalConversionToSale
           : 0;
-
+  
         acc.totalConversionPercentage += totals.sales > 0
           ? (totals.totalConversionToSale / totals.sales) * 100
           : 0;
-
+  
         acc.agentCount += 1;
         return acc;
       },
@@ -202,6 +202,22 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
       }
     );
   }, [groupedMetrics, calculateAgentTotals]);
+  
+  // ✅ Final Averages for % Conversion, ATU, and ATV
+  const avgConversionPercentage = totalMetrics.sales === 0
+    ? "0.00"
+    : (totalMetrics.totalConversionToSale / totalMetrics.sales).toFixed(2);
+  
+  const avgATU =
+    totalMetrics.totalConversionToSale === 0
+      ? "0.00%"
+      : `${((totalMetrics.totalQtySold / totalMetrics.totalConversionToSale) * 100).toFixed(2)}%`;
+  
+  const avgATV =
+    totalMetrics.totalConversionToSale === 0
+      ? "0.00"
+      : formatAmountWithPeso(totalMetrics.totalAmount / totalMetrics.totalConversionToSale);
+  
 
   const calculateResponseTime = useCallback((TicketReceived: string, TicketEndorsed: string) => {
     if (!TicketReceived || !TicketEndorsed) return "N/A";
@@ -321,8 +337,8 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
               <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totalMetrics.totalAmount)}</td>
               <td className="px-6 py-4 text-xs">{totalMetrics.totalQtySold}</td>
               <td className="px-6 py-4 text-xs">{totalMetrics.totalConversionToSale}</td>
-              <td className="px-6 py-4 text-xs">-</td>
-              <td className="px-6 py-4 text-xs">-</td>
+              <td className="px-6 py-4 text-xs">{avgConversionPercentage}%</td>
+              <td className="px-6 py-4 text-xs">{avgATU}</td>
               <td className="px-6 py-4 text-xs">
                 {totalMetrics.totalATV.toLocaleString("en-US", {
                   minimumFractionDigits: 2,
