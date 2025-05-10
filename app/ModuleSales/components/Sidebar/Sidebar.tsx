@@ -4,8 +4,7 @@ import React, { useState, useEffect } from "react";
 import { FaRegCircle } from "react-icons/fa";
 import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo, CiMail, CiCalendar } from "react-icons/ci";
 import { RxCaretLeft, RxCaretDown } from "react-icons/rx";
-
-
+import { IoHelp } from "react-icons/io5";
 import { BsBuildings } from "react-icons/bs";
 
 import Link from 'next/link';
@@ -281,13 +280,6 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ],
     },
     {
-      title: 'Announcements',
-      icon: CiBullhorn,
-      subItems: [
-        { title: 'System Updates', href: `/ModuleSales/Sales/Announcements/SystemUpdates${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
-    {
       title: 'User Management',
       icon: CiUser,
       subItems: [
@@ -322,6 +314,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ],
     },
     {
+      title: 'Help Center',
+      icon: IoHelp,
+      subItems: [
+        { title: 'Tutorials', href: `/ModuleSales/Sales/HelpCenter/Tutorials${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
+    {
       title: 'What is Taskflow?',
       icon: CiCircleInfo,
       subItems: [
@@ -339,14 +338,14 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "National",
         "My Team",
         "Client Activity Board",
-        "Announcements",
+        "Help Center",
         "Xend Mail",
         "Global Employees",
         "Profile",
         "What is Taskflow?"
       ].includes(item.title);
     }
-    
+
     if (userDetails.Role === "Territory Sales Manager") {
       const tsmDefault = [
         "Sales Performance",
@@ -354,7 +353,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "National",
         "My Team",
         "Client Activity Board",
-        "Announcements",
+        "Help Center",
         "Global Employees",
         "Profile",
         "What is Taskflow?",
@@ -366,7 +365,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "Projects",
         "Xend Mail",
         "Boards",
-        "Announcements",
+        "Help Center",
         "Global Employees",
         "Profile",
         "What is Taskflow?",
@@ -382,7 +381,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "Projects",
         "Xend Mail",
         "Boards",
-        "Announcements",
+        "Help Center",
         "Global Employees",
         "Profile",
         "What is Taskflow?"
@@ -455,7 +454,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
               {userDetails.Role === "Territory Sales Manager" && (
                 <label className="inline-flex items-center cursor-pointer mt-2">
                   <input type="checkbox" checked={agentMode} onChange={() => setAgentMode(!agentMode)} className="sr-only peer" />
-                  <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                  <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-400 dark:peer-focus:ring-blue-400 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-400 dark:peer-checked:bg-blue-600"></div>
                   <span className="ms-3 text-xs font-medium text-gray-900 dark:text-gray-300">Agent Mode</span>
                 </label>
               )}

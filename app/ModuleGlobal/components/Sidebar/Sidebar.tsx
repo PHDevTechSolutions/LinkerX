@@ -6,6 +6,7 @@ import { CiUser, CiGrid42, CiSettings } from "react-icons/ci";
 import { RxCaretLeft, RxCaretDown } from "react-icons/rx";
 import TaskflowIcon from './TaskflowIcon';
 import XchireIcon from './XchireIcon';
+import { IoHelp } from "react-icons/io5";
 import Ecodesk from './EcodeskIcon';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
@@ -194,6 +195,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       icon: CiUser,
       subItems: [
         { title: 'Ecoshift Employees Profile', href: `/ModuleGlobal/ERP/Ecoshift/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
+    {
+      title: 'Help Center',
+      icon: IoHelp,
+      subItems: [
+        { title: 'Tutorials', href: `/ModuleGlobal/ERP/HelpCenter/Tutorials${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
