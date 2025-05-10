@@ -26,6 +26,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const [pendingInquiryCount, setPendingInquiryCount] = useState(0);
   const [pendingInactiveCount, setPendingInactiveCount] = useState(0);
   const [pendingDeleteCount, setPendingDeleteCount] = useState(0);
+  const [agentMode, setAgentMode] = useState(false);
 
   // Retrieve the selected avatar from localStorage or default if not set
   const selectedAvatar = localStorage.getItem('selectedAvatar') || `https://robohash.org/${userDetails.Firstname}${userDetails.Lastname}?size=200x200`;
@@ -345,22 +346,35 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         "What is Taskflow?"
       ].includes(item.title);
     }
+    
     if (userDetails.Role === "Territory Sales Manager") {
-      return [
+      const tsmDefault = [
         "Sales Performance",
+        "Xend Mail",
         "National",
         "My Team",
         "Client Activity Board",
-        "My Companies",
-        "Xend Mail",
-        "Activities",
-        "Projects",
         "Announcements",
         "Global Employees",
         "Profile",
-        "What is Taskflow?"
-      ].includes(item.title);
+        "What is Taskflow?",
+      ];
+
+      const agentModeMenu = [
+        "My Companies",
+        "Activities",
+        "Projects",
+        "Xend Mail",
+        "Boards",
+        "Announcements",
+        "Global Employees",
+        "Profile",
+        "What is Taskflow?",
+      ];
+
+      return (agentMode ? agentModeMenu : tsmDefault).includes(item.title);
     }
+
     if (userDetails.Role === "Territory Sales Associate") {
       return [
         "My Companies",
@@ -410,28 +424,43 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         {/* User Details Section */}
         {!collapsed && (
           <div className="p-6 text-xs text-left">
+
+            {/* Profile Image Section Section */}
             <img src={selectedAvatar} alt="Avatar" className="w-12 h-12 object-cover rounded-full mb-2" />
             <p className="font-bold uppercase text-sm">
               {userDetails.Firstname}, {userDetails.Lastname}
             </p>
             <p>{userDetails.Company}</p>
             <p className="italic">( {userDetails.Role} )</p>
-            <span
-              className={`text-white text-[8px] font-semibold px-3 py-1 rounded-full inline-block mt-2 ${userDetails.Status === "Active"
-                ? "bg-green-600"
-                : userDetails.Status === "Inactive"
-                  ? "bg-red-400"
-                  : userDetails.Status === "Locked"
-                    ? "bg-gray-400"
-                    : userDetails.Status === "Busy"
-                      ? "bg-yellow-400"
-                      : userDetails.Status === "Do not Disturb"
-                        ? "bg-gray-800"
-                        : "bg-blue-500"
-                }`}
-            >
-              {userDetails.Status}
-            </span>
+
+            <div className="flex items-center gap-1">
+              <span
+                className={`text-white text-[8px] font-semibold px-3 py-1 rounded-full inline-block mt-2 ${userDetails.Status === "Active"
+                  ? "bg-green-600"
+                  : userDetails.Status === "Inactive"
+                    ? "bg-red-400"
+                    : userDetails.Status === "Locked"
+                      ? "bg-gray-400"
+                      : userDetails.Status === "Busy"
+                        ? "bg-yellow-400"
+                        : userDetails.Status === "Do not Disturb"
+                          ? "bg-gray-800"
+                          : "bg-blue-500"
+                  }`}
+              >
+                {userDetails.Status}
+              </span>
+
+              {/* Toggle Mode Section Section */}
+              {userDetails.Role === "Territory Sales Manager" && (
+                <label className="inline-flex items-center cursor-pointer mt-2">
+                  <input type="checkbox" checked={agentMode} onChange={() => setAgentMode(!agentMode)} className="sr-only peer" />
+                  <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                  <span className="ms-3 text-xs font-medium text-gray-900 dark:text-gray-300">Agent Mode</span>
+                </label>
+              )}
+
+            </div>
           </div>
         )}
 
@@ -511,8 +540,6 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       </div>
     </>
   );
-
-
 };
 
 export default Sidebar;
