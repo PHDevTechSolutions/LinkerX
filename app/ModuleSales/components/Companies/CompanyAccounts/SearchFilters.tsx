@@ -61,6 +61,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                 <option value="">All Status</option>
                 <option value="Active">Active</option> {/* Updated for null */}
                 <option value="Used">Used</option>
+                <option value="On Hold">On Hold</option>
             </select>
 
             <div className="flex gap-2">
