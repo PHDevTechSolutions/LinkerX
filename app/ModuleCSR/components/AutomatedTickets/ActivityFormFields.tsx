@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
+import { HiOutlineSwitchHorizontal } from "react-icons/hi";
 
 type OptionType = {
     value: string;
@@ -99,6 +100,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     editPost
 }) => {
 
+    const [isInput, setIsInput] = useState(false); // toggle state
     const [companies, setCompanies] = useState<any[]>([]);
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -113,6 +115,64 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
         setQtySold(parsedValue); // Update Amount with parsed value (could be number or empty string)
     };
 
+    useEffect(() => {
+        const fetchCompanies = async () => {
+            try {
+                const response = await fetch('/api/ModuleCSR/companies');
+                const data = await response.json();
+                setCompanies(data);
+            } catch (error) {
+                console.error('Error fetching companies:', error);
+            }
+        };
+        fetchCompanies();
+    }, []);
+
+    const CompanyOptions = companies.map((company) => ({
+        value: company.CompanyName,
+        label: company.CompanyName,
+    }));
+
+    const handleCompanyChange = async (selectedOption: any) => {
+        const selectedCompany = selectedOption ? selectedOption.value : '';
+        setCompanyName(selectedCompany);
+
+        if (selectedCompany) {
+            try {
+                const response = await fetch(`/api/ModuleCSR/companies?CompanyName=${encodeURIComponent(selectedCompany)}`);
+                if (response.ok) {
+                    const companyDetails = await response.json();
+                    setCustomerName(companyDetails.CustomerName || '');
+                    setGender(companyDetails.Gender || '');
+                    setContactNumber(companyDetails.ContactNumber || '');
+                    setEmail(companyDetails.Email || '');
+                    setCustomerSegment(companyDetails.CustomerSegment || '');
+                    setCityAddress(companyDetails.CityAddress || '');
+                    setCustomerType(companyDetails.CustomerType || '');
+                } else {
+                    console.error(`Company not found: ${selectedCompany}`);
+                    resetFields();
+                }
+            } catch (error) {
+                console.error('Error fetching company details:', error);
+                resetFields();
+            }
+        } else {
+            resetFields();
+        }
+    };
+
+    const resetFields = () => {
+        setCustomerName('');
+        setGender('');
+        setContactNumber('');
+        setEmail('');
+        setCustomerSegment('');
+        setCityAddress('');
+    };
+
+    const [isEditing, setIsEditing] = useState(false);
+
     const generateTicketReferenceNumber = () => {
         const randomNumber = Math.floor(100000000 + Math.random() * 1000000000); // Ensures a 9-digit number
         return `CSR-TICKET-${randomNumber}`;
@@ -120,8 +180,10 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
 
     useEffect(() => {
         if (editPost) {
+            setIsEditing(true);
             setTicketReferenceNumber(editPost.TicketReferenceNumber); // Set the existing value in edit mode
         } else {
+            setIsEditing(false);
             setTicketReferenceNumber(generateTicketReferenceNumber()); // Generate only in create mode
         }
     }, [editPost, setTicketReferenceNumber]);
@@ -202,27 +264,44 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
             <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
                 <h1 className="text-lg font-bold mb-2">Account Information</h1>
                 <div className="flex flex-wrap -mx-4">
-                    <div className="w-full sm:w-1/2 md:w-1/3 px-4 mb-4">
-                        <input
-                            type="hidden"
-                            id="SalesAgentName"
-                            value={SalesAgentName || ""}
-                            onChange={(e) => setSalesAgentName(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize"
-                            disabled
-                        />
+                    <div className="w-full sm:w-1/2 md:w-1/2 px-4">
+                        <input type="hidden" id="SalesAgentName" value={SalesAgentName || ""} onChange={(e) => setSalesAgentName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                         <input type="hidden" id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                         <input type="hidden" id="UserId" value={UserId || ""} onChange={(e) => setUserId(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                         <input type="hidden" id="Username" value={userName || ""} onChange={(e) => setuserName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                         <input type="hidden" id="ReferenceID" value={ReferenceID || ""} onChange={(e) => setReferenceID(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" disabled />
                         <label className="block text-xs font-bold mb-2" htmlFor="CompanyName">Company Name</label>
-                        <input type="text" id="CompanyName" value={CompanyName || ""} onChange={(e) => setCompanyName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
+                        <div className='flex items-center gap-1'>
+                            <button type="button" onClick={() => setIsInput(!isInput)}
+                            className="text-xs px-3 py-2 border rounded hover:bg-blue-500 hover:text-white transition">
+                            <HiOutlineSwitchHorizontal size={15}/>
+                        </button>
+                        {isInput ? (
+                            <input
+                                type="text"
+                                id="CompanyName"
+                                value={CompanyName}
+                                onChange={(e) => setCompanyName(e.target.value)}
+                                className="w-full px-3 py-2 border rounded text-xs"
+                                placeholder="Enter Company Name"
+                            />
+                        ) : (
+                            <Select
+                                id="CompanyName"
+                                options={CompanyOptions}
+                                onChange={handleCompanyChange}
+                                className="w-full text-xs"
+                                placeholder="Select Company"
+                                isClearable
+                            />
+                        )}
+                        </div>
                     </div>
-                    <div className="w-full sm:w-1/2 md:w-1/3 px-4 mb-4">
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2" htmlFor="CustomerName">Customer Name</label>
                         <input type="text" id="CustomerName" value={CustomerName || ""} onChange={(e) => setCustomerName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
                     </div>
-                    <div className="w-full sm:w-1/2 md:w-1/3 px-4 mb-4">
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2" htmlFor="Gender">Gender</label>
                         <select id="Gender" value={Gender || ""} onChange={(e) => setGender(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" required>
                             <option value="">Select Gender</option>
