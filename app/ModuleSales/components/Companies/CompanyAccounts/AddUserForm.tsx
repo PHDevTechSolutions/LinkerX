@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import FormFields from "./UserFormFields";
-import { CiSaveUp1, CiEdit, CiTurnL1 } from "react-icons/ci";
+import { CiSaveUp1, CiEdit, CiTurnL1, CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 
 interface AddUserFormProps {
   onCancel: () => void;
@@ -30,6 +30,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState<"success" | "error" | "">("");
+  const [isMaximized, setIsMaximized] = useState(false);
+
 
   useEffect(() => {
     if (editUser) {
@@ -101,9 +103,21 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white text-gray-900 shadow-md border rounded-lg p-4 text-xs mt-20">
+    <form
+      onSubmit={handleSubmit}
+      className={`bg-white text-gray-900 rounded-lg p-4 text-xs mt-20 transition-all duration-300 fixed right-0 w-full ${isMaximized ? "max-w-7xl h-screen" : "max-w-md h-screen"
+        }`}
+    >
 
       <div className="flex justify-end mb-4 gap-1">
+        <button
+          type="button"
+          className="px-4 py-2 border rounded text-xs flex gap-1"
+          onClick={() => setIsMaximized(!isMaximized)}
+        >
+          {isMaximized ? <CiCircleMinus size={15} /> : <CiCirclePlus size={15} />}
+          {isMaximized ? "Minimize" : "Maximize"}
+        </button>
         <button type="submit" className="bg-blue-400 text-white px-4 py-2 rounded text-xs flex items-center">
           {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}
           {editUser ? "Update" : "Submit"}
@@ -127,11 +141,10 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       {/* Alert message */}
       {alertMessage && (
         <div
-          className={`mb-4 p-2 rounded border text-xs ${
-            alertType === "success"
-              ? "bg-green-100 text-green-800 border-green-300"
-              : "bg-red-100 text-red-800 border-red-300"
-          }`}
+          className={`mb-4 p-2 rounded border text-xs ${alertType === "success"
+            ? "bg-green-100 text-green-800 border-green-300"
+            : "bg-red-100 text-red-800 border-red-300"
+            }`}
         >
           {alertMessage}
         </div>
@@ -150,6 +163,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         address={address} setaddress={setaddress}
         area={area} setarea={setarea}
         status={status} setstatus={setstatus}
+        isMaximized={isMaximized}
       />
     </form>
   );

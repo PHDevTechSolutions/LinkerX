@@ -850,7 +850,7 @@ const ListofUser: React.FC = () => {
 
                                 {/* Sliding Form */}
                                 <div
-                                    className={`fixed top-0 right-0 h-full p-2 w-full md:w-1/4 bg-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${showForm ? "translate-x-0" : "translate-x-full"
+                                    className={`fixed top-0 right-0 h-full w-full shadow-lg z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${(showForm || showPersonalForm) ? "translate-x-0" : "translate-x-full"
                                         }`}
                                 >
                                     {showForm && (

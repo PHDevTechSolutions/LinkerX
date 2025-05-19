@@ -16,7 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import ExcelJS from "exceljs";
 
 // Icons
-import { CiExport, CiSquarePlus, CiImport, CiSaveUp2, CiTurnL1 } from "react-icons/ci";
+import { CiExport, CiSquarePlus, CiImport, CiSaveUp2, CiTurnL1, CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -43,6 +43,7 @@ const ListofUser: React.FC = () => {
     const [status, setstatus] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const [jsonData, setJsonData] = useState<any[]>([]);
+    const [isMaximized, setIsMaximized] = useState(false);
 
     // Handle file selection and read data
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -260,6 +261,8 @@ const ListofUser: React.FC = () => {
         setShowForm(true);
     };
 
+    const fieldWidthClass = isMaximized ? "w-full sm:w-1/2 px-4 mb-4" : "w-full px-4 mb-4";
+
     return (
         <SessionChecker>
             <ParentLayout>
@@ -281,7 +284,7 @@ const ListofUser: React.FC = () => {
                                     )}
 
                                     <div
-                                        className={`fixed top-0 right-0 h-full w-full md:w-1/4 bg-white shadow-lg z-40 p-2 transform transition-transform duration-300 ease-in-out overflow-y-auto ${(showForm || showImportForm) ? "translate-x-0" : "translate-x-full"
+                                        className={`fixed top-0 right-0 h-full w-full shadow-lg z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${(showForm || showImportForm) ? "translate-x-0" : "translate-x-full"
                                             }`}
                                     >
                                         {showForm ? (
@@ -300,29 +303,38 @@ const ListofUser: React.FC = () => {
                                                 editUser={editUser}
                                             />
                                         ) : showImportForm ? (
-                                            <div className="p-4 mt-20 border rounded-lg shadow-md">
+                                            <div className={`bg-white text-gray-900 rounded-lg p-4 text-xs mt-20 transition-all duration-300 fixed right-0 w-full ${isMaximized ? "max-w-7xl h-screen" : "max-w-md h-screen"
+                                                }`}>
                                                 {/* Buttons */}
-                                                    <div className="flex justify-end mb-4 gap-1">
-                                                        <button type="submit" className="bg-blue-500 text-xs text-white px-4 py-2 rounded flex items-center gap-1">
-                                                            <CiSaveUp2 size={15} /> Upload
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className="border text-xs px-4 py-2 rounded flex items-center gap-1"
-                                                            onClick={() => setShowImportForm(false)}
-                                                        >
-                                                            <CiTurnL1 size={15} /> Back
-                                                        </button>
-                                                    </div>
+                                                <div className="flex justify-end mb-4 gap-1">
+                                                    <button
+                                                        type="button"
+                                                        className="px-4 py-2 border rounded text-xs flex gap-1"
+                                                        onClick={() => setIsMaximized(!isMaximized)}
+                                                    >
+                                                        {isMaximized ? <CiCircleMinus size={15} /> : <CiCirclePlus size={15} />}
+                                                        {isMaximized ? "Minimize" : "Maximize"}
+                                                    </button>
+                                                    <button type="submit" className="bg-blue-500 text-xs text-white px-4 py-2 rounded flex items-center gap-1">
+                                                        <CiSaveUp2 size={15} /> Upload
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="border text-xs px-4 py-2 rounded flex items-center gap-1"
+                                                        onClick={() => setShowImportForm(false)}
+                                                    >
+                                                        <CiTurnL1 size={15} /> Back
+                                                    </button>
+                                                </div>
                                                 <h2 className="text-lg font-bold mb-2">Account Import Section</h2>
                                                 <p className="text-xs text-gray-600 mb-4">
                                                     The <strong>Account Import Section</strong> allows users to upload and integrate bulk account data into the system.
                                                 </p>
 
                                                 <form onSubmit={handleFileUpload}>
-                                                    <div className="flex flex-wrap -mx-4">
+                                                    <div className={`flex flex-wrap -mx-4`}>
                                                         {/* Reference Info */}
-                                                        <div className="w-full px-4 mb-4">
+                                                        <div className={fieldWidthClass}>
                                                             <label className="block text-xs font-bold mb-2">Territory Sales Associate</label>
                                                             <input type="text" value={referenceid} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
                                                             <input type="hidden" value={manager} />
@@ -330,7 +342,7 @@ const ListofUser: React.FC = () => {
                                                         </div>
 
                                                         {/* Status */}
-                                                        <div className="w-full px-4 mb-4">
+                                                        <div className={fieldWidthClass}>
                                                             <label className="block text-xs font-bold mb-2">Status</label>
                                                             <select
                                                                 value={status}
@@ -346,7 +358,7 @@ const ListofUser: React.FC = () => {
                                                         </div>
 
                                                         {/* File Upload */}
-                                                        <div className="w-full px-4 mb-4">
+                                                        <div className={fieldWidthClass}>
                                                             <label className="block text-xs font-bold mb-2">Excel File</label>
                                                             <input
                                                                 type="file"
