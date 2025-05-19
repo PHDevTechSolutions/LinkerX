@@ -131,14 +131,17 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <input type="hidden" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
         </div>
       </div>
+
       <div className="flex flex-wrap -mx-4">
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+
+        <div className="w-full px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="companyname">Company Name</label>
           <input type="text" id="companyname" value={companyname} onChange={(e) => setcompanyname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required
           />
         </div>
+
         {/* Contact Person */}
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+        <div className="w-full px-4 mb-4">
           <label className="block text-xs font-bold mb-2">Contact Person</label>
           {contactPersons.map((person, index) => (
             <div key={index} className="flex items-center gap-2 mb-2">
@@ -150,8 +153,9 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             </div>
           ))}
         </div>
+
         {/* Contact Number */}
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+        <div className="w-full px-4 mb-4">
           <label className="block text-xs font-bold mb-2">Contact Number</label>
           {contactNumbers.map((number, index) => (
             <div key={index} className="flex items-center gap-2 mb-2">
@@ -163,8 +167,9 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             </div>
           ))}
         </div>
+
         {/* Email Address */}
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+        <div className="w-full px-4 mb-4">
           <label className="block text-xs font-bold mb-2">Email Address</label>
           {emailAddresses.map((email, index) => (
             <div key={index} className="flex items-center gap-2 mb-2">
@@ -176,7 +181,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             </div>
           ))}
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+
+        <div className="w-full px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="typeclient">Type of Client</label>
           <select id="typeclient" value={typeclient} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
             <option value="">Select Client</option>
@@ -189,24 +195,29 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="Transferred Account">Transferred Account</option>
           </select>
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+
+        <div className="w-full px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="companygroup">Affiliate or Group</label>
           <input type="text" id="companygroup" value={companygroup} onChange={(e) => setcompanygroup(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" />
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+
+        <div className="w-full px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="address">Address</label>
           <input type="text" id="address" value={address} onChange={(e) => setaddress(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+
+        <div className="w-full px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="area">Area</label>
           <input type="text" id="area" value={area} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+
+        <div className="w-full px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="area">Status</label>
           <select id="status" value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
             <option value="">Select Status</option>
             <option value="On Hold">On Hold</option>
           </select>
+          
           <p className="text-xs text-gray-600 mt-4">
             Select the <strong>Status</strong> of the account to indicate its current state (On Hold).
           </p>

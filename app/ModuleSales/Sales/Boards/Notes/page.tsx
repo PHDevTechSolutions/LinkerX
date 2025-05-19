@@ -188,43 +188,58 @@ const ListofUser: React.FC = () => {
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
                             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
-                                {showForm ? (
-                                    <AddPostForm
-                                        onCancel={() => {
+                                {/* Backdrop overlay */}
+                                {showForm && (
+                                    <div
+                                        className="fixed inset-0 bg-black bg-opacity-50 z-30"
+                                        onClick={() => {
                                             setShowForm(false);
                                             setEditUser(null);
                                         }}
-                                        refreshPosts={fetchAccount}
-                                        userDetails={{
-                                            id: editUser ? editUser.id : userDetails.UserId,
-                                            referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
-                                        }}
-                                        editUser={editUser}
-                                    />
-                                ) : (
-                                    <>
-                                        <div className="flex justify-between items-center mb-4">
-                                            <button
-                                                className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
-                                                onClick={() => setShowForm(true)}
-                                            >
-                                                <CiStickyNote size={16} /> Create Notes
-                                            </button>
-                                        </div>
-
-                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">Notes</h2>
-                                            <p className="text-xs text-gray-600 mb-4">
-                                                The <strong>Kanban Board</strong> here is used to manage and track the progress of various tasks or activities. It helps in organizing the workflow and provides a clear visual representation of task status. The board is divided into different columns such as "Backlogs," "Priority," "Important", and "Finished," allowing users to move tasks across these stages. This system enhances collaboration by allowing team members to easily update and track the status of each task, making it an effective tool for managing tasks, improving productivity, and ensuring smoother coordination within the team.
-                                            </p>
-                                            <UsersCard
-                                                posts={currentPosts}
-                                                handleDelete={confirmDelete}
-                                                updatePostStatus={updatePostStatus} // Pass the updatePostStatus function
-                                            />
-                                        </div>
-                                    </>
+                                    ></div>
                                 )}
+
+                                {/* Sliding Form */}
+                                <div
+                                    className={`fixed top-0 right-0 h-full p-2 w-full md:w-1/4 bg-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${showForm ? "translate-x-0" : "translate-x-full"
+                                        }`}
+                                >
+                                    {showForm && (
+                                        <AddPostForm
+                                            onCancel={() => {
+                                                setShowForm(false);
+                                                setEditUser(null);
+                                            }}
+                                            refreshPosts={fetchAccount}
+                                            userDetails={{
+                                                id: editUser ? editUser.id : userDetails.UserId,
+                                                referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
+                                            }}
+                                            editUser={editUser}
+                                        />
+                                    )}
+                                </div>
+
+                                <div className="flex justify-between items-center mb-4">
+                                    <button
+                                        className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
+                                        onClick={() => setShowForm(true)}
+                                    >
+                                        <CiStickyNote size={16} /> Create Notes
+                                    </button>
+                                </div>
+
+                                <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                    <h2 className="text-lg font-bold mb-2">Notes</h2>
+                                    <p className="text-xs text-gray-600 mb-4">
+                                        The <strong>Kanban Board</strong> here is used to manage and track the progress of various tasks or activities. It helps in organizing the workflow and provides a clear visual representation of task status. The board is divided into different columns such as "Backlogs," "Priority," "Important", and "Finished," allowing users to move tasks across these stages. This system enhances collaboration by allowing team members to easily update and track the status of each task, making it an effective tool for managing tasks, improving productivity, and ensuring smoother coordination within the team.
+                                    </p>
+                                    <UsersCard
+                                        posts={currentPosts}
+                                        handleDelete={confirmDelete}
+                                        updatePostStatus={updatePostStatus} // Pass the updatePostStatus function
+                                    />
+                                </div>
 
                                 {showDeleteModal && (
                                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

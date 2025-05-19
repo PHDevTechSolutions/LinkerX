@@ -108,6 +108,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     date_created: string;
   }[]>([]);
 
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState<"success" | "error" | "">("");
+
   type Activity = {
     id: number;
     typeactivity: string;
@@ -150,9 +153,13 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const url = editUser ? `/api/ModuleSales/Task/DailyActivity/EditUser` : `/api/ModuleSales/Task/DailyActivity/CreateUser`;
-    const method = editUser ? "PUT" : "POST";
+    const url = editUser 
+    ? `/api/ModuleSales/Task/DailyActivity/EditUser` 
+    : `/api/ModuleSales/Task/DailyActivity/CreateUser`;
 
+    const method = editUser ? "PUT" : "POST";
+    
+    try {
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
@@ -163,19 +170,24 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       }),
     });
 
-    if (response.ok) {
-      toast.success(editUser ? "User updated successfully" : "User added successfully", {
-        autoClose: 1000,
-        onClose: () => {
-          onCancel();
-          refreshPosts();
-        },
-      });
-    } else {
-      toast.error(editUser ? "Failed to update user" : "Failed to add user", {
-        autoClose: 1000,
-      });
+    if (!response.ok) throw new Error("Request failed");
+
+      setAlertMessage(editUser ? "The account information has been updated successfully." : "A new account has been created successfully.");
+      setAlertType("success");
+
+      // Optionally refresh list
+      refreshPosts();
+
+    } catch (error) {
+      setAlertMessage("Failed to save account. Please try again.");
+      setAlertType("error");
     }
+
+    // Clear alert after 3 seconds
+    setTimeout(() => {
+      setAlertMessage("");
+      setAlertType("");
+    }, 3000);
   };
 
   const handleDeleteClick = (id: string) => {
@@ -274,20 +286,35 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
-        <div className="flex justify-end gap-2">
+      <form onSubmit={handleSubmit} className="bg-white text-gray-900 shadow-md border rounded-lg p-4 text-xs mt-20">
+
+        <div className="flex justify-end mb-4 gap-1">
           <button type="submit" className="bg-blue-400 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
             {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}
             {editUser ? "Update" : "Submit"}
           </button>
           <button type="button" className="border text-black px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiTurnL1 size={15} /> Back</button>
         </div>
-        <h2 className="text-xs font-bold mb-4">
+
+        <h2 className="text-lg font-bold mb-4">
           {editUser ? "Edit Account Information" : "Add New Account"}
         </h2>
         <p className="text-xs text-gray-600 mb-4">
           The process of <strong>creating</strong> or <strong>editing an account</strong> involves updating key information associated with a company. When adding or editing an account, fields such as company name, contact details, client type, and status play an essential role in maintaining accurate and up-to-date records. These fields ensure smooth management and tracking of company accounts within the system, allowing for better organization and coordination. Properly updating these details is crucial for improving communication and ensuring the integrity of the data throughout the process.
         </p>
+
+        {/* Alert message */}
+        {alertMessage && (
+          <div
+            className={`mb-4 p-2 rounded border text-xs ${alertType === "success"
+                ? "bg-green-100 text-green-800 border-green-300"
+                : "bg-red-100 text-red-800 border-red-300"
+              }`}
+          >
+            {alertMessage}
+          </div>
+        )}
+
         <FormFields
           referenceid={referenceid} setreferenceid={setReferenceid}
           manager={manager} setmanager={setManager}
@@ -390,11 +417,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                             ? "bg-blue-200 text-black"
                             : activity.activitystatus === "Warm"
                               ? "bg-yellow-200 text-black"
-                            : activity.activitystatus === "Hot"
-                              ? "bg-red-200 text-black" 
-                            : activity.activitystatus === "Done"
-                              ? "bg-green-200 text-black"   
-                              : "bg-green-100 text-green-700"
+                              : activity.activitystatus === "Hot"
+                                ? "bg-red-200 text-black"
+                                : activity.activitystatus === "Done"
+                                  ? "bg-green-200 text-black"
+                                  : "bg-green-100 text-green-700"
                             }`}
                         >
                           {activity.activitystatus}
@@ -405,7 +432,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                           <CiTrash size={15} />
                         </button>
                         <button onClick={() => handleEditClick(activity.id)} className="bg-white p-2 rounded-md flex text-blue-900">
-                          <CiEdit size={15} /> 
+                          <CiEdit size={15} />
                         </button>
                       </td>
                     </tr>

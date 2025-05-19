@@ -149,46 +149,61 @@ const ListofUser: React.FC = () => {
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
                             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
-                                {showForm ? (
-                                    <AddPostForm
-                                        onCancel={() => {
+                                {/* Backdrop overlay */}
+                                {showForm && (
+                                    <div
+                                        className="fixed inset-0 bg-black bg-opacity-50 z-30"
+                                        onClick={() => {
                                             setShowForm(false);
                                             setEditUser(null);
                                         }}
-                                        refreshPosts={fetchAccount}
-                                        userDetails={{
-                                            id: editUser ? editUser.id : userDetails.UserId,
-                                            referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
-                                            sender: editUser ? editUser.sender : userDetails.Email,
-                                        }}
-                                        editUser={editUser}
-                                    />
-                                ) : (
-                                    <>
-                                        <div className="flex justify-between items-center mb-4">
-                                            <button
-                                                className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
-                                                onClick={() => setShowForm(true)}
-                                            >
-                                                <CiEdit size={16} /> Compose
-                                            </button>
-                                        </div>
-
-                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">XendMail</h2>
-                                            <p className="text-xs text-gray-600 mb-4">
-                                                The <strong>XendMail</strong> feature allows users to compose new emails and efficiently manage their status updates. It simplifies the workflow by providing a clear visual representation of the email’s current status. Users can categorize emails into stages such as "Draft," "Sent," "Pending," and "Archived," enabling easy tracking and progress monitoring. This system enhances team collaboration by allowing users to quickly update the status of each email, improving communication efficiency and ensuring smooth coordination across the team.
-                                            </p>
-
-                                            <UsersCard
-                                                posts={currentPosts}
-                                                handleEdit={(user) => handleEdit(user)}
-                                                userDetails={userDetails}
-                                                fetchAccount={fetchAccount}
-                                            />
-                                        </div>
-                                    </>
+                                    ></div>
                                 )}
+
+                                {/* Sliding Form */}
+                                <div
+                                    className={`fixed top-0 right-0 h-full p-2 w-full md:w-1/4 bg-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${showForm ? "translate-x-0" : "translate-x-full"
+                                        }`}
+                                >
+                                    {showForm && (
+                                        <AddPostForm
+                                            onCancel={() => {
+                                                setShowForm(false);
+                                                setEditUser(null);
+                                            }}
+                                            refreshPosts={fetchAccount}
+                                            userDetails={{
+                                                id: editUser ? editUser.id : userDetails.UserId,
+                                                referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
+                                                sender: editUser ? editUser.sender : userDetails.Email,
+                                            }}
+                                            editUser={editUser}
+                                        />
+                                    )}
+                                </div>
+
+                                <div className="flex justify-between items-center mb-4">
+                                    <button
+                                        className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition"
+                                        onClick={() => setShowForm(true)}
+                                    >
+                                        <CiEdit size={16} /> Compose
+                                    </button>
+                                </div>
+
+                                <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                    <h2 className="text-lg font-bold mb-2">XendMail</h2>
+                                    <p className="text-xs text-gray-600 mb-4">
+                                        The <strong>XendMail</strong> feature allows users to compose new emails and efficiently manage their status updates. It simplifies the workflow by providing a clear visual representation of the email’s current status. Users can categorize emails into stages such as "Draft," "Sent," "Pending," and "Archived," enabling easy tracking and progress monitoring. This system enhances team collaboration by allowing users to quickly update the status of each email, improving communication efficiency and ensuring smooth coordination across the team.
+                                    </p>
+
+                                    <UsersCard
+                                        posts={currentPosts}
+                                        handleEdit={(user) => handleEdit(user)}
+                                        userDetails={userDetails}
+                                        fetchAccount={fetchAccount}
+                                    />
+                                </div>
 
                                 <ToastContainer className="text-xs" />
                             </div>

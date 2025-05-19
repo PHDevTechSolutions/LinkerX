@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormFields from "./UserFormFields";
-import { CiTrash, CiCircleRemove, CiSaveUp1, CiEdit } from "react-icons/ci";
+import { CiTrash, CiTurnL1, CiSaveUp1, CiEdit } from "react-icons/ci";
 
 interface AddUserFormProps {
     userDetails: {
@@ -52,8 +52,22 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
 
     return (
         <>
-            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
-                <h2 className="text-xs font-bold mb-4">
+            <form onSubmit={handleSubmit} className="bg-white text-gray-900 shadow-md border rounded-lg p-4 text-xs mt-20">
+                <div className="flex justify-end mb-4 gap-1">
+                    <button type="submit" className="bg-blue-400 text-white px-4 py-2 rounded text-xs flex items-center">
+                        {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
+                        {editUser ? "Update" : "Submit"}
+                    </button>
+                    <button
+                        type="button"
+                        className="px-4 py-2 border rounded text-xs flex items-center gap-1"
+                        onClick={onCancel}
+                    >
+                        <CiTurnL1 size={20} /> Cancel
+                    </button>
+                </div>
+
+                <h2 className="text-lg font-bold mb-4">
                     {editUser ? "Edit Notes Information" : "Add New Notes"}
                 </h2>
                 <p className="text-xs text-gray-600 mb-4">
@@ -66,13 +80,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
                     description={description} setdescription={setdescription}
                     status={status} setstatus={setstatus}
                 />
-                <div className="flex justify-between">
-                    <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
-                        {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
-                        {editUser ? "Update" : "Submit"}
-                    </button>
-                    <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiCircleRemove size={20} /> Cancel</button>
-                </div>
             </form>
             <ToastContainer className="text-xs" autoClose={1000} />
         </>

@@ -159,60 +159,74 @@ const ListofUser: React.FC = () => {
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
                             <div className="grid grid-cols-1 md:grid-cols-1">
-                                {showForm ? (
-                                    <AddPostForm
-                                        onCancel={() => {
+                                {/* Backdrop overlay */}
+                                {showForm && (
+                                    <div
+                                        className="fixed inset-0 bg-black bg-opacity-50 z-30"
+                                        onClick={() => {
                                             setShowForm(false);
                                             setEditUser(null);
                                         }}
-                                        refreshPosts={fetchAccount} // Pass the refreshPosts callback
-                                        userDetails={{
-                                            id: editUser ? editUser.id : userDetails.UserId,
-                                            referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
-                                            manager: editUser ? editUser.manager : userDetails.Manager,
-                                            tsm: editUser ? editUser.tsm : userDetails.TSM,
-                                        }}
-                                        editUser={editUser}
+                                    ></div>
+                                )}
+
+                                {/* Sliding Form */}
+                                <div
+                                    className={`fixed top-0 right-0 h-full p-2 w-full md:w-1/4 bg-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${showForm ? "translate-x-0" : "translate-x-full"
+                                        }`}
+                                >
+                                    {showForm && (
+                                        <AddPostForm
+                                            onCancel={() => {
+                                                setShowForm(false);
+                                                setEditUser(null);
+                                            }}
+                                            refreshPosts={fetchAccount} // Pass the refreshPosts callback
+                                            userDetails={{
+                                                id: editUser ? editUser.id : userDetails.UserId,
+                                                referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
+                                                manager: editUser ? editUser.manager : userDetails.Manager,
+                                                tsm: editUser ? editUser.tsm : userDetails.TSM,
+                                            }}
+                                            editUser={editUser}
+                                        />
+                                    )}
+                                </div>
+
+                                <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                    <h2 className="text-lg font-bold mb-2">Deletion Companies</h2>
+                                    <p className="text-xs text-gray-600 mb-4">
+                                        This section displays a list of <strong>Deletion Companies</strong> within the system. You can filter the companies based on various criteria such as client type, start date, end date, and search term. Use the filters to narrow down your search and quickly find the relevant inactive companies you need to manage or review.
+                                    </p>
+                                    <SearchFilters
+                                        searchTerm={searchTerm}
+                                        setSearchTerm={setSearchTerm}
+                                        postsPerPage={postsPerPage}
+                                        setPostsPerPage={setPostsPerPage}
+                                        selectedClientType={selectedClientType}
+                                        setSelectedClientType={setSelectedClientType}
+                                        startDate={startDate}
+                                        setStartDate={setStartDate}
+                                        endDate={endDate}
+                                        setEndDate={setEndDate}
+                                    />
+                                    <UsersTable
+                                        posts={currentPosts}
+                                        handleEdit={handleEdit}
+                                        referenceid={referenceid}
+                                    />
+                                    <Pagination
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        setCurrentPage={setCurrentPage}
                                     />
 
-                                ) : (
-                                    <>
-                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">Deletion Companies</h2>
-                                            <p className="text-xs text-gray-600 mb-4">
-                                                This section displays a list of <strong>Deletion Companies</strong> within the system. You can filter the companies based on various criteria such as client type, start date, end date, and search term. Use the filters to narrow down your search and quickly find the relevant inactive companies you need to manage or review.
-                                            </p>
-                                            <SearchFilters
-                                                searchTerm={searchTerm}
-                                                setSearchTerm={setSearchTerm}
-                                                postsPerPage={postsPerPage}
-                                                setPostsPerPage={setPostsPerPage}
-                                                selectedClientType={selectedClientType}
-                                                setSelectedClientType={setSelectedClientType}
-                                                startDate={startDate}
-                                                setStartDate={setStartDate}
-                                                endDate={endDate}
-                                                setEndDate={setEndDate}
-                                            />
-                                            <UsersTable
-                                                posts={currentPosts}
-                                                handleEdit={handleEdit}
-                                                referenceid={referenceid}
-                                            />
-                                            <Pagination
-                                                currentPage={currentPage}
-                                                totalPages={totalPages}
-                                                setCurrentPage={setCurrentPage}
-                                            />
-
-                                            <div className="text-xs mt-2">
-                                                Showing {indexOfFirstPost + 1} to{" "}
-                                                {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                                {filteredAccounts.length} entries
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
+                                    <div className="text-xs mt-2">
+                                        Showing {indexOfFirstPost + 1} to{" "}
+                                        {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
+                                        {filteredAccounts.length} entries
+                                    </div>
+                                </div>
 
                                 <ToastContainer className="text-xs" autoClose={1000} />
                             </div>

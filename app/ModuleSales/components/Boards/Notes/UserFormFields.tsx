@@ -22,30 +22,29 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     <input type="hidden" id="referenceid" value={referenceid ?? ""} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                 </div>
             </div>
-            <div className="mb-4 border rounded-lg shadow-sm p-4">
-                <div className="flex flex-wrap -mx-4">
-                    <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Title</label>
-                        <input type="text" id="title" value={title ?? ""} onChange={(e) => settitle(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                    </div>
-                    <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Status</label>
-                        <select value={status ?? ""} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize bg-gray-100">
-                            <option value="">Select Status</option>
-                            <option value="Backlogs">Backlogs</option>
-                            <option value="Priority">Priority</option>
-                            <option value="Important">Important</option>
-                            <option value="Finished">Finished</option>
-                        </select>
-                    </div>
+            <div className="flex flex-wrap -mx-4">
+                <div className="w-full px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2">Title</label>
+                    <input type="text" id="title" value={title ?? ""} onChange={(e) => settitle(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                 </div>
-                <div className="flex flex-wrap -mx-4">
-                    <div className="w-full sm:w-1/1 md:w-1/1 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Description</label>
-                        <textarea value={description ?? ""} onChange={(e) => setdescription(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={5}></textarea>
-                    </div>
+                <div className="w-full px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2">Status</label>
+                    <select value={status ?? ""} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize bg-gray-100">
+                        <option value="">Select Status</option>
+                        <option value="Backlogs">Backlogs</option>
+                        <option value="Priority">Priority</option>
+                        <option value="Important">Important</option>
+                        <option value="Finished">Finished</option>
+                    </select>
                 </div>
             </div>
+            <div className="flex flex-wrap -mx-4">
+                <div className="w-full px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2">Description</label>
+                    <textarea value={description ?? ""} onChange={(e) => setdescription(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={5}></textarea>
+                </div>
+            </div>
+
         </>
     );
 };

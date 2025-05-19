@@ -16,8 +16,11 @@ import 'react-toastify/dist/ReactToastify.css';
 // Icons
 import { CiSaveUp1, CiTrash, CiTurnL1 } from "react-icons/ci";
 import { PiHandTapThin } from "react-icons/pi";
-import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
+import { IoCheckmarkDoneCircleOutline, IoTrashOutline } from "react-icons/io5";
 import { FcManager, FcPhone, FcFeedback, FcHome } from "react-icons/fc";
+import { AiOutlineStop } from "react-icons/ai";
+
+
 
 // Read leftover
 const fetchLeftover = async () => {
@@ -645,104 +648,104 @@ const ListofUser: React.FC = () => {
 
     // Revised Code 
     //const getFilteredCompanies = async (post: Company[]) => {
-        //const leftover = await fetchLeftover();
-        //let remaining = 35 + leftover;
+    //const leftover = await fetchLeftover();
+    //let remaining = 35 + leftover;
 
-        //const today = new Date().toISOString().slice(0, 10);
+    //const today = new Date().toISOString().slice(0, 10);
 
-        // Fetch the last generated week and last used status from the database
-        //const { lastGeneratedWeek, lastUsedStatus } = await fetchNewClientMeta(); // Fetch the meta data
+    // Fetch the last generated week and last used status from the database
+    //const { lastGeneratedWeek, lastUsedStatus } = await fetchNewClientMeta(); // Fetch the meta data
 
-        //const currentDate = new Date();
-        //const currentWeek = `${currentDate.getFullYear()}-W${Math.ceil((currentDate.getDate() + 6 - currentDate.getDay()) / 7)}`;
+    //const currentDate = new Date();
+    //const currentWeek = `${currentDate.getFullYear()}-W${Math.ceil((currentDate.getDate() + 6 - currentDate.getDay()) / 7)}`;
 
-        //let newAccountCompanies: Company[] = [];
+    //let newAccountCompanies: Company[] = [];
 
-        // If a new week starts, we process "New Account - Client Development"
-        //if (currentWeek !== lastGeneratedWeek) {
-            // Fetch the next client based on the current status (Used or Active)
-            //const candidate = post
-                //.filter(
-                    //(company) =>
-                        //company.status === lastUsedStatus &&
-                        //company.typeclient === "New Account - Client Development"
-                //)
-                //.slice(0, 1) // Only one company per week
-                //.map((company) => ({
-                    //...company,
-                    //date_assigned: today,
-                //}));
+    // If a new week starts, we process "New Account - Client Development"
+    //if (currentWeek !== lastGeneratedWeek) {
+    // Fetch the next client based on the current status (Used or Active)
+    //const candidate = post
+    //.filter(
+    //(company) =>
+    //company.status === lastUsedStatus &&
+    //company.typeclient === "New Account - Client Development"
+    //)
+    //.slice(0, 1) // Only one company per week
+    //.map((company) => ({
+    //...company,
+    //date_assigned: today,
+    //}));
 
-            //newAccountCompanies = candidate;
+    //newAccountCompanies = candidate;
 
-            // If a client is selected, toggle the status for the next week
-            //if (candidate.length > 0) {
-                //const nextStatus = lastUsedStatus === "Used" ? "Active" : "Used";
-                //await saveNewClientMeta({ lastGeneratedWeek: currentWeek, lastUsedStatus: nextStatus });
-            //}
-        //}
+    // If a client is selected, toggle the status for the next week
+    //if (candidate.length > 0) {
+    //const nextStatus = lastUsedStatus === "Used" ? "Active" : "Used";
+    //await saveNewClientMeta({ lastGeneratedWeek: currentWeek, lastUsedStatus: nextStatus });
+    //}
+    //}
 
-        // Subtract the new account companies from the remaining count
-        //remaining -= newAccountCompanies.length;
+    // Subtract the new account companies from the remaining count
+    //remaining -= newAccountCompanies.length;
 
-        //const finalCompanies: Company[] = [...newAccountCompanies];
+    //const finalCompanies: Company[] = [...newAccountCompanies];
 
-        //const typeClientPriority = ["Top 50", "Next 30", "Balance 20"];
+    //const typeClientPriority = ["Top 50", "Next 30", "Balance 20"];
 
-        // Function to fetch companies by status and type client (Used / Active)
-        //const getCompaniesByStatus = (status: "Used" | "Active", excludeIds: string[]) => {
-            //let result: Company[] = [];
+    // Function to fetch companies by status and type client (Used / Active)
+    //const getCompaniesByStatus = (status: "Used" | "Active", excludeIds: string[]) => {
+    //let result: Company[] = [];
 
-            //for (const type of typeClientPriority) {
-                //const filtered = post.filter(
-                    //(company) =>
-                        //company.status === status &&
-                        //company.typeclient === type &&
-                        //!excludeIds.includes(company.id?.toString() ?? "")
-                //);
+    //for (const type of typeClientPriority) {
+    //const filtered = post.filter(
+    //(company) =>
+    //company.status === status &&
+    //company.typeclient === type &&
+    //!excludeIds.includes(company.id?.toString() ?? "")
+    //);
 
-                //const toAdd = filtered.slice(0, remaining - result.length).map((company) => ({
-                    //...company,
-                    //date_assigned: today,
-                //}));
+    //const toAdd = filtered.slice(0, remaining - result.length).map((company) => ({
+    //...company,
+    //date_assigned: today,
+    //}));
 
-                //result = [...result, ...toAdd];
+    //result = [...result, ...toAdd];
 
-                //if (result.length >= remaining) break;
-            //}
+    //if (result.length >= remaining) break;
+    //}
 
-            //return result;
-        //};
+    //return result;
+    //};
 
-        // Looping: Try Used first, then Active, then Used again if needed
-        //const excludeIds = finalCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id);
+    // Looping: Try Used first, then Active, then Used again if needed
+    //const excludeIds = finalCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id);
 
-        // Fetch the used companies first
-        //const usedCompanies = getCompaniesByStatus("Used", excludeIds);
-        //finalCompanies.push(...usedCompanies);
-        //excludeIds.push(...usedCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id));
+    // Fetch the used companies first
+    //const usedCompanies = getCompaniesByStatus("Used", excludeIds);
+    //finalCompanies.push(...usedCompanies);
+    //excludeIds.push(...usedCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id));
 
-        // If we still need more, add active companies
-        //if (finalCompanies.length < 35) {
-            //const activeCompanies = getCompaniesByStatus("Active", excludeIds);
-            //finalCompanies.push(...activeCompanies);
-            //excludeIds.push(...activeCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id));
-        //}
+    // If we still need more, add active companies
+    //if (finalCompanies.length < 35) {
+    //const activeCompanies = getCompaniesByStatus("Active", excludeIds);
+    //finalCompanies.push(...activeCompanies);
+    //excludeIds.push(...activeCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id));
+    //}
 
-        // If we still need more, add another round of used companies
-        //if (finalCompanies.length < 35) {
-            //const secondRoundUsed = getCompaniesByStatus("Used", excludeIds);
-            //finalCompanies.push(...secondRoundUsed);
-        //}
+    // If we still need more, add another round of used companies
+    //if (finalCompanies.length < 35) {
+    //const secondRoundUsed = getCompaniesByStatus("Used", excludeIds);
+    //finalCompanies.push(...secondRoundUsed);
+    //}
 
-        // Calculate how many companies remain for the next week
-        //const updatedLeftover = 35 - finalCompanies.length;
+    // Calculate how many companies remain for the next week
+    //const updatedLeftover = 35 - finalCompanies.length;
 
-        //setRemainingBalance(updatedLeftover);
-        //setTodayCompanies(finalCompanies);
+    //setRemainingBalance(updatedLeftover);
+    //setTodayCompanies(finalCompanies);
 
-        // Save the leftover companies to be used in the next run (if applicable)
-        //await saveLeftover(updatedLeftover);
+    // Save the leftover companies to be used in the next run (if applicable)
+    //await saveLeftover(updatedLeftover);
     //};
 
     // Current Code 
@@ -750,17 +753,17 @@ const ListofUser: React.FC = () => {
     const getFilteredCompanies = async (post: Company[]) => {
         const leftover = await fetchLeftover();
         let remaining = 35 + leftover;
-    
+
         const today = new Date().toISOString().slice(0, 10);
-    
+
         // Fetch the last generated week and last used status from the database
         const { lastGeneratedWeek, lastUsedStatus } = await fetchNewClientMeta(); // Fetch the meta data
-    
+
         const currentDate = new Date();
         const currentWeek = `${currentDate.getFullYear()}-W${Math.ceil((currentDate.getDate() + 6 - currentDate.getDay()) / 7)}`;
-    
+
         let newAccountCompanies: Company[] = [];
-    
+
         // If a new week starts, we process "New Account - Client Development"
         if (currentWeek !== lastGeneratedWeek) {
             // Fetch the next client based on the current status (Used or Active)
@@ -775,27 +778,27 @@ const ListofUser: React.FC = () => {
                     ...company,
                     date_assigned: today,
                 }));
-    
+
             newAccountCompanies = candidate;
-    
+
             // If a client is selected, toggle the status for the next week
             if (candidate.length > 0) {
                 const nextStatus = lastUsedStatus === "Used" ? "Active" : "Used";
                 await saveNewClientMeta({ lastGeneratedWeek: currentWeek, lastUsedStatus: nextStatus });
             }
         }
-    
+
         // Subtract the new account companies from the remaining count
         remaining -= newAccountCompanies.length;
-    
+
         const finalCompanies: Company[] = [...newAccountCompanies];
-    
+
         const typeClientPriority = ["Top 50", "Next 30", "Balance 20"];
-    
+
         // Function to fetch companies by status and type client (Used / Active), sorted by date_created
         const getCompaniesByStatus = (status: "Used" | "Active", excludeIds: string[]) => {
             let result: Company[] = [];
-    
+
             for (const type of typeClientPriority) {
                 const filtered = post
                     .filter(
@@ -805,49 +808,50 @@ const ListofUser: React.FC = () => {
                             !excludeIds.includes(company.id?.toString() ?? "")
                     )
                     .sort((a, b) => (new Date(a.date_updated).getTime() - new Date(b.date_updated).getTime())); // Sort by date_created
-    
+
                 const toAdd = filtered.slice(0, remaining - result.length).map((company) => ({
                     ...company,
                     date_assigned: today,
                 }));
-    
+
                 result = [...result, ...toAdd];
-    
+
                 if (result.length >= remaining) break;
             }
-    
+
             return result;
         };
-    
+
         const excludeIds = finalCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id);
-    
+
         // Fetch the used companies first
         const usedCompanies = getCompaniesByStatus("Used", excludeIds);
         finalCompanies.push(...usedCompanies);
         excludeIds.push(...usedCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id));
-    
+
         // If we still need more, add active companies
         if (finalCompanies.length < 35) {
             const activeCompanies = getCompaniesByStatus("Active", excludeIds);
             finalCompanies.push(...activeCompanies);
             excludeIds.push(...activeCompanies.map((c) => c.id?.toString()).filter((id): id is string => !!id));
         }
-    
+
         // If we still need more, add another round of used companies
         if (finalCompanies.length < 35) {
             const secondRoundUsed = getCompaniesByStatus("Used", excludeIds);
             finalCompanies.push(...secondRoundUsed);
         }
-    
+
         // Calculate how many companies remain for the next week
         const updatedLeftover = 35 - finalCompanies.length;
-    
+
         setRemainingBalance(updatedLeftover);
         setTodayCompanies(finalCompanies);
-    
+
         // Save the leftover companies to be used in the next run (if applicable)
         await saveLeftover(updatedLeftover);
     };
+
 
     // Fetch companies from API with ReferenceID as query param
     const fetchCompanies = async () => {
@@ -951,6 +955,7 @@ const ListofUser: React.FC = () => {
         } catch (error) {
         } finally {
             setShowModal(false); // Close modal after action
+            await fetchCompanies();
         }
     };
 
@@ -958,6 +963,44 @@ const ListofUser: React.FC = () => {
     const handleAccept = (company: any) => {
         setSelectedCompany(company);
         setShowModal(true);
+    };
+
+    const handleVoid = async (company: any) => {
+        if (!company) return;
+
+        try {
+            let newStatus = company.status === "Used" ? "Active" : "Used";
+
+            const response = await fetch("/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    id: company.id,
+                    status: newStatus,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("❌ Update failed:", errorText);
+                return;
+            }
+
+            const result = await response.json();
+            console.log("Company status updated:", result);
+
+            setTodayCompanies(prevCompanies =>
+                prevCompanies.map(c =>
+                    c.id === company.id ? { ...c, status: newStatus } : c
+                )
+            );
+
+            fetchCompanies();
+        } catch (error) {
+            console.error("An error occurred while updating status", error);
+        }
     };
 
     // Handle Cancel to Close Modal
@@ -1203,46 +1246,63 @@ const ListofUser: React.FC = () => {
                                                                 todayCompanies.map((company, index) => (
                                                                     <div
                                                                         key={company.id}
-                                                                        className={`p-2 rounded-lg shadow-lg flex justify-between items-center text-[10px] transition-all duration-200 ease-in-out transform hover:scale-[1.02] uppercase font-medium 
-                                                                            ${company.typeclient === "New Account - Client Development"
+                                                                        className={`p-2 rounded-lg shadow-lg text-[10px] transition-all duration-200 ease-in-out transform hover:scale-[1.02] uppercase font-medium
+    ${company.typeclient === "New Account - Client Development"
                                                                                 ? "bg-yellow-200 text-black"
                                                                                 : company.status === "Used"
                                                                                     ? "bg-lime-200 text-black"
-                                                                                    : "bg-teal-300 text-black"}`}
+                                                                                    : "bg-teal-300 text-black"
+                                                                            }`}
                                                                     >
-                                                                        <span className="space-y-1">
+                                                                        {/* Company Info */}
+                                                                        <div className="space-y-1">
                                                                             <strong>{company.companyname}</strong>
                                                                             <br />
                                                                             <span>{company.typeclient} / {company.status}</span>
                                                                             <br />
-
-                                                                            <span className="flex gap-1 items-start">
+                                                                            <div className="flex gap-1 items-start">
                                                                                 <FcManager size={10} className="flex-shrink-0 mt-[2px]" />
                                                                                 <span>{company.contactperson}</span>
-                                                                            </span>
-                                                                            <span className="flex gap-1 items-start">
+                                                                            </div>
+                                                                            <div className="flex gap-1 items-start">
                                                                                 <FcPhone size={10} className="flex-shrink-0 mt-[2px]" />
                                                                                 <span className="italic">{company.contactnumber}</span>
-                                                                            </span>
-                                                                            <span className="flex gap-1 items-start">
+                                                                            </div>
+                                                                            <div className="flex gap-1 items-start">
                                                                                 <FcFeedback size={10} className="flex-shrink-0 mt-[2px]" />
                                                                                 <span className="break-all italic lowercase">{company.emailaddress}</span>
-                                                                            </span>
-                                                                            <span className="flex gap-1 items-start">
+                                                                            </div>
+                                                                            <div className="flex gap-1 items-start">
                                                                                 <FcHome size={10} className="flex-shrink-0 mt-[2px]" />
                                                                                 <span className="break-words capitalize">{company.address}</span>
-                                                                            </span>
-                                                                        </span>
-                                                                        <button
-                                                                            onClick={() => handleAccept(company)}
-                                                                            className={`px-3 py-1 text-[10px] rounded hover:bg-blue-600 transition flex gap-1 
-            ${company.status === "Used"
-                                                                                    ? "bg-green-900 text-white"
-                                                                                    : "bg-gray-100 text-black"}`}
-                                                                        >
-                                                                            Accept <IoCheckmarkDoneCircleOutline size={15} />
-                                                                        </button>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        {/* Buttons at the bottom */}
+                                                                        <div className="mt-3 flex justify-end gap-2">
+                                                                            <button
+                                                                                onClick={() => handleAccept(company)}
+                                                                                className={`px-3 py-1 text-[10px] rounded hover:bg-blue-600 transition flex items-center gap-1
+        ${company.status === "Used"
+                                                                                        ? "bg-green-900 text-white"
+                                                                                        : "bg-gray-100 text-black"}`}
+                                                                            >
+                                                                                Accept <IoCheckmarkDoneCircleOutline size={15} />
+                                                                            </button>
+
+                                                                            <button
+                                                                                onClick={() => handleVoid(company)}
+                                                                                className={`px-3 py-1 text-[10px] rounded hover:bg-blue-600 transition flex items-center gap-1
+    ${company.status === "Used"
+                                                                                        ? "bg-red-900 text-white"
+                                                                                        : "bg-gray-100 text-black"}`}
+                                                                            >
+                                                                                Void <AiOutlineStop size={15} />
+                                                                            </button>
+
+                                                                        </div>
                                                                     </div>
+
 
                                                                 ))
                                                             ) : (

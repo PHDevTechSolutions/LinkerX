@@ -3,7 +3,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormFields from "./UserFormFields";
-import { CiTrash, CiCircleRemove, CiSaveUp1, CiEdit, CiMail } from "react-icons/ci";
+import { CiTrash, CiTurnL1, CiSaveUp1, CiEdit, CiMail } from "react-icons/ci";
 
 interface AddUserFormProps {
     userDetails: {
@@ -25,39 +25,51 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
 
     const [channel, setChannel] = useState("System");
 
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertType, setAlertType] = useState<"success" | "error" | "">("");
+
     // 🔹 Save or update the message locally
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const url = editUser ? `/api/ModuleSales/Email/ComposeEmail/EditEmail` : `/api/ModuleSales/Email/ComposeEmail/CreateEmail`;
+        const url = editUser
+            ? `/api/ModuleSales/Email/ComposeEmail/EditEmail`
+            : `/api/ModuleSales/Email/ComposeEmail/CreateEmail`;
+
         const method = editUser ? "PUT" : "POST";
 
-        const response = await fetch(url, {
-            method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id: editUser?.id,
-                referenceid,
-                sender,
-                recepient,
-                subject,
-                message
-            }),
-        });
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: editUser?.id,
+                    referenceid,
+                    sender,
+                    recepient,
+                    subject,
+                    message
+                }),
+            });
 
-        if (response.ok) {
-            toast.success(editUser ? "User updated successfully" : "User added successfully", {
-                autoClose: 1000,
-                onClose: () => {
-                    onCancel();
-                    refreshPosts();
-                },
-            });
-        } else {
-            toast.error(editUser ? "Failed to update user" : "Failed to add user", {
-                autoClose: 1000,
-            });
+            if (!response.ok) throw new Error("Request failed");
+
+            setAlertMessage(editUser ? "The email information has been updated successfully." : "A new email has been sent successfully.");
+            setAlertType("success");
+
+            // Optionally refresh list
+            refreshPosts();
+
+        } catch (error) {
+            setAlertMessage("Failed to save account. Please try again.");
+            setAlertType("error");
         }
+
+        // Clear alert after 3 seconds
+        setTimeout(() => {
+            setAlertMessage("");
+            setAlertType("");
+        }, 3000);
     };
 
     // 🔹 Send the actual email
@@ -93,28 +105,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
 
     return (
         <>
-            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
-                <h2 className="text-xs font-bold mb-4">
-                    {editUser ? "Edit Notes Information" : "Add New Notes"}
-                </h2>
-                <p className="text-xs text-gray-600 mb-4">
-                    This section allows you to <strong>{editUser ? "update" : "create"}</strong> notes. If you're editing existing notes, you can update fields such as the note's title, description, and status. If you're adding new notes, you can fill in these fields to create a new entry.
-                </p>
-
-                <FormFields
-                    referenceid={referenceid} setreferenceid={setReferenceid}
-                    sender={sender} setsender={setSender}
-                    recepient={recepient} setrecepient={setrecepient}
-                    subject={subject} setsubject={setsubject}
-                    message={message} setmessage={setmessage}
-                    channel={channel} setchannel={setChannel}
-                />
-
-                <div className="flex flex-wrap gap-2 mt-4">
+            <form onSubmit={handleSubmit} className="bg-white text-gray-900 shadow-md border rounded-lg p-4 text-xs mt-20">
+                <div className="flex justify-end mb-4 gap-1">
                     {channel === "System" ? (
                         <button
                             type="submit"
-                            className="bg-blue-900 text-white px-4 py-2 rounded text-xs flex items-center gap-1"
+                            className="bg-blue-400 text-white px-4 py-2 rounded text-xs flex items-center"
                         >
                             {editUser ? <CiEdit size={20} /> : <CiSaveUp1 size={20} />}
                             {editUser ? "Update" : "Submit"}
@@ -131,13 +127,40 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
 
                     <button
                         type="button"
-                        className="bg-gray-500 text-white px-4 py-2 rounded text-xs flex items-center gap-1"
+                        className="px-4 py-2 border rounded text-xs flex items-center gap-1"
                         onClick={onCancel}
                     >
-                        <CiCircleRemove size={20} /> Cancel
+                        <CiTurnL1 size={20} /> Cancel
                     </button>
                 </div>
 
+                <h2 className="text-lg font-bold mb-4">
+                    {editUser ? "Edit Email Information" : "Add New Email"}
+                </h2>
+                <p className="text-xs text-gray-600 mb-4">
+                    This section allows you to <strong>{editUser ? "update" : "create"}</strong> notes. If you're editing existing notes, you can update fields such as the note's title, description, and status. If you're adding new notes, you can fill in these fields to create a new entry.
+                </p>
+
+                {/* Alert message */}
+                {alertMessage && (
+                    <div
+                        className={`mb-4 p-2 rounded border text-xs ${alertType === "success"
+                                ? "bg-green-100 text-green-800 border-green-300"
+                                : "bg-red-100 text-red-800 border-red-300"
+                            }`}
+                    >
+                        {alertMessage}
+                    </div>
+                )}
+
+                <FormFields
+                    referenceid={referenceid} setreferenceid={setReferenceid}
+                    sender={sender} setsender={setSender}
+                    recepient={recepient} setrecepient={setrecepient}
+                    subject={subject} setsubject={setsubject}
+                    message={message} setmessage={setmessage}
+                    channel={channel} setchannel={setChannel}
+                />
             </form>
 
             <ToastContainer className="text-xs" autoClose={1000} />
