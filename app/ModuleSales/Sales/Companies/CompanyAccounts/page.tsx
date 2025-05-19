@@ -303,7 +303,7 @@ const ListofUser: React.FC = () => {
                                                 editUser={editUser}
                                             />
                                         ) : showImportForm ? (
-                                            <div className={`bg-white text-gray-900 rounded-lg p-4 text-xs mt-20 transition-all duration-300 fixed right-0 w-full ${isMaximized ? "max-w-7xl h-screen" : "max-w-md h-screen"
+                                            <div className={`bg-white text-gray-900 rounded-lg p-4 text-xs mt-20 transition-all duration-300 fixed right-0 w-full ${isMaximized ? "max-w-7xl" : "max-w-md"
                                                 }`}>
                                                 {/* Buttons */}
                                                 <div className="flex justify-end mb-4 gap-1">

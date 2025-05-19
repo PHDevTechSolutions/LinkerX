@@ -123,10 +123,12 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
   // Ensure selected values are updated when options are available
   const fieldWidthClass = isMaximized ? "w-full sm:w-1/2 px-4 mb-4" : "w-full px-4 mb-4";
+  const isEditMode = !!editPost && Object.keys(editPost).length > 0;
+
 
   return (
     <>
-       <div className={`flex flex-wrap -mx-4`}>
+      <div className={`flex flex-wrap -mx-4`}>
         <div className={fieldWidthClass}>
           <input type="hidden" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
           <input type="hidden" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
@@ -214,16 +216,25 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         </div>
 
         <div className={fieldWidthClass}>
-          <label className="block text-xs font-bold mb-2" htmlFor="area">Status</label>
-          <select id="status" value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+          <label className="block text-xs font-bold mb-2" htmlFor="status">Status</label>
+          <select
+            id="status"
+            value={status}
+            onChange={(e) => setstatus(e.target.value)}
+            className="w-full px-3 py-2 border rounded text-xs capitalize"
+            required
+          >
             <option value="">Select Status</option>
             <option value="On Hold">On Hold</option>
+            <option value="Active" disabled={!isEditMode}>Active</option>
+            <option value="Used" disabled={!isEditMode}>Used</option>
           </select>
-          
+
           <p className="text-xs text-gray-600 mt-4">
             Select the <strong>Status</strong> of the account to indicate its current state (On Hold).
           </p>
         </div>
+
       </div>
     </>
   );

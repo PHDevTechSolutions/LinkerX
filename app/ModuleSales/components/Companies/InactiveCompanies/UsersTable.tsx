@@ -132,6 +132,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                     <thead className="bg-gray-100">
                         <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
                             <th className="px-6 py-4 font-semibold text-gray-700"></th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
@@ -139,7 +140,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                             <th className="px-6 py-4 font-semibold text-gray-700">Address</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Area</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
-                            <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                         </tr>
@@ -168,13 +168,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                                 <input type="checkbox" checked={selectedUsers.has(post.id)} onChange={() => handleSelectUser(post.id)} className="w-4 h-4" />
                                             )}
                                         </td>
-                                        <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
-                                        <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
-                                        <td className="px-6 py-4 text-xs capitalize">{post.contactnumber}</td>
-                                        <td className="px-6 py-4 text-xs">{post.emailaddress}</td>
-                                        <td className="px-6 py-4 text-xs capitalize">{post.address}</td>
-                                        <td className="px-6 py-4 text-xs capitalize">{post.area}</td>
-                                        <td className="px-6 py-4 text-xs">{post.typeclient}</td>
                                         <td className="px-6 py-4 text-xs">
                                             <span
                                                 className={`px-2 py-1 text-[8px] font-semibold rounded-full whitespace-nowrap ${post.status === "Inactive"
@@ -187,6 +180,13 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                                 {post.status}
                                             </span>
                                         </td>
+                                        <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
+                                        <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
+                                        <td className="px-6 py-4 text-xs capitalize">{post.contactnumber}</td>
+                                        <td className="px-6 py-4 text-xs">{post.emailaddress}</td>
+                                        <td className="px-6 py-4 text-xs capitalize">{post.address}</td>
+                                        <td className="px-6 py-4 text-xs capitalize">{post.area}</td>
+                                        <td className="px-6 py-4 text-xs">{post.typeclient}</td>
                                         <td className="px-4 py-2 text-xs align-top">
                                             <div className="flex flex-col gap-1">
                                                 <span className="text-white bg-blue-400 p-2 rounded">Uploaded: {formatDate(new Date(post.date_created).getTime())}</span>
