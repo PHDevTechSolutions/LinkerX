@@ -57,7 +57,6 @@ interface FormFieldsProps {
     csragent: string; setcsragent: (value: string) => void;
 
     currentRecords: Activity[];
-    isMaximized?: boolean;
     editPost?: any;
 }
 
@@ -98,9 +97,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     wrapup, setwrapup,
     inquiries, setinquiries,
     csragent, setcsragent,
-    isMaximized = false,
+
     currentRecords, // Destructure the `currentRecords` prop
-    
     editPost,
 }) => {
     const [companies, setCompanies] = useState<any[]>([]);
@@ -280,6 +278,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 .catch((error) => console.error("Error fetching companies:", error));
         }
     }, [referenceid]);
+
 
     useEffect(() => {
         setContactPersons(contactperson ? contactperson.split(", ") : [""]);
@@ -535,12 +534,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         setcallback(formattedDate);
     };
 
-    const fieldWidthClass = isMaximized ? "w-full sm:w-1/2 px-4 mb-4" : "w-full px-4 mb-4";
 
     return (
         <>
-            <div className={`flex flex-wrap -mx-4`}>
-                <div className={fieldWidthClass}>
+            <div className="flex flex-wrap -mx-4">
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <input type="text" id="activitynumber" value={activitynumber ?? ""} onChange={() => { }} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly={!!editPost} />
                     <input type="hidden" id="referenceid" value={referenceid ?? ""} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                     <input type="hidden" id="manager" value={manager ?? ""} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
@@ -556,9 +554,9 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 </div>
             </div>
 
-            <div className={`flex flex-wrap -mx-4`}>
+            <div className="flex flex-wrap -mx-4">
                 {/* Company Name */}
-                <div className={fieldWidthClass}>
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="companyname">Company Name</label>
                     <Select id="CompanyName" options={companies} onChange={handleCompanySelect} className="w-full text-xs capitalize" placeholder="Select Company" isClearable />
                     {editPost ? (
@@ -577,7 +575,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 </div>
 
                 {/* Contact Person */}
-                <div className={fieldWidthClass}>
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Contact Person</label>
                     {contactPersons.map((person, index) => (
                         <div key={index} className="flex items-center gap-2 mb-2">
@@ -592,7 +590,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 </div>
 
                 {/* Contact Number */}
-                <div className={fieldWidthClass}>
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Contact Number</label>
                     {contactNumbers.map((number, index) => (
                         <div key={index} className="flex items-center gap-2 mb-2">
@@ -607,7 +605,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 </div>
 
                 {/* Email Address */}
-                <div className={fieldWidthClass}>
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Email Address</label>
                     {emailAddresses.map((email, index) => (
                         <div key={index} className="flex items-center gap-2 mb-2">
@@ -622,19 +620,19 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 </div>
 
                 {/* Type Client */}
-                <div className={fieldWidthClass}>
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Type Client</label>
                     <input type="text" id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                 </div>
 
                 {/* Address */}
-                <div className={fieldWidthClass}>
+                <div className="w-full sm:w-1/2 md:w-1/8 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Address</label>
                     <input type="text" id="address" value={address ?? ""} onChange={(e) => setaddress(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                 </div>
 
                 {/* Area */}
-                <div className={fieldWidthClass}>
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Area</label>
                     <input type="text" id="area" value={area ?? ""} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                 </div>
@@ -649,21 +647,21 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             className="flex justify-between items-center px-4 py-3 bg-gray-100 cursor-pointer transition"
                         >
                             <span className="text-xs text-dark">Project Information</span>
-                            {isOpen ? <CiSquareMinus className="text-xl text-black" /> : <CiSquarePlus className="text-xl text-black" />}
+                            {isOpen ? <CiSquareMinus className="text-xl text-white" /> : <CiSquarePlus className="text-xl text-white" />}
                         </div>
 
                         {/* Accordion Content */}
                         <div className={`overflow-hidden transition-all duration-300 ${isOpen ? "p-4" : "max-h-0 p-0"}`}>
-                            <div className={`flex flex-wrap -mx-4 rounded`}>
+                            <div className="flex flex-wrap -mx-4 rounded">
 
                                 {/* Project Name */}
-                                <div className={fieldWidthClass}>
+                                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Project Name ( Optional )</label>
                                     <input type="text" id="projectname" value={projectname ?? ""} onChange={(e) => setprojectname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
                                 </div>
 
                                 {/* Project Category */}
-                                <div className={fieldWidthClass}>
+                                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Project Category</label>
                                     <select value={projectcategory ?? ""} onChange={(e) => setprojectcategory(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                         <option value="">Select Category</option>
@@ -705,7 +703,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 </div>
 
                                 {/* Type */}
-                                <div className={fieldWidthClass}>
+                                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Type</label>
                                     <select value={projecttype ?? ""} onChange={(e) => setprojecttype(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                         <option value="">Select Category</option>
@@ -719,7 +717,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 </div>
 
                                 {/* Source */}
-                                <div className={fieldWidthClass}>
+                                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Source</label>
                                     <select value={source ?? ""} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                         <option value="">Select Category</option>
@@ -737,10 +735,10 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             </div>
 
             <div className="mb-4 border rounded-lg shadow-sm p-4">
-                <div className={`flex flex-wrap -mx-4 rounded`}>
+                <div className="flex flex-wrap -mx-4 rounded">
                     {/* Activity Dropdown */}
                     {/* Type Activity */}
-                    <div className={fieldWidthClass}>
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Type of Activity</label>
                         <select value={typeactivity ?? ""}
                             onChange={(e) => handleActivitySelection(e.target.value)}
@@ -797,7 +795,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     {/* Conditional Fields */}
                     {showInboundFields && (
                         <>
-                            <div className={fieldWidthClass}>
+                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Callback</label>
                                 <select className="w-full px-3 py-2 border rounded text-xs" onChange={handleCallbackChange}>
                                     <option>Select Callback</option>
@@ -819,7 +817,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     />
                                 )}
                             </div>
-                            <div className={fieldWidthClass}>
+                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Type of Call</label>
                                 <select value={typecall ?? ""} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                     <option value="">Select Status</option>
@@ -843,12 +841,12 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                     {showQuotationField && (
                         <>
-                            <div className={fieldWidthClass}>
+                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Quotation Number</label>
                                 <input type="text" value={quotationnumber ?? ""} onChange={(e) => setquotationnumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required />
                             </div>
 
-                            <div className={fieldWidthClass}>
+                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Quotation Amount</label>
                                 <input
                                     type="text"
@@ -866,7 +864,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 />
                             </div>
 
-                            <div className={fieldWidthClass}>
+                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Type of Call</label>
                                 <select value={typecall ?? ""} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                     <option value="">Select Status</option>
@@ -890,12 +888,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                     {showSOField && (
                         <>
-                            <div className={fieldWidthClass}>
+                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Number</label>
                                 <input type="text" value={sonumber ?? ""} onChange={(e) => setsonumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required />
                             </div>
-                            
-                            <div className={fieldWidthClass}>
+                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Amount</label>
                                 <input
                                     type="text"
@@ -917,7 +914,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                     {showDeliverField && (
                         <>
-                            <div className={fieldWidthClass}>
+                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO to DR Amount (Actual Sales)</label>
                                 <input
                                     type="text"
@@ -935,7 +932,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 />
                             </div>
 
-                            <div className={`${fieldWidthClass} flex items-center space-x-2`}>
+                            <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4 flex items-center space-x-2">
                                 <div className="flex-1">
                                     <label className="block text-xs font-bold mb-2">Send Email Survey</label>
                                     <select
@@ -965,7 +962,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                     {showOutboundFields && (
                         <>
-                            <div className={fieldWidthClass}>
+                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Callback</label>
                                 <select className="w-full px-3 py-2 border rounded text-xs" onChange={handleCallbackChange}>
                                     <option>Select Callback</option>
@@ -988,7 +985,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 )}
                             </div>
 
-                            <div className={fieldWidthClass}>
+                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Call Status</label>
                                 <select value={callstatus ?? ""} onChange={(e) => setcallstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                     <option value="">Select Status</option>
@@ -997,7 +994,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 </select>
                             </div>
 
-                            <div className={fieldWidthClass}>
+                            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Type of Call</label>
                                 <select value={typecall ?? ""} onChange={(e) => settypecall(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                     <option value="">Select Status</option>
@@ -1020,9 +1017,9 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     )}
 
                 </div>
-                <div className={`flex flex-wrap -mx-4`}>
+                <div className="flex flex-wrap -mx-4">
                     {/* Remarks */}
-                    <div className={fieldWidthClass}>
+                    <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Remarks</label>
                         <textarea
                             value={remarks ?? ""}
@@ -1037,7 +1034,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     </div>
 
                     {/* Status */}
-                    <div className={fieldWidthClass}>
+                    <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Status</label>
                         <select value={activitystatus || ""} onChange={(e) => setactivitystatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize bg-gray-100" required>
                             <option value="">Select Status</option>

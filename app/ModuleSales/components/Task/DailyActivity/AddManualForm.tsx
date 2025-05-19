@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormFields from "./ManualFormFields";
-import { CiTrash, CiCircleRemove, CiSaveUp1, CiEdit, CiTurnL1, CiCircleMinus, CiCirclePlus } from "react-icons/ci";
+import { CiTrash, CiCircleRemove, CiSaveUp1, CiEdit, CiTurnL1 } from "react-icons/ci";
 
 interface AddUserFormProps {
   onCancel: () => void;
@@ -90,7 +90,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isMaximized, setIsMaximized] = useState(false);
 
   // 🔥 FIX: Ensure activityList is always an array
   const [activityList, setActivityList] = useState<{
@@ -108,9 +107,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     activitystatus: string;
     date_created: string;
   }[]>([]);
-
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertType, setAlertType] = useState<"success" | "error" | "">("");
 
   type Activity = {
     id: number;
@@ -154,41 +150,32 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const url = editUser
-      ? `/api/ModuleSales/Task/DailyActivity/EditUser`
-      : `/api/ModuleSales/Task/DailyActivity/CreateUser`;
-
+    const url = editUser ? `/api/ModuleSales/Task/DailyActivity/EditUser` : `/api/ModuleSales/Task/DailyActivity/CreateUser`;
     const method = editUser ? "PUT" : "POST";
 
-    try {
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: editUser?.id, referenceid, manager, tsm, targetquota, companyname, contactperson, contactnumber, emailaddress, typeclient,
-          address, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, remarks,
-          callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus, ticketreferencenumber, wrapup, inquiries, csragent,
-        }),
+    const response = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: editUser?.id, referenceid, manager, tsm, targetquota, companyname, contactperson, contactnumber, emailaddress, typeclient,
+        address, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, remarks,
+        callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus, ticketreferencenumber, wrapup, inquiries, csragent,
+      }),
+    });
+
+    if (response.ok) {
+      toast.success(editUser ? "User updated successfully" : "User added successfully", {
+        autoClose: 1000,
+        onClose: () => {
+          onCancel();
+          refreshPosts();
+        },
       });
-
-      if (!response.ok) throw new Error("Request failed");
-
-      setAlertMessage(editUser ? "The account information has been updated successfully." : "A new account has been created successfully.");
-      setAlertType("success");
-
-      // Optionally refresh list
-      refreshPosts();
-
-    } catch (error) {
-      setAlertMessage("Failed to save account. Please try again.");
-      setAlertType("error");
+    } else {
+      toast.error(editUser ? "Failed to update user" : "Failed to add user", {
+        autoClose: 1000,
+      });
     }
-
-    // Clear alert after 3 seconds
-    setTimeout(() => {
-      setAlertMessage("");
-      setAlertType("");
-    }, 3000);
   };
 
   const handleDeleteClick = (id: string) => {
@@ -287,47 +274,20 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
   return (
     <>
-      <form
-        onSubmit={handleSubmit}
-        className={`bg-white text-gray-900 rounded-lg p-4 text-xs mt-20 transition-all duration-300 fixed right-0 w-full ${isMaximized ? "max-w-7xl " : "max-w-md"
-          }`}
-      >
-
-        <div className="flex justify-end mb-4 gap-1">
-          <button
-            type="button"
-            className="px-4 py-2 border rounded text-xs flex gap-1"
-            onClick={() => setIsMaximized(!isMaximized)}
-          >
-            {isMaximized ? <CiCircleMinus size={15} /> : <CiCirclePlus size={15} />}
-            {isMaximized ? "Minimize" : "Maximize"}
-          </button>
+      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 text-xs">
+        <div className="flex justify-end gap-2">
           <button type="submit" className="bg-blue-400 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
             {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}
             {editUser ? "Update" : "Submit"}
           </button>
           <button type="button" className="border text-black px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiTurnL1 size={15} /> Back</button>
         </div>
-
-        <h2 className="text-lg font-bold mb-4">
+        <h2 className="text-xs font-bold mb-4">
           {editUser ? "Edit Account Information" : "Add New Account"}
         </h2>
         <p className="text-xs text-gray-600 mb-4">
           The process of <strong>creating</strong> or <strong>editing an account</strong> involves updating key information associated with a company. When adding or editing an account, fields such as company name, contact details, client type, and status play an essential role in maintaining accurate and up-to-date records. These fields ensure smooth management and tracking of company accounts within the system, allowing for better organization and coordination. Properly updating these details is crucial for improving communication and ensuring the integrity of the data throughout the process.
         </p>
-
-        {/* Alert message */}
-        {alertMessage && (
-          <div
-            className={`mb-4 p-2 rounded border text-xs ${alertType === "success"
-              ? "bg-green-100 text-green-800 border-green-300"
-              : "bg-red-100 text-red-800 border-red-300"
-              }`}
-          >
-            {alertMessage}
-          </div>
-        )}
-
         <FormFields
           referenceid={referenceid} setreferenceid={setReferenceid}
           manager={manager} setmanager={setManager}
@@ -367,7 +327,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
           //PassedRecords
           currentRecords={currentRecords}
-          isMaximized={isMaximized}
 
           editPost={editUser}
         />
@@ -431,11 +390,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                             ? "bg-blue-200 text-black"
                             : activity.activitystatus === "Warm"
                               ? "bg-yellow-200 text-black"
-                              : activity.activitystatus === "Hot"
-                                ? "bg-red-200 text-black"
-                                : activity.activitystatus === "Done"
-                                  ? "bg-green-200 text-black"
-                                  : "bg-green-100 text-green-700"
+                            : activity.activitystatus === "Hot"
+                              ? "bg-red-200 text-black" 
+                            : activity.activitystatus === "Done"
+                              ? "bg-green-200 text-black"   
+                              : "bg-green-100 text-green-700"
                             }`}
                         >
                           {activity.activitystatus}
@@ -446,7 +405,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                           <CiTrash size={15} />
                         </button>
                         <button onClick={() => handleEditClick(activity.id)} className="bg-white p-2 rounded-md flex text-blue-900">
-                          <CiEdit size={15} />
+                          <CiEdit size={15} /> 
                         </button>
                       </td>
                     </tr>
@@ -459,51 +418,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
               </tbody>
             </table>
 
-            {/* Modal for showing full remarks */}
-            {showModal && (
-              <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
-                <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-lg">
-                  <h3 className="font-semibold text-lg mb-4">Remarks</h3>
-                  <div className="modal-body">
-                    <p className="text-sm capitalize break-words">{modalRemarks}</p>
-                  </div>
-                  <button
-                    onClick={handleCloseModal}
-                    className="mt-4 text-blue-500 px-4 py-2 border border-blue-500 rounded text-xs"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="flex justify-between mt-4">
-              <button
-                className={`px-4 py-2 text-xs bg-gray-500 text-white rounded ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
-              <span className="text-xs font-semibold">
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                className={`px-4 py-2 text-xs bg-blue-500 text-white rounded ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </div>
-          )}
-        </div>
-
-        {isEditModalOpen && selectedActivity && (
-              <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50 h-screen">
+            {isEditModalOpen && selectedActivity && (
+              <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50">
                 <div className="bg-white p-6 rounded-lg w-full max-w-xl">
                   <h2 className="text-md font-bold mb-4">Edit Activity</h2>
 
@@ -631,6 +547,49 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                 </div>
               </div>
             )}
+
+            {/* Modal for showing full remarks */}
+            {showModal && (
+              <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
+                <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-lg">
+                  <h3 className="font-semibold text-lg mb-4">Remarks</h3>
+                  <div className="modal-body">
+                    <p className="text-sm capitalize break-words">{modalRemarks}</p>
+                  </div>
+                  <button
+                    onClick={handleCloseModal}
+                    className="mt-4 text-blue-500 px-4 py-2 border border-blue-500 rounded text-xs"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex justify-between mt-4">
+              <button
+                className={`px-4 py-2 text-xs bg-gray-500 text-white rounded ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <span className="text-xs font-semibold">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                className={`px-4 py-2 text-xs bg-blue-500 text-white rounded ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </div>
       </form>
 
       {/* Delete Confirmation Modal */}

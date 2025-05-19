@@ -193,7 +193,7 @@ const ListofUser: React.FC = () => {
                 const matchesClientType = selectedClientType
                     ? post?.typeclient === selectedClientType
                     : true;
-
+                
                 const matchesStatus = selectedStatus
                     ? post?.activitystatus === selectedStatus
                     : true;
@@ -491,6 +491,7 @@ const ListofUser: React.FC = () => {
         };
     }, []);
 
+
     // Fetch companies from API with ReferenceID as query param
     const fetchCompanies = async () => {
         try {
@@ -504,7 +505,7 @@ const ListofUser: React.FC = () => {
                 const activeCompanies = data.data.filter((company: Company) => company.status === "Active" || company.status === "Used");
                 setPost(activeCompanies);
             } else {
-
+                
                 setPost([]);
             }
         } catch (error) {
@@ -779,30 +780,30 @@ const ListofUser: React.FC = () => {
                         }),
                     }
                 );
-
+    
                 if (response.ok) {
                     const result = await response.json();
                     console.log("✅ Company status updated successfully:", result.data);
-
+    
                     // Remove the used company from the list
                     const updatedCompanies = todayCompanies.filter(
                         (company) => company.id !== selectedCompany.id
                     );
-
+    
                     // Reduce remaining balance after using one company
                     const newBalance = Math.max(0, remainingBalance - 1);
                     setTodayCompanies(updatedCompanies);
                     setRemainingBalance(newBalance);
-
+    
                     // Save updated data to the database after status update
                     await saveToDatabase(updatedCompanies, newBalance);
-
+    
                     // Set updated status of the company
                     setSelectedCompany({
                         ...selectedCompany,
                         status: "Used",
                     });
-
+    
                     // Show form after update
                     setShowForm(true);
                 } else {
@@ -816,7 +817,7 @@ const ListofUser: React.FC = () => {
             }
         }
     };
-
+    
     // Handle Cancel to Close Modal
     const handleCancel = () => {
         setShowModal(false);
@@ -837,178 +838,163 @@ const ListofUser: React.FC = () => {
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
                             <div className="grid grid-cols-1 md:grid-cols-1">
-                                {/* Backdrop overlay */}
-                                {showForm && (
-                                    <div
-                                        className="fixed inset-0 bg-black bg-opacity-50 z-30"
-                                        onClick={() => {
-                                            setShowForm(false);
-                                            setEditUser(null);
-                                        }}
-                                    ></div>
-                                )}
+                            {showForm ? (
+                                <AddManualForm
+                                    onCancel={() => {
+                                        setShowForm(false);
+                                        setEditUser(null);
+                                        setSelectedCompany(null);
+                                    }}
+                                    refreshPosts={fetchAccount} // Pass the refreshPosts callback
+                                    userDetails={{
+                                        id: editUser ? editUser.id : userDetails.UserId,
+                                        referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
+                                        manager: editUser ? editUser.manager : userDetails.Manager,
+                                        tsm: editUser ? editUser.tsm : userDetails.TSM,
+                                        targetquota: editUser ? editUser.targetquota : userDetails.TargetQuota,
+                                    }}
+                                    editUser={editUser} // ✅ Properly pass editUser for editing
+                                />
+                            ) : (
+                                <>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition"
+                                                onClick={handleButtonClick}>
+                                                <PiHandTapThin size={15} /> Tap</button>
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition" onClick={() => setShowForm(true)} >
+                                                <CiSquarePlus size={15} /> Add</button>
+                                        </div>
 
-                                {/* Sliding Form */}
-                                <div
-                                    className={`fixed top-0 right-0 h-full w-full shadow-lg z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${(showForm || showPersonalForm) ? "translate-x-0" : "translate-x-full"
-                                        }`}
-                                >
-                                    {showForm && (
-                                        <AddManualForm
-                                            onCancel={() => {
-                                                setShowForm(false);
-                                                setEditUser(null);
-                                                setSelectedCompany(null);
-                                            }}
-                                            refreshPosts={fetchAccount} // Pass the refreshPosts callback
-                                            userDetails={{
-                                                id: editUser ? editUser.id : userDetails.UserId,
-                                                referenceid: editUser ? editUser.referenceid : userDetails.ReferenceID,
-                                                manager: editUser ? editUser.manager : userDetails.Manager,
-                                                tsm: editUser ? editUser.tsm : userDetails.TSM,
-                                                targetquota: editUser ? editUser.targetquota : userDetails.TargetQuota,
-                                            }}
-                                            editUser={editUser} // ✅ Properly pass editUser for editing
-                                        />
-                                    )}
-                                </div>
-
-                                <div className="flex justify-between items-center mb-4">
-                                    <div className="flex items-center gap-3">
-                                        <button
-                                            className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition"
-                                            onClick={handleButtonClick}>
-                                            <PiHandTapThin size={15} /> Tap</button>
-                                        <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition" onClick={() => setShowForm(true)} >
-                                            <CiSquarePlus size={15} /> Add</button>
-                                    </div>
-
-                                    {showPersonalForm && (
-                                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1000]">
-                                            <div className="bg-white p-8 rounded shadow-lg  w-96 max-w-lg">
-                                                <h2 className="text-sm font-bold mb-4">Personal Activity</h2>
-                                                <p className="text-xs text-gray-600 mb-4">
-                                                    This form helps track your <strong>personal activities</strong> by selecting an activity type, adding remarks, and specifying the time spent. It assists in managing tasks, time allocation, and productivity analysis.
-                                                </p>
-
-                                                <form onSubmit={handleSubmit}>
-                                                    <input type="hidden" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                                                    <input type="hidden" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                                                    <input type="hidden" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                                                    <input type="hidden" value={startdate} readOnly className="w-full px-3 py-2 border rounded text-xs bg-gray-100 cursor-not-allowed" />
-                                                    <input type="hidden" value={enddate} readOnly className="w-full px-3 py-2 border rounded text-xs" />
-
-                                                    {/* Select Option */}
-                                                    <select value={activitystatus} onChange={(e) => setactivitystatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize mb-4">
-                                                        <option value="">-- Select an Option --</option>
-                                                        <option value="Assisting other Agents Client">Assisting other Agents Client</option>
-                                                        <option value="Coordination of SO to Warehouse">Coordination of SO to Warehouse</option>
-                                                        <option value="Coordination of SO to Orders">Coordination of SO to Orders</option>
-                                                        <option value="Updating Reports">Updating Reports</option>
-                                                        <option value="Email and Viber Checking">Email and Viber Checking</option>
-                                                        <optgroup label="──────────────────"></optgroup>
-                                                        <option value="1st Break">1st Break</option>
-                                                        <option value="Client Meeting">Client Meeting</option>
-                                                        <option value="Coffee Break">Coffee Break </option>
-                                                        <option value="Group Meeting">Group Meeting</option>
-                                                        <option value="Last Break">Last Break</option>
-                                                        <option value="Lunch Break">Lunch Break</option>
-                                                        <option value="TSM Coaching">TSM Coaching</option>
-                                                    </select>
-
-                                                    {/* Remarks Input */}
-                                                    <textarea value={activityremarks} onChange={(e) => setactivityremarks(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize resize-none mb-4" rows={4} placeholder="Enter remarks here..."></textarea>
-
-                                                    <select value={timeDuration} onChange={handleTimeChange} className="w-full px-3 py-2 border rounded text-xs capitalize mb-2">
-                                                        <option value="">Choose Time</option>
-                                                        <option value="1 Minute">1 Minute</option>
-                                                        <option value="5 Minutes">5 Minutes</option>
-                                                        <option value="10 Minutes">10 Minutes</option>
-                                                        <option value="15 Minutes">15 Minutes</option>
-                                                        <option value="20 Minutes">20 Minutes</option>
-                                                        <option value="30 Minutes">30 Minutes</option>
-                                                        <option value="1 Hour">1 Hour</option>
-                                                        <option value="2 Hours">2 Hours</option>
-                                                        <option value="3 Hours">3 Hours</option>
-                                                    </select>
+                                        {showPersonalForm && (
+                                            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1000]">
+                                                <div className="bg-white p-8 rounded shadow-lg w-96 max-w-lg">
+                                                    <h2 className="text-sm font-bold mb-4">Personal Activity</h2>
                                                     <p className="text-xs text-gray-600 mb-4">
-                                                        Select the <strong>activity duration</strong> to log the time spent on the task, ranging from minutes to hours.
+                                                        This form helps track your <strong>personal activities</strong> by selecting an activity type, adding remarks, and specifying the time spent. It assists in managing tasks, time allocation, and productivity analysis.
                                                     </p>
 
-                                                    {/* Buttons */}
-                                                    <div className="mt-6 flex justify-end">
-                                                        <button type="button" className="border text-xs text-black px-5 py-2 rounded mr-2 flex items-center gap-1" onClick={closeForm} disabled={loading}><CiTurnL1 size={15} />Back</button>
-                                                        <button type="submit" className="bg-blue-400 text-white text-xs px-5 py-2 rounded flex items-center gap-1" disabled={loading}><CiSaveUp1 size={15} />{loading ? "Submitting..." : "Submit"}</button>
-                                                    </div>
-                                                </form>
+                                                    <form onSubmit={handleSubmit}>
+                                                        <input type="hidden" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                                                        <input type="hidden" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                                                        <input type="hidden" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                                                        <input type="hidden" value={startdate} readOnly className="w-full px-3 py-2 border rounded text-xs bg-gray-100 cursor-not-allowed" />
+                                                        <input type="hidden" value={enddate} readOnly className="w-full px-3 py-2 border rounded text-xs" />
+
+                                                        {/* Select Option */}
+                                                        <select value={activitystatus} onChange={(e) => setactivitystatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize mb-4">
+                                                            <option value="">-- Select an Option --</option>
+                                                            <option value="Assisting other Agents Client">Assisting other Agents Client</option>
+                                                            <option value="Coordination of SO to Warehouse">Coordination of SO to Warehouse</option>
+                                                            <option value="Coordination of SO to Orders">Coordination of SO to Orders</option>
+                                                            <option value="Updating Reports">Updating Reports</option>
+                                                            <option value="Email and Viber Checking">Email and Viber Checking</option>
+                                                            <optgroup label="──────────────────"></optgroup>
+                                                            <option value="1st Break">1st Break</option>
+                                                            <option value="Client Meeting">Client Meeting</option>
+                                                            <option value="Coffee Break">Coffee Break </option>
+                                                            <option value="Group Meeting">Group Meeting</option>
+                                                            <option value="Last Break">Last Break</option>
+                                                            <option value="Lunch Break">Lunch Break</option>
+                                                            <option value="TSM Coaching">TSM Coaching</option>
+                                                        </select>
+
+                                                        {/* Remarks Input */}
+                                                        <textarea value={activityremarks} onChange={(e) => setactivityremarks(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize resize-none mb-4" rows={4} placeholder="Enter remarks here..."></textarea>
+
+                                                        <select value={timeDuration} onChange={handleTimeChange} className="w-full px-3 py-2 border rounded text-xs capitalize mb-2">
+                                                            <option value="">Choose Time</option>
+                                                            <option value="1 Minute">1 Minute</option>
+                                                            <option value="5 Minutes">5 Minutes</option>
+                                                            <option value="10 Minutes">10 Minutes</option>
+                                                            <option value="15 Minutes">15 Minutes</option>
+                                                            <option value="20 Minutes">20 Minutes</option>
+                                                            <option value="30 Minutes">30 Minutes</option>
+                                                            <option value="1 Hour">1 Hour</option>
+                                                            <option value="2 Hours">2 Hours</option>
+                                                            <option value="3 Hours">3 Hours</option>
+                                                        </select>
+                                                        <p className="text-xs text-gray-600 mb-4">
+                                                            Select the <strong>activity duration</strong> to log the time spent on the task, ranging from minutes to hours.
+                                                        </p>
+
+                                                        {/* Buttons */}
+                                                        <div className="mt-6 flex justify-end">
+                                                            <button type="button" className="border text-xs text-black px-5 py-2 rounded mr-2 flex items-center gap-1" onClick={closeForm} disabled={loading}><CiTurnL1 size={15} />Back</button>
+                                                            <button type="submit" className="bg-blue-400 text-white text-xs px-5 py-2 rounded flex items-center gap-1" disabled={loading}><CiSaveUp1 size={15} />{loading ? "Submitting..." : "Submit"}</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
 
-                                    {showTimerModal && (
-                                        <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-end justify-end pointer-events-auto">
-                                            {/* Invisible overlay to block clicks */}
-                                            <div className="absolute inset-0"></div>
+                                        {showTimerModal && (
+                                            <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-end justify-end pointer-events-auto">
+                                                {/* Invisible overlay to block clicks */}
+                                                <div className="absolute inset-0"></div>
 
-                                            {/* Modal Box */}
-                                            <div className="relative bg-white p-6 rounded-lg shadow-lg w-64 text-center border border-gray-300 m-4">
-                                                <h2 className="text-sm font-bold mb-2">Activity in Progress</h2>
-                                                <p className="text-xl font-bold text-red-600">
-                                                    {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, "0")}
-                                                </p>
-                                                <p className="text-xs text-gray-500 mt-2">Please wait until the timer ends.</p>
+                                                {/* Modal Box */}
+                                                <div className="relative bg-white p-6 rounded-lg shadow-lg w-64 text-center border border-gray-300 m-4">
+                                                    <h2 className="text-sm font-bold mb-2">Activity in Progress</h2>
+                                                    <p className="text-xl font-bold text-red-600">
+                                                        {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, "0")}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500 mt-2">Please wait until the timer ends.</p>
+                                                </div>
                                             </div>
+                                        )}
+                                    </div>
+
+                                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                                        {/* Task */}
+                                        <div className="col-span-1 lg:col-span-4 bg-white shadow-md rounded-lg p-4">
+                                            <h2 className="text-lg font-bold mb-2">Manual Creation Task</h2>
+                                            <p className="text-xs text-gray-600 mb-4">
+                                                This section displays your <strong>tasks</strong> in a <strong>card layout</strong>. Each task is represented as a card, offering a visually appealing and more flexible design compared to traditional tables. You can filter tasks based on various criteria like <strong>client type</strong>, <strong>date range</strong>, and other parameters using the search filters.
+                                            </p>
+
+                                            {/* Search Filters */}
+                                            <SearchFilters
+                                                searchTerm={searchTerm}
+                                                setSearchTerm={setSearchTerm}
+                                                selectedClientType={selectedClientType}
+                                                setSelectedClientType={setSelectedClientType}
+                                                selectedStatus={selectedStatus}
+                                                setSelectedStatus={setSelectedStatus}
+                                                startDate={startDate}
+                                                setStartDate={setStartDate}
+                                                endDate={endDate}
+                                                setEndDate={setEndDate}
+                                            />
+
+                                            {/* Users Table */}
+                                            <UsersTable
+                                                posts={currentPosts}
+                                                handleEdit={(user) => handleEdit(user)}
+                                                handleStatusUpdate={handleStatusUpdate}
+                                                handleDelete={confirmDelete}
+                                            />
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                </>
+                            )}
 
-                                <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                                    {/* Task */}
-                                    <div className="col-span-1 lg:col-span-4 bg-white shadow-md rounded-lg p-4">
-                                        <h2 className="text-lg font-bold mb-2">Manual Creation Task</h2>
-                                        <p className="text-xs text-gray-600 mb-4">
-                                            This section displays your <strong>tasks</strong> in a <strong>card layout</strong>. Each task is represented as a card, offering a visually appealing and more flexible design compared to traditional tables. You can filter tasks based on various criteria like <strong>client type</strong>, <strong>date range</strong>, and other parameters using the search filters.
-                                        </p>
-
-                                        {/* Search Filters */}
-                                        <SearchFilters
-                                            searchTerm={searchTerm}
-                                            setSearchTerm={setSearchTerm}
-                                            selectedClientType={selectedClientType}
-                                            setSelectedClientType={setSelectedClientType}
-                                            selectedStatus={selectedStatus}
-                                            setSelectedStatus={setSelectedStatus}
-                                            startDate={startDate}
-                                            setStartDate={setStartDate}
-                                            endDate={endDate}
-                                            setEndDate={setEndDate}
-                                        />
-
-                                        {/* Users Table */}
-                                        <UsersTable
-                                            posts={currentPosts}
-                                            handleEdit={(user) => handleEdit(user)}
-                                            handleStatusUpdate={handleStatusUpdate}
-                                            handleDelete={confirmDelete}
-                                        />
+                            {showDeleteModal && (
+                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1000]">
+                                    <div className="bg-white p-4 rounded shadow-lg">
+                                        <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
+                                        <p className="text-xs">Are you sure you want to delete this post?</p>
+                                        <div className="mt-4 flex justify-end">
+                                            <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2 flex items-center gap-1" onClick={handleDelete}><CiTrash size={20} />Delete</button>
+                                            <button className="bg-gray-300 text-xs px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowDeleteModal(false)}><CiCircleRemove size={20} /> Cancel</button>
+                                        </div>
                                     </div>
                                 </div>
+                            )}
 
-                                {showDeleteModal && (
-                                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1000]">
-                                        <div className="bg-white p-4 rounded shadow-lg">
-                                            <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
-                                            <p className="text-xs">Are you sure you want to delete this post?</p>
-                                            <div className="mt-4 flex justify-end">
-                                                <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2 flex items-center gap-1" onClick={handleDelete}><CiTrash size={20} />Delete</button>
-                                                <button className="bg-gray-300 text-xs px-4 py-2 rounded flex items-center gap-1" onClick={() => setShowDeleteModal(false)}><CiCircleRemove size={20} /> Cancel</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                <ToastContainer className="text-xs" autoClose={1000} />
-                            </div>
+                            <ToastContainer className="text-xs" autoClose={1000} />
+                        </div>
                         </div>
                     )}
                 </UserFetcher>
