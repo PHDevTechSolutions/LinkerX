@@ -77,7 +77,7 @@ const DailyTransactionTable: React.FC<DailyTransactionTableProps> = ({ posts }) 
             {Object.entries(groupedByCompany).map(([company, records]) => (
               <tr key={company} className="border-b whitespace-nowrap cursor-pointer hover:bg-gray-50" onClick={() => handleRowClick(company)}>
                 <td className="px-6 py-4 text-xs underline">{records[0].ticketreferencenumber || "-"}</td>
-                <td className="px-6 py-4 text-xs">{company}</td>
+                <td className="px-6 py-4 text-xs uppercase">{company}</td>
                 <td className="px-6 py-4 text-xs">{formatDate(records[0].date_created)}</td>
               </tr>
             ))}
