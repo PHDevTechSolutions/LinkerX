@@ -305,40 +305,41 @@ const ListofUser: React.FC = () => {
                                         ) : showImportForm ? (
                                             <div className={`bg-white text-gray-900 rounded-lg p-4 text-xs mt-20 transition-all duration-300 fixed right-0 w-full ${isMaximized ? "max-w-7xl" : "max-w-md"
                                                 }`}>
-                                                {/* Buttons */}
-                                                <div className="flex justify-end mb-4 gap-1">
-                                                    <button
-                                                        type="button"
-                                                        className="px-4 py-2 border rounded text-xs flex gap-1"
-                                                        onClick={() => setIsMaximized(!isMaximized)}
-                                                    >
-                                                        {isMaximized ? <CiCircleMinus size={15} /> : <CiCirclePlus size={15} />}
-                                                        {isMaximized ? "Minimize" : "Maximize"}
-                                                    </button>
-                                                    <button type="submit" className="bg-blue-500 text-xs text-white px-4 py-2 rounded flex items-center gap-1">
-                                                        <CiSaveUp2 size={15} /> Upload
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className="border text-xs px-4 py-2 rounded flex items-center gap-1"
-                                                        onClick={() => setShowImportForm(false)}
-                                                    >
-                                                        <CiTurnL1 size={15} /> Back
-                                                    </button>
-                                                </div>
-                                                <h2 className="text-lg font-bold mb-2">Account Import Section</h2>
-                                                <p className="text-xs text-gray-600 mb-4">
-                                                    The <strong>Account Import Section</strong> allows users to upload and integrate bulk account data into the system.
-                                                </p>
 
                                                 <form onSubmit={handleFileUpload}>
+                                                    {/* Buttons */}
+                                                    <div className="flex justify-end mb-4 gap-1">
+                                                        <button
+                                                            type="button"
+                                                            className="px-4 py-2 border rounded text-xs flex gap-1"
+                                                            onClick={() => setIsMaximized(!isMaximized)}
+                                                        >
+                                                            {isMaximized ? <CiCircleMinus size={15} /> : <CiCirclePlus size={15} />}
+                                                            {isMaximized ? "Minimize" : "Maximize"}
+                                                        </button>
+                                                        <button type="submit" className="bg-blue-500 text-xs text-white px-4 py-2 rounded flex items-center gap-1">
+                                                            <CiSaveUp2 size={15} /> Upload
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="border text-xs px-4 py-2 rounded flex items-center gap-1"
+                                                            onClick={() => setShowImportForm(false)}
+                                                        >
+                                                            <CiTurnL1 size={15} /> Back
+                                                        </button>
+                                                    </div>
+
+                                                    <h2 className="text-lg font-bold mb-2">Account Import Section</h2>
+                                                    <p className="text-xs text-gray-600 mb-4">
+                                                        The <strong>Account Import Section</strong> allows users to upload and integrate bulk account data into the system.
+                                                    </p>
                                                     <div className={`flex flex-wrap -mx-4`}>
                                                         {/* Reference Info */}
                                                         <div className={fieldWidthClass}>
                                                             <label className="block text-xs font-bold mb-2">Territory Sales Associate</label>
-                                                            <input type="text" value={referenceid} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
-                                                            <input type="hidden" value={manager} />
-                                                            <input type="hidden" value={tsm} />
+                                                            <input type="text" id="referenceid" value={referenceid} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                                                            <input type="hidden" id="manager" value={manager} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                                                            <input type="hidden" id="tsm" value={tsm} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                                                         </div>
 
                                                         {/* Status */}
@@ -360,11 +361,7 @@ const ListofUser: React.FC = () => {
                                                         {/* File Upload */}
                                                         <div className={fieldWidthClass}>
                                                             <label className="block text-xs font-bold mb-2">Excel File</label>
-                                                            <input
-                                                                type="file"
-                                                                className="w-full px-3 py-2 border rounded text-xs"
-                                                                onChange={handleFileChange}
-                                                            />
+                                                            <input type="file" className="w-full px-3 py-2 border rounded text-xs" onChange={handleFileChange} />
                                                             <p className="text-xs text-gray-600 mt-2">
                                                                 Upload an Excel file from your device.
                                                             </p>

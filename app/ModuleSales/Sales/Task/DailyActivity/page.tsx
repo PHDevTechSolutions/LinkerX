@@ -20,8 +20,6 @@ import { IoCheckmarkDoneCircleOutline, IoTrashOutline } from "react-icons/io5";
 import { FcManager, FcPhone, FcFeedback, FcHome } from "react-icons/fc";
 import { AiOutlineStop } from "react-icons/ai";
 
-
-
 // Read leftover
 const fetchLeftover = async () => {
     const res = await fetch("/api/Storage");

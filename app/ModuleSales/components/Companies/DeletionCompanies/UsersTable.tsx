@@ -24,6 +24,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                     <thead className="bg-gray-100">
                         <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
                             <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
@@ -32,7 +33,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                             <th className="px-6 py-4 font-semibold text-gray-700">Area</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Remarks / Reason</th>
-                            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -58,7 +58,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
 
                                 return (
                                     <tr key={post.id} className={`border-b whitespace-nowrap ${hoverClass}`}>
-                                        <td className="px-6 py-4 text-xs">
+                                        <td className={`px-6 py-4 text-xs uppercase ${borderLeftClass}`}>
                                             <span
                                                 className={`px-2 py-1 text-[8px] font-semibold rounded-full ${post.status === "For Deletion"
                                                     ? "bg-yellow-400 text-gray-900"
@@ -70,7 +70,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                                 {post.status}
                                             </span>
                                         </td>
-                                        <td className={`px-6 py-4 text-xs uppercase ${borderLeftClass}`}>{post.companyname}</td>
+                                        <td className="px-6 py-4 text-xs">
+                                            {post.status !== "Approve For Deletion" && (
+                                            <button className="block px-4 py-2 text-xs text-gray-700 text-left flex items-center gap-1" onClick={() => handleEdit(post)}><CiEdit /> Edit</button>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
                                         <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
                                         <td className="px-6 py-4 text-xs">{post.contactnumber}</td>
                                         <td className="px-6 py-4 text-xs">{post.emailaddress}</td>
@@ -78,11 +83,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                         <td className="px-6 py-4 text-xs capitalize">{post.area}</td>
                                         <td className="px-6 py-4 text-xs">{post.typeclient}</td>
                                         <td className="px-6 py-4 text-xs capitalize">{post.remarks}</td>
-                                        <td className="px-6 py-4 text-xs">
-                                            {post.status !== "Approve For Deletion" && (
-                                            <button className="block px-4 py-2 text-xs text-gray-700 text-left flex items-center gap-1" onClick={() => handleEdit(post)}><CiEdit /> Edit</button>
-                                            )}
-                                        </td>
                                     </tr>
                                 );
                             })

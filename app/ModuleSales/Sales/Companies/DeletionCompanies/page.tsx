@@ -35,9 +35,6 @@ const ListofUser: React.FC = () => {
     const [referenceid, setReferenceID] = useState("");
     const [manager, setManager] = useState("");
     const [tsm, setTsm] = useState("");
-    const [status, setstatus] = useState("");
-    const [jsonData, setJsonData] = useState<any[]>([]);
-
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -97,7 +94,6 @@ const ListofUser: React.FC = () => {
         fetchAccount();
     }, []);
 
-
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
         ? posts.filter((post) => {
@@ -144,13 +140,11 @@ const ListofUser: React.FC = () => {
     const currentPosts = filteredAccounts.slice(indexOfFirstPost, indexOfLastPost);
     const totalPages = Math.ceil(filteredAccounts.length / postsPerPage);
 
-
     // Handle editing a post
     const handleEdit = (post: any) => {
         setEditUser(post);
         setShowForm(true);
     };
-
 
     return (
         <SessionChecker>
