@@ -25,12 +25,11 @@ const CHANNELS = [
 
 const COLORS = [
   "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40",
-  "#C9CBCF", "#8B0000", "#008080", "#FFD700", "#DC143C", "#20B2AA",
-  "#8A2BE2", "#FF4500", "#00CED1", "#2E8B57", "#4682B4"
+  "#C9CBCF", "#8B0000", "#008080", "#FFD700", "#DC143C"
 ];
 
 const MetricTable: React.FC<MetricTableProps> = ({
-  ReferenceID, month, year, Role, startDate, endDate
+  ReferenceID, Role, startDate, endDate
 }) => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,13 +38,12 @@ const MetricTable: React.FC<MetricTableProps> = ({
     const fetchMetrics = async () => {
       setLoading(true);
       try {
-        const url = `/api/ModuleCSR/Dashboard/Metrics?ReferenceID=${ReferenceID}&month=${month}&year=${year}`;
+        const url = `/api/ModuleCSR/Dashboard/Metrics?ReferenceID=${ReferenceID}&Role=${Role}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error("Failed to fetch metrics");
 
         let data: Metric[] = await res.json();
 
-        // Apply ReferenceID filtering only if needed
         if (Role === "Staff") {
           data = data.filter(m => m.ReferenceID === ReferenceID);
         }
@@ -56,14 +54,9 @@ const MetricTable: React.FC<MetricTableProps> = ({
         if (start) start.setHours(0, 0, 0, 0);
         if (end) end.setHours(23, 59, 59, 999);
 
-        // Parse once for performance
         const filtered = data.filter(({ createdAt }) => {
           const created = new Date(createdAt);
-          const matchMonthYear =
-            month && year ? (created.getMonth() + 1 === month && created.getFullYear() === year) : true;
-          const inDateRange =
-            start && end ? (created >= start && created <= end) : true;
-          return matchMonthYear && inDateRange;
+          return (!start || created >= start) && (!end || created <= end);
         });
 
         setMetrics(filtered);
@@ -75,7 +68,7 @@ const MetricTable: React.FC<MetricTableProps> = ({
     };
 
     fetchMetrics();
-  }, [ReferenceID, Role, month, year, startDate, endDate]);
+  }, [ReferenceID, Role, startDate, endDate]);
 
   const grouped = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -89,20 +82,22 @@ const MetricTable: React.FC<MetricTableProps> = ({
   const maxValue = useMemo(() => Math.max(...Object.values(grouped), 1), [grouped]);
 
   return (
-    <div className="bg-white h-full w-full">
+    <div className="bg-white w-full h-auto">
       {loading ? (
-        <div className="flex justify-center items-center h-full w-full">
+        <div className="flex justify-center items-center w-full h-full">
           <RiRefreshLine size={30} className="animate-spin text-gray-600" />
         </div>
       ) : (
+        <>
+        <h3 className="text-left text-sm font-semibold mb-4">Channel</h3>
         <div className="w-full h-full overflow-x-auto">
-          <div className="flex items-end h-full space-x-4 min-w-max sm:h-[400px]">
+          <div className="grid grid-cols-12 gap-2 items-end h-full sm:min-h-[400px]">
             {CHANNELS.map((channel, i) => {
               const value = grouped[channel] || 0;
               const height = (value / maxValue) * 100;
 
               return (
-                <div key={channel} className="flex flex-col items-center w-12 h-full group">
+                <div key={channel} className="flex flex-col items-center h-full col-span-1">
                   <div className="relative w-full flex-1 bg-gray-100 flex items-end rounded-md overflow-hidden">
                     <div
                       title={`${channel}: ${value}`}
@@ -122,6 +117,7 @@ const MetricTable: React.FC<MetricTableProps> = ({
             })}
           </div>
         </div>
+        </>
       )}
     </div>
   );

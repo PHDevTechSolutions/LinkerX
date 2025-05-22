@@ -4,15 +4,13 @@ import { RiRefreshLine } from "react-icons/ri";
 
 interface Source {
   Source: string | null;
-  createdAt: string | null;
+  createdAt: string;
   ReferenceID: string;
 }
 
 interface CustomerSourceProps {
   ReferenceID: string;
   Role: string;
-  month?: number;
-  year?: number;
   startDate?: string;
   endDate?: string;
 }
@@ -20,29 +18,29 @@ interface CustomerSourceProps {
 const CustomerSource: React.FC<CustomerSourceProps> = ({
   ReferenceID,
   Role,
-  month,
-  year,
   startDate,
   endDate,
 }) => {
   const [sources, setSources] = useState<Source[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // Labels for the customer sources
   const sourceLabels = useMemo(
     () => [
       "FB Ads", "Viber Community / Viber", "Whatsapp Community / Whatsapp",
       "SMS", "Website", "Word of Mouth", "Quotation Docs", "Google Search",
       "Site Visit", "Agent Call", "Catalogue", "Shopee", "Lazada",
-      "Tiktok", "WorldBex", "PhilConstruct", "Conex", "Product Demo"
+      "Tiktok", "WorldBex", "PhilConstruct", "Conex", "Product Demo",
     ],
     []
   );
 
+  // Colors for bars in chart
   const colors = useMemo(
     () => [
       "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40",
       "#C9CBCF", "#8B0000", "#008080", "#FFD700", "#DC143C", "#20B2AA",
-      "#8A2BE2", "#FF4500", "#00CED1", "#2E8B57", "#4682B4", "#F08080"
+      "#8A2BE2", "#FF4500", "#00CED1", "#2E8B57", "#4682B4", "#F08080",
     ],
     []
   );
@@ -51,55 +49,40 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({
     const fetchSources = async () => {
       setLoading(true);
       try {
-        const queryParams = new URLSearchParams({
-          ReferenceID,
-          Role,
-          month: month?.toString() ?? "",
-          year: year?.toString() ?? "",
-        });
-
-        const res = await fetch(`/api/ModuleCSR/Dashboard/CustomerSource?${queryParams}`);
+        const url = `/api/ModuleCSR/Dashboard/CustomerSource?ReferenceID=${ReferenceID}&Role=${Role}`;
+        const res = await fetch(url);
         if (!res.ok) throw new Error("Failed to fetch data");
 
-        const data = await res.json();
+        let data: Source[] = await res.json();
 
-        let filtered = data;
         if (Role === "Staff") {
-          filtered = data.filter((item: Source) => item.ReferenceID === ReferenceID);
+          data = data.filter(m => m.ReferenceID === ReferenceID);
         }
 
-        const adjustedStartDate = startDate ? new Date(startDate) : null;
-        const adjustedEndDate = endDate ? new Date(endDate) : null;
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
 
-        if (adjustedStartDate) adjustedStartDate.setHours(0, 0, 0, 0);
-        if (adjustedEndDate) adjustedEndDate.setHours(23, 59, 59, 999);
+        if (start) start.setHours(0, 0, 0, 0);
+        if (end) end.setHours(23, 59, 59, 999);
 
-        const final = filtered.filter((item: Source) => {
-          if (!item.createdAt || !item.Source) return false;
-
-          const createdAt = new Date(item.createdAt);
-          const isWithinMonthYear = month && year
-            ? createdAt.getMonth() + 1 === month && createdAt.getFullYear() === year
-            : true;
-
-          const isWithinDateRange = adjustedStartDate && adjustedEndDate
-            ? createdAt >= adjustedStartDate && createdAt <= adjustedEndDate
-            : true;
-
-          return isWithinMonthYear && isWithinDateRange && sourceLabels.includes(item.Source);
+        const filtered = data.filter(({ createdAt }) => {
+          const created = new Date(createdAt);
+          return (!start || created >= start) && (!end || created <= end);
         });
 
-        setSources(final);
+        setSources(filtered);
       } catch (error) {
         console.error("Error fetching sources:", error);
+        setSources([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchSources();
-  }, [ReferenceID, Role, month, year, startDate, endDate, sourceLabels]);
+  }, [ReferenceID, Role, startDate, endDate]);
 
+  // Group and count the sources
   const grouped = useMemo(() => {
     return sources.reduce((acc, item) => {
       if (!item.Source) return acc;
@@ -121,7 +104,7 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({
           </div>
         ) : (
           <div className="w-full h-full overflow-x-auto">
-            <h3 className="text-center text-xs font-semibold mb-4">
+            <h3 className="text-left text-sm font-semibold mb-4">
               Where Customers Found Us
             </h3>
             <div className="flex items-end h-full space-x-4 sm:h-[400px] w-full">

@@ -11,8 +11,6 @@ interface WrapUp {
 interface WrapupProps {
   ReferenceID: string;
   Role: string;
-  month?: number;
-  year?: number;
   startDate?: string;
   endDate?: string;
 }
@@ -20,8 +18,6 @@ interface WrapupProps {
 const Wrapup: React.FC<WrapupProps> = ({
   ReferenceID,
   Role,
-  month,
-  year,
   startDate,
   endDate,
 }) => {
@@ -49,50 +45,42 @@ const Wrapup: React.FC<WrapupProps> = ({
   );
 
   useEffect(() => {
-    const fetchWrapups = async () => {
-      try {
-        const res = await fetch(
-          `/api/ModuleCSR/Dashboard/Wrapup?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch data");
-        const data = await res.json();
+  const fetchWrapups = async () => {
+    setLoading(true);
+    try {
+      const url = `/api/ModuleCSR/Dashboard/Wrapup?ReferenceID=${ReferenceID}&Role=${Role}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch wrapup data");
 
-        let filtered = data;
-        if (Role === "Staff") {
-          filtered = data.filter((item: WrapUp) => item.ReferenceID === ReferenceID);
-        }
+      let data: WrapUp[] = await res.json();
 
-        const adjustedStartDate = startDate ? new Date(startDate) : null;
-        const adjustedEndDate = endDate ? new Date(endDate) : null;
-
-        if (adjustedStartDate) adjustedStartDate.setHours(0, 0, 0, 0);
-        if (adjustedEndDate) adjustedEndDate.setHours(23, 59, 59, 999);
-
-        const final = filtered.filter((item: WrapUp) => {
-          if (!item.createdAt || !item.WrapUp) return false;
-
-          const createdAt = new Date(item.createdAt);
-          const isWithinMonthYear = month && year
-            ? createdAt.getMonth() + 1 === month && createdAt.getFullYear() === year
-            : true;
-
-          const isWithinDateRange = adjustedStartDate && adjustedEndDate
-            ? createdAt >= adjustedStartDate && createdAt <= adjustedEndDate
-            : true;
-
-          return isWithinMonthYear && isWithinDateRange && wrapupLabels.includes(item.WrapUp);
-        });
-
-        setWrapups(final);
-      } catch (error) {
-        console.error("Error fetching wrapup data:", error);
-      } finally {
-        setLoading(false);
+      if (Role === "Staff") {
+        data = data.filter(m => m.ReferenceID === ReferenceID);
       }
-    };
 
-    fetchWrapups();
-  }, [ReferenceID, Role, month, year, startDate, endDate]);
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+
+      if (start) start.setHours(0, 0, 0, 0);
+      if (end) end.setHours(23, 59, 59, 999);
+
+      const filtered = data.filter(({ createdAt, WrapUp }) => {
+        if (!createdAt || !WrapUp) return false;
+        const created = new Date(createdAt);
+        return (!start || created >= start) && (!end || created <= end);
+      });
+
+      setWrapups(filtered);
+    } catch (error) {
+      console.error("Error fetching wrapup data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchWrapups();
+}, [ReferenceID, Role, startDate, endDate]);
+
 
   const grouped = useMemo(() => {
     return wrapups.reduce((acc, item) => {
@@ -115,7 +103,7 @@ const Wrapup: React.FC<WrapupProps> = ({
           </div>
         ) : (
           <div className="w-full h-full overflow-x-auto">
-            <h3 className="text-center text-sm font-semibold mb-4">
+            <h3 className="text-left text-sm font-semibold mb-4">
               Wrap-up
             </h3>
             <div className="flex items-end h-full space-x-4 sm:h-[400px] w-full">

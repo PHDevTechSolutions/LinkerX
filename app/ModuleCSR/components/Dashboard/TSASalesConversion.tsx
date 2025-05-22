@@ -25,8 +25,6 @@ interface User {
 interface AgentSalesConversionProps {
     ReferenceID: string;
     Role: string;
-    month: number;
-    year: number;
     startDate?: string;
     endDate?: string;
 }
@@ -34,8 +32,6 @@ interface AgentSalesConversionProps {
 const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     ReferenceID,
     Role,
-    month,
-    year,
     startDate,
     endDate,
 }) => {
@@ -110,8 +106,6 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
         "AB-NCR-001": "Wilnie, Ardelozo",
         "LX-NCR-001": "Leroux Xchire",
         "": "",
-
-
     };
 
     // Function to get Sales Agent name by ReferenceID
@@ -128,35 +122,26 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     const fetchMetrics = async () => {
         try {
             const response = await fetch(
-                `/api/ModuleCSR/Dashboard/AgentSalesConversion?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
+                `/api/ModuleCSR/Dashboard/AgentSalesConversion?ReferenceID=${ReferenceID}&Role=${Role}`
             );
             if (!response.ok) throw new Error("Failed to fetch metrics");
-            const data = await response.json();
 
-            // Filter by Role
-            let filteredData = Role === "Staff"
-                ? data.filter((item: Metric) => item.ReferenceID === ReferenceID)
-                : data;
+            let data = await response.json();
 
-            // Date range filtering
+            // Filter if role is Staff
+            if (Role === "Staff") {
+                data = data.filter((m: Metric) => m.ReferenceID === ReferenceID);
+            }
+
             const start = startDate ? new Date(startDate) : null;
             const end = endDate ? new Date(endDate) : null;
+
             if (start) start.setHours(0, 0, 0, 0);
             if (end) end.setHours(23, 59, 59, 999);
 
-            const finalData = filteredData.filter((item: Metric) => {
-                if (!item.createdAt) return false;
-
-                const createdAt = new Date(item.createdAt);
-                const matchesMonthYear =
-                    createdAt.getMonth() + 1 === month &&
-                    createdAt.getFullYear() === year;
-
-                const inRange =
-                    (!start || createdAt >= start) &&
-                    (!end || createdAt <= end);
-
-                return matchesMonthYear && inRange;
+            const filteredData = data.filter(({ createdAt }: Metric) => {
+                const created = new Date(createdAt);
+                return (!start || created >= start) && (!end || created <= end);
             });
 
             setMetrics(filteredData);
@@ -167,11 +152,12 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
         }
     };
 
-    // Fetch users and metrics on component mount
+    // Fetch users and metrics on component mount or dependencies change
     useEffect(() => {
         fetchUsers();
         fetchMetrics();
-    }, [ReferenceID, Role, month, year, startDate, endDate]);
+    }, [ReferenceID, Role, startDate, endDate]);
+
 
     // ✅ Group by ReferenceID
     const groupedMetrics = useMemo(() => {
@@ -398,14 +384,13 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
                 </div>
             ) : (
                 <>
-                    {Role === "Admin" && (
-                        <button onClick={exportToExcel} className="flex items-center gap-1 border mb-2 bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
-                            <CiExport size={16} /> Export
-                        </button>
-                    )}
+                    <h2 className="text-sm font-semibold mb-4 text-left">TSA Sales </h2>
+                    <button onClick={exportToExcel} className="flex items-center gap-1 border mb-2 bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition">
+                        <CiExport size={16} /> Export
+                    </button>
 
                     <table className="min-w-full table-auto">
-                        <thead className="bg-gray-100">
+                        <thead className="bg-gray-100 sticky top-0">
                             <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
                                 <th className="px-6 py-4 font-semibold text-gray-700">Agent Name</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700">Sales</th>

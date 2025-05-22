@@ -14,13 +14,11 @@ interface Metric {
 interface AgentSalesConversionProps {
   ReferenceID: string;
   Role: string;
-  month: number;
-  year: number;
   startDate?: string;
   endDate?: string;
 }
 
-const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID, Role, month, year, startDate, endDate }) => {
+const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID, Role, startDate, endDate }) => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,40 +35,30 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
 
   useEffect(() => {
     const fetchMetrics = async () => {
+      setLoading(true);
       try {
         const response = await fetch(
-          `/api/ModuleCSR/Dashboard/AgentSalesConversion?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
+          `/api/ModuleCSR/Dashboard/AgentSalesConversion?ReferenceID=${ReferenceID}&Role=${Role}`
         );
         if (!response.ok) throw new Error("Failed to fetch data");
-        const data = await response.json();
 
-        // Filter by Role
-        let filteredData = Role === "Staff"
-          ? data.filter((item: Metric) => item.ReferenceID === ReferenceID)
-          : data;
+        let data: Metric[] = await response.json();
 
-        // Date range filtering
+        if (Role === "Staff") {
+          data = data.filter((m) => m.ReferenceID === ReferenceID);
+        }
+
         const start = startDate ? new Date(startDate) : null;
         const end = endDate ? new Date(endDate) : null;
         if (start) start.setHours(0, 0, 0, 0);
         if (end) end.setHours(23, 59, 59, 999);
 
-        const finalData = filteredData.filter((item: Metric) => {
-          if (!item.createdAt) return false;
-
-          const createdAt = new Date(item.createdAt);
-          const matchesMonthYear =
-            createdAt.getMonth() + 1 === month &&
-            createdAt.getFullYear() === year;
-
-          const inRange =
-            (!start || createdAt >= start) &&
-            (!end || createdAt <= end);
-
-          return matchesMonthYear && inRange;
+        const filtered = data.filter(({ createdAt }) => {
+          const created = new Date(createdAt);
+          return (!start || created >= start) && (!end || created <= end);
         });
 
-        setMetrics(filteredData);
+        setMetrics(filtered);
       } catch (error) {
         console.error("Error fetching metrics:", error);
       } finally {
@@ -79,7 +67,8 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
     };
 
     fetchMetrics();
-  }, [ReferenceID, Role, month, year]);
+  }, [ReferenceID, Role, startDate, endDate]);
+
 
   // ✅ Group by ReferenceID
   const groupedMetrics = useMemo(
@@ -186,88 +175,91 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
           </div>
         </div>
       ) : (
-        <table className="min-w-full table-auto">
-          <thead className="bg-gray-100">
-            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
-              <th className="px-6 py-4 font-semibold text-gray-700">Agent Name</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Sales</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Non-Sales</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Amount</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">QTY Sold</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Conversion to Sale</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Week 1</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Week 2</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Week 3</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Week 4</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {Object.keys(groupedMetrics).length > 0 ? (
-              Object.keys(groupedMetrics).map((refId, index) => {
-                const agentMetrics = groupedMetrics[refId];
-                const totals = calculateAgentTotals(agentMetrics);
+        <>
+          <h2 className="text-sm font-semibold mb-4 text-left">Agent Sales Weekly</h2>
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-100">
+              <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+                <th className="px-6 py-4 font-semibold text-gray-700">Agent Name</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Sales</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Non-Sales</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Amount</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">QTY Sold</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Conversion to Sale</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Week 1</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Week 2</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Week 3</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Week 4</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {Object.keys(groupedMetrics).length > 0 ? (
+                Object.keys(groupedMetrics).map((refId, index) => {
+                  const agentMetrics = groupedMetrics[refId];
+                  const totals = calculateAgentTotals(agentMetrics);
 
-                return (
-                  <tr key={index} className="border-b whitespace-nowrap">
-                    <td className="px-6 py-4 text-xs whitespace-nowrap capitalize">
-                      {referenceIdToNameMap[refId] || "-"}
-                    </td>
-                    <td className="px-6 py-4 text-xs">{totals.sales}</td>
-                    <td className="px-6 py-4 text-xs">{totals.nonSales}</td>
-                    <td className="px-6 py-4 text-xs">
-                      {formatAmountWithPeso(totals.totalAmount)}
-                    </td>
-                    <td className="px-6 py-4 text-xs">{totals.totalQtySold}</td>
-                    <td className="px-6 py-4 text-xs">{totals.totalConversionToSale}</td>
-                    <td className="px-6 py-4 text-xs">
-                      {formatAmountWithPeso(totals.week1)}
-                    </td>
-                    <td className="px-6 py-4 text-xs">
-                      {formatAmountWithPeso(totals.week2)}
-                    </td>
-                    <td className="px-6 py-4 text-xs">
-                      {formatAmountWithPeso(totals.week3)}
-                    </td>
-                    <td className="px-6 py-4 text-xs">
-                      {formatAmountWithPeso(totals.week4)}
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
+                  return (
+                    <tr key={index} className="border-b whitespace-nowrap">
+                      <td className="px-6 py-4 text-xs whitespace-nowrap capitalize">
+                        {referenceIdToNameMap[refId] || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-xs">{totals.sales}</td>
+                      <td className="px-6 py-4 text-xs">{totals.nonSales}</td>
+                      <td className="px-6 py-4 text-xs">
+                        {formatAmountWithPeso(totals.totalAmount)}
+                      </td>
+                      <td className="px-6 py-4 text-xs">{totals.totalQtySold}</td>
+                      <td className="px-6 py-4 text-xs">{totals.totalConversionToSale}</td>
+                      <td className="px-6 py-4 text-xs">
+                        {formatAmountWithPeso(totals.week1)}
+                      </td>
+                      <td className="px-6 py-4 text-xs">
+                        {formatAmountWithPeso(totals.week2)}
+                      </td>
+                      <td className="px-6 py-4 text-xs">
+                        {formatAmountWithPeso(totals.week3)}
+                      </td>
+                      <td className="px-6 py-4 text-xs">
+                        {formatAmountWithPeso(totals.week4)}
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={10} className="p-2 text-center text-gray-500 text-xs">
+                    No data available
+                  </td>
+                </tr>
+              )}
+            </tbody>
+            {/* Add tfoot for totals */}
+            <tfoot className="bg-gray-100 px-6 py-4 text-xs text-left font-bold">
               <tr>
-                <td colSpan={10} className="p-2 text-center text-gray-500 text-xs">
-                  No data available
+                <td className="px-6 py-4 text-xs">Total</td>
+                <td className="px-6 py-4 text-xs">{totalMetrics.sales}</td>
+                <td className="px-6 py-4 text-xs">{totalMetrics.nonSales}</td>
+                <td className="px-6 py-4 text-xs">
+                  {formatAmountWithPeso(totalMetrics.totalAmount)}
+                </td>
+                <td className="px-6 py-4 text-xs">{totalMetrics.totalQtySold}</td>
+                <td className="px-6 py-4 text-xs">{totalMetrics.totalConversionToSale}</td>
+                <td className="px-6 py-4 text-xs">
+                  {formatAmountWithPeso(totalMetrics.week1)}
+                </td>
+                <td className="px-6 py-4 text-xs">
+                  {formatAmountWithPeso(totalMetrics.week2)}
+                </td>
+                <td className="px-6 py-4 text-xs">
+                  {formatAmountWithPeso(totalMetrics.week3)}
+                </td>
+                <td className="px-6 py-4 text-xs">
+                  {formatAmountWithPeso(totalMetrics.week4)}
                 </td>
               </tr>
-            )}
-          </tbody>
-          {/* Add tfoot for totals */}
-          <tfoot className="bg-gray-100 px-6 py-4 text-xs text-left font-bold">
-            <tr>
-              <td className="px-6 py-4 text-xs">Total</td>
-              <td className="px-6 py-4 text-xs">{totalMetrics.sales}</td>
-              <td className="px-6 py-4 text-xs">{totalMetrics.nonSales}</td>
-              <td className="px-6 py-4 text-xs">
-                {formatAmountWithPeso(totalMetrics.totalAmount)}
-              </td>
-              <td className="px-6 py-4 text-xs">{totalMetrics.totalQtySold}</td>
-              <td className="px-6 py-4 text-xs">{totalMetrics.totalConversionToSale}</td>
-              <td className="px-6 py-4 text-xs">
-                {formatAmountWithPeso(totalMetrics.week1)}
-              </td>
-              <td className="px-6 py-4 text-xs">
-                {formatAmountWithPeso(totalMetrics.week2)}
-              </td>
-              <td className="px-6 py-4 text-xs">
-                {formatAmountWithPeso(totalMetrics.week3)}
-              </td>
-              <td className="px-6 py-4 text-xs">
-                {formatAmountWithPeso(totalMetrics.week4)}
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+            </tfoot>
+          </table>
+        </>
       )}
     </div>
   );

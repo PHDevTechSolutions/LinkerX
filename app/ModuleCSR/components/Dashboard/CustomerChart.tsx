@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { RiRefreshLine } from "react-icons/ri";
 
 interface CustomerStatus {
@@ -11,68 +11,67 @@ interface CustomerStatus {
 interface CustomerChartProps {
   ReferenceID: string;
   Role: string;
-  month: number;
-  year: number;
   startDate?: string;
   endDate?: string;
 }
 
+const VALID_STATUSES = [
+  "New Client",
+  "Existing Active",
+  "New Non-Buying",
+  "Existing Inactive",
+];
+
 const CustomerChart: React.FC<CustomerChartProps> = ({
   ReferenceID,
   Role,
-  month,
-  year,
-  startDate = "",  // Default empty string if not provided
-  endDate = "",    // Default empty string if not provided
+  startDate = "",
+  endDate = "",
 }) => {
   const [customerData, setCustomerData] = useState<CustomerStatus[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const calculateDateRange = useCallback(() => {
-    const start = `${year}-${String(month).padStart(2, "0")}-01`;
-    const end = new Date(year, month, 0).toISOString().split("T")[0];
-    return { startDate: start, endDate: end };
-  }, [month, year]);
-
   useEffect(() => {
     const fetchCustomerData = async () => {
       setLoading(true);
-      const { startDate, endDate } = calculateDateRange();
-
       try {
-        const res = await fetch(
-          `/api/ModuleCSR/Dashboard/Customer?ReferenceID=${ReferenceID}&Role=${Role}&startDate=${startDate}&endDate=${endDate}`
-        );
+        const url = new URL("/api/ModuleCSR/Dashboard/Customer", window.location.origin);
+        url.searchParams.append("ReferenceID", ReferenceID);
+        url.searchParams.append("Role", Role);
+        if (startDate) url.searchParams.append("startDate", startDate);
+        if (endDate) url.searchParams.append("endDate", endDate);
+
+        const res = await fetch(url.toString());
 
         if (!res.ok) {
           console.error("Failed to fetch customer data:", res.statusText);
+          setCustomerData([]);
           return;
         }
 
-        const data = await res.json();
+        let data: CustomerStatus[] = await res.json();
 
-        let filtered = data;
+        // Filter data by Role and ReferenceID if Role is Staff
         if (Role === "Staff") {
-          filtered = data.filter((item: CustomerStatus) => item.ReferenceID === ReferenceID);
+          data = data.filter((m) => m.ReferenceID === ReferenceID);
         }
 
-        const final = filtered.filter((item: CustomerStatus) => {
-          if (!item.createdAt) return false;
-          const createdAtDate = new Date(item.createdAt);
-          return (
-            createdAtDate.getMonth() + 1 === month &&
-            createdAtDate.getFullYear() === year &&
-            item.CustomerStatus &&
-            [
-              "New Client",
-              "Existing Active",
-              "New Non-Buying",
-              "Existing Inactive",
-            ].includes(item.CustomerStatus)
-          );
+        // Convert to dates for filtering
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+        if (start) start.setHours(0, 0, 0, 0);
+        if (end) end.setHours(23, 59, 59, 999);
+
+        // Filter by createdAt date range and valid customer statuses
+        const filtered = data.filter(({ createdAt, CustomerStatus }) => {
+          if (!createdAt || !CustomerStatus) return false;
+          const created = new Date(createdAt);
+          const inDateRange = (!start || created >= start) && (!end || created <= end);
+          const validStatus = VALID_STATUSES.includes(CustomerStatus);
+          return inDateRange && validStatus;
         });
 
-        setCustomerData(final);
+        setCustomerData(filtered);
       } catch (error) {
         console.error("Error fetching customer data:", error);
         setCustomerData([]);
@@ -82,9 +81,9 @@ const CustomerChart: React.FC<CustomerChartProps> = ({
     };
 
     fetchCustomerData();
-  }, [ReferenceID, Role, month, year, calculateDateRange]);
+  }, [ReferenceID, Role, startDate, endDate]);
 
-  // Memoize status counts calculation to avoid recalculating on every render
+  // Calculate counts per status
   const statusCounts = useMemo(() => {
     const counts: { [key: string]: number } = {};
     customerData.forEach((item) => {
@@ -101,12 +100,12 @@ const CustomerChart: React.FC<CustomerChartProps> = ({
     "Existing Active": "bg-green-600",
     "New Non-Buying": "bg-yellow-500",
     "Existing Inactive": "bg-red-600",
-    "Unknown": "bg-gray-500",
+    Unknown: "bg-gray-500",
   };
 
   return (
     <div className="w-full max-w-md mx-auto bg-white">
-      <h3 className="text-xs font-bold mb-4 text-center">Customer Status Distribution</h3>
+      <h3 className="text-sm font-bold mb-4 text-let">Customer Status Distribution</h3>
 
       {loading ? (
         <div className="flex justify-center items-center h-full w-full">

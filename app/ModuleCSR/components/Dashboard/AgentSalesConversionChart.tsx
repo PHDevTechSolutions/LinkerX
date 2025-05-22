@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { RiRefreshLine } from "react-icons/ri";
 
@@ -15,8 +16,6 @@ interface Metric {
 interface AgentSalesConversionProps {
   ReferenceID: string;
   Role: string;
-  month: number;
-  year: number;
   startDate?: string;
   endDate?: string;
 }
@@ -24,8 +23,6 @@ interface AgentSalesConversionProps {
 const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
   ReferenceID,
   Role,
-  month,
-  year,
   startDate,
   endDate,
 }) => {
@@ -43,57 +40,48 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     "MC-CSR-947264": "Capin, Mark Vincent",
   };
 
-  const wrapupLabels = [
-    "Confirmed", "Paid", "PDC", "Gcash", "BDO", "BPI", "Metrobank",
-  ];
-
   const colorPalette = [
     "#3A7D44", "#27445D", "#71BBB2", "#578FCA", "#9966FF", "#FF9F40",
     "#C9CBCF", "#008080",
   ];
 
   const fetchMetrics = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await fetch(
-        `/api/ModuleCSR/Dashboard/AgentSalesConversion?ReferenceID=${ReferenceID}&month=${month}&year=${year}`
+        `/api/ModuleCSR/Dashboard/AgentSalesConversion?ReferenceID=${ReferenceID}&Role=${Role}`
       );
       if (!response.ok) throw new Error("Failed to fetch data");
-      const data = await response.json();
 
-      // Date range filtering
+      let data: Metric[] = await response.json();
+
+      if (Role === "Staff") {
+        data = data.filter(m => m.ReferenceID === ReferenceID);
+      }
+
       const start = startDate ? new Date(startDate) : null;
       const end = endDate ? new Date(endDate) : null;
+
       if (start) start.setHours(0, 0, 0, 0);
       if (end) end.setHours(23, 59, 59, 999);
 
-      const finalData = data.filter((item: Metric) => {
-        if (!item.createdAt) return false;
-
-        const createdAt = new Date(item.createdAt);
-        const matchesMonthYear =
-          createdAt.getMonth() + 1 === month &&
-          createdAt.getFullYear() === year;
-
-        const inRange =
-          (!start || createdAt >= start) &&
-          (!end || createdAt <= end);
-
-        return matchesMonthYear && inRange;
+      const filtered = data.filter(({ createdAt }) => {
+        const created = new Date(createdAt);
+        return (!start || created >= start) && (!end || created <= end);
       });
 
-      setMetrics(finalData);
+      setMetrics(filtered);
     } catch (error) {
       console.error("Error fetching metrics:", error);
     } finally {
       setLoading(false);
     }
-  }, [ReferenceID, month, year, startDate, endDate]);
+  }, [ReferenceID, Role, startDate, endDate]);
 
   useEffect(() => {
     fetchMetrics();
   }, [fetchMetrics]);
 
-  // Memoize the grouped metrics calculation to avoid recalculating on every render
   const groupedMetrics = useMemo(() => {
     return metrics.reduce((acc, metric) => {
       if (!acc[metric.ReferenceID]) acc[metric.ReferenceID] = [];
@@ -102,12 +90,13 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     }, {} as Record<string, Metric[]>);
   }, [metrics]);
 
-  // Memoize agent totals calculation to prevent unnecessary recalculations
   const calculateAgentTotals = useCallback((agentMetrics: Metric[]) => {
     return agentMetrics.reduce(
       (acc, metric) => {
-        const amount = parseFloat(metric.Amount as string) || 0;
-        acc.totalAmount += amount;
+        const amount = typeof metric.Amount === "string"
+          ? parseFloat(metric.Amount)
+          : metric.Amount;
+        acc.totalAmount += isNaN(amount) ? 0 : amount;
         return acc;
       },
       { totalAmount: 0 }
@@ -129,13 +118,13 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
     <div className="overflow-x-auto w-full">
       {loading ? (
         <div className="flex justify-center items-center h-full w-full">
-          <div className="flex justify-center items-center w-30 h-30">
+          <div className="w-30 h-30 flex justify-center items-center">
             <RiRefreshLine size={30} className="animate-spin" />
           </div>
         </div>
       ) : (
         <div className="w-full">
-          <h2 className="text-xs font-semibold mb-4">Agent Sales Conversion</h2>
+          <h2 className="text-sm font-semibold mb-4 text-left">Agent Sales Conversion</h2>
 
           <div className="flex flex-col space-y-4">
             {agentLabels.map((refId, index) => {

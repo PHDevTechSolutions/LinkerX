@@ -42,18 +42,38 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
     const fetchMetrics = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/ModuleCSR/Dashboard/Metrics?ReferenceID=${ReferenceID}&month=${month}&year=${year}`);
-        if (!res.ok) throw new Error("Failed to fetch");
-        const data: Metric[] = await res.json();
-        setMetrics(data);
+        const url = `/api/ModuleCSR/Dashboard/Metrics?ReferenceID=${ReferenceID}&Role=${Role}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Failed to fetch metrics");
+
+        let data: Metric[] = await res.json();
+
+        if (Role === "Staff") {
+          data = data.filter(m => m.ReferenceID === ReferenceID);
+        }
+
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+
+        if (start) start.setHours(0, 0, 0, 0);
+        if (end) end.setHours(23, 59, 59, 999);
+
+        const filtered = data.filter(({ createdAt }) => {
+          const created = new Date(createdAt);
+          return (!start || created >= start) && (!end || created <= end);
+        });
+
+        setMetrics(filtered);
       } catch (error) {
         console.error("Fetch error:", error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchMetrics();
-  }, [ReferenceID, month, year]);
+  }, [ReferenceID, Role, startDate, endDate]);
+
 
   const { groupedArray, totalMetrics } = useMemo(() => {
     const grouped = new Map<string, any>();
@@ -142,47 +162,50 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
           <RiRefreshLine size={30} className="animate-spin" />
         </div>
       ) : (
-        <table className="min-w-full table-auto">
-          <thead className="bg-gray-100">
-            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
-              {["Channel", "Traffic", "Amount", "Qty Sold", "Converted to Sale", "Avg Transaction Unit", "Avg Transaction Value"].map(h => (
-                <th key={h} className="px-6 py-4 font-semibold text-gray-700">{h}</th>
+        <>
+          <h3 className="text-left text-sm font-semibold mb-4">Metrics</h3>
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-100">
+              <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+                {["Channel", "Traffic", "Amount", "Qty Sold", "Converted to Sale", "Avg Transaction Unit", "Avg Transaction Value"].map(h => (
+                  <th key={h} className="px-6 py-4 font-semibold text-gray-700">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {groupedArray.map((group, i) => (
+                <tr key={i} className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs">{group.channel}</td>
+                  <td className="px-6 py-4 text-xs">{group.traffic}</td>
+                  <td className="px-6 py-4 text-xs">{formatAmount(group.totalAmount)}</td>
+                  <td className="px-6 py-4 text-xs">{group.totalQtySold}</td>
+                  <td className="px-6 py-4 text-xs">{group.totalConversionToSale}</td>
+                  <td className="px-6 py-4 text-xs">{group.avgTransactionUnit}</td>
+                  <td className="px-6 py-4 text-xs">{parseFloat(group.avgTransactionValue).toLocaleString("en-PH", {
+                    style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2
+                  })}</td>
+                </tr>
               ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {groupedArray.map((group, i) => (
-              <tr key={i} className="border-b whitespace-nowrap">
-                <td className="px-6 py-4 text-xs">{group.channel}</td>
-                <td className="px-6 py-4 text-xs">{group.traffic}</td>
-                <td className="px-6 py-4 text-xs">{formatAmount(group.totalAmount)}</td>
-                <td className="px-6 py-4 text-xs">{group.totalQtySold}</td>
-                <td className="px-6 py-4 text-xs">{group.totalConversionToSale}</td>
-                <td className="px-6 py-4 text-xs">{group.avgTransactionUnit}</td>
-                <td className="px-6 py-4 text-xs">{parseFloat(group.avgTransactionValue).toLocaleString("en-PH", {
-                  style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2
+            </tbody>
+            <tfoot className="bg-gray-100 px-6 py-4 text-xs text-left font-bold">
+              <tr>
+                <td className="px-6 py-4 text-xs">TOTAL</td>
+                <td className="px-6 py-4 text-xs">{totalMetrics.sales}</td>
+                <td className="px-6 py-4 text-xs">{formatAmount(totalMetrics.totalAmount)}</td>
+                <td className="px-6 py-4 text-xs">{totalMetrics.totalQtySold}</td>
+                <td className="px-6 py-4 text-xs">{totalMetrics.totalConversionToSale}</td>
+                <td className="px-6 py-4 text-xs">{parseFloat(totalMetrics.avgATU).toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}</td>
+                <td className="px-6 py-4 text-xs">{parseFloat(totalMetrics.avgATV).toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
                 })}</td>
               </tr>
-            ))}
-          </tbody>
-          <tfoot className="bg-gray-100 px-6 py-4 text-xs text-left font-bold">
-            <tr>
-              <td className="px-6 py-4 text-xs">TOTAL</td>
-              <td className="px-6 py-4 text-xs">{totalMetrics.sales}</td>
-              <td className="px-6 py-4 text-xs">{formatAmount(totalMetrics.totalAmount)}</td>
-              <td className="px-6 py-4 text-xs">{totalMetrics.totalQtySold}</td>
-              <td className="px-6 py-4 text-xs">{totalMetrics.totalConversionToSale}</td>
-              <td className="px-6 py-4 text-xs">{parseFloat(totalMetrics.avgATU).toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              })}</td>
-              <td className="px-6 py-4 text-xs">{parseFloat(totalMetrics.avgATV).toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              })}</td>
-            </tr>
-          </tfoot>
-        </table>
+            </tfoot>
+          </table>
+        </>
       )}
     </div>
   );

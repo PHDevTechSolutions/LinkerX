@@ -10,13 +10,11 @@ interface GenderCount {
 interface GenderBarChartProps {
   ReferenceID: string;
   Role: string;
-  month: number;
-  year: number;
   startDate?: string;
   endDate?: string;
 }
 
-const GenderBarChart: React.FC<GenderBarChartProps> = ({ ReferenceID, Role, month, year, startDate, endDate }) => {
+const GenderBarChart: React.FC<GenderBarChartProps> = ({ ReferenceID, Role, startDate, endDate }) => {
   const [genderData, setGenderData] = useState<GenderCount[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,34 +23,33 @@ const GenderBarChart: React.FC<GenderBarChartProps> = ({ ReferenceID, Role, mont
     const fetchGenderData = async () => {
       setLoading(true);
       try {
-        const res = await fetch(
-          `/api/ModuleCSR/Dashboard/Monitoring?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
-        );
+        const url = `/api/ModuleCSR/Dashboard/Monitoring?ReferenceID=${ReferenceID}&Role=${Role}`;
+        const res = await fetch(url);
 
-        if (!res.ok) {
-          console.error("Failed to fetch gender data:", res.statusText);
-          return;
-        }
+        if (!res.ok) throw new Error("Failed to fetch metrics");
 
-        const data = await res.json();
+        let data: GenderCount[] = await res.json();
 
-        let filteredData = data;
-
-        // Filter based on role if necessary
+        // Filter based on Role if necessary
         if (Role === "Staff") {
-          filteredData = data.filter((item: GenderCount) => item.ReferenceID === ReferenceID);
+          data = data.filter(item => item.ReferenceID === ReferenceID);
         }
 
-        // Apply date filtering only if provided
-        const finalData = filteredData.filter((item: GenderCount) => {
-          if (!item.createdAt) return false;
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
 
+        if (start) start.setHours(0, 0, 0, 0);
+        if (end) end.setHours(23, 59, 59, 999);
+
+        // Filter data by date range and gender condition
+        const finalData = data.filter(item => {
+          if (!item.createdAt) return false;
           const date = new Date(item.createdAt);
-          return (
-            date.getMonth() + 1 === month &&
-            date.getFullYear() === year &&
-            (item.Gender === "Male" || item.Gender === "Female")
-          );
+
+          const inDateRange = (!start || date >= start) && (!end || date <= end);
+          const validGender = item.Gender === "Male" || item.Gender === "Female";
+
+          return inDateRange && validGender;
         });
 
         setGenderData(finalData);
@@ -64,7 +61,8 @@ const GenderBarChart: React.FC<GenderBarChartProps> = ({ ReferenceID, Role, mont
     };
 
     fetchGenderData();
-  }, [ReferenceID, Role, month, year, startDate, endDate]);
+  }, [ReferenceID, Role, startDate, endDate]);
+
 
   // Memoize the gender counts for performance optimization
   const { maleCount, femaleCount, total } = useMemo(() => {
@@ -77,7 +75,7 @@ const GenderBarChart: React.FC<GenderBarChartProps> = ({ ReferenceID, Role, mont
 
   return (
     <div className="w-full max-w-md mx-auto bg-white">
-      <h3 className="text-xs font-bold mb-4 text-center">Inbound Traffic Per Gender</h3>
+      <h3 className="text-sm font-bold mb-4 text-left">Inbound Traffic Per Gender</h3>
 
       {loading ? (
         <div className="flex justify-center items-center h-full w-full">

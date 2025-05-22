@@ -11,8 +11,6 @@ interface CustomerType {
 interface CustomerTypeChartProps {
   ReferenceID: string;
   Role: string;
-  month: number;
-  year: number;
   startDate?: string;
   endDate?: string;
 }
@@ -20,8 +18,6 @@ interface CustomerTypeChartProps {
 const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({
   ReferenceID,
   Role,
-  month,
-  year,
   startDate = "",
   endDate = "",
 }) => {
@@ -29,49 +25,55 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCustomerTypeData = async () => {
-      setLoading(true);
-      try {
-        // Construct start and end dates once
-        const startDateFormatted = `${year}-${String(month).padStart(2, "0")}-01`;
-        const endDateFormatted = new Date(year, month, 0).toISOString().split("T")[0];
+  const fetchCustomerTypeData = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `/api/ModuleCSR/Dashboard/CustomerType?ReferenceID=${ReferenceID}&Role=${Role}`
+      );
 
-        const res = await fetch(
-          `/api/ModuleCSR/Dashboard/CustomerType?ReferenceID=${ReferenceID}&Role=${Role}&startDate=${startDateFormatted}&endDate=${endDateFormatted}`
-        );
-
-        const data = await res.json();
-
-        let filtered = data;
-        if (Role === "Staff") {
-          filtered = data.filter((item: CustomerType) => item.ReferenceID === ReferenceID);
-        }
-
-        // Filtering logic
-        const final = filtered.filter((item: CustomerType) => {
-          if (!item.createdAt) return false;
-          const createdAtDate = new Date(item.createdAt);
-          return (
-            createdAtDate.getMonth() + 1 === month &&
-            createdAtDate.getFullYear() === year &&
-            item.CustomerType &&
-            [
-              "B2B", "B2C", "B2G", "Gentrade", "Modern Trade",
-            ].includes(item.CustomerType)
-          );
-        });
-
-        setCustomerTypeData(final);
-      } catch (error) {
-        console.error("Error fetching customer type data:", error);
-        setCustomerTypeData([]);
-      } finally {
-        setLoading(false);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch customer type data: ${res.statusText}`);
       }
-    };
 
-    fetchCustomerTypeData();
-  }, [ReferenceID, Role, month, year, startDate, endDate]);
+      let data: CustomerType[] = await res.json();
+
+      // Filter by ReferenceID if Role is Staff
+      if (Role === "Staff") {
+        data = data.filter(m => m.ReferenceID === ReferenceID);
+      }
+
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+
+      if (start) start.setHours(0, 0, 0, 0);
+      if (end) end.setHours(23, 59, 59, 999);
+
+      // Filter by createdAt date range
+      const filtered = data.filter(({ createdAt }) => {
+        if (!createdAt) return false;
+        const created = new Date(createdAt);
+        return (!start || created >= start) && (!end || created <= end);
+      });
+
+      // Filter valid CustomerType values
+      const validTypes = ["B2B", "B2C", "B2G", "Gentrade", "Modern Trade"];
+      const final = filtered.filter(
+        item => item.CustomerType && validTypes.includes(item.CustomerType)
+      );
+
+      setCustomerTypeData(final);
+    } catch (error) {
+      console.error("Error fetching customer type data:", error);
+      setCustomerTypeData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCustomerTypeData();
+}, [ReferenceID, Role, startDate, endDate]);
+
 
   // Memoized calculation of type counts
   const typeCounts = useMemo(() => {
@@ -96,7 +98,7 @@ const CustomerTypeChart: React.FC<CustomerTypeChartProps> = ({
 
   return (
     <div className="w-full max-w-md mx-auto bg-white">
-      <h3 className="text-xs font-bold mb-4 text-center">Inbound Traffic Per Customer Type</h3>
+      <h3 className="text-sm font-bold mb-4 text-left">Inbound Traffic Per Customer Type</h3>
 
       {loading ? (
         <div className="flex justify-center items-center h-full w-full">

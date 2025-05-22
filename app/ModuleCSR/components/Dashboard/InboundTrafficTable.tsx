@@ -11,8 +11,6 @@ interface Metric {
 interface MetricTableProps {
   ReferenceID: string;
   Role: string;
-  month: number;
-  year: number;
   startDate?: string;
   endDate?: string;
 }
@@ -43,8 +41,6 @@ const allChannels = [
 const MetricTable: React.FC<MetricTableProps> = ({
   ReferenceID,
   Role,
-  month,
-  year,
   startDate,
   endDate,
 }) => {
@@ -54,17 +50,31 @@ const MetricTable: React.FC<MetricTableProps> = ({
   const fetchMetrics = async () => {
     try {
       setLoading(true);
+
       const res = await fetch(
-        `/api/ModuleCSR/Dashboard/InboundTraffic?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
+        `/api/ModuleCSR/Dashboard/InboundTraffic?ReferenceID=${ReferenceID}&Role=${Role}`
       );
-      if (!res.ok) throw new Error("Failed to fetch data");
 
-      const data: Metric[] = await res.json();
-      const userFiltered = Role === "Staff"
-        ? data.filter((m) => m.ReferenceID === ReferenceID)
-        : data;
+      if (!res.ok) throw new Error("Failed to fetch metrics");
 
-      setMetrics(userFiltered);
+      let data: Metric[] = await res.json();
+
+      if (Role === "Staff") {
+        data = data.filter((m) => m.ReferenceID === ReferenceID);
+      }
+
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+
+      if (start) start.setHours(0, 0, 0, 0);
+      if (end) end.setHours(23, 59, 59, 999);
+
+      const filtered = data.filter(({ createdAt }) => {
+        const created = new Date(createdAt);
+        return (!start || created >= start) && (!end || created <= end);
+      });
+
+      setMetrics(filtered);
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
@@ -74,7 +84,8 @@ const MetricTable: React.FC<MetricTableProps> = ({
 
   useEffect(() => {
     fetchMetrics();
-  }, [ReferenceID, Role, month, year]);
+  }, [ReferenceID, Role, startDate, endDate]);
+
 
   const filteredMetrics = useMemo(() => {
     if (!startDate && !endDate) return metrics;
@@ -133,41 +144,44 @@ const MetricTable: React.FC<MetricTableProps> = ({
           <RiRefreshLine size={30} className="animate-spin text-gray-600" />
         </div>
       ) : (
-        <table className="min-w-full table-auto">
-          <thead className="bg-gray-100">
-            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
-              <th className="px-6 py-4 font-semibold text-gray-700">Channel</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Week 1</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Week 2</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Week 3</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Week 4</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {allChannels.map((channel) => (
-              <tr key={channel} className="border-b whitespace-nowrap">
-                <td className="px-6 py-4 text-xs">{channel}</td>
-                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 1"][channel] || 0}</td>
-                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 2"][channel] || 0}</td>
-                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 3"][channel] || 0}</td>
-                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 4"][channel] || 0}</td>
+        <>
+          <h3 className="text-left text-sm font-semibold mb-4">Weekly Inbound Traffic Per Channel</h3>
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-100">
+              <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+                <th className="px-6 py-4 font-semibold text-gray-700">Channel</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Week 1</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Week 2</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Week 3</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Week 4</th>
               </tr>
-            ))}
-          </tbody>
-          <tfoot className="bg-gray-50 font-semibold text-xs text-gray-700">
-            <tr className="border-t">
-              <td className="px-6 py-3">Total</td>
-              <td className="px-6 py-3">{weeklyTotals["Week 1"] || 0}</td>
-              <td className="px-6 py-3">{weeklyTotals["Week 2"] || 0}</td>
-              <td className="px-6 py-3">{weeklyTotals["Week 3"] || 0}</td>
-              <td className="px-6 py-3">{weeklyTotals["Week 4"] || 0}</td>
-            </tr>
-            <tr className="border-t bg-emerald-50 text-emerald-700">
-              <td className="px-6 py-3">Grand Total</td>
-              <td className="px-6 py-3" colSpan={4}>{grandTotal}</td>
-            </tr>
-          </tfoot>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {allChannels.map((channel) => (
+                <tr key={channel} className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs">{channel}</td>
+                  <td className="px-6 py-4 text-xs">{weeklyCounts["Week 1"][channel] || 0}</td>
+                  <td className="px-6 py-4 text-xs">{weeklyCounts["Week 2"][channel] || 0}</td>
+                  <td className="px-6 py-4 text-xs">{weeklyCounts["Week 3"][channel] || 0}</td>
+                  <td className="px-6 py-4 text-xs">{weeklyCounts["Week 4"][channel] || 0}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot className="bg-gray-50 font-semibold text-xs text-gray-700">
+              <tr className="border-t">
+                <td className="px-6 py-3">Total</td>
+                <td className="px-6 py-3">{weeklyTotals["Week 1"] || 0}</td>
+                <td className="px-6 py-3">{weeklyTotals["Week 2"] || 0}</td>
+                <td className="px-6 py-3">{weeklyTotals["Week 3"] || 0}</td>
+                <td className="px-6 py-3">{weeklyTotals["Week 4"] || 0}</td>
+              </tr>
+              <tr className="border-t bg-emerald-50 text-emerald-700">
+                <td className="px-6 py-3">Grand Total</td>
+                <td className="px-6 py-3" colSpan={4}>{grandTotal}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </>
       )}
     </div>
   );

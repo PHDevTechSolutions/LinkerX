@@ -10,8 +10,6 @@ interface WrapupTableData {
 interface WrapupTableProps {
   ReferenceID: string;
   Role: string;
-  month: number;
-  year: number;
   startDate?: string;
   endDate?: string;
 }
@@ -28,8 +26,6 @@ const getWeekNumber = (dateString: string) => {
 const WrapupTable: React.FC<WrapupTableProps> = ({
   ReferenceID,
   Role,
-  month,
-  year,
   startDate,
   endDate,
 }) => {
@@ -60,37 +56,47 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
 
     try {
       const response = await fetch(
-        `/api/ModuleCSR/Dashboard/WrapupData?ReferenceID=${ReferenceID}&Role=${Role}&month=${month}&year=${year}`
+        `/api/ModuleCSR/Dashboard/WrapupData?ReferenceID=${ReferenceID}&Role=${Role}`
       );
       if (!response.ok) throw new Error("Failed to fetch data");
-      const data: WrapupTableData[] = await response.json();
 
-      // Filter by ReferenceID for Staff
-      let filteredData = Role === "Staff"
-        ? data.filter(item => item.ReferenceID === ReferenceID)
-        : data;
+      let data: WrapupTableData[] = await response.json();
 
-      // Date range filtering
+      if (Role === "Staff") {
+        data = data.filter(m => m.ReferenceID === ReferenceID);
+      }
+
       const start = startDate ? new Date(startDate) : null;
       const end = endDate ? new Date(endDate) : null;
 
       if (start) start.setHours(0, 0, 0, 0);
       if (end) end.setHours(23, 59, 59, 999);
 
-      const finalData = filteredData.filter((item) => {
-        if (!item.createdAt || !item.WrapUp) return false;
+      // Filter by createdAt date range
+      const filtered = data.filter(({ createdAt }) => {
+        const created = new Date(createdAt);
+        return (!start || created >= start) && (!end || created <= end);
+      });
 
+      // If you have month and year variables to filter by, define them:
+      // For example:
+      // const month = start ? start.getMonth() + 1 : null;
+      // const year = start ? start.getFullYear() : null;
+
+      // Filter final data with wrapupLabels and optional month/year check
+      const finalData = filtered.filter(item => {
+        if (!item.createdAt || !item.WrapUp) return false;
         const createdAt = new Date(item.createdAt);
 
-        const matchesMonthYear =
-          createdAt.getMonth() + 1 === month &&
-          createdAt.getFullYear() === year;
+        // Example month/year check (remove if not used)
+        const month = start ? start.getMonth() + 1 : null;
+        const year = start ? start.getFullYear() : null;
 
-        const inRange =
-          (!start || createdAt >= start) &&
-          (!end || createdAt <= end);
+        const matchesMonthYear = month && year
+          ? createdAt.getMonth() + 1 === month && createdAt.getFullYear() === year
+          : true;
 
-        return matchesMonthYear && inRange && wrapupLabels.includes(item.WrapUp);
+        return matchesMonthYear && wrapupLabels.includes(item.WrapUp);
       });
 
       setMetrics(finalData);
@@ -99,7 +105,8 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [ReferenceID, Role, month, year, startDate, endDate]);
+  }, [ReferenceID, Role, startDate, endDate]);
+
 
   useEffect(() => {
     fetchMetricsData();
@@ -154,37 +161,40 @@ const WrapupTable: React.FC<WrapupTableProps> = ({
           </div>
         </div>
       ) : (
-        <table className="min-w-full table-auto">
-          <thead className="bg-gray-100">
-            <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
-              <th className="px-6 py-4 font-semibold text-gray-700">Wrap-Up</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Week 1</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Week 2</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Week 3</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Week 4</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {wrapupLabels.map((label) => (
-              <tr key={label} className="border-b whitespace-nowrap">
-                <td className="px-6 py-4 text-xs">{label}</td>
-                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 1"][label] || 0}</td>
-                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 2"][label] || 0}</td>
-                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 3"][label] || 0}</td>
-                <td className="px-6 py-4 text-xs">{weeklyCounts["Week 4"][label] || 0}</td>
+        <>
+          <h3 className="text-left text-sm font-semibold mb-4">Weekly Wrap-Up</h3>
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-100">
+              <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+                <th className="px-6 py-4 font-semibold text-gray-700">Wrap-Up</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Week 1</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Week 2</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Week 3</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Week 4</th>
               </tr>
-            ))}
-          </tbody>
-          <tfoot className="bg-gray-100">
-            <tr className="text-xs font-semibold text-gray-700">
-              <td className="px-6 py-4">Total</td>
-              <td className="px-6 py-4">{weekTotals["Week 1"]}</td>
-              <td className="px-6 py-4">{weekTotals["Week 2"]}</td>
-              <td className="px-6 py-4">{weekTotals["Week 3"]}</td>
-              <td className="px-6 py-4">{weekTotals["Week 4"]}</td>
-            </tr>
-          </tfoot>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {wrapupLabels.map((label) => (
+                <tr key={label} className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs">{label}</td>
+                  <td className="px-6 py-4 text-xs">{weeklyCounts["Week 1"][label] || 0}</td>
+                  <td className="px-6 py-4 text-xs">{weeklyCounts["Week 2"][label] || 0}</td>
+                  <td className="px-6 py-4 text-xs">{weeklyCounts["Week 3"][label] || 0}</td>
+                  <td className="px-6 py-4 text-xs">{weeklyCounts["Week 4"][label] || 0}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot className="bg-gray-100">
+              <tr className="text-xs font-semibold text-gray-700">
+                <td className="px-6 py-4">Total</td>
+                <td className="px-6 py-4">{weekTotals["Week 1"]}</td>
+                <td className="px-6 py-4">{weekTotals["Week 2"]}</td>
+                <td className="px-6 py-4">{weekTotals["Week 3"]}</td>
+                <td className="px-6 py-4">{weekTotals["Week 4"]}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </>
       )}
     </div>
   );
