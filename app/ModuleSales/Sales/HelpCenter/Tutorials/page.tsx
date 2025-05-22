@@ -174,7 +174,6 @@ const ListofUser: React.FC = () => {
                                             />
                                             <UsersCard
                                                 posts={currentPosts}
-                                                handleDelete={confirmDelete}
                                             />
                                         </div>
                                     </>

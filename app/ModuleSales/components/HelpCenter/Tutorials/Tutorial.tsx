@@ -1,24 +1,54 @@
-import React, { useState } from "react";
-import { LuVideo, LuLayoutList, LuFolderKanban, LuClock } from "react-icons/lu";
+import React, { useState, useEffect } from "react";
+import { LuVideo, LuLayoutList, LuFolderKanban, LuClock, LuStar } from "react-icons/lu";
 
 interface UsersCardProps {
   posts: any[];
-  handleDelete: (postId: string) => void;
-  referenceid?: string;
 }
 
 const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
-  const [currentPage, setCurrentPage] = useState(1);
   const [activeType, setActiveType] = useState<string | null>(null);
-  const postsPerPage = 12;
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [bookmarks, setBookmarks] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("bookmarkedPosts");
+      if (stored) setBookmarks(JSON.parse(stored));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("bookmarkedPosts", JSON.stringify(bookmarks));
+    }
+  }, [bookmarks]);
 
   const extractVideoId = (url: string) => {
-    const regex = /(?:youtube\.com\/(?:[^/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const regex =
+      /(?:youtube\.com\/(?:[^/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const match = url.match(regex);
     return match ? match[1] : null;
   };
 
-  // Count per type for badges
+  const toggleBookmark = (postId: string) => {
+    setBookmarks((prev) =>
+      prev.includes(postId) ? prev.filter((id) => id !== postId) : [...prev, postId]
+    );
+  };
+
+  // Add "bookmarks" as a special filter tab
+  // When activeType === 'bookmarks', show bookmarked posts only
+  let filteredPosts = posts;
+  if (activeType === "bookmarks") {
+    filteredPosts = posts.filter((post) => bookmarks.includes(post.id));
+  } else if (activeType) {
+    filteredPosts = posts.filter((post) => post.type === activeType);
+  }
+
+  const visiblePosts = filteredPosts.slice(0, visibleCount);
+  const canLoadMore = visibleCount < filteredPosts.length;
+  const handleLoadMore = () => setVisibleCount((prev) => prev + 12);
+
   const typeCounts: Record<string, number> = posts.reduce((acc, post) => {
     acc[post.type] = (acc[post.type] || 0) + 1;
     return acc;
@@ -35,19 +65,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
     }
   };
 
-  // Get unique types for tabs
-  const types = Array.from(new Set(posts.map((post) => post.type)));
-
-  // Filter by selected type
-  const filteredPosts = activeType ? posts.filter((post) => post.type === activeType) : posts;
-
-  // Pagination logic
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-
   return (
     <div className="flex flex-col md:flex-row">
       {/* Left Tabs for Desktop, Select for Mobile */}
@@ -59,20 +76,20 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
           <select
             value={activeType ?? "all"}
             onChange={(e) => {
-              const selectedType = e.target.value === "all" ? null : e.target.value;
-              setActiveType(selectedType);
-              setCurrentPage(1);
+              const val = e.target.value;
+              setActiveType(val === "all" ? null : val);
+              setVisibleCount(12);
             }}
             className="w-full p-2 border rounded-md text-xs bg-white text-gray-700"
           >
             <option value="all">All</option>
-            {types.map((type) => (
+            <option value="bookmarks">Bookmarks ({bookmarks.length})</option>
+            {Object.entries(typeCounts).map(([type, count]) => (
               <option key={type} value={type}>
-                {type} ({typeCounts[type]})
+                {type} ({count})
               </option>
             ))}
           </select>
-
         </div>
 
         {/* Desktop View: Tabs */}
@@ -81,25 +98,50 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
             <li
               onClick={() => {
                 setActiveType(null);
-                setCurrentPage(1);
+                setVisibleCount(12);
               }}
-              className={`cursor-pointer px-2 py-1 rounded text-xs ${activeType === null ? "bg-blue-500 text-white" : "hover:bg-gray-100"}`}
+              className={`cursor-pointer px-2 py-1 rounded text-xs ${
+                activeType === null ? "bg-blue-500 text-white" : "hover:bg-gray-100"
+              }`}
             >
               All
             </li>
-            {types.map((type) => (
+            <li
+              onClick={() => {
+                setActiveType("bookmarks");
+                setVisibleCount(12);
+              }}
+              className={`cursor-pointer px-2 py-1 rounded flex items-center justify-between ${
+                activeType === "bookmarks"
+                  ? "bg-yellow-400 text-white"
+                  : "hover:bg-gray-100 text-gray-800"
+              }`}
+            >
+              <span className="flex items-center text-xs">
+                <LuStar className="w-4 h-4 mr-2" /> Bookmarks
+              </span>
+              <span className="text-[10px] bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full">
+                {bookmarks.length}
+              </span>
+            </li>
+            {Object.entries(typeCounts).map(([type, count]) => (
               <li
                 key={type}
                 onClick={() => {
                   setActiveType(type);
-                  setCurrentPage(1);
+                  setVisibleCount(12);
                 }}
-                className={`cursor-pointer px-2 py-1 rounded flex items-center justify-between ${activeType === type ? "bg-blue-500 text-white" : "hover:bg-gray-100 text-gray-800"
-                  }`}
+                className={`cursor-pointer px-2 py-1 rounded flex items-center justify-between ${
+                  activeType === type
+                    ? "bg-blue-500 text-white"
+                    : "hover:bg-gray-100 text-gray-800"
+                }`}
               >
-                <span className="flex items-center text-xs">{getTypeIcon(type)} {type}</span>
+                <span className="flex items-center text-xs">
+                  {getTypeIcon(type)} {type}
+                </span>
                 <span className="text-[10px] bg-gray-300 text-gray-800 px-2 py-0.5 rounded-full">
-                  {typeCounts[type]}
+                  {count}
                 </span>
               </li>
             ))}
@@ -110,32 +152,60 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
       {/* Main Content */}
       <div className="md:w-4/5 md:pl-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {currentPosts.length > 0 ? (
-            currentPosts.map((post) => (
-              <div key={post.id} className="border rounded-xl shadow-sm p-4 flex flex-col justify-between">
-                <div className="text-sm font-semibold text-gray-800 mb-2">{post.title}</div>
-                <div className="flex-1 mb-3">
-                  {post.link.includes("youtube.com") && (
-                    <div className="mt-4 text-xs">
-                      <iframe
-                        width="100%"
-                        height="200"
-                        src={`https://www.youtube.com/embed/${extractVideoId(post.link)}`}
-                        title={post.title}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowFullScreen
-                        className="rounded-lg"
-                      ></iframe>
+          {visiblePosts.length > 0 ? (
+            visiblePosts.map((post) => {
+              const isBookmarked = bookmarks.includes(post.id);
+              const videoId = extractVideoId(post.link);
+
+              return (
+                <div
+                  key={post.id}
+                  className="border rounded-xl shadow-sm p-4 flex flex-col justify-between"
+                >
+                  <div className="text-sm font-semibold text-gray-800 mb-2">{post.title}</div>
+                  <div className="flex-1 mb-3">
+                    {/* Video iframe */}
+                    {videoId && (
+                      <div className="mt-4 text-xs">
+                        <iframe
+                          width="100%"
+                          height="200"
+                          src={`https://www.youtube.com/embed/${videoId}`}
+                          title={post.title}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                          className="rounded-lg"
+                        ></iframe>
+                      </div>
+                    )}
+
+                    <p className="text-xs text-gray-600 mt-2">{post.description}</p>
+                  </div>
+
+                  <div className="text-xs text-gray-500 border-t pt-2 mt-auto flex flex-col gap-1">
+                    <div className="flex items-center gap-1">
+                      <LuClock size={15} />{" "}
+                      {post.date_created
+                        ? new Date(post.date_created).toLocaleDateString()
+                        : "No date"}
                     </div>
-                  )}
-                  <p className="text-xs text-gray-600 mt-2">{post.description}</p>
+
+                    <div className="flex gap-4 mt-2">
+                      <button
+                        onClick={() => toggleBookmark(post.id)}
+                        className={`text-xs ${
+                          isBookmarked ? "text-yellow-500" : "text-gray-400"
+                        } hover:text-yellow-500`}
+                        title={isBookmarked ? "Remove Bookmark" : "Bookmark"}
+                      >
+                        {isBookmarked ? "★ Bookmarked" : "☆ Bookmark"}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-xs text-gray-500 border-t pt-2 mt-auto flex gap-1">
-                  <LuClock size={15}/> {post.date_created ? new Date(post.date_created).toLocaleDateString() : "No date"}
-                </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <div className="col-span-full text-center text-xs text-gray-500 py-8">
               No content available.
@@ -143,32 +213,16 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
           )}
         </div>
 
-        {/* Pagination */}
-        <div className="flex justify-center mt-4 text-xs">
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-l-md disabled:opacity-50"
-          >
-            Prev
-          </button>
-          {[...Array(totalPages)].map((_, index) => (
+        {canLoadMore && (
+          <div className="flex justify-center mt-4">
             <button
-              key={index}
-              onClick={() => paginate(index + 1)}
-              className={`px-4 py-2 ${currentPage === index + 1 ? "bg-blue-400 text-white" : "bg-gray-200 text-gray-700"} rounded-md mx-1`}
+              onClick={handleLoadMore}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
             >
-              {index + 1}
+              Load More
             </button>
-          ))}
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-r-md disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -30,7 +30,6 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   // Retrieve the selected avatar from localStorage or default if not set
   const selectedAvatar = localStorage.getItem('selectedAvatar') || `https://robohash.org/${userDetails.Firstname}${userDetails.Lastname}?size=200x200`;
 
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setUserId(params.get("id"));
