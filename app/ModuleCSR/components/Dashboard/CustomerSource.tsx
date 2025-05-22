@@ -1,11 +1,14 @@
 "use client";
 import React, { useEffect, useState, useMemo } from "react";
 import { RiRefreshLine } from "react-icons/ri";
+import { FiDownload } from "react-icons/fi";
 
 interface Source {
   Source: string | null;
   createdAt: string;
   ReferenceID: string;
+  CompanyName: string;
+  CustomerName: string;
 }
 
 interface CustomerSourceProps {
@@ -23,6 +26,7 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({
 }) => {
   const [sources, setSources] = useState<Source[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [selectedSource, setSelectedSource] = useState<string | null>(null);
 
   // Labels for the customer sources
   const sourceLabels = useMemo(
@@ -56,7 +60,7 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({
         let data: Source[] = await res.json();
 
         if (Role === "Staff") {
-          data = data.filter(m => m.ReferenceID === ReferenceID);
+          data = data.filter((m) => m.ReferenceID === ReferenceID);
         }
 
         const start = startDate ? new Date(startDate) : null;
@@ -93,6 +97,30 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({
 
   const maxValue = useMemo(() => Math.max(...Object.values(grouped), 1), [grouped]);
 
+  // Filter data for modal by selected source
+  const filteredDataBySource = (source: string) =>
+    sources.filter((s) => s.Source === source);
+
+  // CSV Export for all filtered sources
+  const handleExportCSV = () => {
+    const csvRows = [
+      ["Source", "Created At", "CompanyName"],
+      ...sources.map(({ Source, createdAt, CompanyName }) => [
+        Source || "N/A",
+        createdAt ? new Date(createdAt).toLocaleString() : "N/A",
+        CompanyName,
+      ]),
+    ];
+
+    const csvContent = csvRows.map((r) => r.join(",")).join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "CustomerSource_Data.csv";
+    link.click();
+  };
+
   return (
     <div className="w-full">
       <div className="bg-white w-full h-full">
@@ -104,16 +132,34 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({
           </div>
         ) : (
           <div className="w-full h-full overflow-x-auto">
-            <h3 className="text-left text-sm font-semibold mb-4">
-              Where Customers Found Us
-            </h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-left text-sm font-semibold mb-4">Where Customers Found Us</h3>
+              <button
+                onClick={handleExportCSV}
+                className="flex items-center gap-1 text-xs px-2 py-1 bg-white border text-black rounded transition hover:bg-gray-100"
+                aria-label="Export customer source data to CSV"
+              >
+                <FiDownload size={16} /> Export CSV
+              </button>
+            </div>
+
             <div className="flex items-end h-full space-x-4 sm:h-[400px] w-full">
               {sourceLabels.map((label, index) => {
                 const value = grouped[label] || 0;
                 const heightPercent = (value / maxValue) * 100;
 
                 return (
-                  <div key={label} className="flex flex-col items-center h-full group">
+                  <div
+                    key={label}
+                    className="flex flex-col items-center h-full group cursor-pointer"
+                    onClick={() => setSelectedSource(label)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") setSelectedSource(label);
+                    }}
+                    aria-label={`View details for ${label}`}
+                  >
                     <div className="relative w-full flex-1 bg-gray-100 flex items-end rounded-md overflow-hidden">
                       <div
                         className="w-full transition-all duration-300 rounded-t group-hover:scale-105 group-hover:brightness-90"
@@ -127,13 +173,64 @@ const CustomerSource: React.FC<CustomerSourceProps> = ({
                     <span className="text-[10px] sm:text-xs text-center mt-1 break-words leading-tight">
                       {label}
                     </span>
-                    <span className="text-[10px] font-semibold sm:text-sm">
-                      {value}
-                    </span>
+                    <span className="text-[10px] font-semibold sm:text-sm">{value}</span>
                   </div>
                 );
               })}
             </div>
+
+            {/* Modal */}
+            {selectedSource && (
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[999]"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="customer-source-modal-title"
+                onClick={() => setSelectedSource(null)}
+              >
+                <div
+                  className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full max-h-[70vh] overflow-auto"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex justify-between items-center mb-4">
+                    <h4
+                      id="customer-source-modal-title"
+                      className="font-semibold text-lg"
+                    >
+                      Details for {selectedSource}
+                    </h4>
+                    <button
+                      onClick={() => setSelectedSource(null)}
+                      className="text-red-500 hover:underline focus:outline-none"
+                      aria-label="Close modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                  <ul className="space-y-3 text-sm">
+                    {filteredDataBySource(selectedSource).map((item, i) => (
+                      <li key={i} className="border-b pb-2">
+                        <div>
+                          <strong>Company Name:</strong> {item.CompanyName}
+                        </div>
+                        <div>
+                          <strong>Source:</strong> {item.Source || "N/A"}
+                        </div>
+                        <div>
+                          <strong>Date:</strong>{" "}
+                          {item.createdAt
+                            ? new Date(item.createdAt).toLocaleString()
+                            : "N/A"}
+                        </div>
+                      </li>
+                    ))}
+                    {filteredDataBySource(selectedSource).length === 0 && (
+                      <li className="text-center text-gray-500 text-xs">No records found.</li>
+                    )}
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
