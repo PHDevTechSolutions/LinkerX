@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useMemo } from "react";
 import { RiRefreshLine } from "react-icons/ri";
-import { FiDownload } from "react-icons/fi";
+import { CiExport } from "react-icons/ci";
 import { motion } from "framer-motion";
 
 interface GenderCount {
@@ -102,10 +102,9 @@ const GenderBarChart: React.FC<GenderBarChartProps> = ({ ReferenceID, Role, star
         <h3 className="text-sm font-bold">Inbound Traffic Per Gender</h3>
         <button
           onClick={handleExportCSV}
-          className="flex items-center gap-1 text-xs px-2 py-1 bg-white border text-black rounded transition hover:bg-gray-100"
-          aria-label="Export gender data to CSV"
+          className="flex items-center gap-1 border mb-2 bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition"
         >
-          <FiDownload size={16} /> Export CSV
+          <CiExport size={16} /> Export CSV
         </button>
       </div>
 

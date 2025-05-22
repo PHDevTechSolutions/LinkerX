@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useMemo } from "react";
 import { RiRefreshLine } from "react-icons/ri";
-import { FiDownload } from "react-icons/fi";
+import { CiExport } from "react-icons/ci";
 import { motion } from "framer-motion";
 
 interface Metric {
@@ -109,7 +109,7 @@ const MetricTable: React.FC<MetricTableProps> = ({
     metrics.filter(m => m.Channel === channel);
 
   return (
-    <div className="bg-white w-full h-auto p-4 rounded-md shadow-md">
+    <div className="bg-white w-full h-auto">
       {loading ? (
         <div className="flex justify-center items-center w-full h-full">
           <RiRefreshLine size={30} className="animate-spin text-gray-600" />
@@ -120,9 +120,9 @@ const MetricTable: React.FC<MetricTableProps> = ({
             <h3 className="text-left text-sm font-semibold">Channel</h3>
             <button
               onClick={handleExportCSV}
-              className="flex items-center gap-1 text-xs px-2 py-1 bg-white border text-black rounded transition"
+              className="flex items-center gap-1 border mb-2 bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-orange-500 hover:text-white transition"
             >
-              <FiDownload size={15} /> Export CSV
+              <CiExport size={16} /> Export CSV
             </button>
           </div>
           <div className="w-full overflow-x-auto">
