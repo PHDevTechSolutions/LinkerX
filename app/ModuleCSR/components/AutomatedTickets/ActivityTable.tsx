@@ -102,10 +102,13 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
 
 
     const getFormattedDate = (date: Date) => {
-        const dayOfWeek = daysOfWeek[date.getDay()];
+        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dayIndex = date.getDay();
+        const dayOfWeek = daysOfWeek[dayIndex] ?? "Unknown"; // fallback just in case
         const month = date.toLocaleString("default", { month: "short" });
         return `${month} ${date.getDate()}-${dayOfWeek.slice(0, 3)}`;
     };
+
 
     const sortedPosts = Object.keys(groupedPosts)
         .flatMap((day) =>
