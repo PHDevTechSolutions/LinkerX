@@ -220,6 +220,34 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
     return `${hours}h ${minutes}m ${seconds}s`;
   }, []);
 
+  const parseTimeToSeconds = (timeStr: string) => {
+    const match = timeStr.match(/(\d+)h\s+(\d+)m\s+(\d+)s/);
+    if (!match) return 0;
+    const [, h, m, s] = match.map(Number);
+    return h * 3600 + m * 60 + s;
+  };
+
+  const formatSecondsToTime = (totalSeconds: number) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${hours}h ${minutes}m ${seconds}s`;
+  };
+
+  const totalCSRSeconds = Object.keys(groupedMetrics).reduce((acc, refId) => {
+    const agentMetrics = groupedMetrics[refId];
+    if (!agentMetrics.length) return acc;
+
+    const responseTime = calculateResponseTime(
+      agentMetrics[0].TicketReceived,
+      agentMetrics[0].TicketEndorsed
+    );
+
+    return acc + parseTimeToSeconds(responseTime);
+  }, 0);
+
+  const totalCSRTimeFormatted = formatSecondsToTime(totalCSRSeconds);
+
 
   // ✅ Final Averages for % Conversion, ATU, and ATV
   return (
@@ -284,7 +312,6 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
                         agentMetrics[0].TicketEndorsed
                       )
                       : "N/A";
-
                   return (
                     <tr key={index} className="border-b whitespace-nowrap">
                       <td className="px-6 py-4 text-xs">
@@ -338,7 +365,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
                 <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totalMetrics.newNonBuyingAmount)}</td>
                 <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totalMetrics.existingActiveAmount)}</td>
                 <td className="px-6 py-4 text-xs">{formatAmountWithPeso(totalMetrics.existingInactiveAmount)}</td>
-                <td className="px-6 py-4 text-xs">-</td>
+                <td className="px-6 py-4 text-xs">{totalCSRTimeFormatted}</td>
               </tr>
             </tfoot>
           </table>
