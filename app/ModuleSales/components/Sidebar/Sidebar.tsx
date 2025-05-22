@@ -194,7 +194,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       icon: CiMemoPad,
       subItems: [
         { title: 'Automated Task', href: `/ModuleSales/Sales/Task/DailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        
+        //{ title: 'Automated Task (New)', href: `/ModuleSales/Sales/Task/Automated${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Manual Task', href: `/ModuleSales/Sales/Task/ManualDailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Callbacks', href: `/ModuleSales/Sales/Task/Callback${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Client Coverage Guide', href: `/ModuleSales/Sales/Task/ClientCoverageGuide${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
@@ -212,13 +212,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         { title: 'Type of Project/Business', href: `/ModuleSales/Sales/Projects/ProjectType${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
-    {
-      title: 'Xend Mail',
-      icon: CiMail,
-      subItems: [
-        { title: 'Compose Email', href: `/ModuleSales/Sales/Email/ComposeEmail${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
+    //{
+      //title: 'Xend Mail',
+      //icon: CiMail,
+      //subItems: [
+        //{ title: 'Compose Email', href: `/ModuleSales/Sales/Email/ComposeEmail${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      //],
+    //},
     {
       title: 'Boards',
       icon: CiViewBoard,
