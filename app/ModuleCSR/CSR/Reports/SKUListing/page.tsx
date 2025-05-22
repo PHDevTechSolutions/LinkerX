@@ -117,7 +117,7 @@ const SKUListing: React.FC = () => {
             { header: "Remarks", key: "remarks" },
             { header: "Item Code", key: "itemCode" },
             { header: "Item Description", key: "itemDescription" },
-            { header: "Quantity Sold", key: "qtySold" },
+            { header: "Quantity", key: "qtySold" },
             { header: "Sales Agent", key: "salesAgent" }
         ];
 
