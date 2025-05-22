@@ -35,7 +35,7 @@ const DashboardPage: React.FC = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isFiltering, setIsFiltering] = useState(false);
-  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(true); // default true
   const [userDetails, setUserDetails] = useState({
     UserId: "",
     ReferenceID: "",
@@ -95,10 +95,11 @@ const DashboardPage: React.FC = () => {
               onClick={() => setShowFilterModal(true)}
               className="bg-white border text-black px-4 py-2 rounded shadow-md transition text-xs flex gap-1"
             >
-             <CiCalendar size={15} /> Filter Data
+              <CiCalendar size={15} /> Filter Data
             </button>
           </div>
 
+          {/* Filter Modal */}
           {showFilterModal && (
             <div className="fixed inset-0 z-30 bg-black bg-opacity-50 flex items-center justify-center">
               <div className="bg-white p-6 rounded shadow-md w-96">
@@ -139,67 +140,68 @@ const DashboardPage: React.FC = () => {
                     className={`bg-blue-600 text-white px-4 py-2 rounded text-xs ${isFiltering ? "opacity-50 cursor-not-allowed" : ""
                       }`}
                   >
-                    {isFiltering ? "Filtering..." : "Filter Data"}
+                    {isFiltering ? "Filtering..." : "Submit"}
                   </button>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Full-width components */}
-          <div className="grid grid-cols-1 gap-4">
-            <div className="bg-white shadow-md rounded-lg p-4">
-              <BarChart {...userDetails} startDate={startDate} endDate={endDate} />
-            </div>
-          </div>
+          {/* Only render data if dates are selected */}
+          {startDate && endDate && (
+            <>
+              <div className="grid grid-cols-1 gap-4">
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <BarChart {...userDetails} startDate={startDate} endDate={endDate} />
+                </div>
+              </div>
 
-          {/* Two per row components */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div className="bg-white shadow-md rounded-lg p-4">
-              <MetricTable {...userDetails} startDate={startDate} endDate={endDate} />
-            </div>
-            <div className="bg-white shadow-md rounded-lg p-4">
-              <InboundTrafficTable {...userDetails} startDate={startDate} endDate={endDate} />
-            </div>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <MetricTable {...userDetails} startDate={startDate} endDate={endDate} />
+                </div>
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <InboundTrafficTable {...userDetails} startDate={startDate} endDate={endDate} />
+                </div>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div className="bg-white shadow-md rounded-lg p-4">
-              <GenderPieChart {...userDetails} startDate={startDate} endDate={endDate} />
-            </div>
-            <div className="bg-white shadow-md rounded-lg p-4">
-              <CustomerChart {...userDetails} startDate={startDate} endDate={endDate} />
-            </div>
-            <div className="bg-white shadow-md rounded-lg p-4">
-              <CustomerTypeChart {...userDetails} startDate={startDate} endDate={endDate} />
-            </div>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <GenderPieChart {...userDetails} startDate={startDate} endDate={endDate} />
+                </div>
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <CustomerChart {...userDetails} startDate={startDate} endDate={endDate} />
+                </div>
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <CustomerTypeChart {...userDetails} startDate={startDate} endDate={endDate} />
+                </div>
+              </div>
 
-          {/* More full-width components */}
-          <div className="grid grid-cols-1 gap-4 mt-4">
-            <div className="bg-white shadow-md rounded-lg p-4">
-              <CustomerSource {...userDetails} startDate={startDate} endDate={endDate} />
-            </div>
-            <div className="bg-white shadow-md rounded-lg p-4">
-              <Wrapup {...userDetails} startDate={startDate} endDate={endDate} />
-            </div>
-            <div className="bg-white shadow-md rounded-lg p-4">
-              <WrapupTable {...userDetails} startDate={startDate} endDate={endDate} />
-            </div>
-            <div className="bg-white shadow-md rounded-lg p-4">
-              <AgentSalesConversionChart {...userDetails} startDate={startDate} endDate={endDate} />
-            </div>
-            <div className="bg-white shadow-md rounded-lg p-4">
-              <AgentSalesConversion {...userDetails} startDate={startDate} endDate={endDate} />
-            </div>
-            <div className="bg-white shadow-md rounded-lg p-4">
-              <AgentSalesConversionWeekly {...userDetails} startDate={startDate} endDate={endDate} />
-            </div>
-            <div className="bg-white shadow-md rounded-lg p-4">
-              <TSASalesConversion {...userDetails} startDate={startDate} endDate={endDate} />
-            </div>
-          </div>
-
+              <div className="grid grid-cols-1 gap-4 mt-4">
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <CustomerSource {...userDetails} startDate={startDate} endDate={endDate} />
+                </div>
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <Wrapup {...userDetails} startDate={startDate} endDate={endDate} />
+                </div>
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <WrapupTable {...userDetails} startDate={startDate} endDate={endDate} />
+                </div>
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <AgentSalesConversionChart {...userDetails} startDate={startDate} endDate={endDate} />
+                </div>
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <AgentSalesConversion {...userDetails} startDate={startDate} endDate={endDate} />
+                </div>
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <AgentSalesConversionWeekly {...userDetails} startDate={startDate} endDate={endDate} />
+                </div>
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <TSASalesConversion {...userDetails} startDate={startDate} endDate={endDate} />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </ParentLayout>
     </SessionChecker>
