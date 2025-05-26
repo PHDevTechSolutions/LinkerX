@@ -211,40 +211,40 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
     // Fetch companies based on referenceid
     //useEffect(() => {
-        //if (referenceid) {
-            // API call to fetch company data
-            //fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`)
-                //.then((response) => response.json())
-                //.then((data) => {
-                    //if (data.success) {
-                        // Filter companies with status 'Active' or 'Used', and exclude certain 'typeclient' values
-                        //const filteredCompanies = data.data.filter((company: any) =>
-                            //(company.status === 'Active' || company.status === 'Used') &&
-                            //![
-                                //'CSR Inquiries',
-                                //'Balance 20',
-                                //'Top 50',
-                                //'Next 30',
-                                //'New Account - Client Development'
-                            //].includes(company.typeclient)
-                        //);
+    //if (referenceid) {
+    // API call to fetch company data
+    //fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`)
+    //.then((response) => response.json())
+    //.then((data) => {
+    //if (data.success) {
+    // Filter companies with status 'Active' or 'Used', and exclude certain 'typeclient' values
+    //const filteredCompanies = data.data.filter((company: any) =>
+    //(company.status === 'Active' || company.status === 'Used') &&
+    //![
+    //'CSR Inquiries',
+    //'Balance 20',
+    //'Top 50',
+    //'Next 30',
+    //'New Account - Client Development'
+    //].includes(company.typeclient)
+    //);
 
-                        //setCompanies(filteredCompanies.map((company: any) => ({
-                            //value: company.companyname,
-                            //label: company.companyname,
-                            //contactperson: company.contactperson,
-                            //contactnumber: company.contactnumber,
-                            //emailaddress: company.emailaddress,
-                            //typeclient: company.typeclient,
-                            //address: company.address,
-                            //area: company.area,
-                        //})));
-                    //} else {
-                        //console.error("Error fetching companies:", data.error);
-                    //}
-                //})
-                //.catch((error) => console.error("Error fetching companies:", error));
-        //}
+    //setCompanies(filteredCompanies.map((company: any) => ({
+    //value: company.companyname,
+    //label: company.companyname,
+    //contactperson: company.contactperson,
+    //contactnumber: company.contactnumber,
+    //emailaddress: company.emailaddress,
+    //typeclient: company.typeclient,
+    //address: company.address,
+    //area: company.area,
+    //})));
+    //} else {
+    //console.error("Error fetching companies:", data.error);
+    //}
+    //})
+    //.catch((error) => console.error("Error fetching companies:", error));
+    //}
     //}, [referenceid]);
 
     useEffect(() => {
@@ -258,7 +258,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         const filteredCompanies = data.data.filter((company: any) =>
                             company.status === 'Active' || company.status === 'Used'
                         );
-    
+
                         setCompanies(filteredCompanies.map((company: any) => ({
                             id: company.id,  // Ensure `id` is included in the mapped object
                             companyname: company.companyname,
@@ -279,7 +279,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         }
     }, [referenceid]);
 
-
     useEffect(() => {
         setContactPersons(contactperson ? contactperson.split(", ") : [""]);
         setContactNumbers(contactnumber ? contactnumber.split(", ") : [""]);
@@ -288,7 +287,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
     const handleCompanySelect = async (selectedOption: any) => {
         const newStatus = selectedOption ? 'Active' : 'Used';
-    
+
         try {
             // Check if previousCompany has a valid id
             if (previousCompany && previousCompany.id && previousCompany.id !== selectedOption?.id) {
@@ -306,11 +305,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     console.error("Failed to update previous company:", data.error);
                 }
             }
-    
+
             // Check if selectedOption has valid data
             if (selectedOption && selectedOption.id) {
                 console.log("Selected Company Data:", selectedOption);
-    
+
                 setPreviousCompany(selectedOption);
                 setcompanyname(selectedOption.companyname);  // Ensure correct key name here
                 setcontactperson(selectedOption.contactperson);
@@ -319,7 +318,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 settypeclient(selectedOption.typeclient);
                 setaddress(selectedOption.address);
                 setarea(selectedOption.area);
-    
+
                 // Update the selected company to 'Used'
                 console.log("Updating selected company status to:", newStatus);
                 const res = await fetch(`/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus`, {
@@ -534,6 +533,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         setcallback(formattedDate);
     };
 
+    const [isManual, setIsManual] = useState(false); // toggle state
 
     return (
         <>
@@ -555,86 +555,131 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             </div>
 
             <div className="flex flex-wrap -mx-4">
-                {/* Company Name */}
+                {/* Company Name with Switch */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="companyname">Company Name</label>
-                    <Select id="CompanyName" options={companies} onChange={handleCompanySelect} className="w-full text-xs capitalize" placeholder="Select Company" isClearable />
-                    {editPost ? (
+                    <div className="flex items-center justify-between mb-2">
+                        <label className="block text-xs font-bold" htmlFor="companyname">Company Name</label>
+                        <button
+                            type="button"
+                            onClick={() => setIsManual(prev => !prev)}
+                            className="text-blue-500 text-[10px] underline"
+                        >
+                            {isManual ? "Switch to Select" : "Switch to Manual"}
+                        </button>
+                    </div>
+                    {!isManual ? (
+                        <>
+                            <Select
+                                id="CompanyName"
+                                options={companies}
+                                onChange={handleCompanySelect}
+                                className="w-full text-xs capitalize"
+                                placeholder="Select Company"
+                                isClearable
+                            />
+                            {editPost ? (
+                                <input
+                                    type="text"
+                                    id="companyname"
+                                    value={editPost.companyname || ""}
+                                    disabled
+                                    className="text-xs capitalize w-full p-2 border border-gray-300 rounded-md mt-2"
+                                />
+                            ) : (
+                                <input
+                                    type="text"
+                                    id="companyname"
+                                    value={companyname ?? ""}
+                                    onChange={(e) => setcompanyname(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded text-xs capitalize mt-2"
+                                    disabled
+                                />
+                            )}
+                        </>
+                    ) : (
                         <input
                             type="text"
                             id="companyname"
-                            value={editPost.companyname || ''}
-                            disabled
-                            className="text-xs capitalize w-full p-2 border border-gray-300 rounded-md"
+                            value={companyname ?? ""}
+                            onChange={(e) => setcompanyname(e.target.value)}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize"
                         />
-                    ) : (
-                        // If not in edit mode, show the Select dropdown
-                        <input type="text" id="typeclient" value={companyname ?? ""} onChange={(e) => setcompanyname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                     )}
-
                 </div>
 
                 {/* Contact Person */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Contact Person</label>
-                    {contactPersons.map((person, index) => (
-                        <div key={index} className="flex items-center gap-2 mb-2">
-                            <input type="text" value={person ?? ""} onChange={(e) => handleContactPersonChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                            {index > 0 && (
-                                <button type="button" onClick={() => removeContactPerson(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600" >
-                                    <CiCircleMinus size={16} />
-                                </button>
-                            )}
-                        </div>
-                    ))}
+                    <input
+                        type="text"
+                        id="contactperson"
+                        value={contactperson ?? ""}
+                        onChange={(e) => setcontactperson(e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    />
                 </div>
 
                 {/* Contact Number */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Contact Number</label>
-                    {contactNumbers.map((number, index) => (
-                        <div key={index} className="flex items-center gap-2 mb-2">
-                            <input type="text" value={number ?? ""} onChange={(e) => handleContactNumberChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                            {index > 0 && (
-                                <button type="button" onClick={() => removeContactNumber(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600">
-                                    <CiCircleMinus size={16} />
-                                </button>
-                            )}
-                        </div>
-                    ))}
+                    <input
+                        type="text"
+                        id="contactnumber"
+                        value={contactnumber ?? ""}
+                        onChange={(e) => setcontactnumber(e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    />
                 </div>
 
                 {/* Email Address */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Email Address</label>
-                    {emailAddresses.map((email, index) => (
-                        <div key={index} className="flex items-center gap-2 mb-2">
-                            <input type="text" value={email ?? ""} onChange={(e) => handleEmailAddressChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
-                            {index > 0 && (
-                                <button type="button" onClick={() => removeEmailAddress(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600">
-                                    <CiCircleMinus size={16} />
-                                </button>
-                            )}
-                        </div>
-                    ))}
+                    <input
+                        type="text"
+                        id="emailaddress"
+                        value={emailaddress ?? ""}
+                        onChange={(e) => setemailaddress(e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    />
                 </div>
 
                 {/* Type Client */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Type Client</label>
-                    <input type="text" id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
+                    <select id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+                        <option value="">Select Client</option>
+                        <option value="Top 50">Top 50</option>
+                        <option value="Next 30">Next 30</option>
+                        <option value="Balance 20">Balance 20</option>
+                        <option value="Revived Account - Existing">Revived Account - Existing</option>
+                        <option value="Revived Account - Resigned Agent">Revived Account - Resigned Agent</option>
+                        <option value="New Account - Client Development">New Account - Client Development</option>
+                        <option value="Transferred Account">Transferred Account</option>
+                    </select>
                 </div>
 
                 {/* Address */}
-                <div className="w-full sm:w-1/2 md:w-1/8 px-4 mb-4">
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Address</label>
-                    <input type="text" id="address" value={address ?? ""} onChange={(e) => setaddress(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                    <input
+                        type="text"
+                        id="address"
+                        value={address ?? ""}
+                        onChange={(e) => setaddress(e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    />
                 </div>
 
                 {/* Area */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Area</label>
-                    <input type="text" id="area" value={area ?? ""} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                    <input
+                        type="text"
+                        id="area"
+                        value={area ?? ""}
+                        onChange={(e) => setarea(e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    />
                 </div>
             </div>
 
@@ -1070,7 +1115,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         </select>
                     </div>
                 </div>
-
             </div>
         </>
     );

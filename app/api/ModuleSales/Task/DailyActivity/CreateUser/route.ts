@@ -41,7 +41,6 @@ async function create(data: any) {
             activitystatus || null, activitynumber || null, targetquota || null
         ];
 
-        // Construct and execute the query for activity table
         const Xchire_activityPlaceholders = Xchire_activityValues.map((_, index) => `$${index + 1}`).join(", ");
         const Xchire_activityQuery = `
             INSERT INTO activity (${Xchire_activityColumns.join(", ")}, date_created) 
@@ -56,8 +55,29 @@ async function create(data: any) {
             throw new Error("Failed to insert into activity table.");
         }
 
-        // Use the returned activitynumber from the inserted activity
         const Xchire_newActivityNumber = Xchire_insertedActivity.activitynumber;
+
+        // Insert into accounts table
+        const Xchire_accountsQuery = `
+            INSERT INTO accounts (
+                referenceid, manager, tsm, companyname, contactperson,
+                contactnumber, emailaddress, typeclient, address, area, status, date_created
+            ) VALUES (
+                $1, $2, $3, $4, $5,
+                $6, $7, $8, $9, $10, 'Active', CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
+            ) RETURNING *;
+        `;
+
+        const Xchire_accountsValues = [
+            referenceid, manager, tsm, companyname, contactperson,
+            contactnumber, emailaddress, typeclient, address, area
+        ];
+
+        const Xchire_accountsResult = await Xchire_sql(Xchire_accountsQuery, Xchire_accountsValues);
+
+        if (!Xchire_accountsResult[0]) {
+            throw new Error("Failed to insert into accounts table.");
+        }
 
         // Fields for progress table
         const Xchire_progressColumns = [
@@ -72,10 +92,8 @@ async function create(data: any) {
             soamount || null, startdate || null, enddate || null, 
         ];
 
-        // Update activitynumber in progressValues to use the returned one
         Xchire_progressValues[Xchire_progressColumns.indexOf("activitynumber")] = Xchire_newActivityNumber;
 
-        // Construct and execute the query for progress table
         const Xchire_progressPlaceholders = Xchire_progressValues.map((_, index) => `$${index + 1}`).join(", ");
         const Xchire_progressQuery = `
             INSERT INTO progress (${Xchire_progressColumns.join(", ")}, date_created) 
@@ -91,16 +109,14 @@ async function create(data: any) {
 
         return { success: true, activity: Xchire_insertedActivity, progress: Xchire_progressResult[0] };
     } catch (error: any) {
-        console.error("Error inserting activity and progress:", error);
-        return { success: false, error: error.message || "Failed to add activity and progress." };
+        console.error("Error inserting activity, accounts, and progress:", error);
+        return { success: false, error: error.message || "Failed to add records." };
     }
 }
 
 export async function POST(req: Request) {
     try {
         const Xchire_body = await req.json();
-
-        // Call the addUser function
         const Xchire_result = await create(Xchire_body);
 
         return NextResponse.json(Xchire_result);

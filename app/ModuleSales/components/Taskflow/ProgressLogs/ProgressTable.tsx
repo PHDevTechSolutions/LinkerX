@@ -340,6 +340,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                             <th className="px-6 py-4 font-semibold text-gray-700">Inquiries</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">CSR Agent</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">TSA | TSM</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Target Quota</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Dates</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
@@ -411,6 +412,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                                         <td className="px-6 py-4 text-xs">
                                             <strong>{post.referenceid}</strong> | {post.tsm}
                                         </td>
+                                        <td className="px-6 py-4 text-xs">{post.targetquota}</td>
                                         <td className="px-6 py-4 text-xs">
                                             <span
                                                 className={`text-[10px] px-2 py-1 rounded-full ${post.activitystatus === "Cold"
