@@ -27,6 +27,8 @@
     "cookie": "^1.0.2",
     "date-fns-tz": "^3.2.0",
     "dayjs": "^1.11.13",
+    "draft-js": "^0.11.7",
+    "draft-js-export-html": "^1.4.1",
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "formidable": "^3.5.2",
@@ -57,7 +59,9 @@
     "twilio": "^5.5.1"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.16",
     "@types/bcrypt": "^5.0.2",
+    "@types/draft-js": "^0.11.18",
     "@types/file-saver": "^2.0.7",
     "@types/formidable": "^3.4.5",
     "@types/leaflet": "^1.9.16",

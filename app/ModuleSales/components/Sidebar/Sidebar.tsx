@@ -202,15 +202,15 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         //{ title: 'Quotation', href: `/ModuleSales/Sales/Task/Quotation${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
-    {
-      title: 'Projects',
-      icon: CiCalendar,
-      subItems: [
-        { title: 'List of Projects', href: `/ModuleSales/Sales/Projects/Project${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Project Categories', href: `/ModuleSales/Sales/Projects/ProjectCategory${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Type of Project/Business', href: `/ModuleSales/Sales/Projects/ProjectType${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
+    //{
+      //title: 'Projects',
+      //icon: CiCalendar,
+      //subItems: [
+        //{ title: 'List of Projects', href: `/ModuleSales/Sales/Projects/Project${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'Project Categories', href: `/ModuleSales/Sales/Projects/ProjectCategory${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'Type of Project/Business', href: `/ModuleSales/Sales/Projects/ProjectType${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      //],
+    //},
     //{
       //title: 'Xend Mail',
       //icon: CiMail,
@@ -218,13 +218,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         //{ title: 'Compose Email', href: `/ModuleSales/Sales/Email/ComposeEmail${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       //],
     //},
-    {
-      title: 'Boards',
-      icon: CiViewBoard,
-      subItems: [
-        { title: 'Notes', href: `/ModuleSales/Sales/Boards/Notes${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
+    //{
+      //title: 'Boards',
+      //icon: CiViewBoard,
+      //subItems: [
+        //{ title: 'Notes', href: `/ModuleSales/Sales/Boards/Notes${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      //],
+    //},
     {
       title: 'Sales Performance',
       icon: CiWavePulse1,
@@ -289,13 +289,13 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         { title: 'Managers & Directors', href: `/ModuleSales/Sales/UserManagement/ManagerDirectors${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
-    {
-      title: 'Global Employees',
-      icon: CiUser,
-      subItems: [
-        { title: 'Ecoshift Employees', href: `/ModuleSales/Sales/Ecoshift/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
+    //{
+      //title: 'Global Employees',
+      //icon: CiUser,
+      //subItems: [
+        //{ title: 'Ecoshift Employees', href: `/ModuleSales/Sales/Ecoshift/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      //],
+    //},
     {
       title: 'Settings',
       icon: CiSettings,
@@ -309,7 +309,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       icon: CiSettings,
       subItems: [
         { title: 'Update Profile', href: `/ModuleSales/Sales/Profile${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Notifications', href: `/ModuleSales/Sales/Notifications${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'Notifications', href: `/ModuleSales/Sales/Notifications${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Developers', href: `/ModuleSales/Sales/Profile/Developers${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },

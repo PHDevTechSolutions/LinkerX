@@ -1,103 +1,104 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { convertFromRaw } from "draft-js";
+import { stateToHTML } from "draft-js-export-html";
 
 interface Post {
   _id: string;
   Title: string;
-  Description: string;
+  Description: string; // Draft.js raw JSON string
 }
 
 interface AccountsTableProps {
   posts: Post[];
   handleEdit: (post: Post) => void;
+  handleDelete: (postId: string) => void;
+  role: string;
 }
 
-const ClientTable: React.FC<AccountsTableProps> = ({ posts, handleEdit }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage, setPostsPerPage] = useState(10);
+const draftDescriptionToHTML = (description: string) => {
+  try {
+    const contentState = convertFromRaw(JSON.parse(description));
+    return stateToHTML(contentState);
+  } catch {
+    return description;
+  }
+};
 
-  const totalPages = Math.ceil(posts.length / postsPerPage);
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+const ClientAccordion: React.FC<AccountsTableProps> = ({
+  posts,
+  handleEdit,
+  handleDelete,
+  role,
+}) => {
+  const [expandedTitle, setExpandedTitle] = useState<string | null>(null);
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const groupedPosts = useMemo(() => {
+    const grouped: Record<string, Post[]> = {};
+    posts.forEach((post) => {
+      if (!grouped[post.Title]) {
+        grouped[post.Title] = [];
+      }
+      grouped[post.Title].push(post);
+    });
+    return grouped;
+  }, [posts]);
+
+  const uniqueTitles = Object.keys(groupedPosts);
 
   return (
-    <div className="overflow-x-auto bg-white p-4 rounded-md">
-      {/* ✅ Page Size Selector */}
-      <div className="mb-4 text-xs">
-        <select
-          id="postsPerPage"
-          value={postsPerPage}
-          onChange={(e) => setPostsPerPage(Number(e.target.value))}
-          className="border px-3 py-2 rounded text-xs capitalize"
-        >
-          {[5, 10, 15, 20, 50, 100].map((length) => (
-            <option key={length} value={length}>
-              {length}
-            </option>
-          ))}
-        </select>
-      </div>
+    <div className="space-y-4">
+      {uniqueTitles.map((title) => (
+        <div key={title} className="border rounded-md shadow-md overflow-hidden">
+          <button
+            className="w-full text-left px-4 py-3 font-semibold text-sm flex justify-between items-center"
+            onClick={() =>
+              setExpandedTitle(expandedTitle === title ? null : title)
+            }
+          >
+            <span className="text-md font-bold capitalize">{title}</span>
+            <span className="text-gray-500 text-xs">
+              {expandedTitle === title ? "− " : "+"}
+            </span>
+          </button>
 
-      {/* ✅ Table */}
-      <table className="min-w-full table-auto">
-        <thead className="bg-gray-100">
-          <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
-            <th className="px-6 py-4 font-semibold text-gray-700">Title</th>
-            <th className="px-6 py-4 font-semibold text-gray-700">Description</th>
-            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100">
-          {currentPosts.length > 0 ? (
-            currentPosts.map((post) => (
-              <tr key={post._id} className="border-b whitespace-nowrap">
-                <td className="px-6 py-4 text-xs">{post.Title}</td>
-                <td className="px-6 py-4 text-xs">{post.Description}</td>
-                <td className="px-6 py-4 text-xs">
-                  <button
-                    onClick={() => handleEdit(post)}
-                    className="bg-blue-500 text-white text-xs px-3 py-1 rounded hover:bg-blue-600 transition"
-                  >
-                    Edit
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={3} className="text-center text-gray-500 text-xs py-3">
-                No records found
-              </td>
-            </tr>
+          {expandedTitle === title && (
+            <div className="bg-white p-4 space-y-2">
+              {groupedPosts[title].map((post) => (
+                <div
+                  key={post._id}
+                  className="border p-3 rounded-md flex justify-between items-start text-xs space-x-4"
+                >
+                  <div
+                    className="text-gray-700 text-xs capitalize prose max-w-full"
+                    dangerouslySetInnerHTML={{
+                      __html: draftDescriptionToHTML(post.Description),
+                    }}
+                  />
+                  {role !== "Staff" && (
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEdit(post)}
+                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(post._id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
-        </tbody>
-      </table>
-
-      {/* ✅ Pagination */}
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className="px-3 py-1 bg-gray-300 text-gray-600 rounded text-xs"
-        >
-          Previous
-        </button>
-        <span className="text-sm">
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-          className="px-3 py-1 bg-gray-300 text-gray-600 rounded text-xs"
-        >
-          Next
-        </button>
-      </div>
+        </div>
+      ))}
     </div>
   );
 };
 
-export default ClientTable;
+export default ClientAccordion;
