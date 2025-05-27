@@ -267,28 +267,28 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         { title: 'List of Companies', href: `/ModuleSales/Sales/ClientActivityBoard/ListofCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
-    {
-      title: 'Logs',
-      icon: CiTimer,
-      subItems: [
-        { title: 'Activity Logs ( OLD Taskflow )', href: `/ModuleSales/Sales/Logs/ActivityLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Activity Logs ( New Taskflow )', href: `/ModuleSales/Sales/Logs/TaskflowActivityLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Progress Logs ( OLD Taskflow )', href: `/ModuleSales/Sales/Logs/ProgressLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Progress Logs ( New Taskflow )', href: `/ModuleSales/Sales/Logs/TaskflowProgressLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Approvals', href: `/ModuleSales/Sales/Logs/Approvals${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Reports', href: `/ModuleSales/Sales/Logs/HistoricalRecords${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
-    {
-      title: 'User Management',
-      icon: CiUser,
-      subItems: [
-        { title: 'Company Accounts', href: `/ModuleSales/Sales/UserManagement/CompanyAccounts${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Territory Sales Associates', href: `/ModuleSales/Sales/UserManagement/TSA${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Territory Sales Manager', href: `/ModuleSales/Sales/UserManagement/TSM${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Managers & Directors', href: `/ModuleSales/Sales/UserManagement/ManagerDirectors${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
+    //{
+      //title: 'Logs',
+      //icon: CiTimer,
+      //subItems: [
+        //{ title: 'Activity Logs ( OLD Taskflow )', href: `/ModuleSales/Sales/Logs/ActivityLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'Activity Logs ( New Taskflow )', href: `/ModuleSales/Sales/Logs/TaskflowActivityLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'Progress Logs ( OLD Taskflow )', href: `/ModuleSales/Sales/Logs/ProgressLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'Progress Logs ( New Taskflow )', href: `/ModuleSales/Sales/Logs/TaskflowProgressLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'Approvals', href: `/ModuleSales/Sales/Logs/Approvals${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'Reports', href: `/ModuleSales/Sales/Logs/HistoricalRecords${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      //],
+    //},
+    //{
+      //title: 'User Management',
+      //icon: CiUser,
+      //subItems: [
+        //{ title: 'Company Accounts', href: `/ModuleSales/Sales/UserManagement/CompanyAccounts${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'Territory Sales Associates', href: `/ModuleSales/Sales/UserManagement/TSA${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'Territory Sales Manager', href: `/ModuleSales/Sales/UserManagement/TSM${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'Managers & Directors', href: `/ModuleSales/Sales/UserManagement/ManagerDirectors${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      //],
+    //},
     //{
       //title: 'Global Employees',
       //icon: CiUser,
@@ -296,14 +296,14 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         //{ title: 'Ecoshift Employees', href: `/ModuleSales/Sales/Ecoshift/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       //],
     //},
-    {
-      title: 'Settings',
-      icon: CiSettings,
-      subItems: [
-        { title: 'Maintenance', href: `/ModuleSales/Sales/Settings/Maintenance${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'API Keys', href: `/ModuleSales/Sales/Settings/APIKeys${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
+    //{
+      //title: 'Settings',
+      //icon: CiSettings,
+      //subItems: [
+        //{ title: 'Maintenance', href: `/ModuleSales/Sales/Settings/Maintenance${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'API Keys', href: `/ModuleSales/Sales/Settings/APIKeys${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      //],
+    //},
     {
       title: 'Profile',
       icon: CiSettings,
