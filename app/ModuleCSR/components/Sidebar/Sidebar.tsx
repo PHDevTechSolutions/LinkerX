@@ -131,6 +131,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       title: 'Eco Help',
       icon: CiCircleQuestion,
       subItems: [
+       //{ title: 'CSR Faqs', href: `/ModuleCSR/CSR/Help${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'CSR Faqs', href: `/ModuleCSR/CSR/Faqs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
