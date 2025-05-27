@@ -80,7 +80,7 @@ const OutboundTable: React.FC<OutboundTableProps> = ({ posts }) => {
                     <List
                         height={500} // Height of the scrollable area
                         itemCount={sortedPosts.length} // Number of rows
-                        itemSize={50} // Height of each row
+                        itemSize={100} // Height of each row
                         width="100%" // Full width
                     >
                         {Row}

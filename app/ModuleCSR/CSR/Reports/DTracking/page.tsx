@@ -18,15 +18,16 @@ const ReceivedPO: React.FC = () => {
     const [editPost, setEditPost] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
-  
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [postToDelete, setPostToDelete] = useState<string | null>(null);
     const [startDate, setStartDate] = useState("");  // Start date for filtering
     const [endDate, setEndDate] = useState("");  // End date for filtering
 
     const [usersList, setUsersList] = useState<any[]>([]);
 
     const [userDetails, setUserDetails] = useState({
-            UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "",
-        });
+        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "",
+    });
 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -131,6 +132,39 @@ const ReceivedPO: React.FC = () => {
         setShowForm(true);
     };
 
+    // Show delete modal
+    const confirmDelete = (postId: string) => {
+        setPostToDelete(postId);
+        setShowDeleteModal(true);
+    };
+
+    // Delete post function
+    const handleDelete = async () => {
+        if (!postToDelete) return;
+        try {
+            const response = await fetch(`/api/ModuleCSR/DTracking/Delete`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id: postToDelete }),
+            });
+
+            if (response.ok) {
+                setPosts(posts.filter((post) => post._id !== postToDelete));
+                toast.success("Account deleted successfully.");
+            } else {
+                toast.error("Failed to delete account.");
+            }
+        } catch (error) {
+            toast.error("Failed to delete account.");
+            console.error("Error deleting account:", error);
+        } finally {
+            setShowDeleteModal(false);
+            setPostToDelete(null);
+        }
+    };
+
     const exportToExcel = async () => {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Receive PO");
@@ -222,9 +256,23 @@ const ReceivedPO: React.FC = () => {
                                             <DTrackingTable
                                                 posts={filteredAccounts}
                                                 handleEdit={handleEdit}
+                                                handleDelete={confirmDelete}
                                             />
                                         </div>
                                     </>
+                                )}
+
+                                {showDeleteModal && (
+                                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[999]">
+                                        <div className="bg-white p-4 rounded shadow-lg">
+                                            <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
+                                            <p className="text-xs">Are you sure you want to delete this account?</p>
+                                            <div className="mt-4 flex justify-end">
+                                                <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2" onClick={handleDelete}>Delete</button>
+                                                <button className="bg-gray-300 text-xs px-4 py-2 rounded" onClick={() => setShowDeleteModal(false)}>Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 )}
 
                                 <ToastContainer className="text-xs" autoClose={1000} />

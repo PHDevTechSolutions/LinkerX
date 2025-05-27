@@ -69,14 +69,14 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
 
   return (
     <div className="overflow-x-auto">
-      <div className="flex items-center mb-4 space-x-4">
+      <div className="flex flex-wrap gap-2 mb-4 items-center">
         {/* Search Input */}
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search..."
-          className="border px-3 py-2 rounded text-xs w-60"
+          className="border px-3 py-2 rounded text-xs w-full md:w-auto flex-grow capitalize"
         />
 
         {/* Remarks Filter */}
@@ -112,6 +112,7 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
           <table className="min-w-full table-auto">
             <thead className="bg-gray-100">
               <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+                <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                 <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
                 <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
                 <th className="px-6 py-4 font-semibold text-gray-700">Item Category</th>
@@ -119,19 +120,11 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
                 <th className="px-6 py-4 font-semibold text-gray-700">Item Description</th>
                 <th className="px-6 py-4 font-semibold text-gray-700">Quantity</th>
                 <th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
-                <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {paginatedPosts.map((post) => (
                 <tr key={post._id} className="border-b whitespace-nowrap">
-                  <td className="px-6 py-4 text-xs">{new Date(post.createdAt).toLocaleString()}</td>
-                  <td className="px-6 py-4 text-xs">{post.CompanyName}</td>
-                  <td className="px-6 py-4 text-xs">{post.ItemCategory}</td>
-                  <td className="px-6 py-4 text-xs">{post.ItemCode}</td>
-                  <td className="px-6 py-4 text-xs">{post.ItemDescription}</td>
-                  <td className="px-6 py-4 text-xs">{post.QtySold}</td>
-                  <td className="px-6 py-4 text-xs capitalize">{post.Remarks}</td>
                   <td className="px-6 py-4 text-xs gap-1 flex">
                     <button
                       onClick={() => handleEdit(post)}
@@ -146,6 +139,13 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
                       Delete
                     </button>
                   </td>
+                  <td className="px-6 py-4 text-xs">{new Date(post.createdAt).toLocaleString()}</td>
+                  <td className="px-6 py-4 text-xs">{post.CompanyName}</td>
+                  <td className="px-6 py-4 text-xs">{post.ItemCategory}</td>
+                  <td className="px-6 py-4 text-xs">{post.ItemCode}</td>
+                  <td className="px-6 py-4 text-xs">{post.ItemDescription}</td>
+                  <td className="px-6 py-4 text-xs">{post.QtySold}</td>
+                  <td className="px-6 py-4 text-xs capitalize">{post.Remarks}</td>
                 </tr>
               ))}
             </tbody>

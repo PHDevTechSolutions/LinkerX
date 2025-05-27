@@ -73,6 +73,7 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
 }) => {
 
     const [companies, setCompanies] = useState<any[]>([]);
+    const [isManualCompany, setIsManualCompany] = useState(false);
 
     useEffect(() => {
         const fetchCompanies = async () => {
@@ -174,22 +175,51 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
                     <input type="datetime-local" id="DateRecord" value={DateRecord} onChange={(e) => setDateRecord(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                 </div>
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="CompanyName">Company Name</label>
-                    {editPost ? (
-                        <input type="text" id="CompanyName" value={CompanyName} readOnly className="w-full px-3 py-2 border bg-gray-50 rounded text-xs" />
-                    ) : (
-                        <Select id="CompanyName" options={CompanyOptions} onChange={handleCompanyChange} className="w-full text-xs capitalize" placeholder="Select Company" isClearable />
-                    )}
+                    <div className="flex justify-between items-center mb-1">
+                        <label className="block text-xs font-bold" htmlFor="CompanyName">Company Name</label>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setIsManualCompany(prev => !prev);
+                                if (!isManualCompany) resetFields(); // clear customer & contact when switching to manual
+                            }}
+                            className="text-xs text-blue-600 hover:underline"
+                        >
+                            {isManualCompany ? 'Use Select' : 'Manual'}
+                        </button>
+                    </div>
+                    <div>
+                        {isManualCompany ? (
+                            <input
+                                type="text"
+                                id="CompanyName"
+                                value={CompanyName}
+                                onChange={(e) => setCompanyName(e.target.value)}
+                                className="w-full px-3 py-2 border rounded text-xs capitalize"
+                                placeholder="Enter Company Name"
+                            />
+                        ) : (
+                            <Select
+                                id="CompanyName"
+                                options={CompanyOptions}
+                                onChange={handleCompanyChange}
+                                className="w-full text-xs capitalize"
+                                placeholder="Select Company"
+                                isClearable
+                            />
+                        )}
+                    </div>
                 </div>
+
 
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="CustomerName">Customer Name</label>
-                    <input type="text" id="CustomerName" value={CustomerName} onChange={(e) => setCustomerName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-100 capitalize" readOnly />
+                    <input type="text" id="CustomerName" value={CustomerName} onChange={(e) => setCustomerName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
                 </div>
 
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="ContactNumber">Contact Number</label>
-                    <input type="text" id="ContactNumber" value={ContactNumber} onChange={(e) => setContactNumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-100" readOnly />
+                    <input type="text" id="ContactNumber" value={ContactNumber} onChange={(e) => setContactNumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
                 </div>
 
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
@@ -236,7 +266,7 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
 
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="DateClosed">Department</label>
-                    <select id="Department" value={Department} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border rounded text-xs">
+                    <select id="Department" value={Department} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50">
                         <option value="">Select Department</option>
                         <option value="Accounting">Accounting</option>
                         <option value="Engineering">Engineering</option>

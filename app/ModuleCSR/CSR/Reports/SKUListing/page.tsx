@@ -22,6 +22,11 @@ const SKUListing: React.FC = () => {
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
     const [startDate, setStartDate] = useState("");  // Start date for filtering
     const [endDate, setEndDate] = useState("");  // End date for filtering
+    const [userDetails, setUserDetails] = useState({
+        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "",
+    });
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     // Fetch accounts from the API
     const fetchAccounts = async () => {
@@ -39,11 +44,43 @@ const SKUListing: React.FC = () => {
         fetchAccounts();
     }, []);
 
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const params = new URLSearchParams(window.location.search);
+            const userId = params.get("id");
+
+            if (userId) {
+                try {
+                    const response = await fetch(`/api/user?id=${encodeURIComponent(userId)}`);
+                    if (!response.ok) throw new Error("Failed to fetch user data");
+                    const data = await response.json();
+                    setUserDetails({
+                        UserId: data._id, // Set the user's id here
+                        ReferenceID: data.ReferenceID || "",  // <-- Siguraduhin na ito ay may value
+                        Firstname: data.Firstname || "",
+                        Lastname: data.Lastname || "",
+                        Email: data.Email || "",
+                        Role: data.Role || "",
+                    });
+                } catch (err: unknown) {
+                    console.error("Error fetching user data:", err);
+                    setError("Failed to load user data. Please try again later.");
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setError("User ID is missing.");
+                setLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
     // Filter accounts based on search term and city address
     const filteredAccounts = posts
         .filter((post) => {
-            const remarks =
-                post.Remarks && typeof post.Remarks === "string" ? post.Remarks.toLowerCase() : "";
+            const remarks = typeof post.Remarks === "string" ? post.Remarks.toLowerCase() : "";
 
             const isRemarksMatch =
                 remarks === "no stocks / insufficient stocks" ||
@@ -54,15 +91,19 @@ const SKUListing: React.FC = () => {
                 (!startDate || new Date(post.createdAt) >= new Date(startDate)) &&
                 (!endDate || new Date(post.createdAt) <= new Date(endDate));
 
-            return isRemarksMatch && isDateInRange;
+            const baseFilters = isRemarksMatch && isDateInRange;
+
+            if (userDetails.Role === "Super Admin" || userDetails.Role === "Admin") {
+                return baseFilters;
+            }
+
+            if (userDetails.Role === "Staff") {
+                return post.ReferenceID === userDetails.ReferenceID && baseFilters;
+            }
+
+            return false; // Fallback for unknown roles
         })
-        .sort((a, b) => {
-            const dateA = new Date(a.createdAt);
-            const dateB = new Date(b.createdAt);
-            return dateB.getTime() - dateA.getTime(); // Descending order (latest date first)
-        });
-
-
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     // Edit post function
     const handleEdit = (post: any) => {

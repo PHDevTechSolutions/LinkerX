@@ -79,6 +79,7 @@ const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, han
       <table className="min-w-full table-auto">
         <thead className="bg-gray-100">
           <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
             <th className="px-6 py-4 font-semibold text-gray-700">CSR Agent</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Company</th>
             <th className="px-6 py-4 font-semibold text-gray-700">PO Number</th>
@@ -94,13 +95,21 @@ const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, han
             <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Source</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Created At</th>
-            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
           {posts.length > 0 ? (
             posts.map((post) => (
               <tr key={post._id} className="border-b whitespace-nowrap">
+                {/* Actions Menu */}
+                <td className="px-6 py-4 text-xs gap-1 flex">
+                  <button onClick={() => handleEdit(post)} className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">
+                    Edit
+                  </button>
+                  <button onClick={() => handleDelete(post._id)} className="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600">
+                    Delete
+                  </button>
+                </td>
                 <td className="px-6 py-4 text-xs">
                   {post.AgentLastname}, {post.AgentFirstname}
                 </td>
@@ -110,9 +119,9 @@ const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, han
                   {isNaN(parseFloat(post.Amount?.toString() || "0"))
                     ? "0.00"
                     : parseFloat(post.Amount?.toString() || "0").toLocaleString("en-PH", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                 </td>
                 <td className="px-6 py-4 text-xs">{post.SONumber}</td>
                 <td className="px-6 py-4 text-xs">{formatTimestamp(post.SODate)}</td>
@@ -127,24 +136,6 @@ const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, han
                 <td className="px-6 py-4 text-xs">{post.POStatus}</td>
                 <td className="px-6 py-4 text-xs">{post.POSource}</td>
                 <td className="px-6 py-4 text-xs">{new Date(post.createdAt).toLocaleString()}</td>
-
-                {/* Actions Menu */}
-                <td className="px-6 py-4 text-xs">
-                  <button onClick={() => toggleMenu(post._id)} className="text-gray-500 hover:text-gray-800">
-                    <BsThreeDotsVertical size={14} />
-                  </button>
-
-                  {menuVisible[post._id] && (
-                    <div className="absolute right-0 bg-white shadow-md rounded-md border w-32 text-xs z-10">
-                      <button onClick={() => handleEdit(post)} className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-                        Edit
-                      </button>
-                      <button onClick={() => handleDelete(post._id)} className="border-t w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100">
-                        Delete
-                      </button>
-                    </div>
-                  )}
-                </td>
               </tr>
             ))
           ) : (
@@ -159,7 +150,7 @@ const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, han
         {/* Total Amount Footer */}
         <tfoot>
           <tr className="bg-gray-100 text-xs font-semibold">
-            <td colSpan={3} className="px-4 py-2 border text-right">Total Amount:</td>
+            <td colSpan={4} className="px-4 py-2 border text-right">Total Amount:</td>
             <td className="px-4 py-2 border">
               ₱{TotalAmount.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </td>

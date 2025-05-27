@@ -9,6 +9,7 @@ interface Metric {
   Status: string;
   Traffic: string;
   ReferenceID: string;
+  Remarks?: string; // ✅ Added to handle filtering
 }
 
 interface MetricTableProps {
@@ -74,7 +75,6 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
     fetchMetrics();
   }, [ReferenceID, Role, startDate, endDate]);
 
-
   const { groupedArray, totalMetrics } = useMemo(() => {
     const grouped = new Map<string, any>();
     const start = startDate ? new Date(startDate) : null;
@@ -85,6 +85,8 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
     let totalSales = 0, totalAmount = 0, totalQtySold = 0, totalConverted = 0, totalATV = 0, totalATU = 0, channelCount = 0;
 
     for (const m of metrics) {
+      if (m.Remarks === "PO Received") continue; // ✅ Skip if PO Received
+
       const created = new Date(m.createdAt);
       if (
         (Role === "Staff" && m.ReferenceID !== ReferenceID) ||

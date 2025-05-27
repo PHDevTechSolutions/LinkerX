@@ -448,6 +448,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                             <table className="min-w-full table-auto">
                                 <thead className="bg-gray-100">
                                     <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
+                                        <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                                         <th className="px-6 py-4 font-semibold text-gray-700">Date Created</th>
                                         <th className="px-6 py-4 font-semibold text-gray-700">Date Last Touch / Updated</th>
                                         <th className="px-6 py-4 font-semibold text-gray-700">CSR Agent</th>
@@ -483,12 +484,15 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                         <th className="px-6 py-4 font-semibold text-gray-700">Sales Agent</th>
                                         <th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
                                         <th className="px-6 py-4 font-semibold text-gray-700">Inquiry / Concern</th>
-                                        <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {paginatedPosts.map((post) => (
                                         <tr key={post._id} className="border-b whitespace-nowrap">
+                                            <td className="px-6 py-4 text-xs flex gap-1">
+                                                <button onClick={() => handleEdit(post)} className="bg-blue-500 text-white text-xs px-3 py-1 rounded hover:bg-blue-600 transition">Edit</button>
+                                                <button onClick={() => handleDelete(post._id)} className="bg-red-500 text-white text-xs px-3 py-1 rounded hover:bg-blue-600 transition">Delete</button>
+                                            </td>
                                             <td className="px-6 py-4 text-xs">{new Date(post.createdAt).toLocaleString()}</td>
                                             <td className="px-6 py-4 text-xs">
                                                 {isNaN(new Date(post.updatedAt).getTime())
@@ -532,11 +536,6 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                                                     ? `${post.Inquiries.substring(0, 20)}...`
                                                     : post.Inquiries}
                                             </td>
-                                            <td className="px-6 py-4 text-xs">
-                                                <button onClick={() => handleEdit(post)} className="mr-2 text-blue-900">Edit</button>
-                                                <button onClick={() => handleDelete(post._id)} className="mr-2 text-red-900">Delete</button>
-                                            </td>
-
                                         </tr>
                                     ))}
                                 </tbody>
