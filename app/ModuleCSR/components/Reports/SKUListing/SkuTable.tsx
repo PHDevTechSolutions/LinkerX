@@ -29,7 +29,8 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [remarksFilter, setRemarksFilter] = useState<string>("");
-  const [postsPerPage, setPostsPerPage] = useState(10); // Add state for posts per page
+  const [searchTerm, setSearchTerm] = useState<string>(""); // Search term state
+  const [postsPerPage, setPostsPerPage] = useState(10);
 
   const totalPages = Math.ceil(posts.length / postsPerPage);
 
@@ -37,13 +38,22 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
     let filtered = posts;
 
     if (remarksFilter) {
-      filtered = posts.filter((post) =>
+      filtered = filtered.filter((post) =>
         post.Remarks.toLowerCase().includes(remarksFilter.toLowerCase())
       );
     }
 
+    if (searchTerm) {
+      const lowerSearch = searchTerm.toLowerCase();
+      filtered = filtered.filter((post) =>
+        Object.values(post).some((val) =>
+          typeof val === "string" && val.toLowerCase().includes(lowerSearch)
+        )
+      );
+    }
+
     return filtered;
-  }, [posts, remarksFilter]);
+  }, [posts, remarksFilter, searchTerm]);
 
   const paginatedPosts = useMemo(() => {
     const startIndex = (currentPage - 1) * postsPerPage;
@@ -52,7 +62,7 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
 
   const totalQty = useMemo(() => {
     return filteredPosts.reduce((total, post) => {
-      const qty = parseFloat(post.QtySold) || 0; // Convert to number, default to 0 if NaN
+      const qty = parseFloat(post.QtySold) || 0;
       return total + qty;
     }, 0);
   }, [filteredPosts]);
@@ -60,36 +70,41 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
   return (
     <div className="overflow-x-auto">
       <div className="flex items-center mb-4 space-x-4">
-        {/* Remarks Filter */}
-        <div className="flex items-center">
-          <select
-            id="remarksFilter"
-            value={remarksFilter}
-            onChange={(e) => setRemarksFilter(e.target.value)}
-            className="border px-3 py-2 rounded text-xs capitalize"
-          >
-            <option value="">All</option>
-            <option value="No Stocks / Insufficient Stocks">No Stocks / Insufficient Stocks</option>
-            <option value="Item Not Carried">Item Not Carried</option>
-            <option value="Non Standard Item">Non Standard Item</option>
-          </select>
-        </div>
+        {/* Search Input */}
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search..."
+          className="border px-3 py-2 rounded text-xs w-60"
+        />
 
-        {/* Page Length Selector */}
-        <div className="flex items-center">
-          <select
-            id="postsPerPage"
-            value={postsPerPage}
-            onChange={(e) => setPostsPerPage(Number(e.target.value))}
-            className="border px-3 py-2 rounded text-xs"
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-            <option value={500}>500</option>
-          </select>
-        </div>
+        {/* Remarks Filter */}
+        <select
+          id="remarksFilter"
+          value={remarksFilter}
+          onChange={(e) => setRemarksFilter(e.target.value)}
+          className="border px-3 py-2 rounded text-xs capitalize"
+        >
+          <option value="">All</option>
+          <option value="No Stocks / Insufficient Stocks">No Stocks / Insufficient Stocks</option>
+          <option value="Item Not Carried">Item Not Carried</option>
+          <option value="Non Standard Item">Non Standard Item</option>
+        </select>
+
+        {/* Posts Per Page */}
+        <select
+          id="postsPerPage"
+          value={postsPerPage}
+          onChange={(e) => setPostsPerPage(Number(e.target.value))}
+          className="border px-3 py-2 rounded text-xs"
+        >
+          <option value={10}>10</option>
+          <option value={20}>20</option>
+          <option value={50}>50</option>
+          <option value={100}>100</option>
+          <option value={500}>500</option>
+        </select>
       </div>
 
       {filteredPosts.length > 0 ? (
@@ -112,11 +127,11 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
                 <tr key={post._id} className="border-b whitespace-nowrap">
                   <td className="px-6 py-4 text-xs">{new Date(post.createdAt).toLocaleString()}</td>
                   <td className="px-6 py-4 text-xs">{post.CompanyName}</td>
-                  <td className="px-6 py-4 text-xs">{post.Remarks}</td>
+                  <td className="px-6 py-4 text-xs">{post.ItemCategory}</td>
                   <td className="px-6 py-4 text-xs">{post.ItemCode}</td>
                   <td className="px-6 py-4 text-xs">{post.ItemDescription}</td>
                   <td className="px-6 py-4 text-xs">{post.QtySold}</td>
-                  <td className="px-6 py-4 text-xs capitalize">{post.Inquiries}</td>
+                  <td className="px-6 py-4 text-xs capitalize">{post.Remarks}</td>
                   <td className="px-6 py-4 text-xs gap-1 flex">
                     <button
                       onClick={() => handleEdit(post)}
@@ -140,7 +155,7 @@ const AccountsTable: React.FC<AccountsTableProps> = ({
         <p className="text-center text-gray-500 text-xs mt-4">No records found</p>
       )}
 
-      {/* Pagination controls */}
+      {/* Pagination Controls */}
       <div className="flex justify-between items-center mt-4">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}

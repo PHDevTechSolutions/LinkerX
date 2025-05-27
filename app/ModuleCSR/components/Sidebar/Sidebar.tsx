@@ -132,6 +132,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       icon: CiCircleQuestion,
       subItems: [
         { title: 'CSR Faqs', href: `/ModuleCSR/CSR/Help${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        //{ title: 'CSR Faqs (New)', href: `/ModuleCSR/CSR/Faqs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     //{

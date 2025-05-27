@@ -7,7 +7,6 @@ import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 import AddSkuListing from "../../../components/Reports/SKUListing/AddSkuListing";
-import SearchFilters from "../../../components/Reports/SKUListing/SearchFilters";
 import SkuTable from "../../../components/Reports/SKUListing/SkuTable";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -166,14 +165,6 @@ const SKUListing: React.FC = () => {
                                         <h2 className="text-lg font-bold mb-2">SKU Listing's</h2>
                                         <p className="text-xs mb-2">This section displays a list of SKUs (Stock Keeping Units) and includes filtering options to refine the data. Users can search by keyword, adjust the number of displayed entries, and filter results within a specific date range. Additionally, an "Export to Excel" button allows users to download the SKU data for further analysis.</p>
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg text-gray-900">
-                                            <SearchFilters
-                                                searchTerm={searchTerm}
-                                                setSearchTerm={setSearchTerm}
-                                                startDate={startDate}
-                                                setStartDate={setStartDate}
-                                                endDate={endDate}
-                                                setEndDate={setEndDate}
-                                            />
                                             <button onClick={exportToExcel} className="mb-4 px-4 py-2 bg-gray-100 shadow-sm text-dark text-xs flex items-center gap-1 rounded"><CiExport size={20} /> Export to Excel</button>
                                             <SkuTable
                                                 posts={filteredAccounts}

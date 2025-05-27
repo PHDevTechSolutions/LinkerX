@@ -8,14 +8,14 @@ import { FetchUserName } from "../../FetchUsername";
 
 interface AddTrackingProps {
     onCancel: () => void;
-    refreshPosts: () => void;  // Add a refreshPosts callback
+    refreshPosts: () => void; 
     userName: string;
     userDetails: {
         id: string;
         Role: string;
         ReferenceID: string;
       };
-    editPost?: any; // Optional prop for the post being edited
+    editPost?: any;
 }
 
 const AddTracking: React.FC<AddTrackingProps> = ({ userDetails, onCancel, refreshPosts, editPost }) => {

@@ -367,22 +367,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         setEmailAddresses(newEmailAddresses);
     };
 
-    // Remove specific contact info
-    const removeContactPerson = (index: number) => {
-        const newContactPersons = contactPersons.filter((_, i) => i !== index);
-        setContactPersons(newContactPersons);
-    };
-
-    const removeContactNumber = (index: number) => {
-        const newContactNumbers = contactNumbers.filter((_, i) => i !== index);
-        setContactNumbers(newContactNumbers);
-    };
-
-    const removeEmailAddress = (index: number) => {
-        const newEmailAddresses = emailAddresses.filter((_, i) => i !== index);
-        setEmailAddresses(newEmailAddresses);
-    };
-
     const handleActivitySelection = (activity: string) => {
         console.log("Selected:", activity); // Debugging
 

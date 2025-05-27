@@ -234,22 +234,6 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
         fetchTSA();
     }, []);
 
-    useEffect(() => {
-        const now = new Date();
-
-        // Get LOCAL values (NOT UTC)
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-
-        // Format to "YYYY-MM-DDTHH:MM" for datetime-local
-        const formatted = `${year}-${month}-${day}T${hours}:${minutes}`;
-
-        setcreatedAt(formatted);
-    }, []);
-
     return (
         <>
             <div className="flex flex-wrap -mx-4">

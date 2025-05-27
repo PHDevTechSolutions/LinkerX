@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../components/Layouts/ParentLayout";
 import SessionChecker from "../../components/Session/SessionChecker";
+// Route for FAQs
+import CSRFaqs from "../../components/Help/Faqs";
+
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-import CSRFaqs from "../../components/Help/Faqs"; // Import the form component
 
 const ProfilePage: React.FC = () => {
     const [userDetails, setUserDetails] = useState({
