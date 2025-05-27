@@ -128,7 +128,7 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
     useEffect(() => {
         const fetchTSM = async () => {
             try {
-                const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager");
+                const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager, HR Manager, Manager");
                 if (!response.ok) throw new Error("Failed to fetch managers");
 
                 const data = await response.json();
@@ -210,7 +210,6 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
                         )}
                     </div>
                 </div>
-
 
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="CustomerName">Customer Name</label>
