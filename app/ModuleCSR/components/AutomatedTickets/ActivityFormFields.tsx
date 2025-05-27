@@ -574,7 +574,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 {/* Sales Manager Dropdown */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2 bg-white-300 px-2 py-1">
-                        Sales Manager
+                        Manager
                     </label>
                     <Select
                         options={salesManagers}

@@ -314,7 +314,7 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
                 </div>
 
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="ClosedDate">Sales Manager</label>
+                    <label className="block text-xs font-bold mb-2" htmlFor="ClosedDate">Manager</label>
                     <Select
                         options={salesManagers}
                         value={salesManagers.find((option) => option.value === SalesManager) || null}
