@@ -1,5 +1,15 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { format, parseISO, differenceInDays, startOfMonth, getMonth, getYear, isWithinInterval, } from "date-fns";
+import {
+  format,
+  parseISO,
+  differenceInDays,
+  startOfMonth,
+  endOfMonth,
+  getDay,
+  addDays,
+  isSameDay,
+  isWithinInterval,
+} from "date-fns";
 
 interface Post {
   companyname: string;
@@ -12,95 +22,50 @@ interface Post {
 
 interface UsersCardProps {
   posts: Post[];
-  referenceid?: string;
 }
 
+const DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+// Simple modal component
+const Modal: React.FC<{ onClose: () => void; children: React.ReactNode }> = ({
+  onClose,
+  children,
+}) => {
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[999]"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded p-4 max-w-lg w-full max-h-[80vh] overflow-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+        <button
+          onClick={onClose}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
-  // States
-  const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
+  // Filters
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
     start: "",
     end: "",
   });
   const [selectedWeek, setSelectedWeek] = useState<string>("");
-  const [loading, setLoading] = useState(false);
-  const [sortConfig, setSortConfig] = useState<{ key: keyof Post | "date_created"; direction: "asc" | "desc" }>({
-    key: "date_created",
-    direction: "desc",
-  });
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 10;
 
-  // Helpers
-  const getWeekOfMonth = (postDate: Date) => {
-    const startOfMonthDate = startOfMonth(postDate);
-    const daysIntoMonth = differenceInDays(postDate, startOfMonthDate) + 1;
-    if (daysIntoMonth <= 7) return `Week 1`;
-    if (daysIntoMonth <= 14) return `Week 2`;
-    if (daysIntoMonth <= 21) return `Week 3`;
-    if (daysIntoMonth <= 28) return `Week 4`;
-    return `Week 5`;
-  };
+  // Calendar state
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  const groupByCompanyAndWeek = (posts: Post[]) => {
-    const grouped: { [key: string]: { [key: string]: Post[] } } = {};
-
-    posts.forEach((post) => {
-      const postDate = parseISO(post.date_created);
-      const week = getWeekOfMonth(postDate);
-
-      if (!grouped[post.companyname]) {
-        grouped[post.companyname] = {};
-      }
-
-      if (!grouped[post.companyname][week]) {
-        grouped[post.companyname][week] = [];
-      }
-
-      grouped[post.companyname][week].push(post);
-    });
-
-    return grouped;
-  };
-
-  // Sorting function
-  const sortedPosts = useMemo(() => {
-  const sortablePosts = [...filteredPosts];
-  sortablePosts.sort((a, b) => {
-    const key = sortConfig.key;
-    const aRaw = a[key] ?? "";
-    const bRaw = b[key] ?? "";
-
-    let aVal: number | string;
-    let bVal: number | string;
-
-    if (key === "date_created") {
-      aVal = new Date(aRaw as string).getTime();
-      bVal = new Date(bRaw as string).getTime();
-    } else {
-      aVal = (aRaw as string).toLowerCase();
-      bVal = (bRaw as string).toLowerCase();
-    }
-
-    if (aVal < bVal) return sortConfig.direction === "asc" ? -1 : 1;
-    if (aVal > bVal) return sortConfig.direction === "asc" ? 1 : -1;
-    return 0;
-  });
-  return sortablePosts;
-}, [filteredPosts, sortConfig]);
-
-  // Pagination slice
-  const pagedPosts = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return sortedPosts.slice(start, start + itemsPerPage);
-  }, [sortedPosts, currentPage]);
-
-  // Grouped posts memoized
-  const groupedPosts = useMemo(() => groupByCompanyAndWeek(pagedPosts), [pagedPosts]);
-
-  // Filtering posts by date range with loading state
-  useEffect(() => {
-    setLoading(true);
+  // Filtered posts by date range and week
+  const filteredPosts = useMemo(() => {
     let filtered = posts;
 
     if (dateRange.start && dateRange.end) {
@@ -119,44 +84,74 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
       });
     }
 
-    setFilteredPosts(filtered);
-    setCurrentPage(1);
-    setLoading(false);
+    return filtered;
   }, [posts, dateRange, selectedWeek]);
 
-  // Export to CSV function
-  const exportToCSV = () => {
-    const headers = ["Company", "Contact Person", "Contact Number", "Type of Activity", "Date Created", "Remarks"];
-    const rows = filteredPosts.map((post) => [
-      post.companyname,
-      post.contactperson,
-      post.contactnumber,
-      post.typeactivity,
-      post.date_created,
-      post.remarks,
-    ]);
-    let csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].map(e => e.join(",")).join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `posts_export_${Date.now()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  // Helper: week of month string
+  function getWeekOfMonth(date: Date) {
+    const start = startOfMonth(date);
+    const diff = differenceInDays(date, start) + 1;
+    if (diff <= 7) return "Week 1";
+    if (diff <= 14) return "Week 2";
+    if (diff <= 21) return "Week 3";
+    if (diff <= 28) return "Week 4";
+    return "Week 5";
+  }
 
-  // Handle sorting clicks
-  const handleSort = (key: keyof Post | "date_created") => {
-    let direction: "asc" | "desc" = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") direction = "desc";
-    setSortConfig({ key, direction });
-  };
+  // Calendar days generator
+  function getCalendarDays(month: Date) {
+    const startMonth = startOfMonth(month);
+    const endMonth = endOfMonth(month);
+    const startDayOfWeek = getDay(startMonth);
+    const daysInMonth = differenceInDays(endMonth, startMonth) + 1;
+
+    const days: Date[] = [];
+
+    for (let i = 0; i < startDayOfWeek; i++) {
+      days.push(addDays(startMonth, i - startDayOfWeek));
+    }
+
+    for (let i = 0; i < daysInMonth; i++) {
+      days.push(addDays(startMonth, i));
+    }
+
+    while (days.length % 7 !== 0) {
+      days.push(addDays(endMonth, days.length - daysInMonth - startDayOfWeek));
+    }
+
+    return days;
+  }
+
+  const calendarDays = useMemo(() => getCalendarDays(currentMonth), [currentMonth]);
+
+  // Posts grouped by day key yyyy-MM-dd
+  const postsByDay = useMemo(() => {
+    const map: Record<string, Post[]> = {};
+    filteredPosts.forEach((post) => {
+      const dayKey = format(parseISO(post.date_created), "yyyy-MM-dd");
+      if (!map[dayKey]) map[dayKey] = [];
+      map[dayKey].push(post);
+    });
+    return map;
+  }, [filteredPosts]);
+
+  // Navigation handlers
+  function prevMonth() {
+    setCurrentMonth(addDays(startOfMonth(currentMonth), -1));
+  }
+  function nextMonth() {
+    setCurrentMonth(addDays(endOfMonth(currentMonth), 1));
+  }
+
+  // Posts for selected day (to show in modal)
+  const selectedPosts = selectedDate
+    ? postsByDay[format(selectedDate, "yyyy-MM-dd")] || []
+    : [];
 
   return (
-    <div className="mb-4">
+    <div className="p-4">
       {/* Filters */}
-      <div className="flex gap-4 mb-4 items-center">
-        {/* Date Range Filter */}
+      <div className="flex gap-4 mb-4 items-center flex-wrap">
         <label className="text-xs font-semibold" htmlFor="startDate">
           Start Date:
         </label>
@@ -166,7 +161,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
           value={dateRange.start}
           onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
           className="border p-2 text-xs rounded"
-          aria-label="Start Date"
         />
         <label className="text-xs font-semibold" htmlFor="endDate">
           End Date:
@@ -177,22 +171,21 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
           value={dateRange.end}
           onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
           className="border p-2 text-xs rounded"
-          aria-label="End Date"
         />
         <button
-          onClick={() => setDateRange({ start: "", end: "" })}
+          onClick={() => {
+            setDateRange({ start: "", end: "" });
+            setSelectedWeek("");
+          }}
           className="px-3 py-1 text-xs bg-gray-300 rounded"
-          aria-label="Clear Date Filters"
         >
-          Clear
+          Clear Filters
         </button>
 
-        {/* Week Filter */}
         <select
           value={selectedWeek}
           onChange={(e) => setSelectedWeek(e.target.value)}
           className="border p-2 text-xs rounded"
-          aria-label="Filter by Week"
         >
           <option value="">Filter by Week</option>
           {["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"].map((week) => (
@@ -201,161 +194,82 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
             </option>
           ))}
         </select>
+      </div>
 
-        {/* Export Button */}
-        <button
-          onClick={exportToCSV}
-          className="ml-auto px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600"
-          aria-label="Export posts to CSV"
-        >
-          Export CSV
+      {/* Calendar Header */}
+      <div className="flex justify-between items-center mb-2">
+        <button onClick={prevMonth} className="px-2 py-1 border rounded">
+          &lt;
+        </button>
+        <h2 className="text-lg font-semibold">
+          {format(currentMonth, "MMMM yyyy")}
+        </h2>
+        <button onClick={nextMonth} className="px-2 py-1 border rounded">
+          &gt;
         </button>
       </div>
 
-      {/* Loading and Empty States */}
-      {loading && <div className="text-xs italic text-gray-600">Loading data...</div>}
-      {!loading && filteredPosts.length === 0 && (
-        <div className="text-xs italic text-gray-600">No posts match your filter criteria.</div>
-      )}
-
-      {/* Grouped Company Data */}
-      {!loading && filteredPosts.length > 0 && (
-        <div className="overflow-x-auto">
-          {Object.keys(groupedPosts).map((company, index) => {
-            const companyData = groupedPosts[company];
-
-            return (
-              <div key={index} className="mb-6">
-                <div className="text-xs uppercase font-semibold">{company}</div>
-                <table
-                  className="min-w-full table-auto border border-gray-200"
-                  role="table"
-                  aria-label={`Posts for ${company}`}
-                >
-                  <thead className="bg-gray-100">
-                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-                      <th
-                        className="px-6 py-4 font-semibold text-gray-700 cursor-pointer"
-                        onClick={() => handleSort("date_created")}
-                        scope="col"
-                        aria-sort={
-                          sortConfig.key === "date_created"
-                            ? sortConfig.direction === "asc"
-                              ? "ascending"
-                              : "descending"
-                            : "none"
-                        }
-                      >
-                        Week / Date Created
-                      </th>
-                      <th
-                        className="px-6 py-4 font-semibold text-gray-700 cursor-pointer"
-                        onClick={() => handleSort("contactperson")}
-                        scope="col"
-                        aria-sort={
-                          sortConfig.key === "contactperson"
-                            ? sortConfig.direction === "asc"
-                              ? "ascending"
-                              : "descending"
-                            : "none"
-                        }
-                      >
-                        Contact Person
-                      </th>
-                      <th className="px-6 py-4 font-semibold text-gray-700" scope="col">
-                        Contact Number
-                      </th>
-                      <th
-                        className="px-6 py-4 font-semibold text-gray-700 cursor-pointer"
-                        onClick={() => handleSort("typeactivity")}
-                        scope="col"
-                        aria-sort={
-                          sortConfig.key === "typeactivity"
-                            ? sortConfig.direction === "asc"
-                              ? "ascending"
-                              : "descending"
-                            : "none"
-                        }
-                      >
-                        Type of Activity
-                      </th>
-                      <th className="px-6 py-4 font-semibold text-gray-700" scope="col">
-                        Activity Remarks
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"].map((week, weekIndex) => {
-                      const weekPosts = companyData[week] || [];
-                      return (
-                        <React.Fragment key={weekIndex}>
-                          {weekPosts.length > 0 && (
-                            <tr className="border-b whitespace-nowrap bg-gray-50">
-                              <td colSpan={5} className="px-6 py-2 text-xs font-bold">
-                                {week}
-                              </td>
-                            </tr>
-                          )}
-                          {weekPosts.map((post, postIndex) => {
-                            const postDate = parseISO(post.date_created);
-                            return (
-                              <tr key={postIndex} className="border-b whitespace-nowrap">
-                                <td className="px-6 py-4 text-xs">
-                                  {format(postDate, "yyyy-MM-dd HH:mm:ss a")}
-                                </td>
-                                <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
-                                <td className="px-6 py-4 text-xs capitalize">{post.contactnumber}</td>
-                                <td className="px-6 py-4 text-xs">
-                                  <span
-                                    className={`px-2 py-1 rounded text-xs font-semibold ${
-                                      post.typeactivity.toLowerCase().includes("call")
-                                        ? "bg-blue-200 text-blue-800"
-                                        : post.typeactivity.toLowerCase().includes("meeting")
-                                        ? "bg-green-200 text-green-800"
-                                        : "bg-gray-200 text-gray-800"
-                                    }`}
-                                    aria-label={`Type of activity: ${post.typeactivity}`}
-                                  >
-                                    {post.typeactivity}
-                                  </span>
-                                </td>
-                                <td className="px-6 py-4 text-xs capitalize">{post.remarks}</td>
-                              </tr>
-                            );
-                          })}
-                        </React.Fragment>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Pagination Controls */}
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className="px-3 py-1 bg-gray-200 rounded text-xs"
-          aria-label="Previous page"
-        >
-          Previous
-        </button>
-        <div className="text-xs">
-          Page {currentPage} of {Math.ceil(filteredPosts.length / itemsPerPage)}
-        </div>
-        <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(filteredPosts.length / itemsPerPage)))}
-          disabled={currentPage === Math.ceil(filteredPosts.length / itemsPerPage)}
-          className="px-3 py-1 bg-gray-200 rounded text-xs"
-          aria-label="Next page"
-        >
-          Next
-        </button>
+      {/* Days of week */}
+      <div className="grid grid-cols-7 text-center text-xs font-semibold mb-1">
+        {DAYS_OF_WEEK.map((d) => (
+          <div key={d} className="py-1 border border-gray-200 bg-gray-100">
+            {d}
+          </div>
+        ))}
       </div>
+
+      {/* Calendar grid */}
+      <div className="grid grid-cols-7 gap-1">
+        {calendarDays.map((day, idx) => {
+          const dayStr = format(day, "yyyy-MM-dd");
+          const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
+          const hasPosts = !!postsByDay[dayStr]?.length;
+          const isSelected = selectedDate ? isSameDay(day, selectedDate) : false;
+
+          return (
+            <div
+              key={idx}
+              onClick={() => isCurrentMonth && setSelectedDate(day)}
+              className={`cursor-pointer h-16 p-1 border rounded relative text-xs
+                ${isCurrentMonth ? "bg-white" : "bg-gray-50 text-gray-400"}
+                ${isSelected ? "border-blue-500 bg-blue-100" : "border-gray-200"}
+                flex flex-col justify-between
+              `}
+              title={hasPosts ? `${postsByDay[dayStr].length} post(s)` : undefined}
+            >
+              <div className="text-right">{day.getDate()}</div>
+              {hasPosts && (
+                <div className="w-3 h-3 rounded-full bg-green-500 mx-auto mt-auto"></div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Modal for selected date posts */}
+      {selectedDate && (
+        <Modal onClose={() => setSelectedDate(null)}>
+          <h3 className="font-semibold mb-2">
+            Posts on {format(selectedDate, "MMMM dd, yyyy")} ({selectedPosts.length})
+          </h3>
+          {selectedPosts.length === 0 && <p>No posts on this day.</p>}
+          {selectedPosts.length > 0 && (
+            <ul className="text-xs max-h-60 overflow-auto">
+              {selectedPosts.map((post, i) => (
+                <li key={i} className="mb-2 border-b border-gray-300 pb-1">
+                  <div>
+                    <strong className="uppercase">{post.companyname}</strong> - {post.typeactivity}
+                  </div>
+                  <div>
+                    Contact: {post.contactperson} ({post.contactnumber})
+                  </div>
+                  <div className="capitalize">Remarks: {post.remarks}</div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Modal>
+      )}
     </div>
   );
 };
