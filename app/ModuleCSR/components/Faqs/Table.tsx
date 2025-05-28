@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from "react";
 import { convertFromRaw } from "draft-js";
 import { stateToHTML } from "draft-js-export-html";
+import { CiEdit, CiTrash  } from "react-icons/ci";
 
 interface Post {
   _id: string;
@@ -68,7 +69,7 @@ const ClientAccordion: React.FC<AccountsTableProps> = ({
                 {groupedPosts[title].map((post) => (
                   <div
                     key={post._id}
-                    className="border p-3 rounded-md flex justify-between items-start text-xs space-x-4"
+                    className="border p-3 rounded-md shadow-md flex justify-between items-start text-xs space-x-4"
                   >
                     <div
                       className="text-gray-700 text-xs capitalize prose max-w-full"
@@ -80,15 +81,15 @@ const ClientAccordion: React.FC<AccountsTableProps> = ({
                       <div className="flex space-x-2">
                         <button
                           onClick={() => handleEdit(post)}
-                          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                           className="text-blue-500 transition"
                         >
-                          Edit
+                          <CiEdit size={20} />
                         </button>
                         <button
                           onClick={() => handleDelete(post._id)}
-                          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                          className="text-red-500 transition"
                         >
-                          Delete
+                          <CiTrash size={20} />
                         </button>
                       </div>
                     )}
