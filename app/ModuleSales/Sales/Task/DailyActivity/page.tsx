@@ -206,20 +206,16 @@ const ListofUser: React.FC = () => {
     const filteredAccounts = Array.isArray(posts)
         ? posts
             .filter((post) => {
-                // Check if company name or activity status matches the search term
                 const matchesSearchTerm =
                     (post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase())) ||
                     (post?.activitystatus?.toLowerCase().includes(searchTerm.toLowerCase()));
 
-                // Parse the date_created field safely
                 const postDate = post?.date_created ? new Date(post.date_created) : null;
 
-                // Check if the post's date is within the selected date range
                 const isWithinDateRange =
                     (!startDate || (postDate && postDate >= new Date(startDate))) &&
                     (!endDate || (postDate && postDate <= new Date(endDate)));
 
-                // Check if the post matches the selected client type
                 const matchesClientType = selectedClientType
                     ? post?.typeclient === selectedClientType
                     : true;
@@ -228,28 +224,29 @@ const ListofUser: React.FC = () => {
                     ? post?.activitystatus === selectedStatus
                     : true;
 
-                // Check if the post matches the current user's ReferenceID (PostgreSQL or MongoDB)
+                // ReferenceID check based on role
                 const matchesReferenceID =
-                    post?.referenceid === userDetails.ReferenceID || // PostgreSQL referenceid
-                    post?.ReferenceID === userDetails.ReferenceID;   // MongoDB ReferenceID
+                    userDetails.Role === "Special Access" || userDetails.Role === "Super Admin"
+                        ? true // See all
+                        : post?.referenceid === userDetails.ReferenceID || post?.ReferenceID === userDetails.ReferenceID;
 
-                // Check the user's role for filtering
+                // Valid role check
                 const matchesRole =
                     userDetails.Role === "Super Admin" ||
+                    userDetails.Role === "Special Access" ||
                     userDetails.Role === "Territory Sales Associate" ||
                     userDetails.Role === "Territory Sales Manager";
 
-                // Return the final filtering condition
                 return (
                     matchesSearchTerm &&
                     isWithinDateRange &&
                     matchesClientType &&
                     matchesStatus &&
-                    matchesReferenceID && // Ensures the user sees only their data
+                    matchesReferenceID &&
                     matchesRole
                 );
             })
-            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
+            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime())
         : [];
 
     const currentPosts = filteredAccounts.slice();
@@ -751,17 +748,17 @@ const ListofUser: React.FC = () => {
     // Fetch companies from API with ReferenceID as query param
     const fetchCompanies = async () => {
         try {
-            const referenceid = userDetails.ReferenceID; // Directly use the reference ID from MongoDB
-            if (!referenceid) {
-                return;
-            }
+            // If user has Special Access, do not filter by referenceid
+            const isSpecialAccess = userDetails.Role === "Special Access";
 
-            // Ensure the parameter name matches the backend query parameter
-            const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAutomatedAccounts?referenceid=${referenceid}`);
+            const url = isSpecialAccess
+                ? `/api/ModuleSales/Companies/CompanyAccounts/FetchAutomatedAccounts`
+                : `/api/ModuleSales/Companies/CompanyAccounts/FetchAutomatedAccounts?referenceid=${userDetails.ReferenceID}`;
+
+            const response = await fetch(url);
             const data = await response.json();
 
             if (data.success && Array.isArray(data.data)) {
-                // Remove the filtering for 'Active' and 'Used' status
                 setPost(data.data); // Set all fetched companies
             } else {
                 setPost([]); // No companies fetched
@@ -770,6 +767,7 @@ const ListofUser: React.FC = () => {
             console.error("Error fetching companies:", error);
         }
     };
+
 
     useEffect(() => {
         if (userDetails.ReferenceID) {
@@ -986,12 +984,14 @@ const ListofUser: React.FC = () => {
                                     <>
                                         <div className="flex justify-between items-center mb-4">
                                             <div className="flex items-center gap-3">
+                                                {userDetails.Role !== "Special Access" && (
                                                 <button
                                                     className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition"
                                                     onClick={handleButtonClick}
                                                 >
                                                     <PiHandTapThin size={15} /> Tap
                                                 </button>
+                                                )}
                                             </div>
 
                                             {showPersonalForm && (
@@ -1101,6 +1101,7 @@ const ListofUser: React.FC = () => {
                                                     handleEdit={(user) => handleEdit(user)}
                                                     handleStatusUpdate={handleStatusUpdate}
                                                     handleDelete={confirmDelete}
+                                                    Role={userDetails.Role}
                                                 />
                                             </div>
 
@@ -1142,67 +1143,67 @@ const ListofUser: React.FC = () => {
                                                                     .sort((a, b) => new Date(a.date_updated).getTime() - new Date(b.date_updated).getTime()) // ASCENDING
 
                                                                     .map((company, index) => (
-                                                                    <div
-                                                                        key={company.id}
-                                                                        className={`p-2 rounded-lg shadow-lg text-[10px] transition-all duration-200 ease-in-out transform hover:scale-[1.02] uppercase font-medium
+                                                                        <div
+                                                                            key={company.id}
+                                                                            className={`p-2 rounded-lg shadow-lg text-[10px] transition-all duration-200 ease-in-out transform hover:scale-[1.02] uppercase font-medium
     ${company.typeclient === "New Account - Client Development"
-                                                                                ? "bg-yellow-200 text-black"
-                                                                                : company.status === "Used"
-                                                                                    ? "bg-lime-200 text-black"
-                                                                                    : "bg-teal-300 text-black"
-                                                                            }`}
-                                                                    >
-                                                                        {/* Company Info */}
-                                                                        <div className="space-y-1">
-                                                                            <strong>{company.companyname}</strong>
-                                                                            <br />
-                                                                            <span>{company.typeclient} / {company.status}</span>
-                                                                            <br />
-                                                                            <div className="flex gap-1 items-start">
-                                                                                <FcManager size={10} className="flex-shrink-0 mt-[2px]" />
-                                                                                <span>{company.contactperson}</span>
+                                                                                    ? "bg-yellow-200 text-black"
+                                                                                    : company.status === "Used"
+                                                                                        ? "bg-lime-200 text-black"
+                                                                                        : "bg-teal-300 text-black"
+                                                                                }`}
+                                                                        >
+                                                                            {/* Company Info */}
+                                                                            <div className="space-y-1">
+                                                                                <strong>{company.companyname}</strong>
+                                                                                <br />
+                                                                                <span>{company.typeclient} / {company.status}</span>
+                                                                                <br />
+                                                                                <div className="flex gap-1 items-start">
+                                                                                    <FcManager size={10} className="flex-shrink-0 mt-[2px]" />
+                                                                                    <span>{company.contactperson}</span>
+                                                                                </div>
+                                                                                <div className="flex gap-1 items-start">
+                                                                                    <FcPhone size={10} className="flex-shrink-0 mt-[2px]" />
+                                                                                    <span className="italic">{company.contactnumber}</span>
+                                                                                </div>
+                                                                                <div className="flex gap-1 items-start">
+                                                                                    <FcFeedback size={10} className="flex-shrink-0 mt-[2px]" />
+                                                                                    <span className="break-all italic lowercase">{company.emailaddress}</span>
+                                                                                </div>
+                                                                                <div className="flex gap-1 items-start">
+                                                                                    <FcHome size={10} className="flex-shrink-0 mt-[2px]" />
+                                                                                    <span className="break-words capitalize">{company.address}</span>
+                                                                                </div>
                                                                             </div>
-                                                                            <div className="flex gap-1 items-start">
-                                                                                <FcPhone size={10} className="flex-shrink-0 mt-[2px]" />
-                                                                                <span className="italic">{company.contactnumber}</span>
-                                                                            </div>
-                                                                            <div className="flex gap-1 items-start">
-                                                                                <FcFeedback size={10} className="flex-shrink-0 mt-[2px]" />
-                                                                                <span className="break-all italic lowercase">{company.emailaddress}</span>
-                                                                            </div>
-                                                                            <div className="flex gap-1 items-start">
-                                                                                <FcHome size={10} className="flex-shrink-0 mt-[2px]" />
-                                                                                <span className="break-words capitalize">{company.address}</span>
-                                                                            </div>
-                                                                        </div>
 
-                                                                        {/* Buttons at the bottom */}
-                                                                        <div className="mt-3 flex justify-end gap-2">
-                                                                            <button
-                                                                                onClick={() => handleAccept(company)}
-                                                                                className={`px-3 py-1 text-[10px] rounded hover:bg-blue-600 transition flex items-center gap-1
+                                                                            {/* Buttons at the bottom */}
+                                                                            <div className="mt-3 flex justify-end gap-2">
+                                                                                <button
+                                                                                    onClick={() => handleAccept(company)}
+                                                                                    className={`px-3 py-1 text-[10px] rounded hover:bg-blue-600 transition flex items-center gap-1
         ${company.status === "Used"
-                                                                                        ? "bg-green-900 text-white"
-                                                                                        : "bg-gray-100 text-black"}`}
-                                                                            >
-                                                                                Accept <IoCheckmarkDoneCircleOutline size={15} />
-                                                                            </button>
+                                                                                            ? "bg-green-900 text-white"
+                                                                                            : "bg-gray-100 text-black"}`}
+                                                                                >
+                                                                                    Accept <IoCheckmarkDoneCircleOutline size={15} />
+                                                                                </button>
 
-                                                                            <button
-                                                                                onClick={() => handleVoid(company)}
-                                                                                className={`px-3 py-1 text-[10px] rounded hover:bg-blue-600 transition flex items-center gap-1
+                                                                                <button
+                                                                                    onClick={() => handleVoid(company)}
+                                                                                    className={`px-3 py-1 text-[10px] rounded hover:bg-blue-600 transition flex items-center gap-1
     ${company.status === "Used"
-                                                                                        ? "bg-red-900 text-white"
-                                                                                        : "bg-gray-100 text-black"}`}
-                                                                            >
-                                                                                Void <AiOutlineStop size={15} />
-                                                                            </button>
+                                                                                            ? "bg-red-900 text-white"
+                                                                                            : "bg-gray-100 text-black"}`}
+                                                                                >
+                                                                                    Void <AiOutlineStop size={15} />
+                                                                                </button>
 
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
 
 
-                                                                ))
+                                                                    ))
                                                             ) : (
                                                                 <div className="text-xs text-gray-500 text-center p-2">
 

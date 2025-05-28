@@ -8,10 +8,11 @@ interface UsersCardProps {
   posts: any[];
   handleEdit: (post: any) => void;
   referenceid?: string;
+  Role: string;
   fetchAccount: () => Promise<void>; // Function that returns a Promise<void>
 }
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, fetchAccount }) => {
+const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, fetchAccount, Role }) => {
   const [updatedUser, setUpdatedUser] = useState<any[]>([]);
   // Bulk
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
@@ -409,7 +410,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
           <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
             <th className="px-6 py-4 font-semibold text-gray-700"></th>
             <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+            {Role !== "Special Access" && (
             <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
+            )}
             <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
@@ -467,6 +470,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                       {post.status}
                     </span>
                   </td>
+                  {Role !== "Special Access" && (
                   <td className="px-6 py-4 text-xs">
                     <button
                       className="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-300 hover:rounded-full w-full text-left flex items-center gap-1"
@@ -475,6 +479,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                       <CiEdit /> Edit
                     </button>
                   </td>
+                  )}
                   <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
                   <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
                   <td className="px-6 py-4 text-xs capitalize">{post.contactnumber}</td>

@@ -5,18 +5,17 @@ import { FcAssistant, FcCollaboration, FcBullish, FcPaid, FcAddressBook, FcFullT
 import { FaMapLocationDot } from "react-icons/fa6";
 import { MdLocationCity } from "react-icons/md";
 import { RiUserLocationLine } from "react-icons/ri";
-import moment from "moment";
-
 
 interface UsersCardProps {
     posts: any[];
+    Role: string;
     handleEdit: (post: any) => void;
     handleDelete: (postId: string) => void;
     handleStatusUpdate: (postId: string, newStatus: string) => void;
     referenceid?: string;
 }
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUpdate, handleDelete, referenceid }) => {
+const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUpdate, handleDelete, referenceid, Role }) => {
     const [updatedUser, setUpdatedUser] = useState<any[]>([]);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<"default" | "day" | "week" | "month">("default");
@@ -291,7 +290,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                             <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handlePin(user.id)}>
                                                                 <CiMapPin /> {pinnedUsers.has(user.id) ? "Unpin" : "Pin"}
                                                             </li>
+                                                            {Role !== "Special Access" && (
                                                             <li className="p-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1" onClick={() => handleDelete(user.id)}><CiTrash />Delete</li>
+                                                            )}
                                                         </ul>
                                                     </div>
 
@@ -339,10 +340,13 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleStatusUp
                                                     {user.activitystatus === "Coordination of SO to Orders" && (<FcPaid size={20} />)}
                                                     {user.activitystatus === "Email and Viber Checking" && (<FcAddressBook size={20} />)}
                                                     {user.activitystatus === "1st Break" && (<FcAlarmClock size={20} />)}
-
+                                                    
+                                                    
                                                     <div className="flex items-center justify-between w-full">
                                                         <p>{user.activitystatus}</p>
+                                                        {Role !== "Special Access" && (
                                                         <FcFullTrash size={16} className="ml-2 cursor-pointer" onClick={() => handleDelete(user.id)} />
+                                                        )}
                                                     </div>
                                                 </div>
                                                 <p className="mt-2"><strong>Activity Remarks:</strong> {user.activityremarks}</p>

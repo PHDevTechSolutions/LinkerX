@@ -346,6 +346,23 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ].includes(item.title);
     }
 
+    if (userDetails.Role === "Special Access") {
+      return [
+        "My Companies",
+        "Activities",
+        "Sales Performance",
+        "Conversion Rates",
+        "National",
+        "My Team",
+        "Client Activity Board",
+        "Help Center",
+        "Xend Mail",
+        "Global Employees",
+        "Profile",
+        "What is Taskflow?"
+      ].includes(item.title);
+    }
+
     if (userDetails.Role === "Territory Sales Manager") {
       const tsmDefault = [
         "Sales Performance",

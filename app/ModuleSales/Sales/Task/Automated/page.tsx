@@ -117,7 +117,7 @@ const ListofUser: React.FC = () => {
 
     const taskRef = useRef<HTMLDivElement | null>(null); // Reference for My Task div
     const [totalActivityCount, setTotalActivityCount] = useState<number>(0);
-    
+
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
         const fetchUserData = async () => {
@@ -208,6 +208,7 @@ const ListofUser: React.FC = () => {
                 // Check the user's role for filtering
                 const matchesRole =
                     userDetails.Role === "Super Admin" ||
+                    userDetails.Role === "Special Access" ||
                     userDetails.Role === "Territory Sales Associate" ||
                     userDetails.Role === "Territory Sales Manager";
 
@@ -574,43 +575,42 @@ const ListofUser: React.FC = () => {
 
     // Fetch companies from API with ReferenceID as query param
     const fetchCompanies = async () => {
-    try {
-        const referenceid = userDetails.ReferenceID;
-        if (!referenceid) return;
+        try {
+            const referenceid = userDetails.ReferenceID;
+            if (!referenceid) return;
 
-        let url = `/api/ModuleSales/Companies/CompanyAccounts/FetchAutomatedAccounts?referenceid=${referenceid}`;
+            let url = `/api/ModuleSales/Companies/CompanyAccounts/FetchAutomatedAccounts?referenceid=${referenceid}`;
 
-        const response = await fetch(url, { cache: "no-store" }); // <== important: disable cache
-        const data = await response.json();
+            const response = await fetch(url, { cache: "no-store" }); // <== important: disable cache
+            const data = await response.json();
 
-        if (data.success && Array.isArray(data.data)) {
-            setPost(data.data);
-            console.log("✅ Companies fetched:", data.data.length);
-            console.log("📦 Current batch status:", data.batchStatus);
-        } else {
-            setPost([]);
-            console.warn("⚠ No company data returned.");
+            if (data.success && Array.isArray(data.data)) {
+                setPost(data.data);
+                console.log("✅ Companies fetched:", data.data.length);
+                console.log("📦 Current batch status:", data.batchStatus);
+            } else {
+                setPost([]);
+                console.warn("⚠ No company data returned.");
+            }
+        } catch (error) {
+            console.error("❌ Error fetching companies:", error);
         }
-    } catch (error) {
-        console.error("❌ Error fetching companies:", error);
-    }
-};
+    };
 
 
     // This triggers once the ReferenceID is available and starts the batch cycle
     useEffect(() => {
         if (userDetails.ReferenceID) {
-            fetchCompanies(); 
+            fetchCompanies();
         }
     }, [userDetails.ReferenceID]);
-
 
 
     const handleProceed = async () => {
         if (!selectedCompany) return;
 
         try {
-           
+
             let newStatus = selectedCompany.status === "Active" ? "Used" : "Active";
 
             console.log("Updating company:", selectedCompany.id, "→", newStatus);
@@ -721,7 +721,6 @@ const ListofUser: React.FC = () => {
         setShowModal(false);
         setSelectedCompany(null);
     };
-
 
     const [currentPage, setCurrentPage] = useState(1);
 

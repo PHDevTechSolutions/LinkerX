@@ -127,7 +127,7 @@ const ListofUser: React.FC = () => {
             const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
 
             const matchesRole =
-                userDetails.Role === "Super Admin"
+                userDetails.Role === "Super Admin" || userDetails.Role === "Special Access"
                     ? true // Super Admin sees all data
                     : userDetails.Role === "Territory Sales Associate" || userDetails.Role === "Territory Sales Manager"
                         ? post?.referenceid === referenceID // TSA and TSM see only their assigned companies
@@ -200,6 +200,7 @@ const ListofUser: React.FC = () => {
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}
                                                 referenceid={referenceid}
+                                                Role={userDetails.Role}
                                             />
                                             <Pagination
                                                 currentPage={currentPage}

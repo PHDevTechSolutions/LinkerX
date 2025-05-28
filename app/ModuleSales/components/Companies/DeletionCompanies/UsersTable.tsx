@@ -6,9 +6,10 @@ interface UsersCardProps {
     posts: any[];
     handleEdit: (post: any) => void;
     referenceid?: string;
+    Role: string;
 }
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid }) => {
+const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, Role }) => {
     const [updatedUser, setUpdatedUser] = useState<any[]>([]);
 
     useEffect(() => {
@@ -24,7 +25,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                     <thead className="bg-gray-100">
                         <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
                             <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+                            {Role !== "Special Access" && (
                             <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
+                            )}
                             <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
@@ -70,11 +73,13 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                                 {post.status}
                                             </span>
                                         </td>
+                                        {Role !== "Special Access" && (
                                         <td className="px-6 py-4 text-xs">
                                             {post.status !== "Approve For Deletion" && (
                                             <button className="block px-4 py-2 text-xs text-gray-700 text-left flex items-center gap-1" onClick={() => handleEdit(post)}><CiEdit /> Edit</button>
                                             )}
                                         </td>
+                                        )}
                                         <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
                                         <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
                                         <td className="px-6 py-4 text-xs">{post.contactnumber}</td>

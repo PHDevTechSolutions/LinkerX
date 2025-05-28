@@ -176,50 +176,47 @@ const ListofUser: React.FC = () => {
     const filteredAccounts = Array.isArray(posts)
         ? posts
             .filter((post) => {
-                // Check if company name or activity status matches the search term
                 const matchesSearchTerm =
                     (post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase())) ||
                     (post?.activitystatus?.toLowerCase().includes(searchTerm.toLowerCase()));
 
-                // Parse the date_created field safely
                 const postDate = post?.date_created ? new Date(post.date_created) : null;
 
-                // Check if the post's date is within the selected date range
                 const isWithinDateRange =
                     (!startDate || (postDate && postDate >= new Date(startDate))) &&
                     (!endDate || (postDate && postDate <= new Date(endDate)));
 
-                // Check if the post matches the selected client type
                 const matchesClientType = selectedClientType
                     ? post?.typeclient === selectedClientType
                     : true;
-                
+
                 const matchesStatus = selectedStatus
                     ? post?.activitystatus === selectedStatus
                     : true;
 
-                // Check if the post matches the current user's ReferenceID (PostgreSQL or MongoDB)
+                // ReferenceID check based on role
                 const matchesReferenceID =
-                    post?.referenceid === userDetails.ReferenceID || // PostgreSQL referenceid
-                    post?.ReferenceID === userDetails.ReferenceID;   // MongoDB ReferenceID
+                    userDetails.Role === "Special Access" || userDetails.Role === "Super Admin"
+                        ? true // See all
+                        : post?.referenceid === userDetails.ReferenceID || post?.ReferenceID === userDetails.ReferenceID;
 
-                // Check the user's role for filtering
+                // Valid role check
                 const matchesRole =
                     userDetails.Role === "Super Admin" ||
+                    userDetails.Role === "Special Access" ||
                     userDetails.Role === "Territory Sales Associate" ||
                     userDetails.Role === "Territory Sales Manager";
 
-                // Return the final filtering condition
                 return (
                     matchesSearchTerm &&
                     isWithinDateRange &&
                     matchesClientType &&
                     matchesStatus &&
-                    matchesReferenceID && // Ensures the user sees only their data
+                    matchesReferenceID &&
                     matchesRole
                 );
             })
-            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
+            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime())
         : [];
 
     const currentPosts = filteredAccounts.slice();
@@ -858,6 +855,7 @@ const ListofUser: React.FC = () => {
                             ) : (
                                 <>
                                     <div className="flex justify-between items-center mb-4">
+                                        {userDetails.Role !== "Special Access" && (
                                         <div className="flex items-center gap-3">
                                             <button
                                                 className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition"
@@ -866,6 +864,7 @@ const ListofUser: React.FC = () => {
                                             <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition" onClick={() => setShowForm(true)} >
                                                 <CiSquarePlus size={15} /> Add</button>
                                         </div>
+                                        )}
 
                                         {showPersonalForm && (
                                             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1000]">
@@ -974,6 +973,7 @@ const ListofUser: React.FC = () => {
                                                 handleEdit={(user) => handleEdit(user)}
                                                 handleStatusUpdate={handleStatusUpdate}
                                                 handleDelete={confirmDelete}
+                                                Role={userDetails.Role}
                                             />
                                         </div>
                                     </div>

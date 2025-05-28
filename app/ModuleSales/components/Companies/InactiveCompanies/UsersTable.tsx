@@ -6,9 +6,10 @@ interface UsersCardProps {
     posts: any[];
     handleEdit: (post: any) => void;
     referenceid?: string;
+    Role: string;
 }
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid }) => {
+const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, Role }) => {
     const [updatedUser, setUpdatedUser] = useState<any[]>([]);
     const [bulkEditMode, setBulkEditMode] = useState(false);
     const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
@@ -133,6 +134,9 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                         <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
                             <th className="px-6 py-4 font-semibold text-gray-700"></th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+                            {Role !== "Special Access" && (
+                            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
+                            )}
                             <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
@@ -141,7 +145,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                             <th className="px-6 py-4 font-semibold text-gray-700">Area</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
-                            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -180,6 +183,16 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                                 {post.status}
                                             </span>
                                         </td>
+                                        {Role !== "Special Access" && (
+                                        <td className="px-6 py-4 text-xs">
+                                            <button
+                                                className="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-300 hover:rounded-full w-full text-left flex items-center gap-1"
+                                                onClick={() => handleEdit(post)}
+                                            >
+                                                <CiEdit /> Edit
+                                            </button>
+                                        </td>
+                                        )}
                                         <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
                                         <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
                                         <td className="px-6 py-4 text-xs capitalize">{post.contactnumber}</td>
@@ -192,14 +205,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                                                 <span className="text-white bg-blue-400 p-2 rounded">Uploaded: {formatDate(new Date(post.date_created).getTime())}</span>
                                                 <span className="text-white bg-green-500 p-2 rounded">Updated: {formatDate(new Date(post.date_updated).getTime())}</span>
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-xs">
-                                            <button
-                                                className="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-300 hover:rounded-full w-full text-left flex items-center gap-1"
-                                                onClick={() => handleEdit(post)}
-                                            >
-                                                <CiEdit /> Edit
-                                            </button>
                                         </td>
                                     </tr>
                                 );
