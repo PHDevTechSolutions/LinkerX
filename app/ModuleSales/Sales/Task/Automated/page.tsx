@@ -799,6 +799,7 @@ const ListofUser: React.FC = () => {
                                                     handleEdit={(user) => handleEdit(user)}
                                                     handleStatusUpdate={handleStatusUpdate}
                                                     handleDelete={confirmDelete}
+                                                    Role={userDetails.Role}
                                                 />
                                             </div>
 
