@@ -357,6 +357,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
             <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
             <th className="px-6 py-4 font-semibold text-gray-700">TSA | TSM</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+<th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
           </tr>
@@ -439,6 +440,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                       {post.status}
                     </span>
                   </td>
+<td className="px-6 py-4 text-xs">{post.remarks}</td>
                   <td className="px-4 py-2 text-xs align-top">
                     <div className="flex flex-col gap-1">
                       <span className="text-white bg-blue-400 p-2 rounded">Uploaded: {formatDate(new Date(post.date_created).getTime())}</span>
