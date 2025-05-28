@@ -87,48 +87,55 @@ const ListofUser: React.FC = () => {
     const filteredAccounts = Array.isArray(posts)
         ? posts
             .filter((post) => {
-                // Ensure companyname exists
                 const hasCompanyName = !!post?.companyname;
 
-                // Search term filter (company name)
                 const matchesSearchTerm =
                     hasCompanyName &&
                     post.companyname.toLowerCase().includes(searchTerm.toLowerCase());
 
-                // Date range filter
                 const postDate = post.date_created ? new Date(post.date_created) : null;
                 const isWithinDateRange =
                     (!startDate || (postDate && postDate >= new Date(startDate))) &&
                     (!endDate || (postDate && postDate <= new Date(endDate)));
 
-                // Client type filter
                 const matchesClientType = selectedClientType
                     ? post?.typeclient === selectedClientType
                     : true;
 
-                // Get the reference ID from userDetails
-                const userReferenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
+                const userReferenceID = userDetails.ReferenceID;
 
-                // Match reference ID (PostgreSQL "referenceid" or MongoDB "ReferenceID")
-                const matchesReferenceID =
-                    post?.referenceid === userReferenceID || post?.ReferenceID === userReferenceID;
+                // Roles that see all posts regardless of referenceid
+                const isSuperOrSpecial =
+                    userDetails.Role === "Super Admin" ||
+                    userDetails.Role === "Special Access";
 
-                // User role filter
-                const matchesRole =
-                    userDetails.Role === "Super Admin" || userDetails.Role === "Territory Sales Associate" || userDetails.Role === "Territory Sales Manager";
+                // Role check - only show posts if user is one of these roles
+                const allowedRoles = [
+                    "Super Admin",
+                    "Special Access",
+                    "Territory Sales Associate",
+                    "Territory Sales Manager",
+                ];
 
-                // Final filtering condition
+                const matchesRole = allowedRoles.includes(userDetails.Role);
+
+                // Reference ID check only if not super admin or special access
+                const matchesReferenceID = isSuperOrSpecial
+                    ? true
+                    : post?.referenceid === userReferenceID || post?.ReferenceID === userReferenceID;
+
                 return (
-                    hasCompanyName && // Ensure company name exists
+                    hasCompanyName &&
                     matchesSearchTerm &&
                     isWithinDateRange &&
                     matchesClientType &&
-                    matchesReferenceID && // Ensure only relevant posts appear
+                    matchesReferenceID &&
                     matchesRole
                 );
             })
-            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
+            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime())
         : [];
+
 
     return (
         <SessionChecker>
