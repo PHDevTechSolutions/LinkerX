@@ -178,6 +178,7 @@ const ReceivedPO: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
+                                            {userDetails.Role !== "Staff" && (
                                             <button
                                                 className="bg-blue-800 text-white px-4 text-xs py-2 rounded flex items-center gap-1"
                                                 onClick={() => setShowForm(true)}
@@ -185,6 +186,7 @@ const ReceivedPO: React.FC = () => {
                                                 <CiCirclePlus size={20} />
                                                 Add Faqs
                                             </button>
+                                            )}
                                         </div>
                                         <h2 className="text-lg font-bold mb-2">CSR Frequently Asked Questions</h2>
                                         <p className="text-xs mb-2">
