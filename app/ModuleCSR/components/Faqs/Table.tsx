@@ -63,36 +63,38 @@ const ClientAccordion: React.FC<AccountsTableProps> = ({
           </button>
 
           {expandedTitle === title && (
-            <div className="bg-white p-4 space-y-2">
-              {groupedPosts[title].map((post) => (
-                <div
-                  key={post._id}
-                  className="border p-3 rounded-md flex justify-between items-start text-xs space-x-4"
-                >
+            <div className="bg-white p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {groupedPosts[title].map((post) => (
                   <div
-                    className="text-gray-700 text-xs capitalize prose max-w-full"
-                    dangerouslySetInnerHTML={{
-                      __html: draftDescriptionToHTML(post.Description),
-                    }}
-                  />
-                  {role !== "Staff" && (
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleEdit(post)}
-                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(post._id)}
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    key={post._id}
+                    className="border p-3 rounded-md flex justify-between items-start text-xs space-x-4"
+                  >
+                    <div
+                      className="text-gray-700 text-xs capitalize prose max-w-full"
+                      dangerouslySetInnerHTML={{
+                        __html: draftDescriptionToHTML(post.Description),
+                      }}
+                    />
+                    {role !== "Staff" && (
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleEdit(post)}
+                          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(post._id)}
+                          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
