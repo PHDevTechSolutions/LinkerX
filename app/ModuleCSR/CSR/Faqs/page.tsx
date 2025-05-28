@@ -102,13 +102,7 @@ const ReceivedPO: React.FC = () => {
                 (!startDate || new Date(post.createdAt) >= new Date(startDate)) &&
                 (!endDate || new Date(post.createdAt) <= new Date(endDate));
 
-            if (userDetails.Role === "Super Admin" || userDetails.Role === "Admin") {
-                return isSearchMatch && isDateInRange;
-            } else if (userDetails.Role === "Staff") {
-                return post.ReferenceID === userDetails.ReferenceID && isSearchMatch && isDateInRange;
-            }
-
-            return false;
+            return isSearchMatch && isDateInRange;
         })
         .map((post) => {
             const agent = usersList.find((user) => user.ReferenceID === post.ReferenceID);
@@ -119,6 +113,7 @@ const ReceivedPO: React.FC = () => {
             };
         })
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
 
     const handleEdit = (post: any) => {
         setEditPost(post);
