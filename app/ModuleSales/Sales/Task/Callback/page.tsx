@@ -132,64 +132,56 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-        ? posts
-            .filter((post) => {
-                // Ensure typeactivity is either "Outbound Call" or "Inbound Call"
-                const isRelevantCall =
-                    post?.typeactivity === "Outbound Call" || post?.typeactivity === "Inbound Call";
+  ? posts
+      .filter((post) => {
+        const isRelevantCall =
+          post?.typeactivity === "Outbound Call" || post?.typeactivity === "Inbound Call";
 
-                // Ensure callback is not null or empty
-                const hasCallback = post?.callback && post.callback.trim() !== "";
+        const hasCallback = post?.callback && post.callback.trim() !== "";
 
-                // Ensure companyname exists
-                const hasCompanyName = !!post?.companyname;
+        const hasCompanyName = !!post?.companyname;
 
-                // Search term filter (company name or callback)
-                const matchesSearchTerm =
-                    (hasCompanyName &&
-                        post.companyname.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                    (hasCallback && post.callback.toLowerCase().includes(searchTerm.toLowerCase()));
+        const matchesSearchTerm =
+          (hasCompanyName &&
+            post.companyname.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (hasCallback && post.callback.toLowerCase().includes(searchTerm.toLowerCase()));
 
-                // Date range filter
-                const postDate = post.date_created ? new Date(post.date_created) : null;
-                const isWithinDateRange =
-                    (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                    (!endDate || (postDate && postDate <= new Date(endDate)));
+        const postDate = post.date_created ? new Date(post.date_created) : null;
+        const isWithinDateRange =
+          (!startDate || (postDate && postDate >= new Date(startDate))) &&
+          (!endDate || (postDate && postDate <= new Date(endDate)));
 
-                // Client type filter
-                const matchesClientType = selectedClientType
-                    ? post?.typeclient === selectedClientType
-                    : true;
+        const matchesClientType = selectedClientType
+          ? post?.typeclient === selectedClientType
+          : true;
 
-                // Get the reference ID from userDetails
-                const userReferenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
+        const userReferenceID = userDetails.ReferenceID;
+        const role = userDetails.Role;
 
-                // Match reference ID (PostgreSQL "referenceid" or MongoDB "ReferenceID")
-                const matchesReferenceID =
-                    post?.referenceid === userReferenceID || post?.ReferenceID === userReferenceID;
+        const isAdmin = role === "Super Admin" || role === "Special Access";
+        const isTSAorTSM = role === "Territory Sales Associate" || role === "Territory Sales Manager";
 
-                // User role filter
-                const matchesRole =
-                    userDetails.Role === "Super Admin" || userDetails.Role === "Special Access" || userDetails.Role === "Territory Sales Associate" || userDetails.Role === "Territory Sales Manager";
+        const matchesReferenceID =
+          post?.referenceid === userReferenceID || post?.ReferenceID === userReferenceID;
 
-                // Final filtering condition
-                return (
-                    isRelevantCall && // Must be either Inbound or Outbound Call
-                    hasCallback &&
-                    hasCompanyName &&
-                    matchesSearchTerm &&
-                    isWithinDateRange &&
-                    matchesClientType &&
-                    matchesReferenceID && // Ensure only relevant posts appear
-                    matchesRole
-                );
-            })
-            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sort by date_created (newest first)
-        : [];
+        return (
+          isRelevantCall &&
+          hasCallback &&
+          hasCompanyName &&
+          matchesSearchTerm &&
+          isWithinDateRange &&
+          matchesClientType &&
+          (isAdmin || (isTSAorTSM && matchesReferenceID))
+        );
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
+      )
+  : [];
 
     const currentPosts = filteredAccounts.slice();
     const totalPages = Math.ceil(filteredAccounts.length);
-
 
     const confirmDelete = (postId: string) => {
         setPostToDelete(postId);
