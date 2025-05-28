@@ -89,35 +89,42 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-  ? posts
-      .filter((post) => {
-        // Check if the company name matches the search term
-        const matchesSearchTerm = post?.companyname
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase());
+        ? posts
+            .filter((post) => {
+                // Check if the company name matches the search term
+                const matchesSearchTerm = post?.companyname
+                    ?.toLowerCase()
+                    .includes(searchTerm.toLowerCase());
 
-        // Parse the date_created field
-        const postDate = post.date_created ? new Date(post.date_created) : null;
+                // Parse the date_created field
+                const postDate = post.date_created ? new Date(post.date_created) : null;
 
-        // Check if the post's date is within the selected date range
-        const isWithinDateRange =
-          (!startDate || (postDate && postDate >= new Date(startDate))) &&
-          (!endDate || (postDate && postDate <= new Date(endDate)));
+                // Check if the post's date is within the selected date range
+                const isWithinDateRange =
+                    (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                    (!endDate || (postDate && postDate <= new Date(endDate)));
 
-        // Check if the post's reference ID matches the current user's ReferenceID
-        const matchesReferenceID =
-          post?.referenceid === userDetails.ReferenceID ||
-          post?.ReferenceID === userDetails.ReferenceID;
+                // Check if user role is "Special Access"
+                const isSpecialAccess = userDetails?.Role === "Special Access";
 
-        // Return the filtered result
-        return matchesSearchTerm && isWithinDateRange && matchesReferenceID;
-      })
-      .sort(
-        (a, b) =>
-          new Date(b.date_created).getTime() -
-          new Date(a.date_created).getTime()
-      )
-  : [];
+                // Check if the post's reference ID matches the current user's ReferenceID
+                const matchesReferenceID =
+                    post?.referenceid === userDetails.ReferenceID ||
+                    post?.ReferenceID === userDetails.ReferenceID;
+
+                // Return the filtered result
+                return (
+                    matchesSearchTerm &&
+                    isWithinDateRange &&
+                    (isSpecialAccess || matchesReferenceID)
+                );
+            })
+            .sort(
+                (a, b) =>
+                    new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
+            )
+        : [];
+
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
