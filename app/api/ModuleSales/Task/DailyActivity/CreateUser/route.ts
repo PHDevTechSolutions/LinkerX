@@ -23,52 +23,47 @@ async function create(data: any) {
             throw new Error("Company Name and Type of Client are required.");
         }
 
-        // Check if account already exists
+        // Check if company already exists based on companyname only
         const checkQuery = `
             SELECT * FROM accounts
-            WHERE companyname = $1 AND contactnumber = $2 AND contactperson = $3
-              AND emailaddress = $4 AND typeclient = $5 AND address = $6 AND area = $7
+            WHERE companyname = $1
             LIMIT 1;
         `;
-        const checkValues = [
-            companyname, contactnumber, contactperson, emailaddress, typeclient, address, area
-        ];
+        const checkValues = [companyname];
         const existingAccount = await Xchire_sql(checkQuery, checkValues);
         const accountExists = existingAccount.length > 0;
 
-        // Insert into activity
-        const Xchire_activityColumns = [
+        // Insert into activity table
+        const activityColumns = [
             "referenceid", "manager", "tsm", "companyname", "contactperson",
             "contactnumber", "emailaddress", "typeclient", "address", "area",
             "projectname", "projectcategory", "projecttype", "source", 
-            "activitystatus", "activitynumber", "targetquota",
+            "activitystatus", "activitynumber", "targetquota"
         ];
-
-        const Xchire_activityValues = [
+        const activityValues = [
             referenceid, manager, tsm, companyname, contactperson,
             contactnumber, emailaddress, typeclient, address, area,
             projectname, projectcategory, projecttype, source,
             activitystatus || null, activitynumber || null, targetquota || null
         ];
-
-        const Xchire_activityPlaceholders = Xchire_activityValues.map((_, i) => `$${i + 1}`).join(", ");
-        const Xchire_activityQuery = `
-            INSERT INTO activity (${Xchire_activityColumns.join(", ")}, date_created) 
-            VALUES (${Xchire_activityPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') 
+        const activityPlaceholders = activityValues.map((_, i) => `$${i + 1}`).join(", ");
+        const activityQuery = `
+            INSERT INTO activity (${activityColumns.join(", ")}, date_created) 
+            VALUES (${activityPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') 
             RETURNING *;
         `;
-        const Xchire_activityResult = await Xchire_sql(Xchire_activityQuery, Xchire_activityValues);
-        const Xchire_insertedActivity = Xchire_activityResult[0];
+        const activityResult = await Xchire_sql(activityQuery, activityValues);
+        const insertedActivity = activityResult[0];
 
-        if (!Xchire_insertedActivity) {
+        if (!insertedActivity) {
             throw new Error("Failed to insert into activity table.");
         }
 
-        const Xchire_newActivityNumber = Xchire_insertedActivity.activitynumber;
+        const newActivityNumber = insertedActivity.activitynumber;
 
-        // Insert into accounts only if not existing
+        // Insert into accounts table only if company is new
         if (!accountExists) {
-            const Xchire_accountsQuery = `
+            const accountsQuery = `
                 INSERT INTO accounts (
                     referenceid, manager, tsm, companyname, contactperson,
                     contactnumber, emailaddress, typeclient, address, area, status, date_created
@@ -77,52 +72,48 @@ async function create(data: any) {
                     $6, $7, $8, $9, $10, 'Active', CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
                 ) RETURNING *;
             `;
-
-            const Xchire_accountsValues = [
+            const accountsValues = [
                 referenceid, manager, tsm, companyname, contactperson,
                 contactnumber, emailaddress, typeclient, address, area
             ];
+            const accountsResult = await Xchire_sql(accountsQuery, accountsValues);
 
-            const Xchire_accountsResult = await Xchire_sql(Xchire_accountsQuery, Xchire_accountsValues);
-
-            if (!Xchire_accountsResult[0]) {
+            if (!accountsResult[0]) {
                 throw new Error("Failed to insert into accounts table.");
             }
         }
 
-        // Insert into progress
-        const Xchire_progressColumns = [
-            ...Xchire_activityColumns, "typeactivity", "callback", "callstatus", "typecall", 
+        // Insert into progress table
+        const progressColumns = [
+            ...activityColumns,
+            "typeactivity", "callback", "callstatus", "typecall", 
             "remarks", "quotationnumber", "quotationamount", "sonumber", "soamount", 
-            "startdate", "enddate",
+            "startdate", "enddate"
         ];
-
-        const Xchire_progressValues = [
-            ...Xchire_activityValues, typeactivity, callback || null, callstatus || null, typecall || null, 
-            remarks || null, quotationnumber || null, quotationamount || null, sonumber || null, 
-            soamount || null, startdate || null, enddate || null, 
+        const progressValues = [
+            ...activityValues,
+            typeactivity, callback || null, callstatus || null, typecall || null,
+            remarks || null, quotationnumber || null, quotationamount || null,
+            sonumber || null, soamount || null, startdate || null, enddate || null
         ];
-
-        // Set updated activity number
-        Xchire_progressValues[Xchire_progressColumns.indexOf("activitynumber")] = Xchire_newActivityNumber;
-
-        const Xchire_progressPlaceholders = Xchire_progressValues.map((_, i) => `$${i + 1}`).join(", ");
-        const Xchire_progressQuery = `
-            INSERT INTO progress (${Xchire_progressColumns.join(", ")}, date_created) 
-            VALUES (${Xchire_progressPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') 
+        progressValues[progressColumns.indexOf("activitynumber")] = newActivityNumber;
+        const progressPlaceholders = progressValues.map((_, i) => `$${i + 1}`).join(", ");
+        const progressQuery = `
+            INSERT INTO progress (${progressColumns.join(", ")}, date_created)
+            VALUES (${progressPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila')
             RETURNING *;
         `;
-        const Xchire_progressResult = await Xchire_sql(Xchire_progressQuery, Xchire_progressValues);
+        const progressResult = await Xchire_sql(progressQuery, progressValues);
 
-        if (!Xchire_progressResult[0]) {
+        if (!progressResult[0]) {
             throw new Error("Failed to insert into progress table.");
         }
 
-        return { 
-            success: true, 
-            activity: Xchire_insertedActivity, 
-            progress: Xchire_progressResult[0], 
-            accountExists 
+        return {
+            success: true,
+            activity: insertedActivity,
+            progress: progressResult[0],
+            accountExists
         };
     } catch (error: any) {
         console.error("Error inserting activity, accounts, and progress:", error);
@@ -132,13 +123,13 @@ async function create(data: any) {
 
 export async function POST(req: Request) {
     try {
-        const Xchire_body = await req.json();
-        const Xchire_result = await create(Xchire_body);
-        return NextResponse.json(Xchire_result);
-    } catch (Xchire_error: any) {
-        console.error("Error in POST /api/addActivity:", Xchire_error);
+        const body = await req.json();
+        const result = await create(body);
+        return NextResponse.json(result);
+    } catch (error: any) {
+        console.error("Error in POST /api/addActivity:", error);
         return NextResponse.json(
-            { success: false, error: Xchire_error.message || "Internal Server Error" },
+            { success: false, error: error.message || "Internal Server Error" },
             { status: 500 }
         );
     }
