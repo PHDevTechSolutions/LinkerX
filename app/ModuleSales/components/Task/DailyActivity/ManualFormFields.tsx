@@ -548,7 +548,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             onClick={() => setIsManual(prev => !prev)}
                             className="text-blue-500 text-[10px] underline"
                         >
-                            {isManual ? "Switch to Select" : "Switch to Manual"}
+                            {isManual ? "If Account Exists Switch to Select" : "If Account is New Switch to Manual"}
                         </button>
                     </div>
                     {!isManual ? (
