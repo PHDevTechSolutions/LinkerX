@@ -661,7 +661,6 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     </div>
                 </>
             ) : (
-                // You can add alternative UI here if needed when not in edit mode
                 <></>
             )}
 
