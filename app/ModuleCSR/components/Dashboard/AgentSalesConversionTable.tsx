@@ -12,6 +12,7 @@ interface Metric {
   CustomerStatus: string;
   TicketEndorsed: string;
   TicketReceived: string;
+  Remarks: string;
 }
 
 interface AgentSalesConversionProps {
@@ -87,6 +88,9 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
   const calculateAgentTotals = useCallback((agentMetrics: Metric[]) => {
     return agentMetrics.reduce(
       (acc, metric) => {
+        // ✅ Skip computation if Remarks is "PO Received"
+        if (metric.Remarks?.toLowerCase() === "po received") return acc;
+
         const amount = parseFloat(metric.Amount) || 0;
         const qtySold = parseFloat(metric.QtySold) || 0;
         const isSale = metric.Traffic === "Sales";
@@ -131,6 +135,7 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
       }
     );
   }, []);
+
 
   // ✅ Format amount with Peso sign
   const formatAmountWithPeso = useCallback((amount: any) => {

@@ -11,6 +11,7 @@ interface Metric {
   Status: string;
   createdAt: string;
   WrapUp?: string;
+  Remarks: string;
 }
 
 interface AgentSalesConversionProps {
@@ -93,15 +94,20 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({
   const calculateAgentTotals = useCallback((agentMetrics: Metric[]) => {
     return agentMetrics.reduce(
       (acc, metric) => {
+        // ✅ Skip if Remarks is "PO Received"
+        if (metric.Remarks?.toLowerCase() === "po received") return acc;
+
         const amount = typeof metric.Amount === "string"
           ? parseFloat(metric.Amount)
           : metric.Amount;
+
         acc.totalAmount += isNaN(amount) ? 0 : amount;
         return acc;
       },
       { totalAmount: 0 }
     );
   }, []);
+
 
   const agentLabels = useMemo(() => Object.keys(groupedMetrics), [groupedMetrics]);
 
