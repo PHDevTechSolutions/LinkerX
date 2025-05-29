@@ -5,10 +5,11 @@ interface UsersCardProps {
   posts: any[];
   handleEdit: (post: any) => void;
   ReferenceID: string;
+  Role: string;
   fetchAccount: () => Promise<void>;
 }
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, fetchAccount }) => {
+const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, fetchAccount, Role }) => {
   const [updatedUser, setUpdatedUser] = useState<any[]>([]);
   const [bulkTransferTSAMode, setBulkTransferTSAMode] = useState(false);
   const [selectedTsa, setSelectedTsa] = useState("");
@@ -127,10 +128,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
   return (
     <div className="overflow-x-auto">
       <div className="flex gap-2 mb-3">
-        <button onClick={toggleBulkTransferTSAMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
-          <CiSliderHorizontal size={16} />
-          {bulkTransferTSAMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Another Agent"}
-        </button>
+        {Role !== "Special Access" && (
+          <button onClick={toggleBulkTransferTSAMode} className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
+            <CiSliderHorizontal size={16} />
+            {bulkTransferTSAMode ? "Cancel Bulk Transfer" : "Bulk Transfer to Another Agent"}
+          </button>
+        )}
         {/* Filter by Territory Sales Associates */}
         <select
           className="px-2 py-1 border rounded-md text-xs capitalize"
@@ -185,12 +188,14 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
         <thead className="bg-gray-100">
           <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
             <th className="px-6 py-4 font-semibold text-gray-700"></th>
+            {Role !== "Special Access" && (
+              <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
+            )}
             <th className="px-6 py-4 font-semibold text-gray-700">Agent</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Company Information</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
-            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -207,6 +212,16 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
                     />
                   )}
                 </td>
+                {Role !== "Special Access" && (
+                  <td className="px-6 py-4 text-xs">
+                    <button
+                      className="px-4 py-2 text-gray-700 bg-blue-500 text-white rounded-full w-full text-left"
+                      onClick={() => handleEdit(post)}
+                    >
+                      <CiEdit size={16} />
+                    </button>
+                  </td>
+                )}
                 <td className="px-6 py-4 text-xs capitalize">
                   {post.AgentFirstname} {post.AgentLastname}
                   <br />
@@ -240,14 +255,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
                     <span className="text-white bg-blue-400 p-2 rounded">Uploaded: {formatDate(new Date(post.date_created).getTime())}</span>
                     <span className="text-white bg-green-500 p-2 rounded">Updated: {formatDate(new Date(post.date_updated).getTime())}</span>
                   </div>
-                </td>
-                <td className="px-6 py-4 text-xs">
-                  <button
-                    className="px-4 py-2 text-gray-700 w-full text-left"
-                    onClick={() => handleEdit(post)}
-                  >
-                    <CiEdit size={16} />
-                  </button>
                 </td>
               </tr>
             ))

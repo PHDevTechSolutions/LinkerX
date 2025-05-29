@@ -99,44 +99,47 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-  ? posts
-      .filter((post) => {
-        const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
-        const agentFirstname = agent ? agent.Firstname.toLowerCase() : "";
-        const agentLastname = agent ? agent.Lastname.toLowerCase() : "";
-        const searchLower = searchTerm.toLowerCase();
+        ? posts
+            .filter((post) => {
+                const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+                const agentFirstname = agent ? agent.Firstname.toLowerCase() : "";
+                const agentLastname = agent ? agent.Lastname.toLowerCase() : "";
+                const searchLower = searchTerm.toLowerCase();
 
-        const matchesSearchTerm =
-          agentFirstname.includes(searchLower) || agentLastname.includes(searchLower);
+                const matchesSearchTerm =
+                    agentFirstname.includes(searchLower) || agentLastname.includes(searchLower);
 
-        const matchesClientType = selectedClientType
-          ? post?.typeclient === selectedClientType
-          : true;
+                const matchesClientType = selectedClientType
+                    ? post?.typeclient === selectedClientType
+                    : true;
 
-        const referenceID = userDetails.ReferenceID;
+                const referenceID = userDetails.ReferenceID;
 
-        const matchesRole =
-          userDetails.Role === "Super Admin"
-            ? true
-            : userDetails.Role === "Manager"
-            ? post?.manager === referenceID
-            : userDetails.Role === "Territory Sales Manager"
-            ? post?.tsm === referenceID
-            : false;
+                const matchesRole =
+                    userDetails.Role === "Special Access"
+                        ? true // Special Access sees all posts
+                        : userDetails.Role === "Super Admin"
+                            ? true
+                            : userDetails.Role === "Manager"
+                                ? post?.manager === referenceID
+                                : userDetails.Role === "Territory Sales Manager"
+                                    ? post?.tsm === referenceID
+                                    : false;
 
-        return matchesSearchTerm && matchesClientType && matchesRole;
-      })
-      .map((post) => {
-        const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
+                return matchesSearchTerm && matchesClientType && matchesRole;
+            })
+            .map((post) => {
+                const agent = usersList.find((user) => user.ReferenceID === post.referenceid);
 
-        return {
-          ...post,
-          AgentFirstname: agent ? agent.Firstname : "Unknown",
-          AgentLastname: agent ? agent.Lastname : "Unknown",
-        };
-      })
-      .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sorting by date_created
-  : [];
+                return {
+                    ...post,
+                    AgentFirstname: agent ? agent.Firstname : "Unknown",
+                    AgentLastname: agent ? agent.Lastname : "Unknown",
+                };
+            })
+            .sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()) // Sorting by date_created
+        : [];
+
 
     // Handle editing a post
     const handleEdit = (post: any) => {
@@ -151,40 +154,40 @@ const ListofUser: React.FC = () => {
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
                             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
-                            {showForm ? (
-                                <AddPostForm
-                                    onCancel={() => {
-                                        setShowForm(false);
-                                        setEditUser(null);
-                                    }}
-                                    refreshPosts={fetchAccount}  // Pass the refreshPosts callback
-                                    userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
-                                    editUser={editUser}
-                                />
-                            ) : (
-                                <>
-                                    <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                        <h2 className="text-lg font-bold mb-2">Agent Sales Performance Overview</h2>
-                                        <p className="text-xs text-gray-600 mb-2">
-                                            This section provides an overview of each agent’s sales performance, tracking both Month-to-Date (MTD) and Year-to-Date (YTD) sales.
-                                            It assesses whether they are meeting sales targets and evaluates their performance based on achievements and overall sales ratings.
-                                        </p>
-                                        <SearchFilters
-                                            searchTerm={searchTerm}
-                                            setSearchTerm={setSearchTerm}
-                                        />
-                                        <UsersTable
-                                            posts={filteredAccounts}
-                                            handleEdit={handleEdit}
-                                            ReferenceID={userDetails.ReferenceID}
-                                            fetchAccount={fetchAccount}
-                                        />
-                                    </div>
-                                </>
-                            )}
+                                {showForm ? (
+                                    <AddPostForm
+                                        onCancel={() => {
+                                            setShowForm(false);
+                                            setEditUser(null);
+                                        }}
+                                        refreshPosts={fetchAccount}  // Pass the refreshPosts callback
+                                        userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
+                                        editUser={editUser}
+                                    />
+                                ) : (
+                                    <>
+                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">Agent Sales Performance Overview</h2>
+                                            <p className="text-xs text-gray-600 mb-2">
+                                                This section provides an overview of each agent’s sales performance, tracking both Month-to-Date (MTD) and Year-to-Date (YTD) sales.
+                                                It assesses whether they are meeting sales targets and evaluates their performance based on achievements and overall sales ratings.
+                                            </p>
+                                            <SearchFilters
+                                                searchTerm={searchTerm}
+                                                setSearchTerm={setSearchTerm}
+                                            />
+                                            <UsersTable
+                                                posts={filteredAccounts}
+                                                handleEdit={handleEdit}
+                                                ReferenceID={userDetails.ReferenceID}
+                                                fetchAccount={fetchAccount}
+                                            />
+                                        </div>
+                                    </>
+                                )}
 
-                            <ToastContainer className="text-xs" autoClose={1000} />
-                        </div>
+                                <ToastContainer className="text-xs" autoClose={1000} />
+                            </div>
                         </div>
                     )}
                 </UserFetcher>

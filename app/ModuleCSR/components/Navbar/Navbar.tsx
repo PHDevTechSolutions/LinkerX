@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { IoIosMenu } from "react-icons/io";
 import { CiClock2, CiUser, CiSettings, CiBellOn, CiCircleRemove, CiDark, CiSun, CiSearch } from "react-icons/ci";
+import { FaExclamationCircle, FaCheckCircle } from "react-icons/fa";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { motion } from "framer-motion";
 import axios from "axios";
@@ -130,6 +131,9 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   const [emailNotifications, setEmailNotifications] = useState<Email[]>([]);
 
   const allNotifications = [...notifications, ...trackingNotifications, ...callbackNotification, ...notificationData];
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [selectedNotif, setSelectedNotif] = useState<any>(null);
+  const [currentNotifIndex, setCurrentNotifIndex] = useState(0);
 
   const [shake, setShake] = useState(false);
 
@@ -270,7 +274,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     return () => clearInterval(interval); // Cleanup
   }, [userReferenceId, usersList]);  // Add usersList as dependency to trigger on users data change
 
-
+  useEffect(() => {
+    if (notificationData.length > 0) {
+      setShowModal(true);
+    }
+  }, [notificationData]);
 
 
   const fetchTrackingData = async () => {
@@ -928,13 +936,26 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
   };
 
+  const filteredNotifications = notificationData.filter(
+    (notif) => notif.ticketreferencenumber && notif.csrremarks !== "Read"
+  );
+
+  const notif = filteredNotifications[currentNotifIndex] || null;
+
+  useEffect(() => {
+    if (showModal && notif) {
+      const audio = new Audio('/alertmessage.mp3');
+      audio.play().catch((err) => console.error("Audio play failed:", err));
+    }
+  }, [showModal, notif]);
+
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 shadow-md transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
       <div className="flex items-center space-x-4">
         <button onClick={onToggleSidebar} title="Show Sidebar" className="rounded-full shadow-lg block sm:hidden">
           <img src="/ecodesk.png" alt="Logo" className="h-8" />
         </button>
-        
+
         <span className="flex items-center border shadow-md text-xs font-medium px-3 py-1 rounded-full">
           <CiClock2 size={15} className="mr-1" /> {currentTime}
         </span>
@@ -1150,7 +1171,9 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
                         ))}
                     </ul>
                   ) : (
-                    <></>
+                    <>
+
+                    </>
                   )}
 
                   {trackingNotifications.filter((notif) => notif.TrackingStatus === "Open" && notif.status !== "Read").length > 0 ? (
@@ -1282,6 +1305,86 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
           </motion.div>
         )}
 
+        {showModal && notif && (
+          <div className="fixed inset-0 bg-gray-700 bg-opacity-60 flex items-center justify-center z-50">
+            <div className="relative bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg border-2 border-red-600 overflow-y-auto max-h-[90vh] animate-continuous-shake">
+
+              <h2 className="text-lg font-bold text-red-600 mb-6 flex items-center justify-center space-x-2 select-none">
+                <FaExclamationCircle className="text-red-600" />
+                <span>Notification {currentNotifIndex + 1} of {filteredNotifications.length}</span>
+              </h2>
+
+              <p className="text-[12px] mt-3 leading-relaxed capitalize text-gray-900">
+                The ticket <strong>{notif.ticketreferencenumber}</strong> for <strong>{notif.companyname}</strong> is now {notif.typecall ? `marked as ${notif.typecall}` : 'marked as posted'}.
+              </p>
+
+
+              <p className="text-[12px] text-gray-700 mt-2">
+                <span className="font-semibold">Processed by:</span> {notif.fullname}
+              </p>
+
+              <p className="text-[12px] text-gray-700 mt-2">
+                <span className="font-semibold">Remarks:</span> {notif.remarks}
+              </p>
+
+              {notif.date_created && (
+                <span className="text-[10px] mt-3 block text-gray-500 select-none">
+                  {formatDate(new Date(notif.date_created).getTime())}
+                </span>
+              )}
+
+              <button
+                onClick={() => UpdateProgressStatus(notif.id.toString())}
+                disabled={loadingId === notif.id.toString() || notif.csrremarks === "Read"}
+                className={`
+          mt-6 w-full py-2 rounded-md text-sm font-semibold transition
+          ${notif.csrremarks === "Read"
+                    ? "bg-green-600 text-white cursor-default"
+                    : loadingId === notif.id.toString()
+                      ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                      : "bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+                  }
+        `}
+              >
+                {loadingId === notif.id.toString()
+                  ? "Loading..."
+                  : notif.csrremarks === "Read"
+                    ? "Read"
+                    : "Mark as Read"}
+              </button>
+
+              {/* Navigation Buttons */}
+              <div className="flex justify-between mt-6">
+                <button
+                  disabled={currentNotifIndex === 0}
+                  onClick={() => setCurrentNotifIndex(i => Math.max(i - 1, 0))}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition
+            ${currentNotifIndex === 0
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-red-600 hover:text-red-800"}
+          `}
+                >
+                  Prev
+                </button>
+                <button
+                  disabled={currentNotifIndex === filteredNotifications.length - 1}
+                  onClick={() => setCurrentNotifIndex(i => Math.min(i + 1, filteredNotifications.length - 1))}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition
+            ${currentNotifIndex === filteredNotifications.length - 1
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-red-600 hover:text-red-800"
+                    }
+          `}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+
+
         {/* User Dropdown */}
         <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center space-x-2 focus:outline-none hover:bg-gray-200 p-2 hover:rounded-full">
           <CiUser size={20} />
@@ -1310,6 +1413,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
             </button>
           </div>
         )}
+
       </div>
     </div>
   );

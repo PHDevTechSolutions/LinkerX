@@ -118,6 +118,7 @@ const ListofUser: React.FC = () => {
             // Logic for role-based filtering
             const matchesRole =
                 userRole === "Super Admin" || // Kita lahat
+                userRole === "Special Access" || // Kita lahat
                 userRole === "Manager" || // Kita lahat
                 userRole === "Territory Sales Manager" || // Kita lahat
                 post?.manager === referenceID; // Filtered by ReferenceID for other roles

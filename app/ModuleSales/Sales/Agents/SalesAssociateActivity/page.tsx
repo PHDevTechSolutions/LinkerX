@@ -126,7 +126,7 @@ const ListofUser: React.FC = () => {
 
             const referenceID = userDetails.ReferenceID;
 
-            const matchesRole = userDetails.Role === "Super Admin"
+            const matchesRole = userDetails.Role === "Super Admin" || userDetails.Role === "Special Access"
                 ? true
                 : userDetails.Role === "Manager"
                     ? post?.manager === referenceID

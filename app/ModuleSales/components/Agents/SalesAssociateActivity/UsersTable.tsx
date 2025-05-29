@@ -37,25 +37,20 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
     ? updatedUser.filter((user) => `${user.AgentFirstname} ${user.AgentLastname}` === selectedAgent)
     : updatedUser;
 
-  // Get unique agent names for the dropdown
+  // Get all unique agent names from the full posts list (not filtered/paginated)
   const agentNames = Array.from(
-    new Set(updatedUser.map((user) => `${user.AgentFirstname} ${user.AgentLastname}`))
+    new Set(posts.map((user) => `${user.AgentFirstname} ${user.AgentLastname}`))
   );
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
-
-    // Use UTC getters instead of local ones to prevent timezone shifting.
     let hours = date.getUTCHours();
     const minutes = date.getUTCMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
 
-    // Convert hours to 12-hour format
-    hours = hours % 12;
-    hours = hours ? hours : 12; // if hour is 0, display as 12
+    hours = hours % 12 || 12;
     const minutesStr = minutes < 10 ? '0' + minutes : minutes;
 
-    // Use toLocaleDateString with timeZone 'UTC' to format the date portion
     const formattedDateStr = date.toLocaleDateString('en-US', {
       timeZone: 'UTC',
       month: 'short',
@@ -63,14 +58,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
       year: 'numeric',
     });
 
-    // Return combined date and time string
     return `${formattedDateStr} ${hours}:${minutesStr} ${ampm}`;
   };
 
   return (
     <div className="overflow-x-auto">
       <div className="mb-4">
-        {/* Dropdown to filter by agent */}
         <select
           value={selectedAgent}
           onChange={(e) => setSelectedAgent(e.target.value)}
@@ -128,10 +121,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
                     <span className="text-black border p-2 rounded">SO Number: {post.sonumber}</span>
                     <span className="text-black border p-2 rounded">Quotation Number: {post.quotationnumber}</span>
                     <span className={`px-4 py-2 rounded text-white text-xs font-bold ${post.callstatus === "Successful"
-                        ? "bg-green-500"
-                        : post.callstatus === "Unsuccessful"
-                          ? "bg-red-400"
-                          : "bg-gray-400"
+                      ? "bg-green-500"
+                      : post.callstatus === "Unsuccessful"
+                        ? "bg-red-400"
+                        : "bg-gray-400"
                       }`}>Result: {post.callstatus}</span>
                   </div>
                 </td>
@@ -148,7 +141,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, ReferenceID, f
                     </span>
                   </div>
                 </td>
-
               </tr>
             ))
           ) : (

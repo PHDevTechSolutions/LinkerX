@@ -212,33 +212,9 @@ const ListofUser: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        const fetchTSM = async () => {
-            try {
-                const response = await fetch("/api/tsm?Role=Territory Sales Manager");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch managers");
-                }
-                const data = await response.json();
-
-                // Use ReferenceID as value
-                const options = data.map((user: any) => ({
-                    value: user.ReferenceID, // ReferenceID ang isesend
-                    label: `${user.Firstname} ${user.Lastname}`, // Pero ang nakikita sa UI ay Name
-                }));
-
-                setTSMOptions(options);
-            } catch (error) {
-                console.error("Error fetching managers:", error);
-            }
-        };
-
-        fetchTSM();
-    }, []);
-
-    useEffect(() => {
         const fetchTSA = async () => {
             try {
-                const response = await fetch("/api/tsa?Role=Territory Sales Associate");
+                const response = await fetch("/api/fetchtsa?Role=Territory Sales Associate");
                 if (!response.ok) {
                     throw new Error("Failed to fetch agents");
                 }
@@ -288,7 +264,7 @@ const ListofUser: React.FC = () => {
               const referenceID = userDetails.ReferenceID;
 
               const matchesRole =
-                  userDetails.Role === "Super Admin"
+                  userDetails.Role === "Super Admin" || userDetails.Role === "Special Access"
                       ? true
                       : userDetails.Role === "Manager"
                       ? post?.manager === referenceID
@@ -491,6 +467,7 @@ const ListofUser: React.FC = () => {
                                                 handleEdit={handleEdit}
                                                 ReferenceID={userDetails.ReferenceID}
                                                 fetchAccount={fetchAccount}
+                                                Role={userDetails.Role}
                                             />
                                             <Pagination
                                                 currentPage={currentPage}

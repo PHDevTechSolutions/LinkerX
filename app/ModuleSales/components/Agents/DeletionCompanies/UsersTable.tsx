@@ -106,6 +106,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
         <table className="min-w-full table-auto">
           <thead className="bg-gray-100">
             <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+              <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
               <th className="px-6 py-4 font-semibold text-gray-700">Agent </th>
               <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
               <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
@@ -116,13 +117,22 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
               <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
               <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
               <th className="px-6 py-4 font-semibold text-gray-700">Remarks / Reason</th>
-              <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {updatedUser.length > 0 ? (
               updatedUser.map((post) => (
                 <tr key={post.id} className="border-b whitespace-nowrap">
+                  <td className="px-6 py-4 text-xs">
+                    {post.status !== "Approve For Deletion" && (
+                      <button
+                        onClick={() => confirmUpdate(post.id)}
+                        className="block px-4 py-2 text-xs text-gray-700 text-white bg-green-500 rounded-full hover:bg-orange-400 hover:rounded-full w-full text-left flex items-center gap-1"
+                      >
+                        Approve
+                      </button>
+                    )}
+                  </td>
                   <td className="px-6 py-4 text-xs">{getFullname(post.referenceid)}</td>
                   <td className="px-6 py-4 text-xs">{post.companyname}</td>
                   <td className="px-6 py-4 text-xs">{post.contactperson}</td>
@@ -146,16 +156,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
                     </span>
                   </td>
                   <td className="px-6 py-4 text-xs">{post.remarks}</td>
-                  <td className="px-6 py-4 text-xs">
-                    {post.status !== "Approve For Deletion" && (
-                      <button
-                        onClick={() => confirmUpdate(post.id)}
-                        className="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-300 hover:rounded-full w-full text-left flex items-center gap-1"
-                      >
-                        Approve
-                      </button>
-                    )}
-                  </td>
                 </tr>
               ))
             ) : (

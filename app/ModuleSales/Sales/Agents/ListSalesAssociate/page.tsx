@@ -80,22 +80,28 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = posts.filter((post) => {
+        // Exclude if status is Resigned or Terminated
+        const isExcludedStatus = ["Resigned", "Terminated"].includes(post?.Status);
+        if (isExcludedStatus) return false;
+
         // Check if the user's name matches the search term
         const matchesSearchTerm = [post?.Firstname, post?.Lastname]
             .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
 
         // Get the reference ID from userDetails
-        const referenceID = userDetails.ReferenceID; // TSM's ReferenceID from MongoDB
+        const referenceID = userDetails.ReferenceID;
 
         // Check role-based filtering
         const matchesRole =
             userDetails.Role === "Super Admin"
-                ? post?.Role === "Territory Sales Associate" // Super Admin sees all TSAs
+                ? post?.Role === "Territory Sales Associate"
                 : userDetails.Role === "Manager"
-                    ? post?.Role === "Territory Sales Associate" && post?.Manager === referenceID // Manager sees only TSAs assigned to them
+                    ? post?.Role === "Territory Sales Associate" && post?.Manager === referenceID
                     : userDetails.Role === "Territory Sales Manager"
-                        ? post?.Role === "Territory Sales Associate" && post?.TSM === referenceID // TSM sees only TSAs assigned to them
-                        : false; // Default false if no match
+                        ? post?.Role === "Territory Sales Associate" && post?.TSM === referenceID
+                        : userDetails.Role === "Special Access"
+                            ? true // Special Access can see all posts
+                            : false;
 
         return matchesSearchTerm && matchesRole;
     });
