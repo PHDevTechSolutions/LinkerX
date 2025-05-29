@@ -83,7 +83,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   useEffect(() => {
     const fetchManagers = async () => {
       try {
-        const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager"); 
+        const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager,Warehouse Manager"); 
         if (!response.ok) {
           throw new Error("Failed to fetch managers");
         }
@@ -195,6 +195,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="E-Commerce Staff">E-Commerce Staff</option>
             <option value="Business Development Manager">Business Development Manager</option>
             <option value="Business Development Officer">Business Development Officer</option>
+            <option value="Warehouse Manager">Warehouse Manager</option>
+            <option value="Warehouse Staff">Warehouse Staff</option>
           </select>
         </div>
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -206,6 +208,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="IT">IT Department</option>
             <option value="Ecommerce">E-Commerce Department</option>
             <option value="Business Development">Business Development Department</option>
+            <option value="Warehouse">Warehouse Department</option>
           </select>
         </div>
       </div>
