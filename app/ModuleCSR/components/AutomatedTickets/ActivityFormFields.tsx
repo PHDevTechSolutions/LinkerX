@@ -243,7 +243,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                 </div>
                 <div className="w-full sm:w-1/1 md:w-1/6 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="ticketReferenceNumber">Date Created</label>
-                    <input type="datetime-local" id="createdAt" value={createdAt} onChange={(e) => setcreatedAt(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+                    <input type="datetime-local" id="createdAt" value={createdAt} onChange={(e) => setcreatedAt(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required/>
                 </div>
             </div>
             <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
