@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 
 interface ActivityTemplate {
   id: number;
@@ -55,17 +55,7 @@ const statusSuggestions: Record<string, { text: string; emoji: string }> = {
   "TSM Coaching": { text: "Being coached by TSM for performance improvement.", emoji: "🎓" },
 };
 
-const timeOptions = [
-  "1 Minute",
-  "5 Minutes",
-  "10 Minutes",
-  "15 Minutes",
-  "20 Minutes",
-  "30 Minutes",
-  "1 Hour",
-  "2 Hours",
-  "3 Hours",
-];
+const timeOptions = ["1 Minute", "5 Minutes", "10 Minutes", "15 Minutes", "20 Minutes", "30 Minutes", "1 Hour", "2 Hours", "3 Hours",];
 
 const MAX_REMARKS_LENGTH = 200;
 
@@ -110,7 +100,7 @@ const PersonalActivity: React.FC<Props> = ({
           setTimeDuration(parsed.duration);
           calculateEndDate(parsed.duration);
         }
-      } catch {}
+      } catch { }
     }
   }, []);
 
@@ -261,13 +251,7 @@ const PersonalActivity: React.FC<Props> = ({
               <p className="text-xs font-semibold mb-1">Recent Activities:</p>
               <div className="flex gap-2 flex-wrap">
                 {recentActivities.map((act) => (
-                  <button
-                    key={act.id}
-                    onClick={() => handleFillRecent(act)}
-                    className="text-xs px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                    type="button"
-                    title={`${act.status} (${act.duration})`}
-                  >
+                  <button key={act.id} onClick={() => handleFillRecent(act)} className="text-xs px-2 py-1 bg-gray-200 rounded hover:bg-gray-300" type="button" title={`${act.status} (${act.duration})`}>
                     {statusSuggestions[act.status]?.emoji || "⚡"} {act.status}
                   </button>
                 ))}
@@ -281,13 +265,7 @@ const PersonalActivity: React.FC<Props> = ({
               <p className="text-xs font-semibold mb-1">Saved Templates:</p>
               <div className="flex gap-2 flex-wrap">
                 {templates.map((tmpl) => (
-                  <button
-                    key={tmpl.id}
-                    onClick={() => handleSelectTemplate(tmpl)}
-                    className="text-xs px-2 py-1 bg-blue-200 rounded hover:bg-blue-300"
-                    type="button"
-                    title={`${tmpl.status} (${tmpl.duration})`}
-                  >
+                  <button key={tmpl.id} onClick={() => handleSelectTemplate(tmpl)} className="text-xs px-2 py-1 bg-blue-200 rounded hover:bg-blue-300" type="button" title={`${tmpl.status} (${tmpl.duration})`}>
                     {statusSuggestions[tmpl.status]?.emoji || "⭐"} {tmpl.status}
                   </button>
                 ))}
@@ -302,12 +280,7 @@ const PersonalActivity: React.FC<Props> = ({
             <input type="hidden" value={startdate} readOnly />
             <input type="hidden" value={enddate} readOnly />
 
-            <select
-              value={activitystatus}
-              onChange={(e) => setactivitystatus(e.target.value)}
-              className="w-full mb-2 px-3 py-2 border rounded text-xs"
-              disabled={loading}
-            >
+            <select value={activitystatus} onChange={(e) => setactivitystatus(e.target.value)} className="w-full mb-2 px-3 py-2 border rounded text-xs" disabled={loading}>
               <option value="">-- Select an Option --</option>
               {Object.entries(statusSuggestions).map(([status, { emoji }]) => (
                 <option key={status} value={status}>
@@ -316,12 +289,9 @@ const PersonalActivity: React.FC<Props> = ({
               ))}
             </select>
 
-            <textarea
-              value={activityremarks}
-              onChange={(e) => setactivityremarks(e.target.value)}
-              className={`w-full mb-1 px-3 py-2 border rounded text-xs resize-none ${
-                activityremarks.length > MAX_REMARKS_LENGTH ? "border-red-500" : ""
-              }`}
+            <textarea value={activityremarks} onChange={(e) => setactivityremarks(e.target.value)}
+              className={`w-full mb-1 px-3 py-2 border rounded text-xs resize-none 
+              ${activityremarks.length > MAX_REMARKS_LENGTH ? "border-red-500" : ""}`}
               rows={3}
               placeholder="Enter remarks here... (hashtags #tag and emojis allowed)"
               disabled={!activitystatus || loading}
@@ -334,9 +304,8 @@ const PersonalActivity: React.FC<Props> = ({
                 </p>
               )}
               <p
-                className={`ml-auto ${
-                  activityremarks.length > MAX_REMARKS_LENGTH ? "text-red-500" : ""
-                }`}
+                className={`ml-auto ${activityremarks.length > MAX_REMARKS_LENGTH ? "text-red-500" : ""
+                  }`}
               >
                 {activityremarks.length}/{MAX_REMARKS_LENGTH}
               </p>
@@ -383,32 +352,15 @@ const PersonalActivity: React.FC<Props> = ({
               </button>
               <button
                 type="submit"
-                className={`px-4 py-2 rounded text-xs text-white ${
-                  isSubmitDisabled ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
-                }`}
+                className={`px-4 py-2 rounded text-xs text-white ${isSubmitDisabled ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+                  }`}
                 disabled={isSubmitDisabled}
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <svg
-                      className="animate-spin h-4 w-4 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v8z"
-                      ></path>
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
                     </svg>
                     Saving...
                   </span>
@@ -428,22 +380,8 @@ const PersonalActivity: React.FC<Props> = ({
                   Are you sure you want to save the current activity as a reusable template?
                 </p>
                 <div className="flex justify-center gap-4">
-                  <button
-                    onClick={() => setShowConfirmSave(false)}
-                    className="px-4 py-2 text-xs rounded border border-gray-400 hover:bg-gray-100"
-                    type="button"
-                    disabled={loading}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={saveTemplate}
-                    className="px-4 py-2 text-xs rounded bg-green-500 text-white hover:bg-green-600"
-                    type="button"
-                    disabled={loading}
-                  >
-                    Yes, Save
-                  </button>
+                  <button onClick={() => setShowConfirmSave(false)} className="px-4 py-2 text-xs rounded border border-gray-400 hover:bg-gray-100" type="button" disabled={loading}>Cancel</button>
+                  <button onClick={saveTemplate} className="px-4 py-2 text-xs rounded bg-green-500 text-white hover:bg-green-600" type="button" disabled={loading} >Yes, Save</button>
                 </div>
               </div>
             </div>
