@@ -114,7 +114,7 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete, Role }) 
                                                 <FaEdit size={15} className="mr-1" /> Edit
                                             </button>
                                             )}
-                                            {(Role !== "Sales Staff" && Role !== "Auditor" && Role !== "Purchasing Officer") && (
+                                            {(Role !== "Sales Staff" && Role !== "Warehouse Staff" && Role !== "Auditor" && Role !== "Purchasing Officer") && (
                                             <button onClick={() => handleDelete(post._id)} className="text-xs py-2 px-4 rounded bg-red-600 hover:bg-red-800 text-white flex items-center">
                                                 <FaTrash size={15} className="mr-1" /> Delete
                                             </button>

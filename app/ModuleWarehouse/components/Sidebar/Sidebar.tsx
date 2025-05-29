@@ -134,7 +134,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         <div className="flex items-center justify-between p-5">
           <div className="flex items-center">
             <img src="/taskflow.png" alt="Logo" className="h-8 mr-2" />
-            <Link href={`/ModuleSales/Sales/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}>
+            <Link href={`/ModuleWarehouse/Warehouse/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}>
               <h1 className={`text-md font-bold transition-opacity ${collapsed ? "opacity-0" : "opacity-100"}`}>
                 <span>TASK - </span>
                 <span className="inline-block transform scale-x-[-1]">FLOW</span>
@@ -190,7 +190,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         <div className="flex flex-col items-center flex-grow overflow-y-auto text-xs p-2">
           <div className="w-full">
             <Link
-              href={`/ModuleSales/Sales/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}
+              href={`/ModuleWarehouse/Warehouse/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}
               className="flex items-center w-full p-4 bg-orange-400 mb-1 text-white rounded-md transition-all duration-300 ease-in-out hover:shadow-md active:scale-95"
             >
               <CiGrid42 size={22} className="mr-1" />
