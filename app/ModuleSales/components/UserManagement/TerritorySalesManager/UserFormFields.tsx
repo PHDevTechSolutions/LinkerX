@@ -170,7 +170,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="CSR">CSR Department</option>
             <option value="IT">IT Department</option>
             <option value="Ecommerce">E-Commerce Department</option>
-            <option value="Business Development">Business Development Department</option>
+            <option value="BD">Business Development Department</option>
             <option value="Warehouse">Warehouse Department</option>
           </select>
         </div>

@@ -229,7 +229,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     return () => clearInterval(interval); // Clean up interval on unmount
   }, [userReferenceId]);
 
-
   // ✅ Handle click outside to close notifications
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

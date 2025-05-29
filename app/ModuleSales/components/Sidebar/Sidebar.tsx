@@ -195,6 +195,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         { title: 'Automated Task', href: `/ModuleSales/Sales/Task/DailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         //{ title: 'Automated Task (New)', href: `/ModuleSales/Sales/Task/Automated${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Manual Task', href: `/ModuleSales/Sales/Task/ManualDailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Automation', href: `/ModuleSales/Sales/Task/Automation${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Callbacks', href: `/ModuleSales/Sales/Task/Callback${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Client Coverage Guide', href: `/ModuleSales/Sales/Task/ClientCoverageGuide${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'CSR Inquiries', href: `/ModuleSales/Sales/Task/CSRInquiries${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
@@ -216,29 +217,6 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         //{ title: 'Quotation', href: `/ModuleSales/Sales/Task/Quotation${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
-    //{
-      //title: 'Projects',
-      //icon: CiCalendar,
-      //subItems: [
-        //{ title: 'List of Projects', href: `/ModuleSales/Sales/Projects/Project${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        //{ title: 'Project Categories', href: `/ModuleSales/Sales/Projects/ProjectCategory${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        //{ title: 'Type of Project/Business', href: `/ModuleSales/Sales/Projects/ProjectType${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      //],
-    //},
-    //{
-      //title: 'Xend Mail',
-      //icon: CiMail,
-      //subItems: [
-        //{ title: 'Compose Email', href: `/ModuleSales/Sales/Email/ComposeEmail${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      //],
-    //},
-    //{
-      //title: 'Boards',
-      //icon: CiViewBoard,
-      //subItems: [
-        //{ title: 'Notes', href: `/ModuleSales/Sales/Boards/Notes${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      //],
-    //},
     {
       title: 'Sales Performance',
       icon: CiWavePulse1,
@@ -281,43 +259,6 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         { title: 'List of Companies', href: `/ModuleSales/Sales/ClientActivityBoard/ListofCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
-    //{
-      //title: 'Logs',
-      //icon: CiTimer,
-      //subItems: [
-        //{ title: 'Activity Logs ( OLD Taskflow )', href: `/ModuleSales/Sales/Logs/ActivityLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        //{ title: 'Activity Logs ( New Taskflow )', href: `/ModuleSales/Sales/Logs/TaskflowActivityLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        //{ title: 'Progress Logs ( OLD Taskflow )', href: `/ModuleSales/Sales/Logs/ProgressLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        //{ title: 'Progress Logs ( New Taskflow )', href: `/ModuleSales/Sales/Logs/TaskflowProgressLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        //{ title: 'Approvals', href: `/ModuleSales/Sales/Logs/Approvals${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        //{ title: 'Reports', href: `/ModuleSales/Sales/Logs/HistoricalRecords${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      //],
-    //},
-    //{
-      //title: 'User Management',
-      //icon: CiUser,
-      //subItems: [
-        //{ title: 'Company Accounts', href: `/ModuleSales/Sales/UserManagement/CompanyAccounts${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        //{ title: 'Territory Sales Associates', href: `/ModuleSales/Sales/UserManagement/TSA${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        //{ title: 'Territory Sales Manager', href: `/ModuleSales/Sales/UserManagement/TSM${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        //{ title: 'Managers & Directors', href: `/ModuleSales/Sales/UserManagement/ManagerDirectors${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      //],
-    //},
-    //{
-      //title: 'Global Employees',
-      //icon: CiUser,
-      //subItems: [
-        //{ title: 'Ecoshift Employees', href: `/ModuleSales/Sales/Ecoshift/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      //],
-    //},
-    //{
-      //title: 'Settings',
-      //icon: CiSettings,
-      //subItems: [
-        //{ title: 'Maintenance', href: `/ModuleSales/Sales/Settings/Maintenance${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        //{ title: 'API Keys', href: `/ModuleSales/Sales/Settings/APIKeys${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      //],
-    //},
     {
       title: 'Profile',
       icon: CiSettings,

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { FaRegCircle } from "react-icons/fa";
-import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo, CiMail, CiCalendar } from "react-icons/ci";
+import { CiUser, CiGrid42, CiSettings, CiCoins1, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo } from "react-icons/ci";
 import { RxCaretLeft, RxCaretDown } from "react-icons/rx";
 import { IoHelp } from "react-icons/io5";
 import { BsBuildings } from "react-icons/bs";

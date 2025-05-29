@@ -1,4 +1,4 @@
-"use client";  // If you're using Next.js, ensure this is at the top of the file
+"use client";
 
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../components/Layouts/ParentLayout";
