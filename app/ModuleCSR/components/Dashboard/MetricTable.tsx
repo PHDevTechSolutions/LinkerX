@@ -9,7 +9,7 @@ interface Metric {
   Status: string;
   Traffic: string;
   ReferenceID: string;
-  Remarks?: string; // ✅ Added to handle filtering
+  Remarks?: string;
 }
 
 interface MetricTableProps {
@@ -82,17 +82,24 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
     if (start) start.setHours(0, 0, 0, 0);
     if (end) end.setHours(23, 59, 59, 999);
 
-    let totalSales = 0, totalAmount = 0, totalQtySold = 0, totalConverted = 0, totalATV = 0, totalATU = 0, channelCount = 0;
+    let totalSales = 0,
+      totalAmount = 0,
+      totalQtySold = 0,
+      totalConverted = 0,
+      totalATV = 0,
+      totalATU = 0,
+      channelCount = 0;
 
     for (const m of metrics) {
-      if (m.Remarks === "PO Received") continue; // ✅ Skip if PO Received
+      if (m.Remarks === "PO Received") continue;
 
       const created = new Date(m.createdAt);
       if (
         (Role === "Staff" && m.ReferenceID !== ReferenceID) ||
         (month && year && (created.getMonth() + 1 !== month || created.getFullYear() !== year)) ||
         (start && end && (created < start || created > end))
-      ) continue;
+      )
+        continue;
 
       if (!channelsSet.has(m.Channel)) continue;
 
@@ -115,15 +122,20 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
 
       const entry = grouped.get(m.Channel);
       entry.traffic += 1;
-      entry.totalAmount += amount;
-      entry.totalQtySold += qty;
+
+      // Exclude 'Received' status from amount and qtysold computation
+      if (m.Status !== "Received") {
+        entry.totalAmount += amount;
+        entry.totalQtySold += qty;
+      }
+
       entry.sales += isSale ? 1 : 0;
       entry.totalConversionToSale += isConverted ? 1 : 0;
 
       grouped.set(m.Channel, entry);
     }
 
-    const groupedArray = Array.from(grouped.values()).map(group => {
+    const groupedArray = Array.from(grouped.values()).map((group) => {
       const ATU = group.totalConversionToSale ? group.totalQtySold / group.totalConversionToSale : 0;
       const ATV = group.totalConversionToSale ? group.totalAmount / group.totalConversionToSale : 0;
       totalSales += group.sales;
@@ -148,8 +160,8 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
         totalConversionToSale: totalConverted,
         totalATU,
         totalATV,
-        avgATU: (channelCount ? totalATU / channelCount : 0).toFixed(2),
-        avgATV: (channelCount ? totalATV / channelCount : 0).toFixed(2),
+        avgATU: channelCount ? (totalATU / channelCount).toFixed(2) : "0.00",
+        avgATV: channelCount ? (totalATV / channelCount).toFixed(2) : "0.00",
       },
     };
   }, [metrics, ReferenceID, Role, month, year, startDate, endDate]);
@@ -169,8 +181,18 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
           <table className="min-w-full table-auto">
             <thead className="bg-gray-100">
               <tr className="text-xs text-left whitespace-nowrap border-l-4 border-emerald-400">
-                {["Channel", "Traffic", "Amount", "Qty Sold", "Converted to Sale", "Avg Transaction Unit", "Avg Transaction Value"].map(h => (
-                  <th key={h} className="px-6 py-4 font-semibold text-gray-700">{h}</th>
+                {[
+                  "Channel",
+                  "Traffic",
+                  "Amount",
+                  "Qty Sold",
+                  "Converted to Sale",
+                  "Avg Transaction Unit",
+                  "Avg Transaction Value",
+                ].map((h) => (
+                  <th key={h} className="px-6 py-4 font-semibold text-gray-700">
+                    {h}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -183,9 +205,16 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
                   <td className="px-6 py-4 text-xs">{group.totalQtySold}</td>
                   <td className="px-6 py-4 text-xs">{group.totalConversionToSale}</td>
                   <td className="px-6 py-4 text-xs">{group.avgTransactionUnit}</td>
-                  <td className="px-6 py-4 text-xs">{parseFloat(group.avgTransactionValue).toLocaleString("en-PH", {
-                    style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2
-                  })}</td>
+                  <td
+                    className="px-6 py-4 text-xs"
+                    style={{ textAlign: "right" }}
+                  >
+                    {parseFloat(group.avgTransactionValue).toLocaleString("en-PH", {
+                      style: "decimal",
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -196,14 +225,18 @@ const MetricTable: React.FC<MetricTableProps> = ({ ReferenceID, month, year, Rol
                 <td className="px-6 py-4 text-xs">{formatAmount(totalMetrics.totalAmount)}</td>
                 <td className="px-6 py-4 text-xs">{totalMetrics.totalQtySold}</td>
                 <td className="px-6 py-4 text-xs">{totalMetrics.totalConversionToSale}</td>
-                <td className="px-6 py-4 text-xs">{parseFloat(totalMetrics.avgATU).toLocaleString("en-US", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2
-                })}</td>
-                <td className="px-6 py-4 text-xs">{parseFloat(totalMetrics.avgATV).toLocaleString("en-US", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2
-                })}</td>
+                <td className="px-6 py-4 text-xs">
+                  {parseFloat(totalMetrics.avgATU).toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </td>
+                <td className="px-6 py-4 text-xs">
+                  {parseFloat(totalMetrics.avgATV).toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </td>
               </tr>
             </tfoot>
           </table>
