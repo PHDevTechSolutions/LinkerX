@@ -9,7 +9,7 @@ interface Post {
   CompanyName: string;
   ContactNumber: string;
   PONumber: string;
-  Amount: string | number;
+  Amount: number;
   SONumber: string;
   SODate: string;
   PaymentTerms: string;
@@ -121,20 +121,7 @@ const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, han
                 </td>
                 <td className="px-6 py-4 text-xs uppercase">{post.CompanyName}</td>
                 <td className="px-6 py-4 text-xs">{post.PONumber}</td>
-                <td className="px-6 py-4 text-xs">
-                  {(() => {
-                    const rawAmount =
-                      typeof post.Amount === "string" ? post.Amount : post.Amount?.toString() || "0";
-                    const parsedAmount = parseFloat(rawAmount.replace(/,/g, ""));
-                    if (isNaN(parsedAmount)) return "₱0.00";
-                    return parsedAmount.toLocaleString("en-PH", {
-                      style: "currency",
-                      currency: "PHP",
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    });
-                  })()}
-                </td>
+                <td className="px-6 py-4 text-xs">{post.Amount}</td>
                 <td className="px-6 py-4 text-xs">{post.SONumber}</td>
                 <td className="px-6 py-4 text-xs">{formatTimestamp(post.SODate)}</td>
                 <td className="px-6 py-4 text-xs">{post.SalesAgent}</td>
