@@ -9,7 +9,7 @@ interface Post {
   CompanyName: string;
   ContactNumber: string;
   PONumber: string;
-  Amount: number;
+  POAmount: string | number;
   SONumber: string;
   SODate: string;
   PaymentTerms: string;
@@ -40,37 +40,34 @@ const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, han
   };
 
   const formatTimestamp = (timestamp: string) => {
-    if (!timestamp) return ""; // Show blank if no value
+    if (!timestamp) return "";
     return moment(timestamp).isValid() ? moment(timestamp).format("MMM D, YYYY") : "";
   };
 
-  // Calculate Total Amount
+  // Calculate Total Amount robustly
   const TotalAmount = useMemo(() => {
     return posts.reduce((total, post) => {
-      const amountStr = typeof post.Amount === "string" ? post.Amount : post.Amount?.toString();
-      const amount = parseFloat(amountStr?.replace(/,/g, "") || "0");
+      const amountStr = post.POAmount ? post.POAmount.toString() : "0";
+      const cleanedAmountStr = amountStr.replace(/[^0-9.-]+/g, "");
+      const amount = parseFloat(cleanedAmountStr);
       return total + (isNaN(amount) ? 0 : amount);
     }, 0);
   }, [posts]);
 
-  // Calculate Pending Days from SO Date
   const calculatePendingDays = (SODate: string) => {
-    if (!SODate || !moment(SODate).isValid()) return ""; // Return blank if invalid date
+    if (!SODate || !moment(SODate).isValid()) return "";
     const today = moment();
     const soDateMoment = moment(SODate);
     const pendingDays = today.diff(soDateMoment, "days");
     return pendingDays >= 0 ? `${pendingDays} day(s)` : "0 day(s)";
   };
 
-  // Calculate Pending Days from Payment to Delivery
   const calculatePendingPaymentDays = (PaymentDate: string, DeliveryPickupDate: string) => {
-    if (!PaymentDate || !DeliveryPickupDate) return ""; // Return blank if either date is missing
+    if (!PaymentDate || !DeliveryPickupDate) return "";
     const paymentMoment = moment(PaymentDate);
     const deliveryMoment = moment(DeliveryPickupDate);
-
     if (!paymentMoment.isValid() || !deliveryMoment.isValid()) return "0 day(s)";
     const pendingPaymentDays = deliveryMoment.diff(paymentMoment, "days");
-
     return pendingPaymentDays >= 0 ? `${pendingPaymentDays} day(s)` : "0 day(s)";
   };
 
@@ -101,7 +98,6 @@ const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, han
           {posts.length > 0 ? (
             posts.map((post) => (
               <tr key={post._id} className="border-b whitespace-nowrap">
-                {/* Actions Menu */}
                 <td className="px-6 py-4 text-xs gap-1 flex">
                   <button
                     onClick={() => handleEdit(post)}
@@ -121,7 +117,19 @@ const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, han
                 </td>
                 <td className="px-6 py-4 text-xs uppercase">{post.CompanyName}</td>
                 <td className="px-6 py-4 text-xs">{post.PONumber}</td>
-                <td className="px-6 py-4 text-xs">{post.Amount}</td>
+                <td className="px-6 py-4 text-xs">
+                  {(() => {
+                    const amountStr = post.POAmount ? post.POAmount.toString() : "0";
+                    const cleaned = amountStr.replace(/[^0-9.-]+/g, "");
+                    const amount = parseFloat(cleaned);
+                    return isNaN(amount)
+                      ? "0.00"
+                      : amount.toLocaleString("en-PH", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        });
+                  })()}
+                </td>
                 <td className="px-6 py-4 text-xs">{post.SONumber}</td>
                 <td className="px-6 py-4 text-xs">{formatTimestamp(post.SODate)}</td>
                 <td className="px-6 py-4 text-xs">{post.SalesAgent}</td>
@@ -146,16 +154,14 @@ const TransactionTable: React.FC<AccountsTableProps> = ({ posts, handleEdit, han
           )}
         </tbody>
 
-        {/* Total Amount Footer */}
         <tfoot>
           <tr className="bg-gray-100 text-xs font-semibold">
             <td colSpan={4} className="px-4 py-2 border text-right">
               Total Amount:
             </td>
             <td className="px-4 py-2 border">
+              ₱
               {TotalAmount.toLocaleString("en-PH", {
-                style: "currency",
-                currency: "PHP",
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
