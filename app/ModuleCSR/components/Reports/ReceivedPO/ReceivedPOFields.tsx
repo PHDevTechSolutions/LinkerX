@@ -84,7 +84,7 @@ const ReceivedPOFields: React.FC<ReceivedFieldsProps> = ({
     useEffect(() => {
         const fetchTSA = async () => {
             try {
-                const response = await fetch("/api/tsa?Roles=Territory Sales Associate,E-Commerce Staff");
+                const response = await fetch("/api/tsa?Roles=Territory Sales Associate,E-Commerce Staff, Business Development Officer");
                 if (!response.ok) throw new Error("Failed to fetch agents");
 
                 const data = await response.json();
