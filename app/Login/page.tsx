@@ -61,15 +61,7 @@ const LoadingPage: React.FC<{ userId: string }> = ({ userId }) => {
       <audio ref={audioRef} src="/binary-logout-sfx.mp3" preload="auto" />
       
       <svg width={120} height={120} className="mb-4">
-        <circle
-          stroke="#0ff"
-          fill="transparent"
-          strokeWidth={8}
-          r={radius}
-          cx={60}
-          cy={60}
-          style={{ opacity: 0.2 }}
-        />
+        <circle stroke="#0ff" fill="transparent" strokeWidth={8} r={radius} cx={60} cy={60} style={{ opacity: 0.2 }}/>
         <motion.circle
           stroke="#0ff"
           fill="transparent"
@@ -214,21 +206,14 @@ const Login: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="text-xs block mb-1">Email Address</label>
-              <input
-                type="email"
-                placeholder="e.g. user@example.com"
-                value={Email}
-                onChange={(e) => setEmail(e.target.value)}
+              <input type="email" placeholder="e.g. user@example.com" value={Email} onChange={(e) => setEmail(e.target.value)}
                 className={`w-full px-4 py-2 bg-transparent border ${isDark ? 'border-white/30 text-white' : 'border-black/30 text-black'} text-xs rounded-md backdrop-blur-md focus:ring-2 focus:ring-cyan-400 outline-none transition duration-300 ease-in-out transform focus:scale-[1.01]`}
               />
             </div>
 
             <div className="relative">
               <label className="text-xs block mb-1">Password</label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Your secure password"
-                value={Password}
+              <input type={showPassword ? 'text' : 'password'} placeholder="Your secure password" value={Password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={`w-full px-4 py-2 bg-transparent border ${isDark ? 'border-white/30 text-white' : 'border-black/30 text-black'} text-xs rounded-md backdrop-blur-md focus:ring-2 focus:ring-cyan-400 outline-none transition duration-300 ease-in-out transform focus:scale-[1.01]`}
               />
