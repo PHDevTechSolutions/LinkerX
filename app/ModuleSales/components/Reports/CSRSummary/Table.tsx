@@ -111,7 +111,7 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                                     <td className="px-6 py-3">{formatDate(post.date_created)}</td>
                                     <td className="px-6 py-4 text-xs">
                                         <button
-                                            className="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-300 hover:rounded-full w-full text-left flex items-center gap-1"
+                                            className="block px-4 py-2 text-[10px] font-bold text-black bg-blue-300 rounded-lg hover:bg-orange-300 hover:rounded-full hover:shadow-md w-full text-left flex items-center gap-1"
                                             onClick={() => handleEdit(post)}
                                         >
                                             <CiEdit /> Edit
