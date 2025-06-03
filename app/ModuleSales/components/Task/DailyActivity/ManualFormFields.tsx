@@ -971,7 +971,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     {showDeliverField && (
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                                <label className="block text-xs font-bold mb-2">SO to DR Amount (Actual Sales)</label>
+                                <label className="block text-xs font-bold mb-2">SI (Actual Sales)</label>
                                 <input
                                     type="text"
                                     value={actualsales ?? ""}

@@ -812,8 +812,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     <option>Callback Tomorrow</option>
                                     <option>Callback After 3 Days</option>
                                     <option>Callback After a Week</option>
-                                    <option>Callback After a Month</option>
-                                    <option>Callback After a Year</option>
                                     <option>Pick a DateTime</option>
                                 </select>
 
@@ -899,7 +897,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     {showDeliverField && (
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                                <label className="block text-xs font-bold mb-2">SO to DR Amount (Actual Sales)</label>
+                                <label className="block text-xs font-bold mb-2">SI (Actual Sales)</label>
                                 <input
                                     type="number"
                                     value={actualsales ?? ""}
