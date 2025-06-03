@@ -691,7 +691,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                                 {/* Project Category */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                                    <label className="block text-xs font-bold mb-2">Project Category</label>
+                                    <label className="block text-xs font-bold mb-2">Item Category</label>
                                     <select value={projectcategory ?? ""} onChange={(e) => setprojectcategory(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                         <option value="">Select Category</option>
                                         <option value="Bollard Light">Bollard Light</option>
@@ -733,7 +733,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
                                 {/* Type */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                                    <label className="block text-xs font-bold mb-2">Type</label>
+                                    <label className="block text-xs font-bold mb-2">Customer Type</label>
                                     <select value={projecttype ?? ""} onChange={(e) => setprojecttype(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                         <option value="">Select Category</option>
                                         <option value="B2B">B2B</option>
@@ -750,11 +750,12 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     <label className="block text-xs font-bold mb-2">Source</label>
                                     <select value={source ?? ""} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                                         <option value="">Select Category</option>
-                                        <option value="Existing">Existing</option>
+                                        <option value="Direct Client">Direct Client</option>
                                         <option value="CSR Inquiries">CSR Inquiries</option>
-                                        <option value="Referral">Referral</option>
-                                        <option value="New Client Development">New Client Development</option>
-                                        <option value="Ecoshift Database">Ecoshift Database</option>
+                                        <option value="Outbound">Outbound</option>
+                                        <option value="Philgeps">Philgeps</option>
+                                        <option value="Distributor">Distributor</option>
+                                        <option value="Modern Trade">Modern Trade</option>
                                     </select>
                                 </div>
                             </div>
