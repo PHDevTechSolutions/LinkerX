@@ -977,6 +977,7 @@ const ListofUser: React.FC = () => {
                                             contactnumber: selectedCompany?.contactnumber || "",
                                             emailaddress: selectedCompany?.emailaddress || "",
                                             address: selectedCompany?.address || "",
+                                            deliveryaddress: selectedCompany?.deliveryaddress || "",
                                             area: selectedCompany?.area || "",
                                         }}
                                     />
