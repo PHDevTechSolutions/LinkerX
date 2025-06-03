@@ -21,6 +21,7 @@ interface AddUserFormProps {
     contactnumber: string;
     emailaddress: string;
     address: string;
+    deliveryaddress: string;
     area: string;
   };
   editUser?: any;
@@ -46,27 +47,14 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [tsm, setTsm] = useState(userDetails.tsm || "");
   const [targetquota, setTargetQuota] = useState(userDetails.targetquota || "");
 
-  const [companyname, setcompanyname] = useState(
-    editUser ? editUser.companyname : companyData?.companyname || ""
-  );
-  const [typeclient, settypeclient] = useState(
-    editUser ? editUser.typeclient : companyData?.typeclient || ""
-  );
-  const [contactperson, setcontactperson] = useState(
-    editUser ? editUser.contactperson : companyData?.contactperson || ""
-  );
-  const [contactnumber, setcontactnumber] = useState(
-    editUser ? editUser.contactnumber : companyData?.contactnumber || ""
-  );
-  const [emailaddress, setemailaddress] = useState(
-    editUser ? editUser.emailaddress : companyData?.emailaddress || ""
-  );
-  const [address, setaddress] = useState(
-    editUser ? editUser.address : companyData?.address || ""
-  );
-  const [area, setarea] = useState(
-    editUser ? editUser.area : companyData?.area || ""
-  );
+  const [companyname, setcompanyname] = useState(editUser ? editUser.companyname : companyData?.companyname || "");
+  const [typeclient, settypeclient] = useState(editUser ? editUser.typeclient : companyData?.typeclient || "");
+  const [contactperson, setcontactperson] = useState(editUser ? editUser.contactperson : companyData?.contactperson || "");
+  const [contactnumber, setcontactnumber] = useState(editUser ? editUser.contactnumber : companyData?.contactnumber || "");
+  const [emailaddress, setemailaddress] = useState(editUser ? editUser.emailaddress : companyData?.emailaddress || "");
+  const [address, setaddress] = useState(editUser ? editUser.address : companyData?.address || "");
+  const [deliveryaddress, setdeliveryaddress] = useState(editUser ? editUser.deliveryaddress : companyData?.deliveryaddress || "");
+  const [area, setarea] = useState(editUser ? editUser.area : companyData?.area || "");
 
   const [projectname, setprojectname] = useState(editUser ? editUser.projectname : "");
   const [projectcategory, setprojectcategory] = useState(editUser ? editUser.projectcategory : "");
@@ -174,7 +162,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         id: editUser?.id, referenceid, manager, tsm, targetquota, companyname, contactperson, contactnumber, emailaddress, typeclient,
-        address, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, remarks,
+        address, deliveryaddress, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, remarks,
         callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus, ticketreferencenumber, wrapup, inquiries, csragent,
       }),
     });
@@ -341,6 +329,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           emailaddress={emailaddress} setemailaddress={setemailaddress}
           typeclient={typeclient} settypeclient={settypeclient}
           address={address} setaddress={setaddress}
+          deliveryaddress={deliveryaddress} setdeliveryaddress={setdeliveryaddress}
           area={area} setarea={setarea}
           projectname={projectname} setprojectname={setprojectname}
           projectcategory={projectcategory} setprojectcategory={setprojectcategory}

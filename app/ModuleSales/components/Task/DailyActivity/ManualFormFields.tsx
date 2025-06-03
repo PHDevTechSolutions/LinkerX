@@ -30,6 +30,7 @@ interface FormFieldsProps {
     emailaddress: string; setemailaddress: (value: string) => void;
     typeclient: string; settypeclient: (value: string) => void;
     address: string; setaddress: (value: string) => void;
+    deliveryaddress: string; setdeliveryaddress: (value: string) => void;
     area: string; setarea: (value: string) => void;
     projectname: string; setprojectname: (value: string) => void;
     projectcategory: string; setprojectcategory: (value: string) => void;
@@ -55,6 +56,7 @@ interface FormFieldsProps {
     wrapup: string; setwrapup: (value: string) => void;
     inquiries: string; setinquiries: (value: string) => void;
     csragent: string; setcsragent: (value: string) => void;
+    
 
     currentRecords: Activity[];
     editPost?: any;
@@ -72,6 +74,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     emailaddress, setemailaddress,
     typeclient, settypeclient,
     address, setaddress,
+    deliveryaddress, setdeliveryaddress,
     area, setarea,
     projectname, setprojectname,
     projectcategory, setprojectcategory,
@@ -635,16 +638,14 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <option value="Top 50">Top 50</option>
                         <option value="Next 30">Next 30</option>
                         <option value="Balance 20">Balance 20</option>
-                        <option value="Revived Account - Existing">Revived Account - Existing</option>
-                        <option value="Revived Account - Resigned Agent">Revived Account - Resigned Agent</option>
-                        <option value="New Account - Client Development">New Account - Client Development</option>
-                        <option value="Transferred Account">Transferred Account</option>
+                        <option value="CSR Client">CSR Client</option>
+                        <option value="TSA Agent">TSA Agent</option>
                     </select>
                 </div>
 
                 {/* Address */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Address</label>
+                    <label className="block text-xs font-bold mb-2">Complete Address</label>
                     <input
                         type="text"
                         id="address"
@@ -653,17 +654,42 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         className="w-full px-3 py-2 border rounded text-xs capitalize"
                     />
                 </div>
+                
+                {/* Delivery Address */}
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2">Delivery Address</label>
+                    <input
+                        type="text"
+                        id="deliveryaddress"
+                        value={deliveryaddress ?? ""}
+                        onChange={(e) => setdeliveryaddress(e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    />
+                </div>
 
                 {/* Area */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Area</label>
-                    <input
-                        type="text"
-                        id="area"
-                        value={area ?? ""}
-                        onChange={(e) => setarea(e.target.value)}
-                        className="w-full px-3 py-2 border rounded text-xs capitalize"
-                    />
+                    <label className="block text-xs font-bold mb-2">Region</label>
+                    <select id="typeclient" value={area ?? ""} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+                        <option value="">Select Region</option>
+                        <option value="Ilocos Region">Region I - Ilocos Region</option>
+                        <option value="Cagayan Valley">Region II - Cagayan Valley</option>
+                        <option value="Central Luzon">Region III - Central Luzon</option>
+                        <option value="Calabarzon">Region IV - CALABARZON</option>
+                        <option value="Bicol Region">Region V - Bicol Region</option>
+                        <option value="Western Visayas">Region VI - Western Visayas</option>
+                        <option value="Central Visayas">Region VII - Cental Visayas</option>
+                        <option value="Easter Visayas">Region VIII - Easter Visayas</option>
+                        <option value="Zamboanga Peninsula">Region VIX - Zamboanga Peninsula</option>
+                        <option value="Northern Mindanao">Region X - Nothern Mindanao</option>
+                        <option value="Davao Region">Region XI - Davao Region</option>
+                        <option value="Soccsksargen">Region XII - SOCCSKSARGEN</option>
+                        <option value="National Capital Region">NCR</option>
+                        <option value="Cordillera Administrative Region">CAR</option>
+                        <option value="Bangsamoro Autonomous Region in Muslim Mindanao">BARMM</option>
+                        <option value="Caraga">Region XIII</option>
+                        <option value="Mimaropa Region">MIMAROPA Region</option>
+                    </select>
                 </div>
             </div>
 
@@ -999,8 +1025,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     <option>Callback Tomorrow</option>
                                     <option>Callback After 3 Days</option>
                                     <option>Callback After a Week</option>
-                                    <option>Callback After a Month</option>
-                                    <option>Callback After a Year</option>
                                     <option>Pick a DateTime</option>
                                 </select>
 
