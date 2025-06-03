@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { CiEdit } from "react-icons/ci";
 
 interface Post {
     id: string;
@@ -12,9 +13,10 @@ interface Post {
 
 interface UsersCardProps {
     posts: Post[];
+    handleEdit: (post: any) => void;
 }
 
-const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
+const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [startDate, setStartDate] = useState("");
@@ -90,6 +92,7 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
                     <thead className="bg-gray-100 sticky top-0 z-10">
                         <tr className="text-left border-l-4 border-orange-400">
                             <th className="px-6 py-3 font-semibold text-gray-700">Date Created</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Ticket Reference Number</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Company Name</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Contact Person</th>
@@ -106,6 +109,14 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
                             paginatedData.map((post) => (
                                 <tr key={post.id} className="bg-white hover:bg-gray-50">
                                     <td className="px-6 py-3">{formatDate(post.date_created)}</td>
+                                    <td className="px-6 py-4 text-xs">
+                                        <button
+                                            className="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-300 hover:rounded-full w-full text-left flex items-center gap-1"
+                                            onClick={() => handleEdit(post)}
+                                        >
+                                            <CiEdit /> Edit
+                                        </button>
+                                    </td>
                                     <td className="px-6 py-3 uppercase">{post.ticketreferencenumber}</td>
                                     <td className="px-6 py-3 uppercase">{post.companyname}</td>
                                     <td className="px-6 py-3 capitalize">{post.contactperson}</td>
@@ -115,15 +126,15 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
                                         ) : (
                                             <span className={`inline-block px-2 py-1 text-[10px] font-semibold rounded-full
                                                 ${post.activitystatus.toLowerCase() === "cold" ? "bg-blue-200 text-blue-800"
-                                                : post.activitystatus.toLowerCase() === "warm" ? "bg-yellow-200 text-yellow-800"
-                                                : post.activitystatus.toLowerCase() === "hot" ? "bg-red-200 text-red-800"
-                                                : post.activitystatus.toLowerCase() === "done" ? "bg-green-200 text-green-800"
-                                                : "bg-gray-200 text-gray-800"}`}>
+                                                    : post.activitystatus.toLowerCase() === "warm" ? "bg-yellow-200 text-yellow-800"
+                                                        : post.activitystatus.toLowerCase() === "hot" ? "bg-red-200 text-red-800"
+                                                            : post.activitystatus.toLowerCase() === "done" ? "bg-green-200 text-green-800"
+                                                                : "bg-gray-200 text-gray-800"}`}>
                                                 {post.activitystatus}
                                             </span>
                                         )}
                                     </td>
-                                    <td className="px-6 py-3">{post.remarks}</td>
+                                    <td className="px-6 py-3 capitalize">{post.remarks}</td>
                                 </tr>
                             ))
                         )}
