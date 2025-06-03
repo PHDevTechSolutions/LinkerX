@@ -21,6 +21,7 @@ async function create(
     typeclient: string,
     companygroup: string,
     address: string,
+    deliveryaddress: string,
     area: string,
     status: string,
 ) {
@@ -30,8 +31,8 @@ async function create(
         }
 
         const Xchire_insert = await Xchire_sql`
-            INSERT INTO accounts (referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, companygroup, address, area, status, date_created) 
-            VALUES (${referenceid}, ${manager}, ${tsm}, ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${companygroup}, ${address}, ${area}, ${status}, NOW()) 
+            INSERT INTO accounts (referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, companygroup, address, deliveryaddress, area, status, date_created) 
+            VALUES (${referenceid}, ${manager}, ${tsm}, ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${companygroup}, ${address}, ${deliveryaddress}, ${area}, ${status}, NOW()) 
             RETURNING *;
         `;
 
@@ -46,10 +47,10 @@ export async function POST(req: Request) {
     try {
         // Ensure request body is valid JSON
         const Xchire_body = await req.json();
-        const { referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, companygroup, address, area, status } = Xchire_body;
+        const { referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, companygroup, address, deliveryaddress, area, status } = Xchire_body;
 
         // Call the addUser function
-        const Xchire_result = await create(referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, companygroup, address, area, status);
+        const Xchire_result = await create(referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, companygroup, address, deliveryaddress, area, status);
 
         // Return response
         return NextResponse.json(Xchire_result);

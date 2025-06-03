@@ -73,7 +73,8 @@ const ListofUser: React.FC = () => {
                     emailaddress: row.getCell(4).value || "",
                     typeclient: row.getCell(5).value || "",
                     address: row.getCell(6).value || "",
-                    area: row.getCell(7).value || "",
+                    deliveryaddress: row.getCell(7).value || "",
+                    area: row.getCell(8).value || "",
                 });
             });
 
@@ -176,70 +177,69 @@ const ListofUser: React.FC = () => {
         fetchAccount();
     }, []);
 
-
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-    ? posts
-        .filter((post) => {
-            // Only allow Top 50, Next 30, Balance 20
-            const validClientTypes = ["Top 50", "Next 30", "Balance 20"];
-            const isValidTypeClient = validClientTypes.includes(post?.typeclient);
+        ? posts
+            .filter((post) => {
+                // Only allow Top 50, Next 30, Balance 20
+                const validClientTypes = ["Top 50", "Next 30", "Balance 20"];
+                const isValidTypeClient = validClientTypes.includes(post?.typeclient);
 
-            const matchesSearchTerm =
-                post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                post?.typeclient?.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchesSearchTerm =
+                    post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    post?.typeclient?.toLowerCase().includes(searchTerm.toLowerCase());
 
-            const postDate = post?.date_created ? new Date(post.date_created) : null;
+                const postDate = post?.date_created ? new Date(post.date_created) : null;
 
-            const isWithinDateRange =
-                (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                (!endDate || (postDate && postDate <= new Date(endDate + "T23:59:59")));
+                const isWithinDateRange =
+                    (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                    (!endDate || (postDate && postDate <= new Date(endDate + "T23:59:59")));
 
-            const matchesClientType = selectedClientType
-                ? selectedClientType === "null"
-                    ? !post?.typeclient || post?.typeclient === null || post?.typeclient === ""
-                    : post?.typeclient === selectedClientType
-                : true;
+                const matchesClientType = selectedClientType
+                    ? selectedClientType === "null"
+                        ? !post?.typeclient || post?.typeclient === null || post?.typeclient === ""
+                        : post?.typeclient === selectedClientType
+                    : true;
 
-            const matchesStatus = selectedStatus
-                ? post?.status?.toLowerCase() === selectedStatus.toLowerCase()
-                : true;
+                const matchesStatus = selectedStatus
+                    ? post?.status?.toLowerCase() === selectedStatus.toLowerCase()
+                    : true;
 
-            const referenceID = userDetails.ReferenceID;
+                const referenceID = userDetails.ReferenceID;
 
-            const matchesRole =
-                userDetails.Role === "Super Admin" || userDetails.Role === "Special Access"
-                    ? true
-                    : userDetails.Role === "Territory Sales Associate" || userDetails.Role === "Territory Sales Manager"
-                        ? post?.referenceid === referenceID
-                        : false;
+                const matchesRole =
+                    userDetails.Role === "Super Admin" || userDetails.Role === "Special Access"
+                        ? true
+                        : userDetails.Role === "Territory Sales Associate" || userDetails.Role === "Territory Sales Manager"
+                            ? post?.referenceid === referenceID
+                            : false;
 
-            const isActiveOrUsed = post?.status === "Active" || post?.status === "On Hold" || post?.status === "Used";
+                const isActiveOrUsed = post?.status === "Active" || post?.status === "On Hold" || post?.status === "Used";
 
-            return (
-                isValidTypeClient && // ✅ Only allow Top 50, Next 30, Balance 20
-                matchesSearchTerm &&
-                isWithinDateRange &&
-                matchesClientType &&
-                matchesStatus &&
-                matchesRole &&
-                isActiveOrUsed
-            );
-        })
-        .sort((a, b) => {
-            const companyNameA = a.companyname?.toLowerCase() || "";
-            const companyNameB = b.companyname?.toLowerCase() || "";
+                return (
+                    isValidTypeClient && // ✅ Only allow Top 50, Next 30, Balance 20
+                    matchesSearchTerm &&
+                    isWithinDateRange &&
+                    matchesClientType &&
+                    matchesStatus &&
+                    matchesRole &&
+                    isActiveOrUsed
+                );
+            })
+            .sort((a, b) => {
+                const companyNameA = a.companyname?.toLowerCase() || "";
+                const companyNameB = b.companyname?.toLowerCase() || "";
 
-            const numFirstA = companyNameA.match(/^\d+/) ? parseInt(companyNameA.match(/^\d+/)[0], 10) : Infinity;
-            const numFirstB = companyNameB.match(/^\d+/) ? parseInt(companyNameB.match(/^\d+/)[0], 10) : Infinity;
+                const numFirstA = companyNameA.match(/^\d+/) ? parseInt(companyNameA.match(/^\d+/)[0], 10) : Infinity;
+                const numFirstB = companyNameB.match(/^\d+/) ? parseInt(companyNameB.match(/^\d+/)[0], 10) : Infinity;
 
-            if (numFirstA !== numFirstB) {
-                return numFirstA - numFirstB;
-            }
+                if (numFirstA !== numFirstB) {
+                    return numFirstA - numFirstB;
+                }
 
-            return companyNameA.localeCompare(companyNameB);
-        })
-    : [];
+                return companyNameA.localeCompare(companyNameB);
+            })
+        : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -342,7 +342,7 @@ const ListofUser: React.FC = () => {
                                                                 className="w-full px-3 py-2 border rounded text-xs capitalize"
                                                             >
                                                                 <option value="">Select Status</option>
-                                                                <option value="On Hold">On Hold</option>
+                                                                <option value="Active">Active</option>
                                                             </select>
                                                             <p className="text-xs text-gray-600 mt-2">
                                                                 Select the <strong>Status</strong> of the account.
@@ -365,28 +365,30 @@ const ListofUser: React.FC = () => {
                                                     <div className="mt-4">
                                                         <h3 className="text-sm font-bold mb-2">Preview Data ({jsonData.length} records)</h3>
                                                         <div className="overflow-auto max-h-64 border rounded-md">
-                                                            <table className="w-full border-collapse text-left text-xs">
-                                                                <thead className="bg-gray-200">
-                                                                    <tr>
-                                                                        <th className="border px-2 py-1">Company Name</th>
-                                                                        <th className="border px-2 py-1">Contact Person</th>
-                                                                        <th className="border px-2 py-1">Contact Number</th>
-                                                                        <th className="border px-2 py-1">Email Address</th>
-                                                                        <th className="border px-2 py-1">Type of Client</th>
-                                                                        <th className="border px-2 py-1">Address</th>
-                                                                        <th className="border px-2 py-1">Area</th>
+                                                            <table className="min-w-full table-auto">
+                                                                <thead className="bg-gray-100">
+                                                                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
+                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
+                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Email Address</th>
+                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
+                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Complete Address</th>
+                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Delivery Address</th>
+                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Region</th>
                                                                     </tr>
                                                                 </thead>
-                                                                <tbody>
+                                                                <tbody className="divide-y divide-gray-100">
                                                                     {jsonData.map((item, index) => (
-                                                                        <tr key={index}>
-                                                                            <td className="border px-2 py-1">{item.companyname}</td>
-                                                                            <td className="border px-2 py-1">{item.contactperson}</td>
-                                                                            <td className="border px-2 py-1">{item.contactnumber}</td>
-                                                                            <td className="border px-2 py-1">{item.emailaddress}</td>
-                                                                            <td className="border px-2 py-1">{item.typeclient}</td>
-                                                                            <td className="border px-2 py-1">{item.address}</td>
-                                                                            <td className="border px-2 py-1">{item.area}</td>
+                                                                        <tr key={index} className="border-b whitespace-nowrap">
+                                                                            <td className="px-6 py-4 text-xs uppercase">{item.companyname}</td>
+                                                                            <td className="px-6 py-4 text-xs capitalize">{item.contactperson}</td>
+                                                                            <td className="px-6 py-4 text-xs">{item.contactnumber}</td>
+                                                                            <td className="px-6 py-4 text-xs">{item.emailaddress}</td>
+                                                                            <td className="px-6 py-4 text-xs">{item.typeclient}</td>
+                                                                            <td className="px-6 py-4 text-xs">{item.address}</td>
+                                                                            <td className="px-6 py-4 text-xs">{item.deliveryaddress}</td>
+                                                                            <td className="px-6 py-4 text-xs">{item.area}</td>
                                                                         </tr>
                                                                     ))}
                                                                 </tbody>

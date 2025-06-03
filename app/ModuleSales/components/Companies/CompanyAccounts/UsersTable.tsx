@@ -293,14 +293,12 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
             {bulkEditMode && (
               <div className="flex items-center gap-2">
                 <select value={newTypeClient} onChange={(e) => setNewTypeClient(e.target.value)} className="px-2 py-1 border rounded-md">
-                  <option value="">Select Type of Client</option>
+                  <option value="">Select Client</option>
                   <option value="Top 50">Top 50</option>
                   <option value="Next 30">Next 30</option>
                   <option value="Balance 20">Balance 20</option>
-                  <option value="Revive Account - Existing">Revive Account - Existing</option>
-                  <option value="Revive Account - Resigned Agent">Revive Account - Resigned Agent</option>
-                  <option value="New Account - Client Development">New Account - Client Development</option>
-                  <option value="Transfer Account">Transfer Account</option>
+                  <option value="CSR Client">CSR Client</option>
+                  <option value="TSA Client">TSA Client</option>
                 </select>
                 <button onClick={handleBulkEdit} className="px-3 py-1 bg-blue-400 text-white rounded-md hover:bg-blue-500 text-xs" disabled={!newTypeClient}>Apply Changes</button>
               </div>
@@ -351,14 +349,15 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
           <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
             <th className="px-6 py-4 font-semibold text-gray-700"></th>
             {Role !== "Special Access" && (
-            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
             )}
             <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Email Address</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
-            <th className="px-6 py-4 font-semibold text-gray-700">Address</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Complete Address</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Delivery Address</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Area</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
           </tr>
@@ -397,14 +396,14 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                     )}
                   </td>
                   {Role !== "Special Access" && (
-                  <td className="px-6 py-4 text-xs">
-                    <button
-                      className="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-300 hover:rounded-full w-full text-left flex items-center gap-1"
-                      onClick={() => handleEdit(post)}
-                    >
-                      <CiEdit /> Edit
-                    </button>
-                  </td>
+                    <td className="px-6 py-4 text-xs">
+                      <button
+                        className="block px-4 py-2 text-[10px] font-bold text-black bg-blue-300 rounded-lg hover:bg-orange-300 hover:rounded-full hover:shadow-md w-full text-left flex items-center gap-1"
+                        onClick={() => handleEdit(post)}
+                      >
+                        <CiEdit /> Edit
+                      </button>
+                    </td>
                   )}
                   <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
                   <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
@@ -412,6 +411,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                   <td className="px-6 py-4 text-xs">{post.emailaddress}</td>
                   <td className="px-6 py-4 text-xs">{post.typeclient}</td>
                   <td className="px-6 py-4 text-xs capitalize">{post.address}</td>
+                  <td className="px-6 py-4 text-xs capitalize">{post.deliveryaddress}</td>
                   <td className="px-6 py-4 text-xs capitalize">{post.area}</td>
                   <td className="px-4 py-2 text-xs align-top">
                     <div className="flex flex-col gap-1">

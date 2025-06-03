@@ -21,13 +21,14 @@ async function create(
     emailaddress: string,
     typeclient: string,
     address: string,
+    deliveryaddress: string,
     area: string,
     status: string
 ) {
     try {
         const Xchire_insert = await Xchire_sql`
-            INSERT INTO accounts (referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, area, status, date_created) 
-            VALUES (${referenceid}, ${manager}, ${tsm}, ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${address}, ${area}, ${status}, NOW()) 
+            INSERT INTO accounts (referenceid, manager, tsm, companyname, contactperson, contactnumber, emailaddress, typeclient, address, deliveryaddress, area, status, date_created) 
+            VALUES (${referenceid}, ${manager}, ${tsm}, ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${address}, ${deliveryaddress}, ${area}, ${status}, NOW()) 
             RETURNING *;
         `;
 
@@ -65,6 +66,7 @@ export async function POST(req: Request) {
                 account.emailaddress,
                 account.typeclient,
                 account.address,
+                account.deliveryaddress,
                 account.area,
                 account.status,
             );

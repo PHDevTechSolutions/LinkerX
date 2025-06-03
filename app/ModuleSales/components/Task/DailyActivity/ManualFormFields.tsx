@@ -626,7 +626,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         id="emailaddress"
                         value={emailaddress ?? ""}
                         onChange={(e) => setemailaddress(e.target.value)}
-                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                        className="w-full px-3 py-2 border rounded text-xs"
                     />
                 </div>
 
@@ -639,7 +639,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <option value="Next 30">Next 30</option>
                         <option value="Balance 20">Balance 20</option>
                         <option value="CSR Client">CSR Client</option>
-                        <option value="TSA Agent">TSA Agent</option>
+                        <option value="TSA Client">TSA Client</option>
                     </select>
                 </div>
 

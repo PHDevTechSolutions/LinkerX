@@ -25,6 +25,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [typeclient, settypeclient] = useState("");
   const [companygroup, setcompanygroup] = useState("");
   const [address, setaddress] = useState("");
+  const [deliveryaddress, setdeliveryaddress] = useState("");
   const [area, setarea] = useState("");
   const [status, setstatus] = useState("");
 
@@ -45,6 +46,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       settypeclient(editUser.typeclient || "");
       setcompanygroup(editUser.companygroup || "");
       setaddress(editUser.address || "");
+      setdeliveryaddress(editUser.deliveryaddress || "");
       setarea(editUser.area || "");
       setstatus(editUser.status || "");
     }
@@ -77,6 +79,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           typeclient,
           companygroup,
           address,
+          deliveryaddress,
           area,
           status,
         }),
@@ -161,6 +164,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         typeclient={typeclient} settypeclient={settypeclient}
         companygroup={companygroup} setcompanygroup={setcompanygroup}
         address={address} setaddress={setaddress}
+        deliveryaddress={deliveryaddress} setdeliveryaddress={setdeliveryaddress}
         area={area} setarea={setarea}
         status={status} setstatus={setstatus}
         isMaximized={isMaximized}

@@ -5,7 +5,7 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
-import Form from "../../../components/Reports/CSRSummary/Form";
+import Form from "../../../components/Companies/CompanyAccounts/AddUserForm";
 import Filters from "../../../components/Companies/NewClient/Filters";
 import Table from "../../../components/Companies/NewClient/Table";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
@@ -117,6 +117,7 @@ const ListofUser: React.FC = () => {
                     "CSR Inquiries",
                     "New Account - Client Development",
                     "CSR Client",
+                    "TSA Client",
                 ];
                 const matchesTypeClient = allowedTypeClients.includes(post?.typeclient);
 

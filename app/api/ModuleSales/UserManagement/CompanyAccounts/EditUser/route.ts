@@ -20,6 +20,7 @@ async function update(
     typeclient: string,
     companygroup: string,
     address: string,
+    deliveryaddress: string,
     area: string,
     status: string
 ) {
@@ -41,6 +42,7 @@ async function update(
                 typeclient = ${typeclient},
                 companygroup = ${companygroup},
                 address = ${address},
+                deliveryaddress = ${deliveryaddress},
                 area = ${area},
                 status = ${status},
                 date_updated = CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
@@ -70,13 +72,14 @@ export async function PUT(req: Request) {
             typeclient, 
             companygroup,
             address, 
+            deliveryaddress,
             area, 
             status 
         } = Xchire_body;
 
         const Xchire_result = await update(
             id, referenceid, manager, tsm, companyname, contactperson, 
-            contactnumber, emailaddress, typeclient, companygroup, address, area, status
+            contactnumber, emailaddress, typeclient, companygroup, address, deliveryaddress, area, status
         );
 
         return NextResponse.json(Xchire_result);

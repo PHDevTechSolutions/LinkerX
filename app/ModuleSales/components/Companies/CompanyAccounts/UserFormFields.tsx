@@ -14,6 +14,7 @@ interface FormFieldsProps {
   typeclient: string; settypeclient: (value: string) => void;
   companygroup: string; setcompanygroup: (value: string) => void;
   address: string; setaddress: (value: string) => void;
+  deliveryaddress: string; setdeliveryaddress: (value: string) => void;
   area: string; setarea: (value: string) => void;
   status: string; setstatus: (value: string) => void;
   isMaximized?: boolean;
@@ -33,6 +34,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   typeclient, settypeclient,
   companygroup, setcompanygroup,
   address, setaddress,
+  deliveryaddress, setdeliveryaddress,
   area, setarea,
   status, setstatus,
   isMaximized = false, // default false
@@ -188,15 +190,13 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
         <div className={fieldWidthClass}>
           <label className="block text-xs font-bold mb-2" htmlFor="typeclient">Type of Client</label>
-          <select id="typeclient" value={typeclient} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+          <select id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
             <option value="">Select Client</option>
             <option value="Top 50">Top 50</option>
             <option value="Next 30">Next 30</option>
             <option value="Balance 20">Balance 20</option>
-            <option value="Revived Account - Existing">Revived Account - Existing</option>
-            <option value="Revived Account - Resigned Agent">Revived Account - Resigned Agent</option>
-            <option value="New Account - Client Development">New Account - Client Development</option>
-            <option value="Transferred Account">Transferred Account</option>
+            <option value="CSR Client">CSR Client</option>
+            <option value="TSA Client">TSA Client</option>
           </select>
         </div>
 
@@ -206,35 +206,38 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         </div>
 
         <div className={fieldWidthClass}>
-          <label className="block text-xs font-bold mb-2" htmlFor="address">Address</label>
+          <label className="block text-xs font-bold mb-2" htmlFor="address">Complete Address</label>
           <input type="text" id="address" value={address} onChange={(e) => setaddress(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
         </div>
 
         <div className={fieldWidthClass}>
-          <label className="block text-xs font-bold mb-2" htmlFor="area">Area</label>
-          <input type="text" id="area" value={area} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+          <label className="block text-xs font-bold mb-2" htmlFor="deliveryaddress">Delivery Address</label>
+          <input type="text" id="deliveryaddress" value={deliveryaddress} onChange={(e) => setdeliveryaddress(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
         </div>
 
         <div className={fieldWidthClass}>
-          <label className="block text-xs font-bold mb-2" htmlFor="status">Status</label>
-          <select
-            id="status"
-            value={status}
-            onChange={(e) => setstatus(e.target.value)}
-            className="w-full px-3 py-2 border rounded text-xs capitalize"
-            required
-          >
-            <option value="">Select Status</option>
-            <option value="On Hold">On Hold</option>
-            <option value="Active" disabled={!isEditMode}>Active</option>
-            <option value="Used" disabled={!isEditMode}>Used</option>
+          <label className="block text-xs font-bold mb-2" htmlFor="area">Area</label>
+          <select id="typeclient" value={area ?? ""} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+            <option value="">Select Region</option>
+            <option value="Ilocos Region">Region I - Ilocos Region</option>
+            <option value="Cagayan Valley">Region II - Cagayan Valley</option>
+            <option value="Central Luzon">Region III - Central Luzon</option>
+            <option value="Calabarzon">Region IV - CALABARZON</option>
+            <option value="Bicol Region">Region V - Bicol Region</option>
+            <option value="Western Visayas">Region VI - Western Visayas</option>
+            <option value="Central Visayas">Region VII - Cental Visayas</option>
+            <option value="Easter Visayas">Region VIII - Easter Visayas</option>
+            <option value="Zamboanga Peninsula">Region VIX - Zamboanga Peninsula</option>
+            <option value="Northern Mindanao">Region X - Nothern Mindanao</option>
+            <option value="Davao Region">Region XI - Davao Region</option>
+            <option value="Soccsksargen">Region XII - SOCCSKSARGEN</option>
+            <option value="National Capital Region">NCR</option>
+            <option value="Cordillera Administrative Region">CAR</option>
+            <option value="Bangsamoro Autonomous Region in Muslim Mindanao">BARMM</option>
+            <option value="Caraga">Region XIII</option>
+            <option value="Mimaropa Region">MIMAROPA Region</option>
           </select>
-
-          <p className="text-xs text-gray-600 mt-4">
-            Select the <strong>Status</strong> of the account to indicate its current state (On Hold).
-          </p>
         </div>
-
       </div>
     </>
   );
