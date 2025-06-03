@@ -1,5 +1,8 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+##
+Developed And Created By Leroux Y Xchire - ERP PROJECTS 2025 - DO NOT COPYRIGHT THIS!
+
 ## Getting Started
 
 First, run the development server:
