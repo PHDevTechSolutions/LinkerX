@@ -177,7 +177,7 @@ async function create(data: any) {
             contactnumber,
             emailaddress,
             address,
-            "New Account - Client Development",
+            "CSR Inquiries",
             "Active", // ✅ Setting status to 'Used'
         ];
 

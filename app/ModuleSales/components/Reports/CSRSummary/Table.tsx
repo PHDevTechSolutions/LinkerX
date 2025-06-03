@@ -144,9 +144,9 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
 
             {/* Pagination */}
             <div className="flex justify-between items-center mt-4 text-xs text-gray-600">
-                <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100 disabled:opacity-50">Previous</button>
+                <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="bg-gray-200 text-xs px-4 py-2 rounded">Previous</button>
                 <span>Page {currentPage} of {totalPages || 1}</span>
-                <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages || totalPages === 0} className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100 disabled:opacity-50">Next</button>
+                <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages || totalPages === 0} className="bg-gray-200 text-xs px-4 py-2 rounded">Next</button>
             </div>
         </div>
     );

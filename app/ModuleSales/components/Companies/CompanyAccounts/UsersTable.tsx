@@ -409,7 +409,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
         <thead className="bg-gray-100">
           <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
             <th className="px-6 py-4 font-semibold text-gray-700"></th>
-            <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
             {Role !== "Special Access" && (
             <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
             )}
@@ -455,20 +454,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                         className="w-4 h-4"
                       />
                     )}
-                  </td>
-                  <td className="px-6 py-4 text-xs">
-                    <span
-                      className={`px-2 py-1 text-[8px] font-semibold rounded-full whitespace-nowrap ${post.status === "Active"
-                        ? "bg-green-400 text-gray-100"
-                        : post.status === "Used"
-                          ? "bg-blue-400 text-gray-100"
-                          : post.status === "On Hold"
-                            ? "bg-yellow-400 text-black"
-                            : "bg-green-100 text-green-700"
-                        }`}
-                    >
-                      {post.status}
-                    </span>
                   </td>
                   {Role !== "Special Access" && (
                   <td className="px-6 py-4 text-xs">

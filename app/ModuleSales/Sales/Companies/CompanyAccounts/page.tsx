@@ -179,77 +179,67 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-        ? posts
-            .filter((post) => {
-                // Check if the company name or typeclient matches the search term (case-insensitive)
-                const matchesSearchTerm =
-                    post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    post?.typeclient?.toLowerCase().includes(searchTerm.toLowerCase());
+    ? posts
+        .filter((post) => {
+            // Only allow Top 50, Next 30, Balance 20
+            const validClientTypes = ["Top 50", "Next 30", "Balance 20"];
+            const isValidTypeClient = validClientTypes.includes(post?.typeclient);
 
-                // Parse the date_created field with safe handling
-                const postDate = post?.date_created ? new Date(post.date_created) : null;
+            const matchesSearchTerm =
+                post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                post?.typeclient?.toLowerCase().includes(searchTerm.toLowerCase());
 
-                // Check if the post's date is within the selected date range
-                const isWithinDateRange =
-                    (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                    (!endDate || (postDate && postDate <= new Date(endDate + "T23:59:59"))); // Ensures end of day
+            const postDate = post?.date_created ? new Date(post.date_created) : null;
 
-                // Check if the post matches the selected client type (with null/empty checks)
-                const matchesClientType = selectedClientType
-                    ? selectedClientType === "null"
-                        ? !post?.typeclient || post?.typeclient === null || post?.typeclient === "" // Handle null or empty typeclient
-                        : post?.typeclient === selectedClientType
-                    : true;
+            const isWithinDateRange =
+                (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                (!endDate || (postDate && postDate <= new Date(endDate + "T23:59:59")));
 
-                // Check if the post matches the selected status (case-insensitive)
-                const matchesStatus = selectedStatus
-                    ? post?.status?.toLowerCase() === selectedStatus.toLowerCase()
-                    : true;
+            const matchesClientType = selectedClientType
+                ? selectedClientType === "null"
+                    ? !post?.typeclient || post?.typeclient === null || post?.typeclient === ""
+                    : post?.typeclient === selectedClientType
+                : true;
 
-                // Get the reference ID from userDetails
-                const referenceID = userDetails.ReferenceID; // Manager's ReferenceID from MongoDB
+            const matchesStatus = selectedStatus
+                ? post?.status?.toLowerCase() === selectedStatus.toLowerCase()
+                : true;
 
-                // Check if the role matches based on the user's role
-                const matchesRole =
-                    userDetails.Role === "Super Admin" || userDetails.Role === "Special Access"
-                        ? true // Super Admin and Admin see all data
-                        : userDetails.Role === "Territory Sales Associate" || userDetails.Role === "Territory Sales Manager"
-                            ? post?.referenceid === referenceID // TSA and TSM see only their assigned companies
-                            : false; // Default to false if no role matches
+            const referenceID = userDetails.ReferenceID;
 
+            const matchesRole =
+                userDetails.Role === "Super Admin" || userDetails.Role === "Special Access"
+                    ? true
+                    : userDetails.Role === "Territory Sales Associate" || userDetails.Role === "Territory Sales Manager"
+                        ? post?.referenceid === referenceID
+                        : false;
 
-                // Check if the post's status is either 'Active' or 'Used'
-                const isActiveOrUsed = post?.status === "Active" || post?.status === "On Hold" || post?.status === "Used";
+            const isActiveOrUsed = post?.status === "Active" || post?.status === "On Hold" || post?.status === "Used";
 
-                // Return the final filtered result with all conditions applied
-                return (
-                    matchesSearchTerm &&
-                    isWithinDateRange &&
-                    matchesClientType &&
-                    matchesStatus && // ✅ Added correct status matching
-                    matchesRole &&
-                    isActiveOrUsed // ✅ Ensures 'Active' or 'Used' status
-                );
-            })
-            .sort((a, b) => {
-                // Sort alphabetically by company name with numbers first (A-Z, 0-9)
-                const companyNameA = a.companyname?.toLowerCase() || "";
-                const companyNameB = b.companyname?.toLowerCase() || "";
+            return (
+                isValidTypeClient && // ✅ Only allow Top 50, Next 30, Balance 20
+                matchesSearchTerm &&
+                isWithinDateRange &&
+                matchesClientType &&
+                matchesStatus &&
+                matchesRole &&
+                isActiveOrUsed
+            );
+        })
+        .sort((a, b) => {
+            const companyNameA = a.companyname?.toLowerCase() || "";
+            const companyNameB = b.companyname?.toLowerCase() || "";
 
-                // Compare numbers first (if any), then letters
-                const numFirstA = companyNameA.match(/^\d+/) ? parseInt(companyNameA.match(/^\d+/)[0], 10) : Infinity;
-                const numFirstB = companyNameB.match(/^\d+/) ? parseInt(companyNameB.match(/^\d+/)[0], 10) : Infinity;
+            const numFirstA = companyNameA.match(/^\d+/) ? parseInt(companyNameA.match(/^\d+/)[0], 10) : Infinity;
+            const numFirstB = companyNameB.match(/^\d+/) ? parseInt(companyNameB.match(/^\d+/)[0], 10) : Infinity;
 
-                // Compare by number first
-                if (numFirstA !== numFirstB) {
-                    return numFirstA - numFirstB;
-                }
+            if (numFirstA !== numFirstB) {
+                return numFirstA - numFirstB;
+            }
 
-                // If numbers are the same, compare alphabetically (A-Z)
-                return companyNameA.localeCompare(companyNameB);
-            })
-        : [];
-
+            return companyNameA.localeCompare(companyNameB);
+        })
+    : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -409,9 +399,6 @@ const ListofUser: React.FC = () => {
                                     </div>
 
                                     <div className="flex justify-between items-center mb-4">
-                                        <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition" onClick={() => setShowForm(true)} >
-                                            <CiSquarePlus size={15} /> Add Companies
-                                        </button>
                                         <div className="flex gap-2">
                                             <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-600 hover:text-white transition" onClick={() => setShowImportForm(true)}>
                                                 <CiImport size={15} /> Import Account

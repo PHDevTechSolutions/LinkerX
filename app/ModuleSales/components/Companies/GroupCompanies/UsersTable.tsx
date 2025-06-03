@@ -43,7 +43,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
   };
 
   const filteredCompanies = modalData.filter((company) =>
-    company.companyname.toLowerCase().includes(searchTerm.toLowerCase())
+    company.companygroup.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredCompanies.length / itemsPerPage);

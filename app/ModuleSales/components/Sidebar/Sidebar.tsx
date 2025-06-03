@@ -188,12 +188,14 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ],
     },
     {
-      title: 'My Companies',
+      title: 'List of Accounts',
       icon: BsBuildings,
       subItems: [
-        { title: 'List of Company Accounts', href: `/ModuleSales/Sales/Companies/CompanyAccounts${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Inactive Companies', href: `/ModuleSales/Sales/Companies/InactiveCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Group of Companies', href: `/ModuleSales/Sales/Companies/GroupCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Active', href: `/ModuleSales/Sales/Companies/CompanyAccounts${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'New Client', href: `/ModuleSales/Sales/Companies/NewClient${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Inactive', href: `/ModuleSales/Sales/Companies/InactiveCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Non-Buying', href: `/ModuleSales/Sales/Companies/NonBuying${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Group / Affiliate', href: `/ModuleSales/Sales/Companies/GroupCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'For Deletion', href: `/ModuleSales/Sales/Companies/DeletionCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
@@ -308,7 +310,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
 
     if (userDetails.Role === "Special Access") {
       return [
-        "My Companies",
+        "List of Accounts",
         "Activity",
         "Sales Performance",
         "Conversion Rates",
@@ -337,7 +339,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ];
 
       const agentModeMenu = [
-        "My Companies",
+        "List of Accounts",
         "Activities",
         "Projects",
         "Xend Mail",
@@ -353,7 +355,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
 
     if (userDetails.Role === "Territory Sales Associate") {
       return [
-        "My Companies",
+        "List of Accounts",
         "Activities",
         "Reports",
         "Projects",
