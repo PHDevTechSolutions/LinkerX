@@ -38,65 +38,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
     setUpdatedUser(posts);
   }, [posts]);
 
-  // Function to handle updating user status to inactive
-  const handleUpdateStatusToInactive = async (userId: string, companyName: string) => {
-    try {
-      const response = await axios.post(`/api/ModuleSales/Companies/CompanyAccounts/UpdateStatus`, {
-        userId,
-        status: "Inactive",
-      });
-
-      if (response.data.success) {
-        // Update the user status in the frontend
-        setUpdatedUser((prev) =>
-          prev.map((user) =>
-            user.id === userId ? { ...user, status: "Inactive" } : user
-          )
-        );
-
-        // Display toast notification with company name
-        toast.info(`${companyName} status updated to inactive automatically!`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      } else {
-        console.error("Failed to update user status");
-      }
-    } catch (error) {
-      console.error("Error updating user status:", error);
-    }
-  };
-
-  // Check if any user should be updated to inactive based on time intervals and date_created
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = Date.now();
-
-      updatedUser.forEach((user) => {
-        const dateUpdated = new Date(user.date_updated).getTime(); // Convert to timestamp
-        const timeElapsed = now - dateUpdated; // Time difference from last updated time
-
-        // Check if the user is on hold and status conditions are met to change to inactive
-        if (user.status === "On Hold") {
-          if (user.typeclient === "Top 50" && timeElapsed >= 14 * 24 * 60 * 60 * 1000) { // 14 days in milliseconds
-            handleUpdateStatusToInactive(user.id, user.companyname);
-          } else if (user.typeclient === "Next 30" && timeElapsed >= 1 * 24 * 60 * 60 * 1000) { // 1 day in milliseconds
-            handleUpdateStatusToInactive(user.id, user.companyname);
-          } else if (user.typeclient === "Below 20" && timeElapsed >= 60 * 24 * 60 * 60 * 1000) { // 60 days in milliseconds
-            handleUpdateStatusToInactive(user.id, user.companyname);
-          }
-        }
-      });
-    }, 30000); // Check every 30 seconds
-
-    return () => clearInterval(interval);
-  }, [updatedUser]);
-
   useEffect(() => {
     if (bulkTransferMode) {
       fetch("/api/tsm?Role=Territory Sales Manager")
