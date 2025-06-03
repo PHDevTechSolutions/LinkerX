@@ -188,7 +188,7 @@ const ListofUser: React.FC = () => {
                                 </div>
 
                                 <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                    <h2 className="text-lg font-bold mb-2">Deletion Companies</h2>
+                                    <h2 className="text-lg font-bold mb-2">List of Accounts - Deletion</h2>
                                     <p className="text-xs text-gray-600 mb-4">
                                         This section displays a list of <strong>Deletion Companies</strong> within the system. You can filter the companies based on various criteria such as client type, start date, end date, and search term. Use the filters to narrow down your search and quickly find the relevant inactive companies you need to manage or review.
                                     </p>

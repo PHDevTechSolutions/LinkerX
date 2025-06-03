@@ -146,7 +146,7 @@ const ListofUser: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">Company Groups</h2>
+                                            <h2 className="text-lg font-bold mb-2">List of Accounts - Company Groups</h2>
                                             <p className="text-xs text-gray-600 mb-4">
                                                 This section allows you to filter and search through different company groups.
                                                 You can use the search bar to search for company names and apply various filters based on client type and the date range.

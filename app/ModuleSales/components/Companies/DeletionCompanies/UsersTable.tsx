@@ -76,7 +76,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, R
                                         {Role !== "Special Access" && (
                                         <td className="px-6 py-4 text-xs">
                                             {post.status !== "Approve For Deletion" && (
-                                            <button className="block px-4 py-2 text-xs text-gray-700 text-left flex items-center gap-1" onClick={() => handleEdit(post)}><CiEdit /> Edit</button>
+                                            <button className="block px-4 py-2 text-[10px] font-bold text-black bg-blue-300 rounded-lg hover:bg-orange-300 hover:rounded-full hover:shadow-md w-full text-left flex items-center gap-1" onClick={() => handleEdit(post)}><CiEdit /> Edit</button>
                                             )}
                                         </td>
                                         )}
