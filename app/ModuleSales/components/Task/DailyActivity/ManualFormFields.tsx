@@ -828,102 +828,63 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 </div>
             </div>
 
-         <div className="mb-4 border rounded-lg shadow-sm p-4">
-  <div className="flex flex-wrap -mx-4 rounded">
-    {/* Activity Dropdown */}
-    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-      <label className="block text-xs font-bold mb-2">Type of Activity</label>
-      <select
-        value={typeactivity ?? ""}
-        onChange={(e) => handleActivitySelection(e.target.value)}
-        className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm"
-        required
-      >
-        <option value="" disabled>
-          Select an activity
-        </option>
-
-        <optgroup label="Account Development">
-          <option value="Account Development">Account Development</option>
-        </optgroup>
-
-        <optgroup label="Accounting">
-          <option value="Accounting: Accounts Receivable and Payment">Accounts Receivable and Payment</option>
-          <option value="Accounting: Billing Concern">Billing Concern</option>
-          <option value="Accounting: Refund Request">Refund Request</option>
-          <option value="Accounting: Sales Order Concern">Sales Order Concern</option>
-          <option value="Accounting: TPC Request">TPC Request</option>
-        </optgroup>
-
-        <optgroup label="Admin Concern">
-          <option value="Admin Concern: Coordination of Payment Terms Request">Coordination of Payment Terms Request</option>
-        </optgroup>
-
-        <optgroup label="CSR">
-          <option value="CSR Inquiries">CSR Inquiries</option>
-        </optgroup>
-
-        <optgroup label="Coordination">
-          <option value="Coordination of Pick-Up / Delivery to Client">Pick-Up / Delivery to Client</option>
-          <option value="Coordination With CS (Email Acknowledgement)">With CS (Email Acknowledgement)</option>
-        </optgroup>
-
-        <optgroup label="Marketing">
-          <option value="Marketing Concern">Marketing Concern</option>
-        </optgroup>
-
-        <optgroup label="Communication">
-          <option value="Email and Viber Checking">Email and Viber Checking</option>
-          <option value="Email Blast">Email Blast</option>
-          <option value="Email, SMS & Viber Replies">Email, SMS & Viber Replies</option>
-        </optgroup>
-
-        <optgroup label="Calls and Follow-Ups">
-          <option value="Inbound Call">Inbound Call</option>
-          <option value="Outbound Call">Outbound Call</option>
-          <option value="Payment Follow-Up">Payment Follow-Up</option>
-          <option value="Quotation Follow-Up">Quotation Follow-Up</option>
-        </optgroup>
-
-        <optgroup label="Logistics">
-          <option value="Logistic Concern: Shipping Cost Estimation">Shipping Cost Estimation</option>
-        </optgroup>
-
-        <optgroup label="Preparation">
-          <option value="Preparation: Bidding Preparation">Bidding Preparation</option>
-          <option value="Preparation: Preparation of Report">Preparation of Report</option>
-          <option value="Preparation: Preparation of SPF">Preparation of SPF</option>
-          <option value="Preparation: Preparation of Quote: New Client">Quote: New Client</option>
-          <option value="Preparation: Preparation of Quote: Existing Client">Quote: Existing Client</option>
-          <option value="Preparation: Sales Order Preparation">Sales Order Preparation</option>
-        </optgroup>
-
-        <optgroup label="Technical">
-          <option value="Technical: Dialux Simulation Request">Dialux Simulation Request</option>
-          <option value="Technical: Drawing Request">Drawing Request</option>
-          <option value="Technical: Inquiry">Inquiry</option>
-          <option value="Technical: Site Visit Request">Site Visit Request</option>
-          <option value="Technical: TDS Request">TDS Request</option>
-        </optgroup>
-
-        <optgroup label="Warehouse">
-          <option value="Warehouse: Coordination to Billing">Coordination to Billing</option>
-          <option value="Warehouse: Coordination to Dispatch">Coordination to Dispatch</option>
-          <option value="Warehouse: Coordination to Inventory">Coordination to Inventory</option>
-          <option value="Warehouse: Delivery / Helper Concern">Delivery / Helper Concern</option>
-          <option value="Warehouse: Replacement Request / Concern">Replacement Request / Concern</option>
-          <option value="Warehouse: Sample Request / Concern">Sample Request / Concern</option>
-          <option value="Warehouse: SO Status Follow Up">SO Status Follow Up</option>
-        </optgroup>
-
-        <optgroup label="Other">
-          <option value="Walk-In Client">Walk-In Client</option>
-          <option value="Delivered">Delivered</option>
-        </optgroup>
-      </select>
-    </div>
-  </div>
-</div>
+          <div className="mb-4 border rounded-lg shadow-sm p-4">
+                <div className="flex flex-wrap -mx-4 rounded">
+                    {/* Activity Dropdown */}
+                    {/* Type Activity */}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Type of Activity</label>
+                        <select value={typeactivity ?? ""}
+                            onChange={(e) => handleActivitySelection(e.target.value)}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm" required>
+                            <option value="" disabled>Select an activity</option>
+                            {[
+                                "Account Development",
+                                "Accounting: Accounts Receivable and Payment",
+                                "Accounting: Billing Concern",
+                                "Accounting: Refund Request",
+                                "Accounting: Sales Order Concern",
+                                "Accounting: TPC Request",
+                                "Admin Concern: Coordination of Payment Terms Request",
+                                "CSR Inquiries",
+                                "Coordination of Pick-Up / Delivery to Client",
+                                "Coordination With CS (Email Acknowledgement)",
+                                "Marketing Concern",
+                                "Email and Viber Checking",
+                                "Email Blast",
+                                "Email, SMS & Viber Replies",
+                                "Inbound Call",
+                                "Payment Follow-Up",
+                                "Quotation Follow-Up",
+                                "Logistic Concern: Shipping Cost Estimation",
+                                "Outbound Call",
+                                "Preparation: Bidding Preparation",
+                                "Preparation: Preparation of Report",
+                                "Preparation: Preparation of SPF",
+                                "Preparation: Preparation of Quote: New Client",
+                                "Preparation: Preparation of Quote: Existing Client",
+                                "Preparation: Sales Order Preparation",
+                                "Technical: Dialux Simulation Request",
+                                "Technical: Drawing Request",
+                                "Technical: Inquiry",
+                                "Technical: Site Visit Request",
+                                "Technical: TDS Request",
+                                "Walk-In Client",
+                                "Warehouse: Coordination to Billing",
+                                "Warehouse: Coordination to Dispatch",
+                                "Warehouse: Coordination to Inventory",
+                                "Warehouse: Delivery / Helper Concern",
+                                "Warehouse: Replacement Request / Concern",
+                                "Warehouse: Sample Request / Concern",
+                                "Warehouse: SO Status Follow Up",
+                                "Delivered",
+                            ].map((item) => (
+                                <option key={item} value={item}>
+                                    {item}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
                     {/* Conditional Fields */}
                     {showInboundFields && (
