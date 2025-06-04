@@ -3,6 +3,61 @@ import Select from 'react-select';
 import { CiCircleMinus, CiSquarePlus, CiSquareMinus } from "react-icons/ci";
 import { CiPaperplane } from "react-icons/ci";
 
+const activityGroups = {
+    "Account Development": ["Account Development"],
+    Accounting: [
+        "Accounts Receivable and Payment",
+        "Billing Concern",
+        "Refund Request",
+        "Sales Order Concern",
+        "TPC Request",
+    ],
+    "Admin Concern": ["Coordination of Payment Terms Request"],
+    CSR: ["CSR Inquiries"],
+    Coordination: [
+        "Pick-Up / Delivery to Client",
+        "With CS (Email Acknowledgement)",
+    ],
+    Marketing: ["Marketing Concern"],
+    Communication: [
+        "Email and Viber Checking",
+        "Email Blast",
+        "Email, SMS & Viber Replies",
+    ],
+    "Calls and Follow-Ups": [
+        "Inbound Call",
+        "Outbound Call",
+        "Payment Follow-Up",
+        "Quotation Follow-Up",
+    ],
+    Logistics: ["Shipping Cost Estimation"],
+    Preparation: [
+        "Bidding Preparation",
+        "Preparation of Report",
+        "Preparation of SPF",
+        "Quote: New Client",
+        "Quote: Existing Client",
+        "Sales Order Preparation",
+    ],
+    Technical: [
+        "Dialux Simulation Request",
+        "Drawing Request",
+        "Inquiry",
+        "Site Visit Request",
+        "TDS Request",
+    ],
+    Warehouse: [
+        "Coordination to Billing",
+        "Coordination to Dispatch",
+        "Coordination to Inventory",
+        "Delivery / Helper Concern",
+        "Replacement Request / Concern",
+        "Sample Request / Concern",
+        "SO Status Follow Up",
+    ],
+    Other: ["Walk-In Client", "Delivered"],
+};
+
 interface Activity {
     id: number;
     typeactivity: string;
@@ -211,44 +266,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             setactivitynumber(editPost.activitynumber);
         }
     }, [editPost, companyname, referenceid]);
-
-    // Fetch companies based on referenceid
-    //useEffect(() => {
-    //if (referenceid) {
-    // API call to fetch company data
-    //fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`)
-    //.then((response) => response.json())
-    //.then((data) => {
-    //if (data.success) {
-    // Filter companies with status 'Active' or 'Used', and exclude certain 'typeclient' values
-    //const filteredCompanies = data.data.filter((company: any) =>
-    //(company.status === 'Active' || company.status === 'Used') &&
-    //![
-    //'CSR Inquiries',
-    //'Balance 20',
-    //'Top 50',
-    //'Next 30',
-    //'New Account - Client Development'
-    //].includes(company.typeclient)
-    //);
-
-    //setCompanies(filteredCompanies.map((company: any) => ({
-    //value: company.companyname,
-    //label: company.companyname,
-    //contactperson: company.contactperson,
-    //contactnumber: company.contactnumber,
-    //emailaddress: company.emailaddress,
-    //typeclient: company.typeclient,
-    //address: company.address,
-    //area: company.area,
-    //})));
-    //} else {
-    //console.error("Error fetching companies:", data.error);
-    //}
-    //})
-    //.catch((error) => console.error("Error fetching companies:", error));
-    //}
-    //}, [referenceid]);
 
     useEffect(() => {
         if (referenceid) {
@@ -834,56 +851,41 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     {/* Type Activity */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Type of Activity</label>
-                        <select value={typeactivity ?? ""}
-                            onChange={(e) => handleActivitySelection(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm" required>
-                            <option value="" disabled>Select an activity</option>
-                            {[
-                                "Account Development",
-                                "Accounting: Accounts Receivable and Payment",
-                                "Accounting: Billing Concern",
-                                "Accounting: Refund Request",
-                                "Accounting: Sales Order Concern",
-                                "Accounting: TPC Request",
-                                "Admin Concern: Coordination of Payment Terms Request",
-                                "CSR Inquiries",
-                                "Coordination of Pick-Up / Delivery to Client",
-                                "Coordination With CS (Email Acknowledgement)",
-                                "Marketing Concern",
-                                "Email and Viber Checking",
-                                "Email Blast",
-                                "Email, SMS & Viber Replies",
-                                "Inbound Call",
-                                "Payment Follow-Up",
-                                "Quotation Follow-Up",
-                                "Logistic Concern: Shipping Cost Estimation",
-                                "Outbound Call",
-                                "Preparation: Bidding Preparation",
-                                "Preparation: Preparation of Report",
-                                "Preparation: Preparation of SPF",
-                                "Preparation: Preparation of Quote: New Client",
-                                "Preparation: Preparation of Quote: Existing Client",
-                                "Preparation: Sales Order Preparation",
-                                "Technical: Dialux Simulation Request",
-                                "Technical: Drawing Request",
-                                "Technical: Inquiry",
-                                "Technical: Site Visit Request",
-                                "Technical: TDS Request",
-                                "Walk-In Client",
-                                "Warehouse: Coordination to Billing",
-                                "Warehouse: Coordination to Dispatch",
-                                "Warehouse: Coordination to Inventory",
-                                "Warehouse: Delivery / Helper Concern",
-                                "Warehouse: Replacement Request / Concern",
-                                "Warehouse: Sample Request / Concern",
-                                "Warehouse: SO Status Follow Up",
-                                "Delivered",
-                            ].map((item) => (
-                                <option key={item} value={item}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="relative">
+                            <button
+                                type="button"
+                                onClick={() => setIsOpen(!isOpen)}
+                                className="w-full px-3 py-2 border rounded text-xs bg-white shadow-sm text-left"
+                            >
+                                {typeactivity || "Select an activity"}
+                            </button>
+
+                            {isOpen && (
+                                <div className="absolute z-10 w-full bg-white border mt-1 rounded shadow-lg max-h-64 overflow-y-auto">
+                                    {Object.entries(activityGroups).map(([group, items]) => (
+                                        <div key={group} className="group hover:bg-gray-100">
+                                            <div className="px-3 py-2 text-xs font-semibold bg-gray-50 text-gray-700 cursor-pointer">
+                                                {group}
+                                            </div>
+                                            <div className="pl-4">
+                                                {items.map((item) => (
+                                                    <div
+                                                        key={item}
+                                                        onClick={() => {
+                                                            settypeactivity(`${group}: ${item}`);
+                                                            setIsOpen(false);
+                                                        }}
+                                                        className="px-3 py-2 text-xs hover:bg-blue-100 cursor-pointer"
+                                                    >
+                                                        {item}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Conditional Fields */}

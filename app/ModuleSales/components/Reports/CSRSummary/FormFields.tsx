@@ -89,7 +89,16 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
         <div className={fieldWidthClass}>
           <label className="block text-xs font-bold mb-2" htmlFor="companyname">Company Name</label>
-          <input type="text" id="companyname" value={companyname} onChange={(e) => setcompanyname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required
+          <input
+            type="text"
+            id="companyname"
+            value={companyname}
+            onChange={(e) => {
+              const input = e.target.value;
+              const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+              setcompanyname(sanitized);
+            }}
+            className="w-full px-3 py-2 border rounded text-xs capitalize" required
           />
         </div>
 
@@ -98,7 +107,16 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <label className="block text-xs font-bold mb-2">Contact Person</label>
           {contactPersons.map((person, index) => (
             <div key={index} className="flex items-center gap-2 mb-2">
-              <input type="text" value={person} onChange={(e) => handleContactPersonChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+              <input
+                type="text"
+                value={person}
+                onChange={(e) => {
+                  const input = e.target.value;
+                  const lettersOnly = input.replace(/[^a-zA-Z\s]/g, "");
+                  handleContactPersonChange(index, lettersOnly);
+                }}
+                className="w-full px-3 py-2 border rounded text-xs capitalize" />
+
               <button type="button" onClick={addContactPerson} className="p-2 bg-gray-100 shadow-sm rounded hover:bg-green-500 hover:text-white"><CiCirclePlus size={18} /></button>
               {index > 0 && (
                 <button type="button" onClick={() => removeContactPerson(index)} className="p-2 bg-red-400 text-white rounded hover:bg-red-600"><CiCircleMinus size={18} /></button>
@@ -109,7 +127,17 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
         <div className={fieldWidthClass}>
           <label className="block text-xs font-bold mb-2" htmlFor="remarks">Remarks</label>
-          <textarea value={remarks} onChange={(e) => setremarks(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={5}></textarea>
+          <textarea
+            value={remarks}
+            onChange={(e) => {
+              const input = e.target.value;
+              const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+              setremarks(sanitized);
+            }}
+            className="w-full px-3 py-2 border rounded text-xs capitalize"
+            rows={5}>
+
+          </textarea>
         </div>
 
         <div className={fieldWidthClass}>

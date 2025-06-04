@@ -1,5 +1,6 @@
 import React from "react";
-import MainCardTable from "../../../components/Task/ScheduledTask/MainCardTable";
+import MainCardTable from "./MainCardTable";
+import Automation from "./Automation";
 
 interface Post {
   id: string;
@@ -45,10 +46,8 @@ const Main: React.FC<UsersTableProps> = ({ posts, userDetails, fetchAccount }) =
   
     <div className="grid grid-cols-4 gap-4">
       <MainCardTable posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
-      <div className="col-span-1 bg-black rounded-lg shadow p-4">
-
-        {/* Future widgets or insights */}
-
+      <div className="col-span-1 rounded-lg shadow">
+      <Automation posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
       </div>
     </div>
   );
