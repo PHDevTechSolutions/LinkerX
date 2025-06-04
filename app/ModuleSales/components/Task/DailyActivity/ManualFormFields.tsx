@@ -56,7 +56,7 @@ interface FormFieldsProps {
     wrapup: string; setwrapup: (value: string) => void;
     inquiries: string; setinquiries: (value: string) => void;
     csragent: string; setcsragent: (value: string) => void;
-    
+
 
     currentRecords: Activity[];
     editPost?: any;
@@ -577,7 +577,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     type="text"
                                     id="companyname"
                                     value={companyname ?? ""}
-                                    onChange={(e) => setcompanyname(e.target.value)}
+                                    onChange={(e) => {
+                                        const input = e.target.value;
+                                        const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                        setcompanyname(sanitized);
+                                    }}
                                     className="w-full px-3 py-2 border rounded text-xs capitalize mt-2"
                                     disabled
                                 />
@@ -588,7 +592,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             type="text"
                             id="companyname"
                             value={companyname ?? ""}
-                            onChange={(e) => setcompanyname(e.target.value)}
+                            onChange={(e) => {
+                                const input = e.target.value;
+                                const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                setcompanyname(sanitized);
+                            }}
                             className="w-full px-3 py-2 border rounded text-xs capitalize"
                         />
                     )}
@@ -601,7 +609,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         type="text"
                         id="contactperson"
                         value={contactperson ?? ""}
-                        onChange={(e) => setcontactperson(e.target.value)}
+                        onChange={(e) => {
+                            const input = e.target.value;
+                            const lettersOnly = input.replace(/[^a-zA-Z\s]/g, ""); // Allows only letters and spaces
+                            setcontactperson(lettersOnly);
+                        }}
                         className="w-full px-3 py-2 border rounded text-xs capitalize"
                     />
                 </div>
@@ -613,8 +625,12 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         type="text"
                         id="contactnumber"
                         value={contactnumber ?? ""}
-                        onChange={(e) => setcontactnumber(e.target.value)}
-                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                        onChange={(e) => {
+                            const input = e.target.value;
+                            const numbersOnly = input.replace(/[^0-9]/g, ""); // Allows only digits
+                            setcontactnumber(numbersOnly);
+                        }}
+                        className="w-full px-3 py-2 border rounded text-xs"
                     />
                 </div>
 
@@ -625,7 +641,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         type="text"
                         id="emailaddress"
                         value={emailaddress ?? ""}
-                        onChange={(e) => setemailaddress(e.target.value)}
+                        onChange={(e) => {
+                            const input = e.target.value;
+                            const allowed = input.replace(/[^a-zA-Z0-9@._-]/g, ""); // Allows typical email characters
+                            setemailaddress(allowed);
+                        }}
                         className="w-full px-3 py-2 border rounded text-xs"
                     />
                 </div>
@@ -650,11 +670,15 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         type="text"
                         id="address"
                         value={address ?? ""}
-                        onChange={(e) => setaddress(e.target.value)}
+                        onChange={(e) => {
+                            const input = e.target.value;
+                            const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                            setaddress(sanitized);
+                        }}
                         className="w-full px-3 py-2 border rounded text-xs capitalize"
                     />
                 </div>
-                
+
                 {/* Delivery Address */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Delivery Address</label>
@@ -662,7 +686,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         type="text"
                         id="deliveryaddress"
                         value={deliveryaddress ?? ""}
-                        onChange={(e) => setdeliveryaddress(e.target.value)}
+                        onChange={(e) => {
+                            const input = e.target.value;
+                            const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                            setdeliveryaddress(sanitized);
+                        }}
                         className="w-full px-3 py-2 border rounded text-xs capitalize"
                     />
                 </div>
@@ -712,7 +740,17 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 {/* Project Name */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Project Name ( Optional )</label>
-                                    <input type="text" id="projectname" value={projectname ?? ""} onChange={(e) => setprojectname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
+                                    <input
+                                        type="text"
+                                        id="projectname"
+                                        value={projectname ?? ""}
+                                        onChange={(e) => {
+                                            const input = e.target.value;
+                                            const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                            setprojectname(sanitized);
+                                        }}
+                                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                                        required />
                                 </div>
 
                                 {/* Project Category */}
@@ -899,7 +937,16 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Quotation Number</label>
-                                <input type="text" value={quotationnumber ?? ""} onChange={(e) => setquotationnumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required />
+                                <input
+                                    type="text"
+                                    value={quotationnumber ?? ""}
+                                    onChange={(e) => {
+                                        const input = e.target.value;
+                                        const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                        setquotationnumber(sanitized);
+                                    }}
+                                    className="w-full px-3 py-2 border rounded text-xs uppercase"
+                                    required />
                             </div>
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -946,8 +993,18 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Number</label>
-                                <input type="text" value={sonumber ?? ""} onChange={(e) => setsonumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required />
+                                <input
+                                    type="text"
+                                    value={sonumber ?? ""}
+                                    onChange={(e) => {
+                                        const input = e.target.value;
+                                        const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                        setsonumber(sanitized);
+                                    }}
+                                    className="w-full px-3 py-2 border rounded text-xs uppercase"
+                                    required />
                             </div>
+
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Amount</label>
                                 <input
@@ -1077,7 +1134,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <label className="block text-xs font-bold mb-2">Remarks</label>
                         <textarea
                             value={remarks ?? ""}
-                            onChange={(e) => setremarks(e.target.value)}
+                            onChange={(e) => {
+                                const input = e.target.value;
+                                const lettersOnly = input.replace(/[^a-zA-Z\s]/g, ""); // Only letters and spaces
+                                setremarks(lettersOnly);
+                            }}
                             className="w-full px-3 py-2 border rounded text-xs capitalize"
                             rows={5}
                             required

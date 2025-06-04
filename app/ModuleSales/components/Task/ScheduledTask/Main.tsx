@@ -36,16 +36,19 @@ interface UsersTableProps {
     Manager: string;
     TSM: string;
   };
+
   fetchAccount: () => void;
 }
 
 const Main: React.FC<UsersTableProps> = ({ posts, userDetails, fetchAccount }) => {
   return (
+  
     <div className="grid grid-cols-4 gap-4">
       <MainCardTable posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
-
       <div className="col-span-1 bg-black rounded-lg shadow p-4">
+
         {/* Future widgets or insights */}
+
       </div>
     </div>
   );

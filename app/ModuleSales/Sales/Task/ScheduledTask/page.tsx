@@ -12,37 +12,18 @@ import Main from "../../../components/Task/ScheduledTask/Main";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
+// Fetch Users
 const ListofUser: React.FC = () => {
-    const [showForm, setShowForm] = useState(false);
-    const [showImportForm, setShowImportForm] = useState(false);
-    const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(10);
-    const [selectedClientType, setSelectedClientType] = useState("");
-    const [startDate, setStartDate] = useState(""); // Default to null
-    const [endDate, setEndDate] = useState(""); // Default to null
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
-    const [userDetails, setUserDetails] = useState({
-        UserId: "", 
-        Firstname: "", 
-        Lastname: "", 
-        Manager: "",
-        TSM: "",
-        Email: "", 
-        Role: "", 
-        Department: "", 
-        Company: "", 
-        TargetQuota: "", 
-        ReferenceID: "",
-    });
-    const [TargetQuota, setTargetQuota] = useState("");
+    const [userDetails, setUserDetails] = useState({ UserId: "", Firstname: "", Lastname: "", Manager: "", TSM: "",
+        Email: "", Role: "", Department: "", Company: "", TargetQuota: "", ReferenceID: "", });
+
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
-    const [showAccessModal, setShowAccessModal] = useState(false);
-
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -145,6 +126,7 @@ const ListofUser: React.FC = () => {
                                         <p className="text-xs text-gray-600 mb-4">
                                             This section provides an organized overview of <strong>client accounts</strong> handled by the Sales team. It enables users to efficiently monitor account status, track communications, and manage key activities and deliverables. The table below offers a detailed summary to support effective relationship management and ensure client needs are consistently met.
                                         </p>
+
                                         <Filters
                                             searchTerm={searchTerm}
                                             setSearchTerm={setSearchTerm}
@@ -153,16 +135,14 @@ const ListofUser: React.FC = () => {
                                             endDate={endDate}
                                             setEndDate={setEndDate}
                                         />
+
                                         <Main
-  posts={filteredAccounts}
-  userDetails={userDetails}
-  fetchAccount={fetchAccount}
-/>
-
-
+                                            posts={filteredAccounts}
+                                            userDetails={userDetails}
+                                            fetchAccount={fetchAccount}
+                                        />
                                     </div>
                                 </>
-
                                 <ToastContainer className="text-xs" autoClose={1000} />
                             </div>
                         </div>

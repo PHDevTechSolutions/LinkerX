@@ -151,10 +151,31 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <label className="block text-xs font-bold mb-2">Contact Person</label>
           {contactPersons.map((person, index) => (
             <div key={index} className="flex items-center gap-2 mb-2">
-              <input type="text" value={person} onChange={(e) => handleContactPersonChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-              <button type="button" onClick={addContactPerson} className="p-2 bg-gray-100 shadow-sm rounded hover:bg-green-500 hover:text-white"><CiCirclePlus size={18} /></button>
+              <input
+                type="text"
+                value={person}
+                onChange={(e) => {
+                  const input = e.target.value;
+                  const lettersOnly = input.replace(/[^a-zA-Z\s]/g, "");
+                  handleContactPersonChange(index, lettersOnly);
+                }}
+                className="w-full px-3 py-2 border rounded text-xs capitalize"
+              />
+              <button
+                type="button"
+                onClick={addContactPerson}
+                className="p-2 bg-gray-100 shadow-sm rounded hover:bg-green-500 hover:text-white"
+              >
+                <CiCirclePlus size={18} />
+              </button>
               {index > 0 && (
-                <button type="button" onClick={() => removeContactPerson(index)} className="p-2 bg-red-400 text-white rounded hover:bg-red-600"><CiCircleMinus size={18} /></button>
+                <button
+                  type="button"
+                  onClick={() => removeContactPerson(index)}
+                  className="p-2 bg-red-400 text-white rounded hover:bg-red-600"
+                >
+                  <CiCircleMinus size={18} />
+                </button>
               )}
             </div>
           ))}
@@ -165,10 +186,31 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <label className="block text-xs font-bold mb-2">Contact Number</label>
           {contactNumbers.map((number, index) => (
             <div key={index} className="flex items-center gap-2 mb-2">
-              <input type="text" value={number} onChange={(e) => handleContactNumberChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
-              <button type="button" onClick={addContactNumber} className="p-2 bg-gray-100 shadow-sm rounded hover:bg-green-500 hover:text-white"><CiCirclePlus size={18} /></button>
+              <input
+                type="text"
+                value={number}
+                onChange={(e) => {
+                  const input = e.target.value;
+                  const numbersOnly = input.replace(/[^0-9]/g, ""); // allow digits only
+                  handleContactNumberChange(index, numbersOnly);
+                }}
+                className="w-full px-3 py-2 border rounded text-xs"
+              />
+              <button
+                type="button"
+                onClick={addContactNumber}
+                className="p-2 bg-gray-100 shadow-sm rounded hover:bg-green-500 hover:text-white"
+              >
+                <CiCirclePlus size={18} />
+              </button>
               {index > 0 && (
-                <button type="button" onClick={() => removeContactNumber(index)} className="p-2 bg-red-400 text-white rounded hover:bg-red-600"><CiCircleMinus size={18} /></button>
+                <button
+                  type="button"
+                  onClick={() => removeContactNumber(index)}
+                  className="p-2 bg-red-400 text-white rounded hover:bg-red-600"
+                >
+                  <CiCircleMinus size={18} />
+                </button>
               )}
             </div>
           ))}
@@ -177,17 +219,39 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         {/* Email Address */}
         <div className={fieldWidthClass}>
           <label className="block text-xs font-bold mb-2">Email Address</label>
-          {emailAddresses.map((email, index) => (
-            <div key={index} className="flex items-center gap-2 mb-2">
-              <input type="text" value={email} onChange={(e) => handleEmailAddressChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
-              <button type="button" onClick={addEmailAddress} className="p-2 bg-gray-100 shadow-sm rounded hover:bg-green-500 hover:text-white"><CiCirclePlus size={16} /></button>
-              {index > 0 && (
-                <button type="button" onClick={() => removeEmailAddress(index)} className="p-2 bg-red-400 text-white rounded hover:bg-red-600"><CiCircleMinus size={16} /></button>
-              )}
-            </div>
-          ))}
+          {emailAddresses.map((email, index) => {
+            const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            return (
+              <div key={index} className="flex items-center gap-2 mb-2">
+                <input
+                  type="text"
+                  value={email}
+                  onChange={(e) => handleEmailAddressChange(index, e.target.value)}
+                  className={`w-full px-3 py-2 border rounded text-xs ${email.length > 0 && !isValidEmail ? "border-red-500" : ""
+                    }`}
+                />
+                <button
+                  type="button"
+                  onClick={addEmailAddress}
+                  className="p-2 bg-gray-100 shadow-sm rounded hover:bg-green-500 hover:text-white"
+                >
+                  <CiCirclePlus size={16} />
+                </button>
+                {index > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => removeEmailAddress(index)}
+                    className="p-2 bg-red-400 text-white rounded hover:bg-red-600"
+                  >
+                    <CiCircleMinus size={16} />
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
-
+        
+        {/* Type of Client */}
         <div className={fieldWidthClass}>
           <label className="block text-xs font-bold mb-2" htmlFor="typeclient">Type of Client</label>
           <select id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
@@ -200,21 +264,55 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           </select>
         </div>
 
+        {/* Affiliate or Group */}
         <div className={fieldWidthClass}>
           <label className="block text-xs font-bold mb-2" htmlFor="companygroup">Affiliate or Group</label>
-          <input type="text" id="companygroup" value={companygroup} onChange={(e) => setcompanygroup(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" />
+          <input
+            type="text"
+            id="companygroup"
+            value={companygroup}
+            onChange={(e) => {
+              const input = e.target.value;
+              const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+              setcompanygroup(sanitized);
+            }}
+
+            className="w-full px-3 py-2 border rounded text-xs uppercase"
+          />
         </div>
 
+        {/* Complete Address */}
         <div className={fieldWidthClass}>
           <label className="block text-xs font-bold mb-2" htmlFor="address">Complete Address</label>
-          <input type="text" id="address" value={address} onChange={(e) => setaddress(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+          <input
+            type="text"
+            id="address"
+            value={address}
+            onChange={(e) => {
+              const input = e.target.value;
+              const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+              setaddress(sanitized);
+            }}
+            className="w-full px-3 py-2 border rounded text-xs capitalize"
+          />
         </div>
-
+        
+        {/* Delivery Address */}
         <div className={fieldWidthClass}>
           <label className="block text-xs font-bold mb-2" htmlFor="deliveryaddress">Delivery Address</label>
-          <input type="text" id="deliveryaddress" value={deliveryaddress} onChange={(e) => setdeliveryaddress(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+          <input
+            type="text"
+            id="deliveryaddress"
+            value={deliveryaddress}
+            onChange={(e) => {
+              const input = e.target.value;
+              const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+              setdeliveryaddress(sanitized);
+            }}
+            className="w-full px-3 py-2 border rounded text-xs capitalize" />
         </div>
-
+        
+        {/* Region / Area */}
         <div className={fieldWidthClass}>
           <label className="block text-xs font-bold mb-2" htmlFor="area">Area</label>
           <select id="typeclient" value={area ?? ""} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>

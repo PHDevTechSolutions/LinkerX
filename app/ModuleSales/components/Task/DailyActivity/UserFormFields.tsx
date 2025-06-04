@@ -57,6 +57,7 @@ interface FormFieldsProps {
     inquiries: string; setinquiries: (value: string) => void;
     csragent: string; setcsragent: (value: string) => void;
 
+
     currentRecords: Activity[];
     editPost?: any;
 }
@@ -212,6 +213,43 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     }, [editPost, companyname, referenceid]);
 
     // Fetch companies based on referenceid
+    //useEffect(() => {
+    //if (referenceid) {
+    // API call to fetch company data
+    //fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`)
+    //.then((response) => response.json())
+    //.then((data) => {
+    //if (data.success) {
+    // Filter companies with status 'Active' or 'Used', and exclude certain 'typeclient' values
+    //const filteredCompanies = data.data.filter((company: any) =>
+    //(company.status === 'Active' || company.status === 'Used') &&
+    //![
+    //'CSR Inquiries',
+    //'Balance 20',
+    //'Top 50',
+    //'Next 30',
+    //'New Account - Client Development'
+    //].includes(company.typeclient)
+    //);
+
+    //setCompanies(filteredCompanies.map((company: any) => ({
+    //value: company.companyname,
+    //label: company.companyname,
+    //contactperson: company.contactperson,
+    //contactnumber: company.contactnumber,
+    //emailaddress: company.emailaddress,
+    //typeclient: company.typeclient,
+    //address: company.address,
+    //area: company.area,
+    //})));
+    //} else {
+    //console.error("Error fetching companies:", data.error);
+    //}
+    //})
+    //.catch((error) => console.error("Error fetching companies:", error));
+    //}
+    //}, [referenceid]);
+
     useEffect(() => {
         if (referenceid) {
             // API call to fetch company data
@@ -225,6 +263,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         );
 
                         setCompanies(filteredCompanies.map((company: any) => ({
+                            id: company.id,  // Ensure `id` is included in the mapped object
+                            companyname: company.companyname,
                             value: company.companyname,
                             label: company.companyname,
                             contactperson: company.contactperson,
@@ -248,78 +288,68 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         setEmailAddresses(emailaddress ? emailaddress.split(", ") : [""]);
     }, [contactperson, contactnumber, emailaddress]);
 
-    const handleCompanySelect = (selectedOption: any) => {
-        const newStatus = selectedOption ? 'Used' : 'Active';
+    const handleCompanySelect = async (selectedOption: any) => {
+        const newStatus = selectedOption ? 'Active' : 'Used';
 
-        // If a company was previously selected, set its status back to Active
-        if (previousCompany && previousCompany.value !== selectedOption?.value) {
-            // Update previous company status to Active
-            fetch(`/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    companyname: previousCompany.value,
-                    status: 'Active', // Set the status to Active for the previous company
-                }),
-            })
-                .then(response => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        console.log("Previous company status updated to Active.");
-                    } else {
-                        console.error("Error updating previous company status:", data.error);
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error updating previous company status:", error);
+        try {
+            // Check if previousCompany has a valid id
+            if (previousCompany && previousCompany.id && previousCompany.id !== selectedOption?.id) {
+                console.log("Updating previous company to Active:", previousCompany.id);
+                const res = await fetch(`/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: previousCompany.id, // Correct `id` being passed
+                        status: 'Used',
+                    }),
                 });
-        }
-
-        // Update the current selected company's status to Used and the form fields
-        if (selectedOption) {
-            setPreviousCompany(selectedOption); // Track the current selection for future reference
-            setcompanyname(selectedOption.value);
-            setcontactperson(selectedOption.contactperson);
-            setcontactnumber(selectedOption.contactnumber);
-            setemailaddress(selectedOption.emailaddress);
-            settypeclient(selectedOption.typeclient);
-            setaddress(selectedOption.address);
-            setarea(selectedOption.area);
-        } else {
-            // If no company is selected, reset all fields and set the previous company as null
-            setPreviousCompany(null);
-            setcompanyname("");
-            setcontactperson("");
-            setcontactnumber("");
-            setemailaddress("");
-            settypeclient("");
-            setaddress("");
-            setarea("");
-        }
-
-        // Ensure both companyname and status are passed in the request body
-        fetch(`/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                companyname: selectedOption ? selectedOption.value : "", // Ensure companyname is passed
-                status: newStatus, // Ensure status is passed
-            }),
-        })
-            .then(response => response.json())
-            .then((data) => {
-                if (data.success) {
-                    console.log("Company status updated successfully.");
-                } else {
-
+                const data = await res.json();
+                if (!data.success) {
+                    console.error("Failed to update previous company:", data.error);
                 }
-            })
-            .catch((error) => {
-            });
+            }
+
+            // Check if selectedOption has valid data
+            if (selectedOption && selectedOption.id) {
+                console.log("Selected Company Data:", selectedOption);
+
+                setPreviousCompany(selectedOption);
+                setcompanyname(selectedOption.companyname);  // Ensure correct key name here
+                setcontactperson(selectedOption.contactperson);
+                setcontactnumber(selectedOption.contactnumber);
+                setemailaddress(selectedOption.emailaddress);
+                settypeclient(selectedOption.typeclient);
+                setaddress(selectedOption.address);
+                setarea(selectedOption.area);
+
+                // Update the selected company to 'Used'
+                console.log("Updating selected company status to:", newStatus);
+                const res = await fetch(`/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: selectedOption.id,  // Ensure `id` is passed correctly
+                        status: newStatus,
+                    }),
+                });
+                const data = await res.json();
+                if (!data.success) {
+                    console.error("Failed to update selected company:", data.error);
+                }
+            } else {
+                console.log("No selected company, resetting form fields.");
+                setPreviousCompany(null);
+                setcompanyname("");
+                setcontactperson("");
+                setcontactnumber("");
+                setemailaddress("");
+                settypeclient("");
+                setaddress("");
+                setarea("");
+            }
+        } catch (error) {
+            console.error("Unexpected error while updating company status:", error);
+        }
     };
 
     const handleContactPersonChange = (index: number, value: string) => {
@@ -337,22 +367,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const handleEmailAddressChange = (index: number, value: string) => {
         const newEmailAddresses = [...emailAddresses];
         newEmailAddresses[index] = value;
-        setEmailAddresses(newEmailAddresses);
-    };
-
-    // Remove specific contact info
-    const removeContactPerson = (index: number) => {
-        const newContactPersons = contactPersons.filter((_, i) => i !== index);
-        setContactPersons(newContactPersons);
-    };
-
-    const removeContactNumber = (index: number) => {
-        const newContactNumbers = contactNumbers.filter((_, i) => i !== index);
-        setContactNumbers(newContactNumbers);
-    };
-
-    const removeEmailAddress = (index: number) => {
-        const newEmailAddresses = emailAddresses.filter((_, i) => i !== index);
         setEmailAddresses(newEmailAddresses);
     };
 
@@ -506,6 +520,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         setcallback(formattedDate);
     };
 
+    const [isManual, setIsManual] = useState(false); // toggle state
+
     return (
         <>
             <div className="flex flex-wrap -mx-4">
@@ -526,68 +542,112 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             </div>
 
             <div className="flex flex-wrap -mx-4">
-                {/* Company Name */}
+                {/* Company Name with Switch */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2" htmlFor="companyname">Company Name</label>
-                    {editPost ? (
-                        // If editUser exists (edit mode), show a disabled text field
+                    <div className="flex items-center justify-between mb-2">
+                        <label className="block text-xs font-bold" htmlFor="companyname">Company Name</label>
+                        <button
+                            type="button"
+                            onClick={() => setIsManual(prev => !prev)}
+                            className="text-blue-500 text-[10px] underline"
+                        >
+                            {isManual ? "If Account Exists Switch to Select" : "If Account is New Switch to Manual"}
+                        </button>
+                    </div>
+                    {!isManual ? (
+                        <>
+                            <Select
+                                id="CompanyName"
+                                options={companies}
+                                onChange={handleCompanySelect}
+                                className="w-full text-xs capitalize"
+                                placeholder="Select Company"
+                                isClearable
+                            />
+                            {editPost ? (
+                                <input
+                                    type="text"
+                                    id="companyname"
+                                    value={editPost.companyname || ""}
+                                    disabled
+                                    className="text-xs capitalize w-full p-2 border border-gray-300 rounded-md mt-2"
+                                />
+                            ) : (
+                                <input
+                                    type="text"
+                                    id="companyname"
+                                    value={companyname ?? ""}
+                                    onChange={(e) => {
+                                        const input = e.target.value;
+                                        const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                        setcompanyname(sanitized);
+                                    }}
+                                    className="w-full px-3 py-2 border rounded text-xs capitalize mt-2"
+                                    disabled
+                                />
+                            )}
+                        </>
+                    ) : (
                         <input
                             type="text"
                             id="companyname"
-                            value={editPost.companyname || ''}
-                            disabled
-                            className="text-xs capitalize w-full p-2 border border-gray-300 rounded-md"
+                            value={companyname ?? ""}
+                            onChange={(e) => {
+                                const input = e.target.value;
+                                const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                setcompanyname(sanitized);
+                            }}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize"
                         />
-                    ) : (
-                        // If not in edit mode, show the Select dropdown
-                        <input type="text" id="typeclient" value={companyname ?? ""} onChange={(e) => setcompanyname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" disabled />
                     )}
-
                 </div>
 
                 {/* Contact Person */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Contact Person</label>
-                    {contactPersons.map((person, index) => (
-                        <div key={index} className="flex items-center gap-2 mb-2">
-                            <input type="text" value={person ?? ""} onChange={(e) => handleContactPersonChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                            {index > 0 && (
-                                <button type="button" onClick={() => removeContactPerson(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600" >
-                                    <CiCircleMinus size={16} />
-                                </button>
-                            )}
-                        </div>
-                    ))}
+                    <input
+                        type="text"
+                        id="contactperson"
+                        value={contactperson ?? ""}
+                        onChange={(e) => {
+                            const input = e.target.value;
+                            const lettersOnly = input.replace(/[^a-zA-Z\s]/g, ""); // Allows only letters and spaces
+                            setcontactperson(lettersOnly);
+                        }}
+                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    />
                 </div>
 
                 {/* Contact Number */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Contact Number</label>
-                    {contactNumbers.map((number, index) => (
-                        <div key={index} className="flex items-center gap-2 mb-2">
-                            <input type="text" value={number ?? ""} onChange={(e) => handleContactNumberChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                            {index > 0 && (
-                                <button type="button" onClick={() => removeContactNumber(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600">
-                                    <CiCircleMinus size={16} />
-                                </button>
-                            )}
-                        </div>
-                    ))}
+                    <input
+                        type="text"
+                        id="contactnumber"
+                        value={contactnumber ?? ""}
+                        onChange={(e) => {
+                            const input = e.target.value;
+                            const numbersOnly = input.replace(/[^0-9]/g, ""); // Allows only digits
+                            setcontactnumber(numbersOnly);
+                        }}
+                        className="w-full px-3 py-2 border rounded text-xs"
+                    />
                 </div>
 
                 {/* Email Address */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Email Address</label>
-                    {emailAddresses.map((email, index) => (
-                        <div key={index} className="flex items-center gap-2 mb-2">
-                            <input type="text" value={email ?? ""} onChange={(e) => handleEmailAddressChange(index, e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
-                            {index > 0 && (
-                                <button type="button" onClick={() => removeEmailAddress(index)} className="p-2 bg-red-700 text-white rounded hover:bg-red-600">
-                                    <CiCircleMinus size={16} />
-                                </button>
-                            )}
-                        </div>
-                    ))}
+                    <input
+                        type="text"
+                        id="emailaddress"
+                        value={emailaddress ?? ""}
+                        onChange={(e) => {
+                            const input = e.target.value;
+                            const allowed = input.replace(/[^a-zA-Z0-9@._-]/g, ""); // Allows typical email characters
+                            setemailaddress(allowed);
+                        }}
+                        className="w-full px-3 py-2 border rounded text-xs"
+                    />
                 </div>
 
                 {/* Type Client */}
@@ -604,9 +664,19 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 </div>
 
                 {/* Address */}
-                <div className="w-full sm:w-1/2 md:w-1/8 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Address</label>
-                    <input type="text" id="address" value={address ?? ""} onChange={(e) => setaddress(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2">Complete Address</label>
+                    <input
+                        type="text"
+                        id="address"
+                        value={address ?? ""}
+                        onChange={(e) => {
+                            const input = e.target.value;
+                            const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                            setaddress(sanitized);
+                        }}
+                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    />
                 </div>
 
                 {/* Delivery Address */}
@@ -616,14 +686,18 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         type="text"
                         id="deliveryaddress"
                         value={deliveryaddress ?? ""}
-                        onChange={(e) => setdeliveryaddress(e.target.value)}
+                        onChange={(e) => {
+                            const input = e.target.value;
+                            const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                            setdeliveryaddress(sanitized);
+                        }}
                         className="w-full px-3 py-2 border rounded text-xs capitalize"
                     />
                 </div>
 
                 {/* Area */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Area</label>
+                    <label className="block text-xs font-bold mb-2">Region</label>
                     <select id="typeclient" value={area ?? ""} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
                         <option value="">Select Region</option>
                         <option value="Ilocos Region">Region I - Ilocos Region</option>
@@ -666,7 +740,17 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                 {/* Project Name */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Project Name ( Optional )</label>
-                                    <input type="text" id="projectname" value={projectname ?? ""} onChange={(e) => setprojectname(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
+                                    <input
+                                        type="text"
+                                        id="projectname"
+                                        value={projectname ?? ""}
+                                        onChange={(e) => {
+                                            const input = e.target.value;
+                                            const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                            setprojectname(sanitized);
+                                        }}
+                                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                                        required />
                                 </div>
 
                                 {/* Project Category */}
@@ -812,6 +896,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     <option>Callback Tomorrow</option>
                                     <option>Callback After 3 Days</option>
                                     <option>Callback After a Week</option>
+                                    <option>Callback After a Month</option>
+                                    <option>Callback After a Year</option>
                                     <option>Pick a DateTime</option>
                                 </select>
 
@@ -851,12 +937,34 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Quotation Number</label>
-                                <input type="text" value={quotationnumber ?? ""} onChange={(e) => setquotationnumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required />
+                                <input
+                                    type="text"
+                                    value={quotationnumber ?? ""}
+                                    onChange={(e) => {
+                                        const input = e.target.value;
+                                        const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                        setquotationnumber(sanitized);
+                                    }}
+                                    className="w-full px-3 py-2 border rounded text-xs uppercase"
+                                    required />
                             </div>
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Quotation Amount</label>
-                                <input type="number" value={quotationamount ?? ""} onChange={(e) => setquotationamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+                                <input
+                                    type="text"
+                                    value={quotationamount ?? ""}
+                                    onInput={(e) => {
+                                        const inputValue = (e.target as HTMLInputElement).value;
+                                        const formattedValue = inputValue
+                                            .replace(/,/g, '')
+                                            .replace(/(\..*)\./g, '$1');
+
+                                        setquotationamount(formattedValue);
+                                    }}
+                                    className="w-full px-3 py-2 border rounded text-xs"
+                                    required
+                                />
                             </div>
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -885,11 +993,34 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Number</label>
-                                <input type="text" value={sonumber ?? ""} onChange={(e) => setsonumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required />
+                                <input
+                                    type="text"
+                                    value={sonumber ?? ""}
+                                    onChange={(e) => {
+                                        const input = e.target.value;
+                                        const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                        setsonumber(sanitized);
+                                    }}
+                                    className="w-full px-3 py-2 border rounded text-xs uppercase"
+                                    required />
                             </div>
+
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Amount</label>
-                                <input type="number" value={soamount ?? ""} onChange={(e) => setsoamount(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+                                <input
+                                    type="text"
+                                    value={soamount ?? ""}
+                                    onInput={(e) => {
+                                        const inputValue = (e.target as HTMLInputElement).value;
+                                        const formattedValue = inputValue
+                                            .replace(/,/g, '')
+                                            .replace(/(\..*)\./g, '$1');
+
+                                        setsoamount(formattedValue);
+                                    }}
+                                    className="w-full px-3 py-2 border rounded text-xs"
+                                    required
+                                />
                             </div>
                         </>
                     )}
@@ -899,10 +1030,18 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SI (Actual Sales)</label>
                                 <input
-                                    type="number"
+                                    type="text"
                                     value={actualsales ?? ""}
-                                    onChange={(e) => setactualsales(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded text-xs uppercase" required
+                                    onInput={(e) => {
+                                        const inputValue = (e.target as HTMLInputElement).value;
+                                        const formattedValue = inputValue
+                                            .replace(/,/g, '')
+                                            .replace(/(\..*)\./g, '$1');
+
+                                        setactualsales(formattedValue);
+                                    }}
+                                    className="w-full px-3 py-2 border rounded text-xs"
+                                    required
                                 />
                             </div>
 
@@ -943,8 +1082,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     <option>Callback Tomorrow</option>
                                     <option>Callback After 3 Days</option>
                                     <option>Callback After a Week</option>
-                                    <option>Callback After a Month</option>
-                                    <option>Callback After a Year</option>
                                     <option>Pick a DateTime</option>
                                 </select>
 
@@ -997,7 +1134,11 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         <label className="block text-xs font-bold mb-2">Remarks</label>
                         <textarea
                             value={remarks ?? ""}
-                            onChange={(e) => setremarks(e.target.value)}
+                            onChange={(e) => {
+                                const input = e.target.value;
+                                const lettersOnly = input.replace(/[^a-zA-Z\s]/g, ""); // Only letters and spaces
+                                setremarks(lettersOnly);
+                            }}
                             className="w-full px-3 py-2 border rounded text-xs capitalize"
                             rows={5}
                             required
@@ -1044,7 +1185,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                         </select>
                     </div>
                 </div>
-
             </div>
         </>
     );
