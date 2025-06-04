@@ -15,7 +15,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, setCur
                 onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
                 disabled={currentPage === 1}
             >
-                Previous
+                Previouss
             </button>
             <span className="text-xs">Page {currentPage} of {totalPages}</span>
             <button
