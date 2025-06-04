@@ -164,6 +164,9 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const [showDeliverField, setShowDeliverField] = useState(false);
     const dropdownRef = useRef<HTMLUListElement>(null);
 
+    const [openGroup, setOpenGroup] = useState<string | null>(null);
+    const [isDropdownOpen, setDropdownOpen] = useState(false);
+
     const isQuotationEmpty = !quotationnumber || !quotationamount;
 
     const [showInput, setShowInput] = useState(false);
@@ -529,8 +532,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     };
 
     const [isManual, setIsManual] = useState(false); // toggle state
-    const [openGroup, setOpenGroup] = useState<string | null>(null);
-    const [isDropdownOpen, setDropdownOpen] = useState(false);
 
     return (
         <>
@@ -818,7 +819,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                         <option value="Building Maintenance">Building Maintenance</option>
                                     </select>
                                 </div>
-
                                 {/* Source */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Source</label>
@@ -887,6 +887,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             </div>
                         )}
                     </div>
+
 
                     {/* Conditional Fields */}
                     {showInboundFields && (

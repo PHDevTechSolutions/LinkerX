@@ -46,7 +46,7 @@ const Main: React.FC<UsersTableProps> = ({ posts, userDetails, fetchAccount }) =
   
     <div className="grid grid-cols-4 gap-4">
       <MainCardTable posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
-      <div className="col-span-1 rounded-lg shadow">
+      <div className="col-span-1">
       <Automation posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
       </div>
     </div>
