@@ -891,7 +891,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
       )}
     </div>
 
-
                     {/* Conditional Fields */}
                     {showInboundFields && (
                         <>
