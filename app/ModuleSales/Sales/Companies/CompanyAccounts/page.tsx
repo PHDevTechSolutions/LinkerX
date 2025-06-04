@@ -349,14 +349,31 @@ const ListofUser: React.FC = () => {
                                                             </p>
                                                         </div>
 
-                                                        {/* File Upload */}
+                                                        {/* File Upload - Excel Only */}
                                                         <div className={fieldWidthClass}>
                                                             <label className="block text-xs font-bold mb-2">Excel File</label>
-                                                            <input type="file" className="w-full px-3 py-2 border rounded text-xs" onChange={handleFileChange} />
+                                                            <input
+                                                                type="file"
+                                                                accept=".xls,.xlsx"
+                                                                className="w-full px-3 py-2 border rounded text-xs"
+                                                                onChange={(e) => {
+                                                                    const file = e.target.files?.[0];
+                                                                    if (file) {
+                                                                        const isExcel = file.name.endsWith(".xls") || file.name.endsWith(".xlsx");
+                                                                        if (!isExcel) {
+                                                                            alert("Only Excel files (.xls, .xlsx) are allowed.");
+                                                                            e.target.value = ""; // Reset file input
+                                                                            return;
+                                                                        }
+                                                                        handleFileChange(e);
+                                                                    }
+                                                                }}
+                                                            />
                                                             <p className="text-xs text-gray-600 mt-2">
-                                                                Upload an Excel file from your device.
+                                                                Upload an Excel file (.xls, .xlsx) from your device.
                                                             </p>
                                                         </div>
+
                                                     </div>
                                                 </form>
 
