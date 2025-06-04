@@ -532,7 +532,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     };
 
     const [isManual, setIsManual] = useState(false); // toggle state
-
+    
     return (
         <>
             <div className="flex flex-wrap -mx-4">
@@ -842,54 +842,54 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 <div className="flex flex-wrap -mx-4 rounded">
                     {/* Activity Dropdown */}
                     {/* Type Activity */}
-                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4 relative">
-                        <label className="block text-xs font-bold mb-2">Type of Activity</label>
+<div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4 relative">
+      <label className="block text-xs font-bold mb-2">Type of Activity</label>
 
-                        {/* Trigger Button */}
-                        <button
-                            onClick={() => setDropdownOpen(!isDropdownOpen)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm text-left"
-                        >
-                            {typeactivity || "Select an activity"}
-                        </button>
+      {/* Trigger Button */}
+      <button
+        onClick={() => setDropdownOpen(!isDropdownOpen)}
+        className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm text-left"
+      >
+        {typeactivity || "Select an activity"}
+      </button>
 
-                        {/* Dropdown */}
-                        {isDropdownOpen && (
-                            <div className="absolute z-10 mt-1 w-full bg-white border rounded shadow-lg max-h-72 overflow-y-auto text-xs">
-                                {Object.entries(activityGroups).map(([group, items]) => (
-                                    <div key={group} className="border-b last:border-b-0">
-                                        <button
-                                            onClick={() => setOpenGroup(openGroup === group ? null : group)}
-                                            className="w-full text-left px-3 py-2 font-semibold bg-gray-100 hover:bg-gray-200"
-                                        >
-                                            {group}
-                                        </button>
+      {/* Dropdown */}
+      {isDropdownOpen && (
+        <div className="absolute z-10 mt-1 w-full bg-white border rounded shadow-lg max-h-72 overflow-y-auto text-xs">
+          {Object.entries(activityGroups).map(([group, items]) => (
+            <div key={group} className="border-b last:border-b-0">
+              <button
+                onClick={() => setOpenGroup(openGroup === group ? null : group)}
+                className="w-full text-left px-3 py-2 font-semibold bg-gray-100 hover:bg-gray-200"
+              >
+                {group}
+              </button>
 
-                                        {openGroup === group && (
-                                            <div className="bg-white">
-                                                {items.map((item) => (
-                                                    <div
-                                                        key={item}
-                                                        onClick={() => {
-                                                            settypeactivity(`${group}: ${item}`);
-                                                            setDropdownOpen(false);
-                                                            setOpenGroup(null);
-                                                        }}
-                                                        className="cursor-pointer px-6 py-2 hover:bg-blue-100"
-                                                    >
-                                                        {item}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+              {openGroup === group && (
+                <div className="bg-white">
+                  {items.map((item) => (
+                    <div
+                      key={item}
+                      onClick={() => {
+                        settypeactivity(`${group}: ${item}`);
+                        setDropdownOpen(false);
+                        setOpenGroup(null);
+                      }}
+                      className="cursor-pointer px-6 py-2 hover:bg-blue-100"
+                    >
+                      {item}
                     </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
 
-
-                    {/* Conditional Fields */}
+                  
+                  {/* Conditional Fields */}
                     {showInboundFields && (
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
