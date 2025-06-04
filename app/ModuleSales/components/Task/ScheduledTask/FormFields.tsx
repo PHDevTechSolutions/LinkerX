@@ -821,7 +821,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                         <option value="Building Maintenance">Building Maintenance</option>
                                     </select>
                                 </div>
-
                                 {/* Source */}
                                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                     <label className="block text-xs font-bold mb-2">Source</label>
