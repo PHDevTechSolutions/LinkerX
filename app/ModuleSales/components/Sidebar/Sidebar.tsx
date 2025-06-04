@@ -203,9 +203,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       title: 'Activities',
       icon: CiMemoPad,
       subItems: [
-        { title: 'ScheduledTask', href: `/ModuleSales/Sales/Task/ScheduledTask${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Automated Task', href: `/ModuleSales/Sales/Task/DailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Manual Task', href: `/ModuleSales/Sales/Task/ManualDailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Scheduled Task', href: `/ModuleSales/Sales/Task/ScheduledTask${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Callbacks', href: `/ModuleSales/Sales/Task/Callback${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Client Coverage Guide', href: `/ModuleSales/Sales/Task/ClientCoverageGuide${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'CSR Inquiries', href: `/ModuleSales/Sales/Task/CSRInquiries${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
