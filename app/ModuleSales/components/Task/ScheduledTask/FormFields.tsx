@@ -19,17 +19,8 @@ const activityGroups = {
         "With CS (Email Acknowledgement)",
     ],
     Marketing: ["Marketing Concern"],
-    Communication: [
-        "Email and Viber Checking",
-        "Email Blast",
-        "Email, SMS & Viber Replies",
-    ],
-    "Calls and Follow-Ups": [
-        "Inbound Call",
-        "Outbound Call",
-        "Payment Follow-Up",
-        "Quotation Follow-Up",
-    ],
+    Communication: ["Email and Viber Checking", "Email Blast", "Email, SMS & Viber Replies"],
+    "Calls and Follow-Ups": ["Inbound Call", "Outbound Call", "Payment Follow-Up", "Quotation Follow-Up"],
     Logistics: ["Shipping Cost Estimation"],
     Preparation: [
         "Bidding Preparation",
@@ -538,6 +529,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     };
 
     const [isManual, setIsManual] = useState(false); // toggle state
+    const [openGroup, setOpenGroup] = useState<string | null>(null);
+    const [isDropdownOpen, setDropdownOpen] = useState(false);
 
     return (
         <>
@@ -849,43 +842,50 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 <div className="flex flex-wrap -mx-4 rounded">
                     {/* Activity Dropdown */}
                     {/* Type Activity */}
-                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4 relative">
                         <label className="block text-xs font-bold mb-2">Type of Activity</label>
-                        <div className="relative">
-                            <button
-                                type="button"
-                                onClick={() => setIsOpen(!isOpen)}
-                                className="w-full px-3 py-2 border rounded text-xs bg-white shadow-sm text-left"
-                            >
-                                {typeactivity || "Select an activity"}
-                            </button>
 
-                            {isOpen && (
-                                <div className="absolute z-10 w-full bg-white border mt-1 rounded shadow-lg max-h-64 overflow-y-auto">
-                                    {Object.entries(activityGroups).map(([group, items]) => (
-                                        <div key={group} className="group hover:bg-gray-100">
-                                            <div className="px-3 py-2 text-xs font-semibold bg-gray-50 text-gray-700 cursor-pointer">
-                                                {group}
-                                            </div>
-                                            <div className="pl-4">
+                        {/* Trigger Button */}
+                        <button
+                            onClick={() => setDropdownOpen(!isDropdownOpen)}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm text-left"
+                        >
+                            {typeactivity || "Select an activity"}
+                        </button>
+
+                        {/* Dropdown */}
+                        {isDropdownOpen && (
+                            <div className="absolute z-10 mt-1 w-full bg-white border rounded shadow-lg max-h-72 overflow-y-auto text-xs">
+                                {Object.entries(activityGroups).map(([group, items]) => (
+                                    <div key={group} className="border-b last:border-b-0">
+                                        <button
+                                            onClick={() => setOpenGroup(openGroup === group ? null : group)}
+                                            className="w-full text-left px-3 py-2 font-semibold bg-gray-100 hover:bg-gray-200"
+                                        >
+                                            {group}
+                                        </button>
+
+                                        {openGroup === group && (
+                                            <div className="bg-white">
                                                 {items.map((item) => (
                                                     <div
                                                         key={item}
                                                         onClick={() => {
                                                             settypeactivity(`${group}: ${item}`);
-                                                            setIsOpen(false);
+                                                            setDropdownOpen(false);
+                                                            setOpenGroup(null);
                                                         }}
-                                                        className="px-3 py-2 text-xs hover:bg-blue-100 cursor-pointer"
+                                                        className="cursor-pointer px-6 py-2 hover:bg-blue-100"
                                                     >
                                                         {item}
                                                     </div>
                                                 ))}
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Conditional Fields */}

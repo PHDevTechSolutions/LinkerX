@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { FcBusinessman } from "react-icons/fc";
 
 interface Post {
   id: string;
@@ -100,8 +101,8 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
                   {post.companyname}
                 </h3>
                 <p className="text-xs mb-4 text-gray-600">{post.typeclient}</p>
-                <p className="text-xs text-gray-600">
-                  <span className="font-medium">Contact Person:</span> {post.contactperson}
+                <p className="text-xs text-gray-600 flex gap-1 items-center">
+                  <FcBusinessman size={20} /><span className="font-medium capitalize">{post.contactperson}</span>
                 </p>
               </div>
             ))}
