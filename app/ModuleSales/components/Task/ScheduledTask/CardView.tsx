@@ -6,13 +6,16 @@ interface Post {
   companyname: string;
   contactperson: string;
   contactnumber: string;
+  typeclient: string;
+  activitystatus: string;
+  ticketreferencenumber: string;
   date_created: string;
   date_updated: string | null;
-  activitystatus: string;
 }
 
 interface CardCalendarViewProps {
   posts: Post[];
+  handleEdit: (post: Post) => void;
 }
 
 type ViewType = "day" | "week" | "month";
@@ -89,7 +92,7 @@ const isRecentlyUpdated = (post: Post, days = 3) => {
   return now.getTime() - date.getTime() <= days * 24 * 60 * 60 * 1000;
 };
 
-const CardCalendarView: React.FC<CardCalendarViewProps> = ({ posts }) => {
+const CardCalendarView: React.FC<CardCalendarViewProps> = ({ posts, handleEdit }) => {
   const [view, setView] = useState<ViewType>(() => {
     const saved = localStorage.getItem("cardCalendarView");
     if (saved === "day" || saved === "week" || saved === "month") return saved;
@@ -274,10 +277,8 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({ posts }) => {
                           toggleCard(post.id);
                         }
                       }}
-                      className={`rounded-md p-4 shadow hover:shadow-md transition cursor-pointer outline-none
-    ${getStatusColor(post.activitystatus)} 
-    ${recent ? "ring-2 m-1 ring-blue-500" : ""}
-  `}
+                      className={`rounded-md p-4 shadow hover:shadow-md transition cursor-pointer outline-none relative
+    ${getStatusColor(post.activitystatus)} ${recent ? "ring-2 m-1" : ""}`}
                       aria-expanded={isCardExpanded}
                       aria-controls={`card-details-${post.id}`}
                     >
@@ -285,7 +286,7 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({ posts }) => {
                         <h3 className="font-semibold uppercase text-xs">{post.companyname}</h3>
                         {recent && (
                           <span
-                            className="text-xs bg-blue-600 text-white px-1 rounded ml-2"
+                            className="text-[10px] bg-orange-400 text-white px-1 rounded ml-2"
                             title="Recently updated within last 3 days"
                           >
                             NEW
@@ -306,6 +307,23 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({ posts }) => {
                         </p>
                       </div>
 
+                      {/* Spacer div to push the button to the bottom */}
+                      <div className="h-4"></div>
+
+                      <div className="flex justify-end mt-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(post);
+                          }}
+                          className="bg-blue-400 text-white text-xs px-3 py-1 rounded hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          aria-label={`Edit ${post.companyname}`}
+                          type="button"
+                        >
+                          Edit
+                        </button>
+                      </div>
+
                       <div
                         id={`card-details-${post.id}`}
                         className={`mt-3 overflow-hidden transition-all duration-300 ${isCardExpanded ? "max-h-96" : "max-h-0"
@@ -317,6 +335,7 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({ posts }) => {
                         </p>
                       </div>
                     </div>
+
                   );
                 })}
               </div>

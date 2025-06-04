@@ -74,24 +74,24 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
                 <div className="space-x-2 text-xs">
                     <button
                         onClick={() => setView("table")}
-                        className={`px-3 py-1 rounded ${view === "table" ? "bg-blue-600 text-white" : "bg-gray-100"
+                        className={`px-3 py-1 rounded ${view === "table" ? "bg-blue-400 text-white" : "bg-gray-100"
                             }`}
                     >
                         Table
                     </button>
                     <button
                         onClick={() => setView("grid")}
-                        className={`px-3 py-1 rounded ${view === "grid" ? "bg-blue-600 text-white" : "bg-gray-100"
+                        className={`px-3 py-1 rounded ${view === "grid" ? "bg-blue-400 text-white" : "bg-gray-100"
                             }`}
                     >
                         Grid
                     </button>
                     <button
                         onClick={() => setView("card")}
-                        className={`px-3 py-1 rounded ${view === "card" ? "bg-blue-600 text-white" : "bg-gray-100"
+                        className={`px-3 py-1 rounded ${view === "card" ? "bg-blue-400 text-white" : "bg-gray-100"
                             }`}
                     >
-                        Card
+                        Calendar
                     </button>
                 </div>
 
@@ -130,7 +130,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
                         <TableView posts={paginatedData} handleEdit={handleEdit} />
                     )}
                     {view === "grid" && <GridView posts={paginatedData} handleEdit={handleEdit} />}
-                    {view === "card" && <CardView posts={paginatedData} />}
+                    {view === "card" && <CardView posts={paginatedData} handleEdit={handleEdit} />}
                 </>
             )}
 

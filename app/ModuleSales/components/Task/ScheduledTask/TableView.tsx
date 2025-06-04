@@ -107,7 +107,7 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
                 e.stopPropagation(); // Prevent triggering expand on click
                 handleEdit(post);
               }}
-              className="absolute top-3 right-3 bg-blue-500 text-white text-xs px-3 py-1 rounded hover:bg-blue-600 transition"
+              className="absolute top-3 right-3 bg-blue-400 text-white text-xs px-3 py-1 rounded hover:bg-blue-600 transition"
               aria-label={`Edit ${post.companyname}`}
             >
               Edit

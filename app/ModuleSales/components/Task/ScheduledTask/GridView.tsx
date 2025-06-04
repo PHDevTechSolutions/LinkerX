@@ -140,7 +140,7 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit, loading = false 
                   e.stopPropagation();
                   handleEdit(post);
                 }}
-                className="bg-blue-600 text-white text-xs px-3 py-1 rounded hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-blue-400 text-white text-xs px-3 py-1 rounded hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
                 aria-label={`Edit ${post.companyname}`}
                 type="button"
               >
