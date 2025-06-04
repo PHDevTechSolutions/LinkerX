@@ -829,11 +829,12 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             </div>
 
           <div className="mb-4 border rounded-lg shadow-sm p-4">
-  <div className="flex flex-wrap -mx-4 rounded">
-    {/* Activity Dropdown */}
-    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-      <label className="block text-xs font-bold mb-2">Type of Activity</label>
-      <select
+                <div className="flex flex-wrap -mx-4 rounded">
+                    {/* Activity Dropdown */}
+                    {/* Type Activity */}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Type of Activity</label>
+                         <select
         value={typeactivity ?? ""}
         onChange={(e) => handleActivitySelection(e.target.value)}
         className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm"
@@ -921,10 +922,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <option value="Delivered">Delivered</option>
         </optgroup>
       </select>
-    </div>
-  </div>
-</div>
-
+                    </div>
                     {/* Conditional Fields */}
                     {showInboundFields && (
                         <>
