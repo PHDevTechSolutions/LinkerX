@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Pin from "./Pin";
 import ActivityLogs from "./ActivityLogs";
+import NotifyMe from "./NotifyMe";
 
 interface Post {
   id: string;
@@ -54,11 +55,7 @@ const NOTIFY_STORAGE_KEY = "notifySettings";
 const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
   const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
   const [activityDataMap, setActivityDataMap] = useState<Record<string, ActivityFetchState>>({});
-  const [loading, setLoading] = useState(false);
-
-  // Notify feature states
   const [notifySettings, setNotifySettings] = useState<NotifySetting[]>([]);
-  const [showNotifyPickerFor, setShowNotifyPickerFor] = useState<string | null>(null);
 
   // Load pinned posts from localStorage
   useEffect(() => {
@@ -69,7 +66,7 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
         if (Array.isArray(parsed)) {
           setPinnedIds(new Set(parsed));
         }
-      } catch {}
+      } catch { }
     }
   }, []);
 
@@ -87,7 +84,7 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
         if (Array.isArray(parsed)) {
           setNotifySettings(parsed);
         }
-      } catch {}
+      } catch { }
     }
   }, []);
 
@@ -177,25 +174,9 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
     });
   };
 
-  // Schedule notification in X minutes
-  const scheduleNotification = (postId: string, minutes: number) => {
-    const notifyAt = Date.now() + minutes * 60000;
-    setNotifySettings((prev) => {
-      const filtered = prev.filter((s) => s.postId !== postId);
-      return [...filtered, { postId, notifyAt }];
-    });
-    setShowNotifyPickerFor(null);
+  const updateNotifySettings = (newSettings: NotifySetting[]) => {
+    setNotifySettings(newSettings);
   };
-
-  if (loading) {
-    return (
-      <div className="grid grid-cols-2 gap-4">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="border rounded p-5 shadow-sm animate-pulse bg-gray-100 h-40" />
-        ))}
-      </div>
-    );
-  }
 
   if (posts.length === 0) {
     return <p className="text-center text-gray-500 text-sm mt-10">No records available</p>;
@@ -207,7 +188,7 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
 
   return (
     <>
-      <div className="mb-4 text-sm font-medium text-gray-700">
+      <div className="mb-4 text-xs font-medium text-gray-700">
         Pinned Posts: {pinnedIds.size}
       </div>
 
@@ -218,9 +199,7 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
           const loadingActivities = activityState?.loading ?? false;
           const activities = activityState?.data ?? [];
 
-          const isNotifyPickerOpen = showNotifyPickerFor === post.id;
-          const hasNotify = notifySettings.some((s) => s.postId === post.id);
-
+          // Pass notify data & handlers to NotifyMe component
           return (
             <div
               key={post.id}
@@ -248,7 +227,7 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                   </p>
                 </div>
 
-                <div className="flex space-x-2 relative z-20">
+                <div className="flex space-x-1 relative z-20">
                   <div title={isPinned ? "Unpin this post" : "Pin this post"}>
                     <Pin
                       isPinned={isPinned}
@@ -257,6 +236,12 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                       loading={loadingActivities}
                     />
                   </div>
+
+                  <NotifyMe
+                    postId={post.id}
+                    notifySettings={notifySettings}
+                    updateNotifySettings={updateNotifySettings}
+                  />
 
                   <button
                     onClick={(e) => {
@@ -270,48 +255,6 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                     Create
                   </button>
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowNotifyPickerFor(isNotifyPickerOpen ? null : post.id);
-                    }}
-                    className={`text-xs px-2 py-1 rounded ${
-                      hasNotify ? "bg-yellow-300" : "bg-gray-200"
-                    } hover:bg-yellow-400`}
-                    type="button"
-                  >
-                    {hasNotify ? "Notification Set" : "Notify Me"}
-                  </button>
-
-                  {isNotifyPickerOpen && (
-                    <div
-                      className="absolute top-full right-0 mt-1 bg-white border rounded shadow-lg z-50 p-2 text-xs text-gray-800"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <p className="mb-1 font-semibold">Notify me in:</p>
-                      {[5, 10, 15, 30, 60, 120].map((min) => (
-                        <button
-                          key={min}
-                          className="block w-full text-left hover:bg-gray-100 rounded px-2 py-1"
-                          type="button"
-                          onClick={() => scheduleNotification(post.id, min)}
-                        >
-                          {min < 60 ? `${min} minute${min > 1 ? "s" : ""}` : `${min / 60} hour${min / 60 > 1 ? "s" : ""}`}
-                        </button>
-                      ))}
-                      <button
-                        type="button"
-                        className="mt-1 w-full text-left text-red-600 hover:bg-red-100 rounded px-2 py-1"
-                        onClick={() => {
-                          // Remove notify setting for this post
-                          setNotifySettings((prev) => prev.filter((s) => s.postId !== post.id));
-                          setShowNotifyPickerFor(null);
-                        }}
-                      >
-                        Cancel Notification
-                      </button>
-                    </div>
-                  )}
                 </div>
               </div>
 
