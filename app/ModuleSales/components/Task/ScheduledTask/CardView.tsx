@@ -11,6 +11,7 @@ interface Post {
   ticketreferencenumber: string;
   date_created: string;
   date_updated: string | null;
+  activitynumber: string;
 }
 
 interface CardCalendarViewProps {

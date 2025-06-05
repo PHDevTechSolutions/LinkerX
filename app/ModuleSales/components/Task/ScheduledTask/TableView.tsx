@@ -11,6 +11,7 @@ export interface Post {
   ticketreferencenumber: string;
   date_created: string;
   date_updated: string | null;
+  activitynumber: string;
 }
 
 interface TableViewProps {
@@ -95,8 +96,6 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
             </td>
           </tr>
 
-
-
           {postsForDate.map((post) => (
             <tr
               key={post.id}
@@ -114,7 +113,7 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
                     e.stopPropagation();
                     onEdit(post);
                   }}
-                  className="absolute top-3 right-3 bg-blue-400 text-white text-xs px-3 py-1 rounded hover:bg-blue-600 transition"
+                  className="absolute top-3 right-3 bg-green-500 text-white text-xs px-3 py-1 rounded hover:bg-green-700 transition"
                   aria-label={`Edit ${post.companyname}`}
                 >
                   Create
