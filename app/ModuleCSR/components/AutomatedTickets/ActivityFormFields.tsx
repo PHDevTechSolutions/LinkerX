@@ -198,7 +198,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     useEffect(() => {
         const fetchTSM = async () => {
             try {
-                const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager, HR Manager, Manager");
+                const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager, HR Manager, Manager, E-Commerce Staff");
                 if (!response.ok) throw new Error("Failed to fetch managers");
 
                 const data = await response.json();
