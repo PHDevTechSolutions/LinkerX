@@ -563,6 +563,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
                     <select id="Department" value={Department || ""} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border bg-gray-50 rounded text-xs">
                         <option value="">Select Department</option>
                         <option value="Accounting">Accounting</option>
+                        <option value="E-Commerce">E-Commerce</option>
                         <option value="Engineering">Engineering</option>
                         <option value="Human Resources">Human Resources</option>
                         <option value="Marketing">Marketing</option>
