@@ -19,8 +19,10 @@ const ListofUser: React.FC = () => {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
 
-    const [userDetails, setUserDetails] = useState({ UserId: "", Firstname: "", Lastname: "", Manager: "", TSM: "",
-        Email: "", Role: "", Department: "", Company: "", TargetQuota: "", ReferenceID: "", });
+    const [userDetails, setUserDetails] = useState({
+        UserId: "", Firstname: "", Lastname: "", Manager: "", TSM: "",
+        Email: "", Role: "", Department: "", Company: "", TargetQuota: "", ReferenceID: "",
+    });
 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -70,7 +72,7 @@ const ListofUser: React.FC = () => {
             const response = await fetch("/api/ModuleSales/Reports/AccountManagement/FetchActivity");
             const data = await response.json();
             console.log("Fetched data:", data); // Debugging line
-            setPosts(data.data); // Make sure you're setting `data.data` if API response has `{ success: true, data: [...] }`
+            setPosts(data.data); // Assuming API returns { success: true, data: [...] }
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
@@ -79,6 +81,12 @@ const ListofUser: React.FC = () => {
 
     useEffect(() => {
         fetchAccount();
+
+        const intervalId = setInterval(() => {
+            fetchAccount();
+        }, 1000); // 1000ms = 1 second
+
+        return () => clearInterval(intervalId); // cleanup on unmount
     }, []);
 
     // Filter users by search term (firstname, lastname)

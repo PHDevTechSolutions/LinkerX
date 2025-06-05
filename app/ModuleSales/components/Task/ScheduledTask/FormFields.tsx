@@ -172,6 +172,29 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const [showInput, setShowInput] = useState(false);
     const [previousCompany, setPreviousCompany] = useState<any>(null);
 
+    const [minutesSpent, setMinutesSpent] = useState("");
+
+    useEffect(() => {
+        if (startdate && enddate) {
+            const start = new Date(startdate);
+            const end = new Date(enddate);
+
+            if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+                const diffMs = end.getTime() - start.getTime();
+
+                const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+                const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
+                setMinutesSpent(formattedTime);
+            } else {
+                setMinutesSpent("Invalid date");
+            }
+        }
+    }, [startdate, enddate]);
+
+
     useEffect(() => {
         if (!tsm && referenceid) {
             settsm(referenceid);  // Set `tsm` from `referenceid` if `tsm` is empty
@@ -532,10 +555,15 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     };
 
     const [isManual, setIsManual] = useState(false); // toggle state
-    
+
     return (
         <>
+            <div className="inline-flex items-center space-x-2 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full w-fit">
+                <span>Time Spent:</span>
+                <span className="bg-blue-500 text-white px-2 py-0.5 rounded-full">{minutesSpent}</span>
+            </div>
             <div className="flex flex-wrap -mx-4">
+
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <input type="text" id="activitynumber" value={activitynumber ?? ""} onChange={() => { }} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly={!!editPost} />
                     <input type="hidden" id="referenceid" value={referenceid ?? ""} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" />
@@ -557,13 +585,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <div className="flex items-center justify-between mb-2">
                         <label className="block text-xs font-bold" htmlFor="companyname">Company Name</label>
-                        <button
-                            type="button"
-                            onClick={() => setIsManual(prev => !prev)}
-                            className="text-blue-500 text-[10px] underline"
-                        >
-                            {isManual ? "If Account Exists Switch to Select" : "If Account is New Switch to Manual"}
-                        </button>
                     </div>
                     {!isManual ? (
                         <>
@@ -611,7 +632,16 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                             className="w-full px-3 py-2 border rounded text-xs capitalize"
                         />
                     )}
+
+                    <button
+                        type="button"
+                        onClick={() => setIsManual(prev => !prev)}
+                        className="text-blue-500 text-[10px] underline"
+                    >
+                        {isManual ? "If Account Exists Switch to Select" : "If Account is New Switch to Manual"}
+                    </button>
                 </div>
+
 
                 {/* Contact Person */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -842,54 +872,62 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 <div className="flex flex-wrap -mx-4 rounded">
                     {/* Activity Dropdown */}
                     {/* Type Activity */}
-<div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4 relative">
-      <label className="block text-xs font-bold mb-2">Type of Activity</label>
-
-      {/* Trigger Button */}
-      <button
-        onClick={() => setDropdownOpen(!isDropdownOpen)}
-        className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm text-left"
-      >
-        {typeactivity || "Select an activity"}
-      </button>
-
-      {/* Dropdown */}
-      {isDropdownOpen && (
-        <div className="absolute z-10 mt-1 w-full bg-white border rounded shadow-lg max-h-72 overflow-y-auto text-xs">
-          {Object.entries(activityGroups).map(([group, items]) => (
-            <div key={group} className="border-b last:border-b-0">
-              <button
-                onClick={() => setOpenGroup(openGroup === group ? null : group)}
-                className="w-full text-left px-3 py-2 font-semibold bg-gray-100 hover:bg-gray-200"
-              >
-                {group}
-              </button>
-
-              {openGroup === group && (
-                <div className="bg-white">
-                  {items.map((item) => (
-                    <div
-                      key={item}
-                      onClick={() => {
-                        settypeactivity(`${group}: ${item}`);
-                        setDropdownOpen(false);
-                        setOpenGroup(null);
-                      }}
-                      className="cursor-pointer px-6 py-2 hover:bg-blue-100"
-                    >
-                      {item}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Type of Activity</label>
+                        <select value={typeactivity ?? ""}
+                            onChange={(e) => handleActivitySelection(e.target.value)}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm" required>
+                            <option value="" disabled>Select an activity</option>
+                            {[
+                                "Account Development",
+                                "Accounting: Accounts Receivable and Payment",
+                                "Accounting: Billing Concern",
+                                "Accounting: Refund Request",
+                                "Accounting: Sales Order Concern",
+                                "Accounting: TPC Request",
+                                "Admin Concern: Coordination of Payment Terms Request",
+                                "CSR Inquiries",
+                                "Coordination of Pick-Up / Delivery to Client",
+                                "Coordination With CS (Email Acknowledgement)",
+                                "Marketing Concern",
+                                "Email and Viber Checking",
+                                "Email Blast",
+                                "Email, SMS & Viber Replies",
+                                "Inbound Call",
+                                "Payment Follow-Up",
+                                "Quotation Follow-Up",
+                                "Logistic Concern: Shipping Cost Estimation",
+                                "Outbound Call",
+                                "Preparation: Bidding Preparation",
+                                "Preparation: Preparation of Report",
+                                "Preparation: Preparation of SPF",
+                                "Preparation: Preparation of Quote: New Client",
+                                "Preparation: Preparation of Quote: Existing Client",
+                                "Preparation: Sales Order Preparation",
+                                "Technical: Dialux Simulation Request",
+                                "Technical: Drawing Request",
+                                "Technical: Inquiry",
+                                "Technical: Site Visit Request",
+                                "Technical: TDS Request",
+                                "Walk-In Client",
+                                "Warehouse: Coordination to Billing",
+                                "Warehouse: Coordination to Dispatch",
+                                "Warehouse: Coordination to Inventory",
+                                "Warehouse: Delivery / Helper Concern",
+                                "Warehouse: Replacement Request / Concern",
+                                "Warehouse: Sample Request / Concern",
+                                "Warehouse: SO Status Follow Up",
+                                "Delivered",
+                            ].map((item) => (
+                                <option key={item} value={item}>
+                                    {item}
+                                </option>
+                            ))}
+                        </select>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
 
-                  
-                  {/* Conditional Fields */}
+
+                    {/* Conditional Fields */}
                     {showInboundFields && (
                         <>
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">

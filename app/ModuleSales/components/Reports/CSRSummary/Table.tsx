@@ -91,12 +91,12 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                 <table className="min-w-full table-auto">
                     <thead className="bg-gray-100">
                         <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-                            <th className="px-6 py-4 font-semibold text-gray-700">Date Created</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+                            <th className="px-6 py-4 font-semibold text-gray-700">Date Created</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Ticket Reference Number</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
-                            <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
                         </tr>
                     </thead>
@@ -108,7 +108,6 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                         ) : (
                             paginatedData.map((post) => (
                                 <tr key={post.id} className="border-b whitespace-nowrap">
-                                    <td className="px-6 py-4 text-xs">{formatDate(post.date_created)}</td>
                                     <td className="px-6 py-4 text-xs">
                                         <button
                                             className="block px-4 py-2 text-[10px] font-bold text-black bg-blue-300 rounded-lg hover:bg-orange-300 hover:rounded-full hover:shadow-md w-full text-left flex items-center gap-1"
@@ -117,9 +116,6 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                                             <CiEdit /> Edit
                                         </button>
                                     </td>
-                                    <td className="px-6 py-4 text-xs uppercase">{post.ticketreferencenumber}</td>
-                                    <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
-                                    <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
                                     <td className="px-6 py-4 text-xs">
                                         {isHotAndPending(post.activitystatus, post.date_created) ? (
                                             <span className="inline-block px-2 py-1 text-[10px] font-semibold rounded-full bg-orange-200 text-orange-800">Pending</span>
@@ -134,6 +130,10 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                                             </span>
                                         )}
                                     </td>
+                                    <td className="px-6 py-4 text-xs">{formatDate(post.date_created)}</td>
+                                    <td className="px-6 py-4 text-xs uppercase">{post.ticketreferencenumber}</td>
+                                    <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
+                                    <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
                                     <td className="px-6 py-4 text-xs capitalize">{post.remarks}</td>
                                 </tr>
                             ))

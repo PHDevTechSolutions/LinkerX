@@ -175,12 +175,12 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
                 <table className="min-w-full table-auto text-xs">
                     <thead className="bg-gray-100 sticky top-0 z-10">
                         <tr className="text-left border-l-4 border-orange-400">
+                            <th className="px-6 py-3 font-semibold text-gray-700">Status</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Date Created</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Company Name</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Contact Person</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Quotation Number</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Quotation Amount</th>
-                            <th className="px-6 py-3 font-semibold text-gray-700">Status</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Remarks</th>
                         </tr>
                     </thead>
@@ -194,11 +194,6 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
                         ) : (
                             paginatedData.map((post) => (
                                 <tr key={post.id} className="bg-white hover:bg-gray-50">
-                                    <td className="px-6 py-3">{formatDate(post.date_created)}</td>
-                                    <td className="px-6 py-3 uppercase">{post.companyname}</td>
-                                    <td className="px-6 py-3 capitalize">{post.contactperson}</td>
-                                    <td className="px-6 py-3">{post.quotationnumber}</td>
-                                    <td className="px-6 py-3">{formatCurrency(post.quotationamount)}</td>
                                     <td className="px-6 py-3">
                                         <span
                                             className={`inline-block px-2 py-1 text-[10px] font-semibold rounded-full
@@ -217,7 +212,11 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
                                             {post.activitystatus}
                                         </span>
                                     </td>
-
+                                    <td className="px-6 py-3">{formatDate(post.date_created)}</td>
+                                    <td className="px-6 py-3 uppercase">{post.companyname}</td>
+                                    <td className="px-6 py-3 capitalize">{post.contactperson}</td>
+                                    <td className="px-6 py-3">{post.quotationnumber}</td>
+                                    <td className="px-6 py-3">{formatCurrency(post.quotationamount)}</td>
                                     <td className="px-6 py-3 capitalize">{post.remarks}</td>
                                 </tr>
                             ))

@@ -188,7 +188,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ],
     },
     {
-      title: 'List of Accounts',
+      title: 'My Companies',
       icon: BsBuildings,
       subItems: [
         { title: 'Active', href: `/ModuleSales/Sales/Companies/CompanyAccounts${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
@@ -219,17 +219,6 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         { title: 'SO Summary', href: `/ModuleSales/Sales/Reports/SOSummary${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Pending SO', href: `/ModuleSales/Sales/Reports/PendingSO${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'CSR Inquiry Summary', href: `/ModuleSales/Sales/Reports/CSRSummary${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
-    {
-      title: 'Activity',
-      icon: CiMemoPad,
-      subItems: [
-        { title: 'Automated Task', href: `/ModuleSales/Sales/Task/DailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Manual Task', href: `/ModuleSales/Sales/Task/ManualDailyActivity${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Callbacks', href: `/ModuleSales/Sales/Task/Callback${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Client Coverage Guide', href: `/ModuleSales/Sales/Task/ClientCoverageGuide${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'CSR Inquiries', href: `/ModuleSales/Sales/Task/CSRInquiries${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {

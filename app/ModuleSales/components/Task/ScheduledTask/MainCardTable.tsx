@@ -127,7 +127,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
             ) : (
                 <>
                     {view === "table" && (
-                        <TableView posts={paginatedData} handleEdit={handleEdit} />
+                        <TableView posts={paginatedData} handleEdit={handleEdit} refreshPosts={fetchAccount} />
                     )}
                     {view === "grid" && <GridView posts={paginatedData} handleEdit={handleEdit} />}
                     {view === "card" && <CardView posts={paginatedData} handleEdit={handleEdit} />}

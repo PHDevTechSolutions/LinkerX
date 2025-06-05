@@ -320,7 +320,7 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({ posts, handleEdit }
                           aria-label={`Edit ${post.companyname}`}
                           type="button"
                         >
-                          Edit
+                          Create
                         </button>
                       </div>
 

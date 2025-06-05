@@ -36,6 +36,8 @@ interface Activity {
   quotationamount: string;
   actualsales: string;
   remarks: string;
+  startdate: string;
+  enddate: string;
   date_created: string; // Ensure this is a valid date string
 }
 
@@ -93,7 +95,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  // 🔥 FIX: Ensure activityList is always an array
   const [activityList, setActivityList] = useState<{
     id: number;
     typeactivity: string;
@@ -108,6 +109,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     actualsales: string;
     activitystatus: string;
     date_created: string;
+    startdate: string;
+    enddate: string;
   }[]>([]);
 
   type Activity = {
@@ -124,6 +127,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     actualsales: string;
     activitystatus: string;
     date_created: string;
+    startdate: string;
+    enddate: string;
   };
 
   // Fetch progress data when activitynumber change
@@ -345,6 +350,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
             <table className="min-w-full table-auto">
               <thead className="bg-gray-100">
                 <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
+                  <th className="px-6 py-4 font-semibold text-gray-700">Time Spent</th>
                   <th className="px-6 py-4 font-semibold text-gray-700">Type of Activity</th>
                   <th className="px-6 py-4 font-semibold text-gray-700">Callback</th>
                   <th className="px-6 py-4 font-semibold text-gray-700">Call Status</th>
@@ -363,6 +369,23 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                 {currentRecords.length > 0 ? (
                   currentRecords.map((activity, index) => (
                     <tr key={index} className="border-b whitespace-nowrap">
+                      <td className="px-6 py-4 text-xs">
+                        {(() => {
+                          const start = new Date(activity.startdate);
+                          const end = new Date(activity.enddate);
+
+                          if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+                            const diffMs = end.getTime() - start.getTime();
+                            const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                            const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+                            return `${hours}h ${minutes}m ${seconds}s`;
+                          } else {
+                            return "Invalid date";
+                          }
+                        })()}
+                      </td>
+
                       <td className="px-6 py-4 text-xs">{activity.typeactivity}</td>
                       <td className="px-6 py-4 text-xs">
                         {activity.callback
@@ -376,7 +399,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                           })
                           : ""}
                       </td>
-
                       <td className="px-6 py-4 text-xs">{activity.callstatus}</td>
                       <td className="px-6 py-4 text-xs">{activity.typecall}</td>
                       <td className="px-6 py-4 text-xs uppercase">{activity.quotationnumber}</td>
@@ -393,11 +415,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                             ? "bg-blue-200 text-black"
                             : activity.activitystatus === "Warm"
                               ? "bg-yellow-200 text-black"
-                            : activity.activitystatus === "Hot"
-                              ? "bg-red-200 text-black" 
-                            : activity.activitystatus === "Done"
-                              ? "bg-green-200 text-black"   
-                              : "bg-green-100 text-green-700"
+                              : activity.activitystatus === "Hot"
+                                ? "bg-red-200 text-black"
+                                : activity.activitystatus === "Done"
+                                  ? "bg-green-200 text-black"
+                                  : "bg-green-100 text-green-700"
                             }`}
                         >
                           {activity.activitystatus}
@@ -408,7 +430,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                           <CiTrash size={15} />
                         </button>
                         <button onClick={() => handleEditClick(activity.id)} className="bg-white p-2 rounded-md flex text-blue-900">
-                          <CiEdit size={15} /> 
+                          <CiEdit size={15} />
                         </button>
                       </td>
                     </tr>
@@ -553,7 +575,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
             {/* Modal for showing full remarks */}
             {showModal && (
-              <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
+              <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-[999]">
                 <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-lg">
                   <h3 className="font-semibold text-lg mb-4">Remarks</h3>
                   <div className="modal-body">

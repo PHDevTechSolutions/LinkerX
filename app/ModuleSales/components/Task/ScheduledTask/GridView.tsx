@@ -144,7 +144,7 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit, loading = false 
                 aria-label={`Edit ${post.companyname}`}
                 type="button"
               >
-                Edit
+                Create
               </button>
             </div>
 

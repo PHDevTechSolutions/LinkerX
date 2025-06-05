@@ -17,6 +17,7 @@ interface Post {
     emailaddress: string;
     address: string;
     activitynumber: string;
+    status: string;
 }
 
 interface MainCardTableProps {
@@ -87,7 +88,9 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
 
                 const typeMatch = selectedTypeClient === "All" || post.typeclient === selectedTypeClient;
 
-                return isAllowed && typeMatch;
+                const isActive = post.status === "Active";
+
+                return isAllowed && typeMatch && isActive;
             })
         )
         : [];
@@ -122,6 +125,11 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
     };
 
     const handleSubmit = async (post: Post) => {
+        if (!post.id) {
+            toast.error("Missing ID for status update.");
+            return;
+        }
+
         const activitynumber = generateActivityNumber(post.companyname, userDetails.ReferenceID);
 
         const payload = {
@@ -133,24 +141,42 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
             referenceid: userDetails.ReferenceID,
             tsm: userDetails.TSM,
             manager: userDetails.Manager,
+            targetquota: userDetails.TargetQuota,
             ticketreferencenumber: post.ticketreferencenumber || "",
             typeclient: post.typeclient,
             activitystatus: "Cold",
-            activitynumber,  // use the generated number here
+            activitynumber,
         };
 
         try {
-            const res = await fetch("/api/ModuleSales/Task/DailyActivity/CreateUser", {
+            const res = await fetch("/api/ModuleSales/Task/ScheduleTask/PostData", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
             });
 
             if (res.ok) {
-                toast.success("Added successfully!");
+                const statusUpdateRes = await fetch("/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id: post.id,
+                        status: "Used",
+                    }),
+                });
+
+                if (statusUpdateRes.ok) {
+                    toast.success("Activity added and status updated!");
+
+                    // ✅ Refresh the list so "Used" item is removed
+                    fetchData();
+                } else {
+                    const updateErr = await statusUpdateRes.json();
+                    toast.warn(`Activity added, but failed to update status: ${updateErr.message}`);
+                }
             } else {
                 const err = await res.json();
-                toast.error(`Error: ${err.message || "Failed to add."}`);
+                toast.error(`Error: ${err.message || "Failed to add activity."}`);
             }
         } catch (err) {
             console.error("Submit error:", err);
@@ -158,9 +184,8 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
         }
     };
 
-
     return (
-        <div className="bg-white rounded-xl shadow-lg p-6 col-span-3">
+        <div className="bg-white rounded-xl shadow-lg p-4 col-span-3">
             <div className="flex justify-end mb-4">
                 <select
                     className="border px-3 py-2 rounded text-xs"
@@ -197,7 +222,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
                                     <h3 className="text-sm font-bold text-gray-800 uppercase truncate">
                                         {post.companyname}
                                     </h3>
-                                    <p className="text-xs text-blue-600 font-semibold">{post.typeclient}</p>
+                                    <p className="text-[10px] text-blue-600 font-semibold uppercase">{post.typeclient} / {post.status}</p>
                                 </div>
 
                                 <div className="relative space-y-1 mt-3 text-xs text-gray-700 pb-10">
