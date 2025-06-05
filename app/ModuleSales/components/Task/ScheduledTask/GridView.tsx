@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Pin from "./Pin";
 import ActivityLogs from "./ActivityLogs";
 import NotifyMe from "./NotifyMe";
+import Priorities from "./Priorities";
 
 interface Post {
   id: string;
@@ -14,6 +15,7 @@ interface Post {
   date_created: string;
   date_updated: string | null;
   activitynumber: string;
+  remarks?: string; // Add remarks here if missing
 }
 
 interface Activity {
@@ -51,6 +53,8 @@ interface NotifySetting {
 
 const PINNED_POSTS_STORAGE_KEY = "pinnedPosts";
 const NOTIFY_STORAGE_KEY = "notifySettings";
+
+const DAYS_THRESHOLD = 7; // days threshold for follow-up and pending checks
 
 const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
   const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
@@ -178,6 +182,7 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
     setNotifySettings(newSettings);
   };
 
+
   if (posts.length === 0) {
     return <p className="text-center text-gray-500 text-sm mt-10">No records available</p>;
   }
@@ -199,7 +204,7 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
           const loadingActivities = activityState?.loading ?? false;
           const activities = activityState?.data ?? [];
 
-          // Pass notify data & handlers to NotifyMe component
+
           return (
             <div
               key={post.id}
@@ -214,6 +219,8 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                 </span>
               )}
 
+              {/* Show Priority */}
+
               <div className="bg-white flex justify-between items-start border p-2 rounded-lg">
                 <div>
                   <p className="text-xs font-semibold text-gray-800 mb-1">
@@ -225,6 +232,26 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                   <p className="text-xs text-gray-600 mb-1">
                     Contact Number: <span className="capitalize">{post.contactnumber}</span>
                   </p>
+
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[8px] font-semibold select-none
+                      ${post.activitystatus.toLowerCase() === "cold"
+                        ? "bg-gray-400 text-white"
+                        : post.activitystatus.toLowerCase() === "active"
+                          ? "bg-green-500 text-white"
+                          : post.activitystatus.toLowerCase() === "pending"
+                            ? "bg-yellow-400 text-black"
+                            : "bg-blue-400 text-white"
+                      }`}
+
+                    aria-label={`Status: ${post.activitystatus}`}>
+                    {post.activitystatus}
+                  </span>
+
+                  <div className="flex items-center space-x-2">
+                    {/* Activity Status Badge */}
+                    <Priorities post={post} activities={activities} />
+                  </div>
                 </div>
 
                 <div className="flex space-x-1 relative z-20">
@@ -254,14 +281,10 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                   >
                     Create
                   </button>
-
                 </div>
               </div>
 
-              <div
-                className="mt-3 overflow-x-auto"
-                style={{ maxHeight: 180 }}
-              >
+              <div className="mt-3 overflow-x-auto" style={{ maxHeight: 180 }}>
                 {loadingActivities ? (
                   <p className="text-xs italic text-gray-400">Loading activities...</p>
                 ) : activities.length === 0 ? (
