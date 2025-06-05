@@ -983,12 +983,14 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     value={quotationnumber ?? ""}
                                     onChange={(e) => {
                                         const input = e.target.value;
-                                        const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                        const sanitized = input.replace(/[^a-zA-Z0-9]/g, ""); // allow only letters and numbers
                                         setquotationnumber(sanitized);
                                     }}
                                     className="w-full px-3 py-2 border rounded text-xs uppercase"
-                                    required />
+                                    required
+                                />
                             </div>
+
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">Quotation Amount</label>
@@ -1039,12 +1041,14 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                                     value={sonumber ?? ""}
                                     onChange={(e) => {
                                         const input = e.target.value;
-                                        const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                        const sanitized = input.replace(/[^a-zA-Z0-9]/g, ""); // allow only letters and numbers
                                         setsonumber(sanitized);
                                     }}
                                     className="w-full px-3 py-2 border rounded text-xs uppercase"
-                                    required />
+                                    required
+                                />
                             </div>
+
 
                             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                                 <label className="block text-xs font-bold mb-2">SO Amount</label>

@@ -340,9 +340,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         />
         {/* Historical Records Table */}
         <div className="mt-6">
-          <h3 className="text-xs font-bold mb-2">Historical Records</h3>
+          <h3 className="text-xs font-bold mb-2">Progress</h3>
           <p className="text-xs text-gray-600 mb-4">
-            This section displays <strong>historical records</strong> of past activities, allowing users to view key details related to calls and related actions. It includes columns such as activity type, callback, call status, and related amounts. The table helps in tracking and reviewing past interactions for better decision-making and analysis.
+            This section displays <strong>Progres</strong> of past activities, allowing users to view key details related to calls and related actions. It includes columns such as activity type, callback, call status, and related amounts. The table helps in tracking and reviewing past interactions for better decision-making and analysis.
           </p>
 
           {/* Desktop View */}
