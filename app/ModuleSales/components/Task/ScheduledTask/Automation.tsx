@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import FilterTop50 from "./FilterTop50";
-import FilterNext30 from "./FilterNext30";
-import FilterBalance20 from "./FilterBalance20";
-import FilterCSRClient from "./FilterCSRClient";
-import FilterTSAClient from "./FilterTSAClient";
+import FilterTop50 from "./Filters/FilterTop50";
+import FilterNext30 from "./Filters/FilterNext30";
+import FilterBalance20 from "./Filters/FilterBalance20";
+import FilterCSRClient from "./Filters/FilterCSRClient";
+import FilterTSAClient from "./Filters/FilterTSAClient";
 
 interface Post {
   id: string;
@@ -283,12 +283,12 @@ const Section: React.FC<{
   onToggle: () => void;
   children: React.ReactNode;
 }> = ({ title, open, onToggle, children }) => (
-  <div className="border rounded-lg shadow-sm">
+  <div className="shadow-sm">
     <div
-      className="cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200 flex justify-between items-center"
+      className="cursor-pointer px-2 py-2 hover:bg-gray-200 flex justify-between items-center"
       onClick={onToggle}
     >
-      <span className="font-medium text-xs">{title}</span>
+      <span className="font-medium text-[10px] uppercase">{title}</span>
       <span className="text-[10px] text-gray-500">{open ? "Collapse ▲" : "Expand ▼"}</span>
     </div>
     {open && <div>{children}</div>}
