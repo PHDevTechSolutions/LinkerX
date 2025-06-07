@@ -298,7 +298,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
 
     if (userDetails.Role === "Special Access") {
       return [
-        "List of Accounts",
+        "My Companies",
         "Activity",
         "Sales Performance",
         "Conversion Rates",
@@ -327,7 +327,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ];
 
       const agentModeMenu = [
-        "List of Accounts",
+        "My Companies",
         "Activities",
         "Projects",
         "Xend Mail",
@@ -343,7 +343,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
 
     if (userDetails.Role === "Territory Sales Associate") {
       return [
-        "List of Accounts",
+        "My Companies",
         "Activities",
         "Reports",
         "Projects",

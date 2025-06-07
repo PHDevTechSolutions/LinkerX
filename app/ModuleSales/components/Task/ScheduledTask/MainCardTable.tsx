@@ -85,7 +85,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
                         className={`px-3 py-1 rounded ${view === "grid" ? "bg-blue-400 text-white" : "bg-gray-100"
                             }`}
                     >
-                        Activity Records
+                        Task
                     </button>
                     <button
                         onClick={() => setView("card")}
