@@ -37,6 +37,8 @@ interface MainCardTableProps {
     Manager: string;
     TSM: string;
   };
+  posts: Post[];
+  fetchAccount: () => void;
 }
 
 const STORAGE_KEY = "expandedFiltersState";

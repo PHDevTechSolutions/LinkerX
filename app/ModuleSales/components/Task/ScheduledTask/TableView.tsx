@@ -131,18 +131,18 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
               <td className="px-6 py-4 text-xs">{formatDate(post.date_created)}</td>
               <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
 
-              <td colSpan={5} className="relative px-0 py-0">
+              <td colSpan={5} className="relative px-0 py-0 whitespace-nowrap">
                 <div className="flex">
-                  <div className="px-6 py-4 text-xs capitalize flex-1 border-r border-gray-200">
+                  <div className="px-6 py-4 text-xs capitalize flex-1 whitespace-nowrap">
                     {post.contactperson}
                   </div>
-                  <div className="px-6 py-4 text-xs flex-1 border-r border-gray-200">
+                  <div className="px-6 py-4 text-xs flex-1 whitespace-nowrap">
                     {post.contactnumber}
                   </div>
-                  <div className="px-6 py-4 text-xs flex-1 border-r border-gray-200">
+                  <div className="px-6 py-4 text-xs flex-1">
                     {post.typeclient}
                   </div>
-                  <div className="px-6 py-4 text-xs flex-1 border-r border-gray-200">
+                  <div className="px-6 py-4 text-xs flex-1">
                     {post.ticketreferencenumber}
                   </div>
                   <div className="px-6 py-4 text-xs flex-1">
@@ -150,6 +150,7 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
                   </div>
                 </div>
               </td>
+
             </tr>
           ))}
         </React.Fragment>
