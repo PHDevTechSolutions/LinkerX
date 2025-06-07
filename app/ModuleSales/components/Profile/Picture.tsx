@@ -100,7 +100,7 @@ const Picture: React.FC<PictureProps> = ({
                     <div
                         onDrop={onDrop}
                         onDragOver={onDragOver}
-                        className="w-full border-2 border-dashed border-gray-400 rounded-md p-4 cursor-pointer text-center text-gray-500 mb-4"
+                        className="w-full border-2 border-dashed border-gray-400 rounded-md p-4 cursor-pointer text-center text-sm text-gray-500 mb-4"
                         onClick={() => inputRef.current?.click()}
                     >
                         Drag & Drop image here or click to select
