@@ -248,7 +248,7 @@ const ProfileForm: React.FC = () => {
           />
         </div>
 
-        <div className="md:col-span-2 bg-white rounded-md p-6 shadow-md">
+        <div className="md:col-span-2 bg-white">
           <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
             <div>
               <label htmlFor="Firstname" className="block text-xs font-medium text-gray-700">
