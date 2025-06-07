@@ -44,10 +44,12 @@ interface UsersTableProps {
 const Main: React.FC<UsersTableProps> = ({ posts, userDetails, fetchAccount }) => {
   return (
   
-    <div className="grid grid-cols-4 gap-4">
-      <MainCardTable posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
-      <div className="col-span-1">
-      <Automation posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+      <div className="lg:col-span-3">
+        <MainCardTable posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
+      </div>
+      <div className="lg:col-span-1">
+        <Automation posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
       </div>
     </div>
   );

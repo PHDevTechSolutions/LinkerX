@@ -434,6 +434,39 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         {/* Menu Section */}
         <div className="flex flex-col items-center flex-grow overflow-y-auto text-xs p-2">
           <div className="w-full">
+
+            {/* My Profile - Manual Render */}
+            <button
+              onClick={() => handleToggle("My Profile")}
+              className={`flex items-center w-full p-4 hover:bg-orange-400 rounded hover:rounded-md hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""}`}
+            >
+              <CiSettings size={18} />
+              {!collapsed && <span className="ml-2">My Profile</span>}
+              {!collapsed && (
+                <span className="ml-auto">
+                  {openSections["My Profile"] ? <RxCaretDown size={15} /> : <RxCaretLeft size={15} />}
+                </span>
+              )}
+            </button>
+
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out text-gray-900 ${openSections["My Profile"] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}>
+              {openSections["My Profile"] && !collapsed && (
+                <div>
+                  <Link href={`/ModuleSales/Sales/Profile${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex items-center w-full p-4 bg-gray-200 hover:bg-orange-400 hover:text-white transition-all border-transparent duration-300 ease-in-out">
+                    <FaRegCircle size={10} className="mr-2 ml-2" />
+                    Update Profile
+                  </Link>
+                  <Link href={`/ModuleSales/Sales/Profile/Developers${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex items-center w-full p-4 bg-gray-200 hover:bg-orange-400 hover:text-white transition-all border-transparent duration-300 ease-in-out">
+                    <FaRegCircle size={10} className="mr-2 ml-2" />
+                    Developers
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Dashboard Button */}
+          <div className="w-full mt-1">
             <Link
               href={`/ModuleSales/Sales/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}
               className="flex items-center w-full p-4 bg-orange-400 mb-1 text-white rounded-md transition-all duration-300 ease-in-out hover:shadow-md active:scale-95"
@@ -443,66 +476,60 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
             </Link>
           </div>
 
-          {/* Dynamic Menu Items */}
-          {filteredMenuItems.map((item, index) => (
-            <div key={index} className="w-full">
-              {/* Main Menu Button */}
-              <button
-                onClick={() => handleToggle(item.title)}
-                className={`flex items-center w-full p-4 hover:bg-orange-400 rounded hover:rounded-md hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""}`}
-              >
-                <item.icon size={18} />
-                {!collapsed && <span className="ml-2">{item.title}</span>}
-                {/* Only show the count if it's greater than zero */}
-                {item.title === 'Task' && pendingInquiryCount > 0 && (
-                  <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">
-                    {pendingInquiryCount}
-                  </span>
-                )}
+          {/* Filtered Menu Items Except "My Profile" */}
+          {filteredMenuItems
+            .filter(item => item.title !== "My Profile")
+            .map((item, index) => (
+              <div key={index} className="w-full">
+                {/* Main Menu Button */}
+                <button
+                  onClick={() => handleToggle(item.title)}
+                  className={`flex items-center w-full p-4 hover:bg-orange-400 rounded hover:rounded-md hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""}`}
+                >
+                  <item.icon size={18} />
+                  {!collapsed && <span className="ml-2">{item.title}</span>}
+                  {item.title === 'Task' && pendingInquiryCount > 0 && (
+                    <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInquiryCount}</span>
+                  )}
+                  {item.title === 'My Companies' && (pendingInactiveCount > 0 || pendingDeleteCount > 0) && (
+                    <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount + pendingDeleteCount}</span>
+                  )}
+                  {!collapsed && (
+                    <span className="ml-auto">
+                      {openSections[item.title] ? <RxCaretDown size={15} /> : <RxCaretLeft size={15} />}
+                    </span>
+                  )}
+                </button>
 
-                {item.title === 'My Companies' && pendingInactiveCount > 0 && pendingDeleteCount > 0 && (
-                  <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">
-                    {pendingInactiveCount}
-                  </span>
-                )}
-
-                {!collapsed && (
-                  <span className="ml-auto">
-                    {openSections[item.title] ? <RxCaretDown size={15} /> : <RxCaretLeft size={15} />}
-                  </span>
-                )}
-              </button>
-
-              {/* Submenu Items (Collapsible) */}
-              <div className={`overflow-hidden transition-all duration-300 ease-in-out text-gray-900 ${openSections[item.title] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}>
-                {openSections[item.title] && !collapsed && (
-                  <div>
-                    {item.subItems.map((subItem, subIndex) => (
-                      <Link
-                        key={subIndex}
-                        href={subItem.href}
-                        prefetch={true}
-                        className="flex items-center w-full p-4 bg-gray-200 hover:bg-orange-400 hover:text-white transition-all border-transparent duration-300 ease-in-out"
-                      >
-                        <FaRegCircle size={10} className="mr-2 ml-2" />
-                        {subItem.title}
-                        {subItem.title === 'CSR Inquiries' && pendingInquiryCount > 0 && (
-                          <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInquiryCount}</span>
-                        )}
-                        {subItem.title === 'Inactive Companies' && pendingInactiveCount > 0 && (
-                          <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount}</span>
-                        )}
-                        {subItem.title === 'For Deletion' && pendingDeleteCount > 0 && (
-                          <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingDeleteCount}</span>
-                        )}
-                      </Link>
-                    ))}
-                  </div>
-                )}
+                {/* Submenu */}
+                <div className={`overflow-hidden transition-all duration-300 ease-in-out text-gray-900 ${openSections[item.title] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}>
+                  {openSections[item.title] && !collapsed && (
+                    <div>
+                      {item.subItems.map((subItem, subIndex) => (
+                        <Link
+                          key={subIndex}
+                          href={subItem.href}
+                          prefetch={true}
+                          className="flex items-center w-full p-4 bg-gray-200 hover:bg-orange-400 hover:text-white transition-all border-transparent duration-300 ease-in-out"
+                        >
+                          <FaRegCircle size={10} className="mr-2 ml-2" />
+                          {subItem.title}
+                          {subItem.title === 'CSR Inquiries' && pendingInquiryCount > 0 && (
+                            <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInquiryCount}</span>
+                          )}
+                          {subItem.title === 'Inactive Companies' && pendingInactiveCount > 0 && (
+                            <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount}</span>
+                          )}
+                          {subItem.title === 'For Deletion' && pendingDeleteCount > 0 && (
+                            <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingDeleteCount}</span>
+                          )}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-
+            ))}
         </div>
       </div>
     </>
