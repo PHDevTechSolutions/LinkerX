@@ -117,7 +117,6 @@ const ListofUser: React.FC = () => {
                     "CSR Inquiries",
                     "New Account - Client Development",
                     "CSR Client",
-                    "TSA Client",
                 ];
                 const matchesTypeClient = allowedTypeClients.includes(post?.typeclient);
 

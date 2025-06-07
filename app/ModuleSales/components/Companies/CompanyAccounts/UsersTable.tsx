@@ -327,7 +327,10 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
               <div className="flex items-center gap-2">
                 <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="px-2 py-1 border rounded-md">
                   <option value="">Select Status</option>
-                  <option value="Used">Used</option>
+                  <option value="Used">Active</option>
+                  <option value="New Client">New Client</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Non-Buying">Non-Buying</option>
                 </select>
                 <button onClick={handleBulkChange} className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs" disabled={!newStatus}>Apply Changes</button>
               </div>
@@ -351,6 +354,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
             {Role !== "Special Access" && (
               <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
             )}
+            <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
@@ -405,6 +409,20 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid, f
                       </button>
                     </td>
                   )}
+                  <td className="px-6 py-4 text-xs">
+                    <span
+                      className={`px-2 py-1 text-[8px] font-semibold rounded-full whitespace-nowrap ${post.status === "Active"
+                        ? "bg-green-400 text-gray-100"
+                        : post.status === "Used"
+                          ? "bg-blue-400 text-gray-100"
+                          : post.status === "On Hold"
+                            ? "bg-yellow-400 text-black"
+                            : "bg-green-100 text-green-700"
+                        }`}
+                    >
+                      {post.status}
+                    </span>
+                  </td>
                   <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
                   <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
                   <td className="px-6 py-4 text-xs capitalize">{post.contactnumber}</td>

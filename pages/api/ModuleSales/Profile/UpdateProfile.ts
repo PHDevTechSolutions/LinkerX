@@ -18,7 +18,8 @@ export default async function updateProfile(req: NextApiRequest, res: NextApiRes
     Department,
     Status,
     ContactNumber,
-    Password, // ✅ Make sure to destructure Password
+    Password,
+    profilePicture, // bagong field dito
   } = req.body;
 
   if (!id) {
@@ -40,22 +41,27 @@ export default async function updateProfile(req: NextApiRequest, res: NextApiRes
       updatedAt: new Date(),
     };
 
+    if (profilePicture) {
+      updatedUser.profilePicture = profilePicture; // i-save ang url dito
+    }
+
     if (Password && Password.trim() !== "") {
       const hashedPassword = await bcrypt.hash(Password, 10);
       updatedUser.Password = hashedPassword;
     }
 
-    await userCollection.updateOne(
+    const result = await userCollection.updateOne(
       { _id: new ObjectId(id) },
       { $set: updatedUser }
     );
 
-    return res.status(200).json({
-      success: true,
-      message: "Profile updated successfully",
-    });
+    if (result.modifiedCount === 1) {
+      return res.status(200).json({ message: "Profile updated successfully" });
+    } else {
+      return res.status(404).json({ error: "User not found or no changes made" });
+    }
   } catch (error) {
     console.error("Error updating profile:", error);
-    return res.status(500).json({ error: "Failed to update profile" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }

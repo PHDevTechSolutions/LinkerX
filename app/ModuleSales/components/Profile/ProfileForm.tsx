@@ -1,231 +1,275 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import QRCode from 'qrcode';
+import React, { useState, useEffect } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 
-type ProfileFormProps = {
-    userDetails: {
-        id: string;
-        Firstname: string;
-        Lastname: string;
-        Password: string;
-        Email: string;
-        ContactNumber: string;
-        Role: string;
-        Department: string;
-        Status: string;
-    };
-    handleSubmit: (e: React.FormEvent) => void;
-    handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleSelectChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-};
+const ProfileForm: React.FC = () => {
+  const [userDetails, setUserDetails] = useState({
+    id: "",
+    Firstname: "",
+    Lastname: "",
+    Email: "",
+    Role: "",
+    Department: "",
+    Status: "",
+    Password: "",
+    ContactNumber: "",
+    profilePicture: "",
+  });
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [uploading, setUploading] = useState(false);
 
-const ProfileForm: React.FC<ProfileFormProps> = ({ userDetails, handleSubmit, handleChange, handleSelectChange }) => {
-    const [activeTab, setActiveTab] = useState('profile');
-    const [showPassword, setShowPassword] = useState(false);
-    const [generatedCode, setGeneratedCode] = useState('');
-    const [qrCode, setQrCode] = useState('');
-    const [selectedAvatar, setSelectedAvatar] = useState<string>(`https://robohash.org/${userDetails.Email}?size=200x200`);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const userId = params.get("id");
 
-    // List of avatars
-    const avatars = [
-        `https://robohash.org/${userDetails.Email}?set=set1&size=200x200`,
-        `https://robohash.org/${userDetails.Email}?set=set2&size=200x200`,
-        `https://robohash.org/${userDetails.Email}?set=set3&size=200x200`,
-        `https://robohash.org/${userDetails.Email}?set=set4&size=200x200`,
-        `https://robohash.org/${userDetails.Email}?set=set5&size=200x200`,
-    ];
-
-    // Generate a code based on userDetails
-    useEffect(() => {
-        if (userDetails.id && userDetails.Firstname && userDetails.Lastname) {
-            const code = `${userDetails.id}-${userDetails.Firstname.substring(0, 2)}${userDetails.Lastname.substring(0, 2)}-000`;
-            setGeneratedCode(code);
-        }
-    }, [userDetails]);
-
-    // Automatically generate QR Code when generatedCode is set
-    useEffect(() => {
-        if (generatedCode) {
-            generateQRCode(generatedCode);
-        }
-    }, [generatedCode]);
-
-    const generateQRCode = async (text: string) => {
+      if (userId) {
         try {
-            const qrData = `Taskflow System | ERP Module - Ecoshift Corporation,\nAgentName: ${userDetails.Firstname} ${userDetails.Lastname}\nPosition: ${userDetails.Role}\nContactNumber: ${userDetails.ContactNumber}\nEmail: ${userDetails.Email}\nLink: https://ecoshiftcorp.com`;
-            const qr = await QRCode.toDataURL(qrData);
-            setQrCode(qr);
+          const response = await fetch(`/api/user?id=${encodeURIComponent(userId)}`);
+          if (!response.ok) throw new Error("Failed to fetch user data");
+          const data = await response.json();
+          setUserDetails({
+            id: data._id || "",
+            Firstname: data.Firstname || "",
+            Lastname: data.Lastname || "",
+            Email: data.Email || "",
+            Password: data.Password || "",
+            ContactNumber: data.ContactNumber || "",
+            Role: data.Role || "",
+            Department: data.Department || "",
+            Status: data.Status || "",
+            profilePicture: data.profilePicture || "",
+          });
         } catch (err) {
-            console.error('Error generating QR code', err);
+          console.error("Error fetching user data:", err);
+          setError("Failed to load user data. Please try again later.");
+        } finally {
+          setLoading(false);
         }
+      } else {
+        setError("User ID is missing.");
+        setLoading(false);
+      }
     };
 
-    const handleAvatarChange = useCallback((avatar: string) => {
-        setSelectedAvatar(avatar);
-        // Save selected avatar in localStorage immediately
-        localStorage.setItem('selectedAvatar', avatar);
-    }, []);
+    fetchUserData();
+  }, []);
 
-    return (
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6 p-6 text-xs">
-            <div className="bg-white shadow-md rounded-lg p-6">
-                <button
-                    className={`py-2 px-4 ${activeTab === 'profile' ? 'border-b-2 border-blue-500' : 'text-gray-500'}`}
-                    onClick={() => setActiveTab('profile')}
-                >
-                    Profile
-                </button>
-                <button
-                    className={`py-2 px-4 ${activeTab === 'blank' ? 'border-b-2 border-blue-500' : 'text-gray-500'}`}
-                    onClick={() => setActiveTab('blank')}
-                >
-                    Generate Code
-                </button>
+  const handleImageUpload = async (file: File) => {
+    setUploading(true);
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "Xchire"); // Update with your Cloudinary preset
 
-                {activeTab === 'profile' && (
-                    <div className="flex flex-col items-center mt-6">
-                        <div className="w-full bg-gray-200 rounded-lg overflow-hidden">
-                            <img src={selectedAvatar} alt="Profile" className="w-full h-full object-cover" />
-                        </div>
+    try {
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dhczsyzcz/image/upload",
+        {
+          method: "POST",
+          body: data,
+        }
+      );
+      const json = await res.json();
+      if (json.secure_url) {
+        setUserDetails((prev) => ({ ...prev, profilePicture: json.secure_url }));
+        toast.success("Image uploaded successfully");
+      } else {
+        toast.error("Failed to upload image");
+      }
+    } catch (error) {
+      toast.error("Error uploading image");
+      console.error(error);
+    } finally {
+      setUploading(false);
+    }
+  };
 
-                        {/* Avatar Carousel */}
-                        <div className="mt-4 flex space-x-4 overflow-x-auto">
-                            {avatars.map((avatar, index) => (
-                                <div
-                                    key={index}
-                                    onClick={() => handleAvatarChange(avatar)}
-                                    className="cursor-pointer"
-                                >
-                                    <img
-                                        src={avatar}
-                                        alt={`Avatar ${index + 1}`}
-                                        className="w-16 h-16 object-cover rounded-lg border-2 border-gray-300 hover:border-blue-500"
-                                    />
-                                </div>
-                            ))}
-                        </div>
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-                        <p className="mt-4 text-sm font-semibold">{userDetails.Firstname} {userDetails.Lastname}</p>
-                    </div>
-                )}
+    try {
+      const response = await fetch("/api/ModuleSales/Profile/UpdateProfile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userDetails),
+      });
 
-                {activeTab === 'blank' && (
-                    <div className="flex flex-col items-center mt-6">
-                        {generatedCode && <p className="text-sm font-semibold">Generated Code: {generatedCode}</p>}
-                        {qrCode && (
-                            <img
-                                src={qrCode}
-                                alt="Generated QR Code"
-                                className="mt-4"
-                                style={{ width: '300px', height: '300px' }} // Set the width and height directly with inline styles
-                            />
-                        )}
-                    </div>
-                )}
+      if (response.ok) {
+        toast.success("Profile updated successfully");
+      } else {
+        throw new Error("Failed to update profile");
+      }
+    } catch {
+      toast.error("Failed to update profile");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUserDetails((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setUserDetails((prev) => ({ ...prev, [name]: value }));
+  };
+
+  if (loading) return <div>Loading...</div>;
+
+  return (
+    <>
+      <div className="grid grid-cols-4 gap-6">
+        {/* Left card: Large Profile Picture */}
+        <div className="col-span-1 bg-white rounded-md p-6 shadow-md flex flex-col items-center">
+          <h2 className="text-md font-semibold mb-4">Profile Picture</h2>
+
+          {userDetails.profilePicture ? (
+            <img
+              src={userDetails.profilePicture}
+              alt="Profile"
+              className="w-48 h-48 rounded-full object-cover mb-4"
+            />
+          ) : (
+            <div className="w-48 h-48 rounded-full bg-gray-200 flex items-center justify-center mb-4">
+              <span className="text-gray-500 text-sm">No Image</span>
             </div>
+          )}
 
-            {/* User Details Form Card */}
-            <div className="bg-white shadow-md rounded-lg p-6">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label htmlFor="Firstname" className="block text-xs font-medium text-gray-700">First Name</label>
-                        <input
-                            type="text"
-                            id="Firstname"
-                            name="Firstname"
-                            value={userDetails.Firstname}
-                            onChange={handleChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="Lastname" className="block text-xs font-medium text-gray-700">Last Name</label>
-                        <input
-                            type="text"
-                            id="Lastname"
-                            name="Lastname"
-                            value={userDetails.Lastname}
-                            onChange={handleChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
-                        />
-                    </div>
-                    <div className="relative">
-                        <label htmlFor="Password" className="block text-xs font-medium text-gray-700">
-                            Current Password / Change Password
-                        </label>
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            id="Password"
-                            name="Password"
-                            value={userDetails.Password}
-                            onChange={handleChange}
-                            className="mt-1 block w-full px-4 py-2 pr-10 border border-gray-300 rounded-md text-xs"
-                        />
-                        <div
-                            onClick={() => setShowPassword((prev) => !prev)}
-                            className="absolute inset-y-0 right-3 top-[20px] flex items-center cursor-pointer text-gray-500"
-                        >
-                            {showPassword ? <IoIosEyeOff size={18} /> : <IoIosEye size={18} />}
-                        </div>
-                    </div>
-                    <div>
-                        <label htmlFor="Email" className="block text-xs font-medium text-gray-700">Email Address</label>
-                        <input
-                            type="email"
-                            id="Email"
-                            name="Email"
-                            value={userDetails.Email}
-                            onChange={handleChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs"
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="ContactNumber" className="block text-xs font-medium text-gray-700">Contact Number</label>
-                        <input
-                            type="text"
-                            id="ContactNumber"
-                            name="ContactNumber"
-                            value={userDetails.ContactNumber}
-                            onChange={handleChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs"
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="Department" className="block text-xs font-medium text-gray-700">Department</label>
-                        <select
-                            id="Department"
-                            name="Department"
-                            value={userDetails.Department}
-                            onChange={handleSelectChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
-                        >
-                            <option value="">Select Department</option>
-                            <option value="Sales">Sales</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label htmlFor="Status" className="block text-xs font-medium text-gray-700">Change Status</label>
-                        <select
-                            id="Status"
-                            name="Status"
-                            value={userDetails.Status}
-                            onChange={handleSelectChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
-                        >
-                            <option value="" disabled>Select Status</option>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                            <option value="Busy">Busy</option>
-                            <option value="Do not Disturb">Do not Disturb</option>
-                        </select>
-                    </div>
-                    <button type="submit" className="bg-blue-600 text-white text-xs px-4 py-2 rounded">Save Changes</button>
-                </form>
-            </div>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                handleImageUpload(e.target.files[0]);
+              }
+            }}
+            className="block w-full text-xs"
+          />
+          {uploading && <p className="text-xs text-gray-500 mt-2">Uploading image...</p>}
         </div>
-    );
+
+        {/* Right card: Form Fields */}
+        <div className="col-span-3 bg-white rounded-md p-6 shadow-md">
+          <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
+            <div>
+              <label htmlFor="Firstname" className="block text-xs font-medium text-gray-700">
+                First Name
+              </label>
+              <input
+                type="text"
+                id="Firstname"
+                name="Firstname"
+                value={userDetails.Firstname}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="Lastname" className="block text-xs font-medium text-gray-700">
+                Last Name
+              </label>
+              <input
+                type="text"
+                id="Lastname"
+                name="Lastname"
+                value={userDetails.Lastname}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
+              />
+            </div>
+
+            <div className="relative">
+              <label htmlFor="Password" className="block text-xs font-medium text-gray-700">
+                Current Password / Change Password
+              </label>
+              <input
+                type={showPassword ? "text" : "password"}
+                id="Password"
+                name="Password"
+                value={userDetails.Password}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 pr-10 border border-gray-300 rounded-md text-xs"
+              />
+              <div
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-3 top-[20px] flex items-center cursor-pointer text-gray-500"
+              >
+                {showPassword ? <IoIosEyeOff size={18} /> : <IoIosEye size={18} />}
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="Email" className="block text-xs font-medium text-gray-700">
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="Email"
+                name="Email"
+                value={userDetails.Email}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="ContactNumber" className="block text-xs font-medium text-gray-700">
+                Contact Number
+              </label>
+              <input
+                type="text"
+                id="ContactNumber"
+                name="ContactNumber"
+                value={userDetails.ContactNumber}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="Status" className="block text-xs font-medium text-gray-700">
+                Change Status
+              </label>
+              <select
+                id="Status"
+                name="Status"
+                value={userDetails.Status}
+                onChange={handleSelectChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
+              >
+                <option value="" disabled>
+                  Select Status
+                </option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+                <option value="Busy">Busy</option>
+                <option value="Do not Disturb">Do not Disturb</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="bg-blue-600 text-white text-xs px-4 py-2 rounded"
+              disabled={uploading}
+            >
+              Save Changes
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <ToastContainer />
+    </>
+  );
 };
 
 export default ProfileForm;

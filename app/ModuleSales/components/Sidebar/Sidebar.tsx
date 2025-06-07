@@ -16,7 +16,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
-  const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", ReferenceID: "" });
+  const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", profilePicture: "", ReferenceID: "" });
   const router = useRouter();
   const [userNotifications, setUserNotifications] = useState<any>(null);
   const [inactiveAccount, setInactiveAccount] = useState<any>(null);
@@ -53,6 +53,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
           Company: data.Company || "Ecoshift Corporation",
           Status: data.Status || "None",
           ReferenceID: data.ReferenceID,
+          profilePicture: data.profilePicture,
         });
       } catch (error) {
         console.error("Error fetching user details:", error);
@@ -389,11 +390,17 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         </div>
 
         {/* User Details Section */}
+        {/* User Details Section */}
         {!collapsed && (
           <div className="p-6 text-xs text-left">
 
-            {/* Profile Image Section Section */}
-            <img src={selectedAvatar} alt="Avatar" className="w-12 h-12 object-cover rounded-full mb-2" />
+            {/* Profile Image Section */}
+            <img
+              src={userDetails.profilePicture || "/default-avatar.png"}
+              alt="Avatar"
+              className="w-12 h-12 object-cover rounded-full mb-2"
+            />
+
             <p className="font-bold uppercase text-sm">
               {userDetails.Firstname}, {userDetails.Lastname}
             </p>
@@ -403,25 +410,30 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
             <div className="flex items-center gap-1">
               <span
                 className={`text-white text-[8px] font-semibold px-3 py-1 rounded-full inline-block mt-2 ${userDetails.Status === "Active"
-                  ? "bg-green-600"
-                  : userDetails.Status === "Inactive"
-                    ? "bg-red-400"
-                    : userDetails.Status === "Locked"
-                      ? "bg-gray-400"
-                      : userDetails.Status === "Busy"
-                        ? "bg-yellow-400"
-                        : userDetails.Status === "Do not Disturb"
-                          ? "bg-gray-800"
-                          : "bg-blue-500"
+                    ? "bg-green-600"
+                    : userDetails.Status === "Inactive"
+                      ? "bg-red-400"
+                      : userDetails.Status === "Locked"
+                        ? "bg-gray-400"
+                        : userDetails.Status === "Busy"
+                          ? "bg-yellow-400"
+                          : userDetails.Status === "Do not Disturb"
+                            ? "bg-gray-800"
+                            : "bg-blue-500"
                   }`}
               >
                 {userDetails.Status}
               </span>
 
-              {/* Toggle Mode Section Section */}
+              {/* Toggle Mode Section */}
               {userDetails.Role === "Territory Sales Manager" && (
                 <label className="inline-flex items-center cursor-pointer mt-2">
-                  <input type="checkbox" checked={agentMode} onChange={() => setAgentMode(!agentMode)} className="sr-only peer" />
+                  <input
+                    type="checkbox"
+                    checked={agentMode}
+                    onChange={() => setAgentMode(!agentMode)}
+                    className="sr-only peer"
+                  />
                   <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-400 dark:peer-focus:ring-blue-400 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-400 dark:peer-checked:bg-blue-600"></div>
                   <span className="ms-3 text-xs font-medium text-gray-900 dark:text-gray-300">Agent Mode</span>
                 </label>
@@ -430,6 +442,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
             </div>
           </div>
         )}
+
 
         {/* Menu Section */}
         <div className="flex flex-col items-center flex-grow overflow-y-auto text-xs p-2">
