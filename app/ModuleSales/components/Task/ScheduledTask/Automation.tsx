@@ -57,7 +57,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
         } catch {
           // Invalid JSON fallback
           return {
-            top50: true,
+            top50: false,
             next30: false,
             balance20: false,
             csr: false,
@@ -67,7 +67,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
       }
     }
     return {
-      top50: true,
+      top50: false,
       next30: false,
       balance20: false,
       csr: false,
@@ -133,6 +133,9 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
   const referenceID = userDetails?.ReferenceID;
   const role = userDetails?.Role;
 
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10); // "YYYY-MM-DD" lang, walang time
+
   const filteredSortedAccounts = posts
     .filter((post) => {
       const isAllowed =
@@ -141,10 +144,15 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
         (["Territory Sales Associate", "Territory Sales Manager"].includes(role) &&
           post.referenceid === referenceID);
 
-      const hasValidDate =
-        post.date_updated !== null && !isNaN(new Date(post.date_updated).getTime());
+      if (!post.date_updated) return false;
 
-      return isAllowed && hasValidDate;
+      // Kunin ang date part lang ng date_updated para i-compare
+      const postDateStr = new Date(post.date_updated).toISOString().slice(0, 10);
+
+      // Check kung date_updated ay ngayong araw
+      const isDateToday = postDateStr === todayStr;
+
+      return isAllowed && isDateToday;
     })
     .sort((a, b) => new Date(a.date_updated!).getTime() - new Date(b.date_updated!).getTime());
 
@@ -157,6 +165,22 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
     const formattedDate = `${day}${month}`;
     const randomNumber = Math.floor(100000 + Math.random() * 900000).toString();
     return `${firstLetter}-${firstTwoRef}-${formattedDate}-${randomNumber}`;
+  };
+
+  const getDateUpdated = (typeclient: string) => {
+    const now = new Date();
+
+    if (typeclient === "Top 50") {
+      now.setDate(now.getDate() + 15);
+    } else if (typeclient === "Next 30" || typeclient === "Balance 20") {
+      now.setMonth(now.getMonth() + 1);
+    }
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
   };
 
   const handleSubmit = async (post: Post) => {
@@ -191,10 +215,18 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
       });
 
       if (res.ok) {
-        const statusUpdateRes = await fetch("/api/ModuleSales/Task/DailyActivity/UpdateCompanyStatus", {
+        // Calculate date_updated here before updating status
+        const date_updated = getDateUpdated(post.typeclient);
+
+        // Send id, status, and date_updated to update status & date
+        const statusUpdateRes = await fetch("/api/ModuleSales/Task/ScheduleTask/EditStatus", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: post.id, status: "Used" }),
+          body: JSON.stringify({
+            id: post.id,
+            status: "Used",
+            date_updated,  // <-- isama dito
+          }),
         });
 
         if (statusUpdateRes.ok) {
