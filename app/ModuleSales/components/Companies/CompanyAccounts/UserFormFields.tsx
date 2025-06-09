@@ -146,6 +146,36 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           />
         </div>
 
+        {/* Affiliate or Group */}
+        <div className={fieldWidthClass}>
+          <label className="block text-xs font-bold mb-2" htmlFor="companygroup">Affiliate or Group</label>
+          <input
+            type="text"
+            id="companygroup"
+            value={companygroup}
+            onChange={(e) => {
+              const input = e.target.value;
+              const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+              setcompanygroup(sanitized);
+            }}
+
+            className="w-full px-3 py-2 border rounded text-xs uppercase"
+          />
+        </div>
+
+        {/* Type of Client */}
+        <div className={fieldWidthClass}>
+          <label className="block text-xs font-bold mb-2" htmlFor="typeclient">Type of Client</label>
+          <select id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+            <option value="">Select Client</option>
+            <option value="Top 50">Top 50</option>
+            <option value="Next 30">Next 30</option>
+            <option value="Balance 20">Balance 20</option>
+            <option value="CSR Client">CSR Client</option>
+            <option value="TSA Client">TSA Client</option>
+          </select>
+        </div>
+
         {/* Contact Person */}
         <div className={fieldWidthClass}>
           <label className="block text-xs font-bold mb-2">Contact Person</label>
@@ -249,36 +279,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
               </div>
             );
           })}
-        </div>
-        
-        {/* Type of Client */}
-        <div className={fieldWidthClass}>
-          <label className="block text-xs font-bold mb-2" htmlFor="typeclient">Type of Client</label>
-          <select id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
-            <option value="">Select Client</option>
-            <option value="Top 50">Top 50</option>
-            <option value="Next 30">Next 30</option>
-            <option value="Balance 20">Balance 20</option>
-            <option value="CSR Client">CSR Client</option>
-            <option value="TSA Client">TSA Client</option>
-          </select>
-        </div>
-
-        {/* Affiliate or Group */}
-        <div className={fieldWidthClass}>
-          <label className="block text-xs font-bold mb-2" htmlFor="companygroup">Affiliate or Group</label>
-          <input
-            type="text"
-            id="companygroup"
-            value={companygroup}
-            onChange={(e) => {
-              const input = e.target.value;
-              const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
-              setcompanygroup(sanitized);
-            }}
-
-            className="w-full px-3 py-2 border rounded text-xs uppercase"
-          />
         </div>
 
         {/* Complete Address */}
