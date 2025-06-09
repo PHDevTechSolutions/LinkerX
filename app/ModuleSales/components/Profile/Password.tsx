@@ -63,7 +63,7 @@ const Password: React.FC<PasswordProps> = ({
           onChange={onChange}
           maxLength={10}
           aria-describedby="passwordHelp passwordError"
-          className={`mt-1 block w-full px-4 py-2 pr-10 border rounded-md text-xs ${
+          className={`mt-1 block w-full px-4 py-2 pr-10 border rounded-md text-xs text-black ${
             passwordError ? "border-red-500" : "border-gray-300"
           }`}
         />
@@ -124,7 +124,7 @@ const Password: React.FC<PasswordProps> = ({
           onChange={onChange}
           maxLength={10}
           aria-describedby="confirmPasswordError"
-          className={`mt-1 block w-full px-4 py-2 border rounded-md text-xs ${
+          className={`mt-1 block w-full px-4 py-2 border rounded-md text-xs text-black ${
             confirmError ? "border-red-500" : "border-gray-300"
           }`}
         />

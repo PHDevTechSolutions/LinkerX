@@ -248,7 +248,7 @@ const ProfileForm: React.FC = () => {
           />
         </div>
 
-        <div className="md:col-span-2 bg-white">
+        <div className="md:col-span-2 bg-white ">
           <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
             <div>
               <label htmlFor="Firstname" className="block text-xs font-medium text-gray-700">
@@ -260,7 +260,7 @@ const ProfileForm: React.FC = () => {
                 name="Firstname"
                 value={userDetails.Firstname}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs text-black capitalize"
               />
             </div>
 
@@ -274,7 +274,7 @@ const ProfileForm: React.FC = () => {
                 name="Lastname"
                 value={userDetails.Lastname}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs capitalize"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs text-black capitalize"
               />
             </div>
 
@@ -296,7 +296,7 @@ const ProfileForm: React.FC = () => {
                 name="Email"
                 value={userDetails.Email}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs text-black"
               />
             </div>
 
@@ -310,7 +310,7 @@ const ProfileForm: React.FC = () => {
                 name="ContactNumber"
                 value={userDetails.ContactNumber}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs text-black"
               />
             </div>
 
@@ -322,7 +322,7 @@ const ProfileForm: React.FC = () => {
               <button
                 type="button"
                 onClick={toggleStatusDropdown}
-                className="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-md text-xs capitalize bg-white"
+                className="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-md text-xs text-black capitalize bg-white"
                 aria-haspopup="listbox"
                 aria-expanded={statusDropdownOpen}
                 aria-label="Select status"
@@ -331,7 +331,7 @@ const ProfileForm: React.FC = () => {
                   {userDetails.Status ? (
                     <>
                       <span
-                        className={`inline-block w-3 h-3 rounded-full ${
+                        className={`inline-block w-3 h-3 rounded-full text-black ${
                           STATUS_OPTIONS.find((opt) => opt.value === userDetails.Status)?.color || "bg-gray-400"
                         }`}
                       />
@@ -356,7 +356,7 @@ const ProfileForm: React.FC = () => {
                 <ul
                   role="listbox"
                   tabIndex={-1}
-                  className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md max-h-40 overflow-auto text-xs"
+                  className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md max-h-40 overflow-auto text-xs text-black"
                 >
                   {STATUS_OPTIONS.map(({ value, label, color }) => (
                     <li

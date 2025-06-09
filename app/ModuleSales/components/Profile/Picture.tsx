@@ -74,7 +74,7 @@ const Picture: React.FC<PictureProps> = ({
 
     return (
         <div className="bg-white rounded-md p-6 shadow-md flex flex-col items-center w-full">
-            <h2 className="text-md font-semibold mb-4">Profile Picture</h2>
+            <h2 className="text-md font-semibold mb-4 text-black">Profile Picture</h2>
 
             {/* Drag & Drop zone */}
             {!imageSrc && (
@@ -141,13 +141,13 @@ const Picture: React.FC<PictureProps> = ({
                     <div className="flex justify-between items-center mt-4 space-x-2">
                         <button
                             onClick={onCancelCrop}
-                            className="bg-red-500 text-white px-3 py-1 rounded text-sm"
+                            className="bg-red-500 text-white px-3 py-1 rounded text-xs"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={showCroppedImage}
-                            className="bg-green-600 text-white px-3 py-1 rounded text-sm"
+                            className="bg-green-600 text-white px-3 py-1 rounded text-xs"
                         >
                             Confirm
                         </button>
@@ -156,7 +156,7 @@ const Picture: React.FC<PictureProps> = ({
 
                     <div className="mt-4 flex flex-col space-y-4">
                         <div className="flex items-center space-x-2">
-                            <label className="text-xs whitespace-nowrap w-12">Zoom:</label>
+                            <label className="text-xs text-black whitespace-nowrap w-12">Zoom:</label>
                             <input
                                 type="range"
                                 min={1}
@@ -169,7 +169,7 @@ const Picture: React.FC<PictureProps> = ({
                         </div>
 
                         <div className="flex items-center space-x-2">
-                            <label className="text-xs whitespace-nowrap w-12">Rotate:</label>
+                            <label className="text-xs text-black whitespace-nowrap w-12">Rotate:</label>
                             <input
                                 type="range"
                                 min={0}

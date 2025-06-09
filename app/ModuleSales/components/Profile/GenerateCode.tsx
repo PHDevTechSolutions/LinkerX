@@ -177,7 +177,7 @@ Link: https://ecoshiftcorp.com`;
     <div className="flex flex-col items-center mt-6" role="main">
       {/* Generated code */}
       {generatedCode && (
-        <p className="text-sm font-semibold" aria-live="polite">
+        <p className="text-sm font-semibold text-black" aria-live="polite">
           Generated Code:{" "}
           <span className="text-blue-600 font-mono">{generatedCode}</span>
         </p>
