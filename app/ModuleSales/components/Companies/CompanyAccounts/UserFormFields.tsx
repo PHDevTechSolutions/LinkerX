@@ -296,7 +296,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             className="w-full px-3 py-2 border rounded text-xs capitalize"
           />
         </div>
-        
+
         {/* Delivery Address */}
         <div className={fieldWidthClass}>
           <label className="block text-xs font-bold mb-2" htmlFor="deliveryaddress">Delivery Address</label>
@@ -311,7 +311,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             }}
             className="w-full px-3 py-2 border rounded text-xs capitalize" />
         </div>
-        
+
         {/* Region / Area */}
         <div className={fieldWidthClass}>
           <label className="block text-xs font-bold mb-2" htmlFor="area">Area</label>
