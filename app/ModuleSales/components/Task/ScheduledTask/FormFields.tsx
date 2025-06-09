@@ -173,6 +173,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     const [previousCompany, setPreviousCompany] = useState<any>(null);
 
     const [minutesSpent, setMinutesSpent] = useState("");
+    const [subOpen, setSubOpen] = useState(false);
 
     useEffect(() => {
         if (startdate && enddate) {
@@ -404,75 +405,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         setEmailAddresses(newEmailAddresses);
     };
 
-    const handleActivitySelection = (activity: string) => {
-        console.log("Selected:", activity); // Debugging
-
-        settypeactivity(activity);
-
-        // Reset all fields
-        setShowFields(false);
-        setShowOutboundFields(false);
-        setShowInboundFields(false);
-        setShowQuotationField(false);
-        setShowSOField(false);
-        setShowDeliverField(false); // Reset the delivered field before checking
-
-        const accountingActivities = [
-            "Account Development",
-            "Accounting: Accounts Receivable and Payment",
-            "Accounting: Billing Concern",
-            "Accounting: Refund Request",
-            "Accounting: Sales Order Concern",
-            "Accounting: TPC Request",
-            "Admin Concern: Coordination of Payment Terms Request",
-            "CSR Inquiries",
-            "Coordination of Pick-Up / Delivery to Client",
-            "Coordination With CS (Email Acknowledgement)",
-            "Marketing Concern",
-            "Email and Viber Checking",
-            "Email Blast",
-            "Email, SMS & Viber Replies",
-            "Payment Follow-Up",
-            "Quotation Follow-Up",
-            "Logistic Concern: Shipping Cost Estimation",
-            "Preparation: Bidding Preparation",
-            "Preparation: Preparation of Report",
-            "Preparation: Preparation of SPF",
-            "Technical: Dialux Simulation Request",
-            "Technical: Drawing Request",
-            "Technical: Inquiry",
-            "Technical: Site Visit Request",
-            "Technical: TDS Request",
-            "Walk-In Client",
-            "Warehouse: Coordination to Billing",
-            "Warehouse: Coordination to Dispatch",
-            "Warehouse: Coordination to Inventory",
-            "Warehouse: Delivery / Helper Concern",
-            "Warehouse: Replacement Request / Concern",
-            "Warehouse: Sample Request / Concern",
-            "Warehouse: SO Status Follow Up",
-        ];
-
-        if (accountingActivities.includes(activity)) {
-            setShowFields(true);
-        } else if (activity === "Outbound Call") {
-            setShowFields(true);
-            setShowOutboundFields(true);
-        } else if (activity === "Inbound Call") {
-            setShowFields(true);
-            setShowInboundFields(true);
-        } else if (activity.includes("Preparation: Preparation of Quote")) {
-            setShowFields(true);
-            setShowQuotationField(true);
-        } else if (activity.includes("Preparation: Sales Order Preparation")) {
-            setShowFields(true);
-            setShowSOField(true);
-        } else if (activity.includes("Delivered")) {
-            setShowFields(true);
-            setShowDeliverField(true); // Trigger showing the delivered field when "Delivered" is selected
-        }
-    };
-
     useEffect(() => {
         if (dropdownRef.current) {
             dropdownRef.current.focus();
@@ -555,6 +487,114 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     };
 
     const [isManual, setIsManual] = useState(false); // toggle state
+    const menuRef = useRef<HTMLElement | null>(null);
+
+    const groupedActivities = {
+        Accounting: [
+            "Accounts Receivable and Payment",
+            "Billing Concern",
+            "Refund Request",
+            "Sales Order Concern",
+            "TPC Request",
+        ],
+        Admin: ["Coordination of Payment Terms Request"],
+        "CSR / Client Support": [
+            "CSR Inquiries",
+            "Coordination of Pick-Up / Delivery to Client",
+            "Coordination With CS (Email Acknowledgement)",
+            "Inbound Call",
+            "Outbound Call",
+            "Walk-In Client",
+        ],
+        Communication: [
+            "Email and Viber Checking",
+            "Email Blast",
+            "Email, SMS & Viber Replies",
+        ],
+        Marketing: ["Marketing Concern"],
+        Sales: ["Account Development", "Payment Follow-Up", "Quotation Follow-Up"],
+        Logistics: ["Shipping Cost Estimation"],
+        Preparation: [
+            "Bidding Preparation",
+            "Preparation of Report",
+            "Preparation of SPF",
+            "Preparation of Quote: New Client",
+            "Preparation of Quote: Existing Client",
+            "Sales Order Preparation",
+        ],
+        Technical: [
+            "Dialux Simulation Request",
+            "Drawing Request",
+            "Inquiry",
+            "Site Visit Request",
+            "TDS Request",
+        ],
+        Warehouse: [
+            "Coordination to Billing",
+            "Coordination to Dispatch",
+            "Coordination to Inventory",
+            "Delivery / Helper Concern",
+            "Replacement Request / Concern",
+            "Sample Request / Concern",
+            "SO Status Follow Up",
+        ],
+        Others: ["Delivered"],
+    };
+
+    // Flat list of accounting activities for quick checking
+    const accountingActivities = groupedActivities.Accounting;
+
+    // Handle activity selection
+    const handleActivitySelection = (activity: string) => {
+        console.log("Selected:", activity);
+        settypeactivity(activity);
+
+        // Reset all conditional fields
+        setShowFields(false);
+        setShowOutboundFields(false);
+        setShowInboundFields(false);
+        setShowQuotationField(false);
+        setShowSOField(false);
+        setShowDeliverField(false);
+
+        if (accountingActivities.includes(activity)) {
+            setShowFields(true);
+        } else if (activity === "Outbound Call") {
+            setShowFields(true);
+            setShowOutboundFields(true);
+        } else if (activity === "Inbound Call") {
+            setShowFields(true);
+            setShowInboundFields(true);
+        } else if (activity.includes("Preparation of Quote")) {
+            setShowFields(true);
+            setShowQuotationField(true);
+        } else if (activity === "Sales Order Preparation") {
+            setShowFields(true);
+            setShowSOField(true);
+        } else if (activity === "Delivered") {
+            setShowFields(true);
+            setShowDeliverField(true);
+        }
+    };
+
+    // Handle dropdown open/close
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setSubOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    // Handle click from activity dropdown
+    const handleClick = (category: string, item: string) => {
+        const value = category === "Others" ? item : item;
+        handleActivitySelection(value);
+        setSubOpen(false);
+    };
 
     return (
         <>
@@ -874,58 +914,41 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     {/* Type Activity */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Type of Activity</label>
-                        <select value={typeactivity ?? ""}
-                            onChange={(e) => handleActivitySelection(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white shadow-sm" required>
-                            <option value="" disabled>Select an activity</option>
-                            {[
-                                "Account Development",
-                                "Accounting: Accounts Receivable and Payment",
-                                "Accounting: Billing Concern",
-                                "Accounting: Refund Request",
-                                "Accounting: Sales Order Concern",
-                                "Accounting: TPC Request",
-                                "Admin Concern: Coordination of Payment Terms Request",
-                                "CSR Inquiries",
-                                "Coordination of Pick-Up / Delivery to Client",
-                                "Coordination With CS (Email Acknowledgement)",
-                                "Marketing Concern",
-                                "Email and Viber Checking",
-                                "Email Blast",
-                                "Email, SMS & Viber Replies",
-                                "Inbound Call",
-                                "Payment Follow-Up",
-                                "Quotation Follow-Up",
-                                "Logistic Concern: Shipping Cost Estimation",
-                                "Outbound Call",
-                                "Preparation: Bidding Preparation",
-                                "Preparation: Preparation of Report",
-                                "Preparation: Preparation of SPF",
-                                "Preparation: Preparation of Quote: New Client",
-                                "Preparation: Preparation of Quote: Existing Client",
-                                "Preparation: Sales Order Preparation",
-                                "Technical: Dialux Simulation Request",
-                                "Technical: Drawing Request",
-                                "Technical: Inquiry",
-                                "Technical: Site Visit Request",
-                                "Technical: TDS Request",
-                                "Walk-In Client",
-                                "Warehouse: Coordination to Billing",
-                                "Warehouse: Coordination to Dispatch",
-                                "Warehouse: Coordination to Inventory",
-                                "Warehouse: Delivery / Helper Concern",
-                                "Warehouse: Replacement Request / Concern",
-                                "Warehouse: Sample Request / Concern",
-                                "Warehouse: SO Status Follow Up",
-                                "Delivered",
-                            ].map((item) => (
-                                <option key={item} value={item}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                        <div
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => setSubOpen((prev) => !prev)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') setSubOpen((prev) => !prev);
+                            }}
+                            className="w-full px-3 py-2 border rounded text-xs bg-white shadow-sm text-left cursor-pointer focus:outline-none focus:ring"
+                        >
+                            {typeactivity || "Select an activity"}
+                        </div>
 
+                        {subOpen && (
+                            <div className="z-20 mt-1 bg-white shadow-lg border rounded-tl-xl rounded-bl-xl w-full">
+                                {Object.entries(groupedActivities).map(([category, items]) => (
+                                    <div key={category} className="group relative">
+                                        <div className="px-3 py-2 text-xs font-semibold hover:bg-orange-400 hover:text-white cursor-pointer">
+                                            {category}
+                                        </div>
+                                        <div className="absolute left-full top-0 hidden group-hover:block bg-white border rounded-tr-xl rounded-br-xl shadow-md min-w-max z-30">
+                                            {items.map((item) => (
+                                                <div
+                                                    key={item}
+                                                    onClick={() => handleClick(category, item)}
+                                                    className="px-4 py-2 text-xs hover:bg-orange-400 hover:text-white cursor-pointer whitespace-nowrap"
+                                                >
+                                                    {item}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
 
                     {/* Conditional Fields */}
                     {showInboundFields && (
