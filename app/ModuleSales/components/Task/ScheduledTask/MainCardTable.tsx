@@ -71,43 +71,50 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
     return (
         <div className="bg-white rounded-lg shadow p-4 col-span-3">
             {/* View switcher and items per page */}
-            <div className="mb-4 flex justify-between items-center">
-                <div className="space-x-2 text-xs">
+            <div className="mb-2 flex flex-col md:flex-row md:justify-between md:items-center space-y-2 md:space-y-0">
+                {/* View Buttons */}
+                <div className="flex flex-wrap gap-2 text-xs justify-center md:justify-start">
                     <button
                         onClick={() => setView("table")}
-                        className={`px-3 py-1 rounded ${view === "table" ? "bg-blue-400 text-white" : "bg-gray-100"
-                            }`}
+                        className={`px-3 py-1 rounded ${view === "table" ? "bg-blue-400 text-white" : "bg-gray-100"}`}
                     >
                         Table
                     </button>
                     <button
                         onClick={() => setView("grid")}
-                        className={`px-3 py-1 rounded ${view === "grid" ? "bg-blue-400 text-white" : "bg-gray-100"
-                            }`}
+                        className={`px-3 py-1 rounded ${view === "grid" ? "bg-blue-400 text-white" : "bg-gray-100"}`}
                     >
                         Task
                     </button>
                     <button
                         onClick={() => setView("card")}
-                        className={`px-3 py-1 rounded ${view === "card" ? "bg-blue-400 text-white" : "bg-gray-100"
-                            }`}
+                        className={`px-3 py-1 rounded ${view === "card" ? "bg-blue-400 text-white" : "bg-gray-100"}`}
                     >
                         Calendar
                     </button>
                 </div>
 
-                <select
-                    value={itemsPerPage}
-                    onChange={handleItemsPerPageChange}
-                    className="border px-3 py-2 rounded text-xs"
-                >
-                    {[10, 25, 50, 100].map((num) => (
-                        <option key={num} value={num}>
-                            {num}
-                        </option>
-                    ))}
-                </select>
+                {/* Items Per Page + Pagination */}
+                <div className="flex flex-col md:flex-row items-center justify-center md:justify-end gap-2 text-[10px] text-gray-600">
+                    <select
+                        value={itemsPerPage}
+                        onChange={handleItemsPerPageChange}
+                        className="border px-3 py-2 rounded text-[10px]"
+                    >
+                        {[10, 25, 50, 100].map((num) => (
+                            <option key={num} value={num}>
+                                {num}
+                            </option>
+                        ))}
+                    </select>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                    />
+                </div>
             </div>
+
 
             {showForm ? (
                 <Form
@@ -134,15 +141,6 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
                     {view === "card" && <CardView posts={paginatedData} handleEdit={handleEdit} />}
                 </>
             )}
-
-            {/* Pagination - you can add your pagination component here */}
-            <div className="mt-4">
-                <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                />
-            </div>
         </div>
     );
 };

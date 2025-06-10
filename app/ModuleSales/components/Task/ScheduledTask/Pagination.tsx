@@ -1,4 +1,5 @@
 import React from "react";
+import { MdNavigateBefore, MdNavigateNext } from "react-icons/md";
 
 interface PaginationProps {
   currentPage: number;
@@ -18,25 +19,25 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="flex justify-between items-center mt-4 text-xs text-gray-600">
-      <button
-        onClick={() => goToPage(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="bg-gray-200 px-4 py-2 rounded"
-      >
-        Previous
-      </button>
-      <span>
-        Page {currentPage} of {totalPages || 1}
-      </span>
-      <button
-        onClick={() => goToPage(currentPage + 1)}
-        disabled={currentPage === totalPages || totalPages === 0}
-        className="bg-gray-200 px-4 py-2 rounded"
-      >
-        Next
-      </button>
-    </div>
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={() => goToPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="bg-gray-200 px-4 py-2 rounded disabled:opacity-50 flex items-center"
+        >
+          <MdNavigateBefore size={15} /> Previous
+        </button>
+        <button
+          onClick={() => goToPage(currentPage + 1)}
+          disabled={currentPage === totalPages || totalPages === 0}
+          className="bg-gray-200 px-4 py-2 rounded disabled:opacity-50 flex items-center"
+        >
+           Next <MdNavigateNext size={15} />
+        </button>
+        <span className="ml-2">
+          Page {currentPage} of {totalPages || 1}
+        </span>
+      </div>
   );
 };
 
