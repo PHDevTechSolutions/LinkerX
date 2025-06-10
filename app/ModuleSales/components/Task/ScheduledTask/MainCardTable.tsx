@@ -70,7 +70,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
     };
 
     return (
-        <div className="bg-white rounded-lg shadow p-4 col-span-3">
+        <div className="bg-white col-span-3">
             {/* View switcher and items per page */}
             <div className="mb-2 flex flex-col md:flex-row md:justify-between md:items-center space-y-2 md:space-y-0">
                 {/* View Buttons */}
@@ -90,7 +90,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
                             }`}
                     >
                         <FaTasks size={12} />
-                        Task
+                        Logs
                     </button>
 
                     <button
