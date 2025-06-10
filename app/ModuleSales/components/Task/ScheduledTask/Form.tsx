@@ -406,7 +406,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
                       <td className="px-6 py-4 text-xs">{activity.soamount}</td>
                       <td className="px-6 py-4 text-xs uppercase">{activity.sonumber}</td>
                       <td className="px-6 py-4 text-xs">{activity.actualsales}</td>
-                      <td className="px-6 py-4 border break-words truncate max-w-xs cursor-pointer" onClick={() => handleShowRemarks(activity.remarks)}>
+                      <td className="px-6 py-4 border break-words truncate max-w-xs cursor-pointer capitalize" onClick={() => handleShowRemarks(activity.remarks)}>
                         {activity.remarks}
                       </td>
                       <td className="px-6 py-4 text-xs">

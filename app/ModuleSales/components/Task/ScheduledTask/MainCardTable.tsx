@@ -115,7 +115,6 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
                 </div>
             </div>
 
-
             {showForm ? (
                 <Form
                     onCancel={() => {

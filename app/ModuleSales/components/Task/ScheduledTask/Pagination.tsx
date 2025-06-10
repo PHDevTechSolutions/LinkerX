@@ -1,5 +1,6 @@
 import React from "react";
 import { MdNavigateBefore, MdNavigateNext } from "react-icons/md";
+import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
 
 interface PaginationProps {
   currentPage: number;
@@ -13,31 +14,63 @@ const Pagination: React.FC<PaginationProps> = ({
   onPageChange,
 }) => {
   const goToPage = (page: number) => {
-    if (page < 1) page = 1;
-    else if (page > totalPages) page = totalPages;
-    onPageChange(page);
+    const clampedPage = Math.max(1, Math.min(page, totalPages));
+    onPageChange(clampedPage);
   };
 
   return (
-      <div className="flex items-center space-x-2">
-        <button
-          onClick={() => goToPage(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="bg-gray-200 px-4 py-2 rounded disabled:opacity-50 flex items-center"
-        >
-          <MdNavigateBefore size={15} /> Previous
-        </button>
-        <button
-          onClick={() => goToPage(currentPage + 1)}
-          disabled={currentPage === totalPages || totalPages === 0}
-          className="bg-gray-200 px-4 py-2 rounded disabled:opacity-50 flex items-center"
-        >
-           Next <MdNavigateNext size={15} />
-        </button>
-        <span className="ml-2">
-          Page {currentPage} of {totalPages || 1}
-        </span>
-      </div>
+    <div className="flex flex-wrap items-center space-x-1 text-[10px]">
+      {/* First Page */}
+      <button
+        onClick={() => goToPage(1)}
+        disabled={currentPage === 1}
+        title="First Page"
+        aria-label="First Page"
+        className="bg-gray-200 px-2 py-2 rounded disabled:opacity-50 flex items-center focus:outline-none focus:ring"
+      >
+        <AiOutlineDoubleLeft size={14} />
+      </button>
+
+      {/* Previous Page */}
+      <button
+        onClick={() => goToPage(currentPage - 1)}
+        disabled={currentPage === 1}
+        title="Previous Page"
+        aria-label="Previous Page"
+        className="bg-gray-200 px-2 py-2 rounded disabled:opacity-50 flex items-center space-x-1 focus:outline-none focus:ring"
+      >
+        <MdNavigateBefore size={15} />
+        <span>Prev</span>
+      </button>
+
+      {/* Next Page */}
+      <button
+        onClick={() => goToPage(currentPage + 1)}
+        disabled={currentPage === totalPages || totalPages === 0}
+        title="Next Page"
+        aria-label="Next Page"
+        className="bg-gray-200 px-2 py-2 rounded disabled:opacity-50 flex items-center space-x-1 focus:outline-none focus:ring"
+      >
+        <span>Next</span>
+        <MdNavigateNext size={15} />
+      </button>
+
+      {/* Last Page */}
+      <button
+        onClick={() => goToPage(totalPages)}
+        disabled={currentPage === totalPages || totalPages === 0}
+        title="Last Page"
+        aria-label="Last Page"
+        className="bg-gray-200 px-2 py-2 rounded disabled:opacity-50 flex items-center focus:outline-none focus:ring"
+      >
+        <AiOutlineDoubleRight size={14} />
+      </button>
+
+      {/* Page Info */}
+      <span className="ml-2 text-[11px]">
+        Page {currentPage} of {totalPages || 1}
+      </span>
+    </div>
   );
 };
 
