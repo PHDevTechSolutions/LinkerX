@@ -66,6 +66,8 @@ const FilterTop50: React.FC<FilterCardProps> = ({
 
   // Filter posts
   const filteredAccounts = useMemo(() => {
+    const todayStr = new Date().toISOString().slice(0, 10); // Get YYYY-MM-DD for today
+
     return posts
       .filter((post) => post.typeclient === "Top 50")
       .filter(
@@ -73,10 +75,14 @@ const FilterTop50: React.FC<FilterCardProps> = ({
           post.date_updated !== null &&
           !isNaN(new Date(post.date_updated).getTime())
       )
+      // New filter: date_updated is today
+      .filter((post) => {
+        const postDateStr = new Date(post.date_updated!).toISOString().slice(0, 10);
+        return postDateStr === todayStr;
+      })
       .sort(
         (a, b) =>
-          new Date(a.date_updated!).getTime() -
-          new Date(b.date_updated!).getTime()
+          new Date(a.date_updated!).getTime() - new Date(b.date_updated!).getTime()
       );
   }, [posts]);
 
@@ -114,7 +120,7 @@ const FilterTop50: React.FC<FilterCardProps> = ({
 
   return (
     <div className="space-y-2">
-      <div className="grid gap-2">
+      <div className="grid">
         {isLimitReached && (
           <p className="text-red-500 text-xs text-center font-medium">
             Daily limit reached. You can add again tomorrow.
@@ -134,7 +140,7 @@ const FilterTop50: React.FC<FilterCardProps> = ({
             return (
               <div
                 key={post.id}
-                className="border-b border-gray-200 p-4 hover:shadow-lg transition duration-300 bg-gray-50"
+                className="border-b border-gray-200 p-4 hover:rounded-xl hover:shadow-lg transition duration-300"
               >
                 <input
                   type="hidden"

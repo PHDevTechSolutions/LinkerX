@@ -69,7 +69,7 @@ const FilterTop50: React.FC<FilterCardProps> = ({
 
     return (
         <div className="space-y-2">
-            <div className="grid gap-2">
+            <div className="grid">
                 {currentPosts.length === 0 && (
                     <p className="text-xs text-center text-gray-500">No CSR Client accounts to display.</p>
                 )}
@@ -80,7 +80,7 @@ const FilterTop50: React.FC<FilterCardProps> = ({
                     return (
                         <div
                             key={post.id}
-                            className="border-b border-gray-200 p-4 hover:shadow-lg transition duration-300 bg-gray-50"
+                            className="border-b border-gray-200 p-4 hover:rounded-xl hover:shadow-lg transition duration-300"
                         >
                             {/* Hidden inputs for form data */}
                             <input type="hidden" name="referenceid" value={userDetails.ReferenceID} />

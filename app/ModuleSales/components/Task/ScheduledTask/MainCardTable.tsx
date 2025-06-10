@@ -4,6 +4,7 @@ import Pagination from "./Pagination";
 import GridView from "./GridView";
 import CardView from "./CardView";
 import Form from "./Form";
+import { FaTable, FaTasks, FaCalendarAlt } from "react-icons/fa";
 
 interface Post {
     id: string;
@@ -76,20 +77,28 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
                 <div className="flex flex-wrap gap-2 text-xs justify-center md:justify-start">
                     <button
                         onClick={() => setView("table")}
-                        className={`px-3 py-1 rounded ${view === "table" ? "bg-blue-400 text-white" : "bg-gray-100"}`}
+                        className={`flex items-center gap-1 px-3 py-1 rounded ${view === "table" ? "bg-blue-400 text-white" : "bg-gray-100"
+                            }`}
                     >
+                        <FaTable size={12} />
                         Table
                     </button>
+
                     <button
                         onClick={() => setView("grid")}
-                        className={`px-3 py-1 rounded ${view === "grid" ? "bg-blue-400 text-white" : "bg-gray-100"}`}
+                        className={`flex items-center gap-1 px-3 py-1 rounded ${view === "grid" ? "bg-blue-400 text-white" : "bg-gray-100"
+                            }`}
                     >
+                        <FaTasks size={12} />
                         Task
                     </button>
+
                     <button
                         onClick={() => setView("card")}
-                        className={`px-3 py-1 rounded ${view === "card" ? "bg-blue-400 text-white" : "bg-gray-100"}`}
+                        className={`flex items-center gap-1 px-3 py-1 rounded ${view === "card" ? "bg-blue-400 text-white" : "bg-gray-100"
+                            }`}
                     >
+                        <FaCalendarAlt size={12} />
                         Calendar
                     </button>
                 </div>
@@ -133,9 +142,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
                 />
             ) : (
                 <>
-                    {view === "table" && (
-                        <TableView posts={paginatedData} handleEdit={handleEdit} refreshPosts={fetchAccount} />
-                    )}
+                    {view === "table" && (<TableView posts={paginatedData} handleEdit={handleEdit} refreshPosts={fetchAccount} />)}
                     {view === "grid" && <GridView posts={paginatedData} handleEdit={handleEdit} />}
                     {view === "card" && <CardView posts={paginatedData} handleEdit={handleEdit} />}
                 </>

@@ -144,17 +144,14 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
         (["Territory Sales Associate", "Territory Sales Manager"].includes(role) &&
           post.referenceid === referenceID);
 
+      // Exclude posts without date_updated
       if (!post.date_updated) return false;
 
-      // Kunin ang date part lang ng date_updated para i-compare
-      const postDateStr = new Date(post.date_updated).toISOString().slice(0, 10);
-
-      // Check kung date_updated ay ngayong araw
-      const isDateToday = postDateStr === todayStr;
-
-      return isAllowed && isDateToday;
+      // Remove date_today filter — only check isAllowed now
+      return isAllowed;
     })
     .sort((a, b) => new Date(a.date_updated!).getTime() - new Date(b.date_updated!).getTime());
+
 
   const generateActivityNumber = (companyname: string, referenceid: string): string => {
     const firstLetter = companyname.charAt(0).toUpperCase();
@@ -247,7 +244,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-4 col-span-3 space-y-4">
+    <div className="bg-white col-span-3 space-y-4">
       <div className="flex justify-end">
         <button
           onClick={toggleAll}

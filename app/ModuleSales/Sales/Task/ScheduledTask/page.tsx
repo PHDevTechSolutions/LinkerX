@@ -119,10 +119,11 @@ const ListofUser: React.FC = () => {
           {(user) => (
             <div className="container mx-auto p-4 text-gray-900">
               <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                <h2 className="text-lg font-bold mb-2">Scheduled Task</h2>
+                <h2 className="text-lg font-bold mb-2">Activities</h2>
                 <p className="text-xs text-gray-600 mb-4">
-                  This section provides an organized overview of <strong>client accounts</strong> handled by the Sales team.
+                  An overview of your recent and upcoming actions, including <strong>scheduled tasks</strong>, <strong>callbacks</strong>, <strong>calendar events</strong>, and <strong>inquiries</strong>—all in one place to keep you on track.
                 </p>
+
 
                 <Filters
                   searchTerm={searchTerm}
