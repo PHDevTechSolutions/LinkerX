@@ -237,11 +237,11 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                     className={`px-2 py-0.5 rounded-full text-[8px] font-semibold select-none
                       ${post.activitystatus.toLowerCase() === "cold"
                         ? "bg-gray-400 text-white"
-                        : post.activitystatus.toLowerCase() === "active"
-                          ? "bg-green-500 text-white"
-                          : post.activitystatus.toLowerCase() === "pending"
-                            ? "bg-yellow-400 text-black"
-                            : "bg-blue-400 text-white"
+                        : post.activitystatus.toLowerCase() === "warm"
+                          ? "bg-yellow-500 text-white"
+                          : post.activitystatus.toLowerCase() === "hot"
+                            ? "bg-red-400 text-white"
+                            : "bg-green-500 text-white"
                       }`}
 
                     aria-label={`Status: ${post.activitystatus}`}>
