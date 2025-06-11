@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { Email, Password, Department } = req.body;
 
-  if (!Email || !Password || !Department) {
+  if (!Email || !Password) {
     return res.status(400).json({ message: "All fields are required." });
   }
 

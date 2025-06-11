@@ -11,6 +11,8 @@ import { BsBuildings } from "react-icons/bs";
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
+import SidebarMenu from "./SidebarMenu";
+import SidebarUserInfo from "./SidebarUserInfo";
 
 const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: boolean; }> = ({ isOpen, onClose, isDarkMode }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -27,9 +29,6 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const [pendingInactiveCount, setPendingInactiveCount] = useState(0);
   const [pendingDeleteCount, setPendingDeleteCount] = useState(0);
   const [agentMode, setAgentMode] = useState(false);
-
-  // Retrieve the selected avatar from localStorage or default if not set
-  const selectedAvatar = localStorage.getItem('selectedAvatar') || `https://robohash.org/${userDetails.Firstname}${userDetails.Lastname}?size=200x200`;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -388,160 +387,29 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
           </div>
         </div>
 
+        {/* Menu Section */}
+        <SidebarMenu
+          collapsed={collapsed}
+          openSections={openSections}
+          handleToggle={handleToggle}
+          menuItems={filteredMenuItems}
+          userId={userId}
+          pendingInquiryCount={pendingInquiryCount}
+          pendingInactiveCount={pendingInactiveCount}
+          pendingDeleteCount={pendingDeleteCount}
+        />
+
         {/* User Details Section */}
         {!collapsed && (
-          <div className="p-6 text-xs text-left">
-
-            {/* Profile Image Section */}
-            <img
-              src={userDetails.profilePicture || "/default-avatar.png"}
-              alt="Avatar"
-              className="w-12 h-12 object-cover rounded-full mb-2"
+          <div className="text-xs text-left">
+            <SidebarUserInfo
+              collapsed={collapsed}
+              userDetails={userDetails}
+              agentMode={agentMode}
+              setAgentMode={setAgentMode}
             />
-
-            <p className="font-bold uppercase text-sm">
-              {userDetails.Firstname}, {userDetails.Lastname}
-            </p>
-            <p>{userDetails.Company}</p>
-            <p className="italic">( {userDetails.Role} )</p>
-
-            <div className="flex items-center gap-1">
-              <span
-                className={`text-white text-[8px] font-semibold px-3 py-1 rounded-full inline-block mt-2 ${userDetails.Status === "Active"
-                  ? "bg-green-600"
-                  : userDetails.Status === "Inactive"
-                    ? "bg-red-400"
-                    : userDetails.Status === "Locked"
-                      ? "bg-gray-400"
-                      : userDetails.Status === "Busy"
-                        ? "bg-yellow-400"
-                        : userDetails.Status === "Do not Disturb"
-                          ? "bg-gray-800"
-                          : "bg-blue-500"
-                  }`}
-              >
-                {userDetails.Status}
-              </span>
-
-              {/* Toggle Mode Section */}
-              {userDetails.Role === "Territory Sales Manager" && (
-                <label className="inline-flex items-center cursor-pointer mt-2">
-                  <input
-                    type="checkbox"
-                    checked={agentMode}
-                    onChange={() => setAgentMode(!agentMode)}
-                    className="sr-only peer"
-                  />
-                  <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-400 dark:peer-focus:ring-blue-400 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-400 dark:peer-checked:bg-blue-600"></div>
-                  <span className="ms-3 text-xs font-medium text-gray-900 dark:text-gray-300">Agent Mode</span>
-                </label>
-              )}
-
-            </div>
           </div>
         )}
-
-
-        {/* Menu Section */}
-        <div className="flex flex-col items-center flex-grow overflow-y-auto text-xs p-2">
-          <div className="w-full">
-
-            {/* My Profile - Manual Render */}
-            <button
-              onClick={() => handleToggle("My Profile")}
-              className={`flex items-center w-full p-4 hover:bg-orange-400 rounded hover:rounded-md hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""}`}
-            >
-              <CiSettings size={18} />
-              {!collapsed && <span className="ml-2">My Profile</span>}
-              {!collapsed && (
-                <span className="ml-auto">
-                  {openSections["My Profile"] ? <RxCaretDown size={15} /> : <RxCaretLeft size={15} />}
-                </span>
-              )}
-            </button>
-
-            <div className={`overflow-hidden transition-all duration-300 ease-in-out text-gray-900 ${openSections["My Profile"] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}>
-              {openSections["My Profile"] && !collapsed && (
-                <div>
-                  <Link href={`/ModuleSales/Sales/Profile${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex items-center w-full p-4 bg-gray-200 hover:bg-orange-400 hover:text-white transition-all border-transparent duration-300 ease-in-out">
-                    <FaRegCircle size={10} className="mr-2 ml-2" />
-                    Update Profile
-                  </Link>
-                  <Link href={`/ModuleSales/Sales/Profile/Developers${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex items-center w-full p-4 bg-gray-200 hover:bg-orange-400 hover:text-white transition-all border-transparent duration-300 ease-in-out">
-                    <FaRegCircle size={10} className="mr-2 ml-2" />
-                    Developers
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Dashboard Button */}
-          <div className="w-full mt-1">
-            <Link
-              href={`/ModuleSales/Sales/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}
-              className="flex items-center w-full p-4 bg-orange-400 mb-1 text-white rounded-md transition-all duration-300 ease-in-out hover:shadow-md active:scale-95"
-            >
-              <CiGrid42 size={22} className="mr-1" />
-              Dashboard
-            </Link>
-          </div>
-
-          {/* Filtered Menu Items Except "My Profile" */}
-          {filteredMenuItems
-            .filter(item => item.title !== "My Profile")
-            .map((item, index) => (
-              <div key={index} className="w-full">
-                {/* Main Menu Button */}
-                <button
-                  onClick={() => handleToggle(item.title)}
-                  className={`flex items-center w-full p-4 hover:bg-orange-400 rounded hover:rounded-md hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""}`}
-                >
-                  <item.icon size={18} />
-                  {!collapsed && <span className="ml-2">{item.title}</span>}
-                  {item.title === 'Task' && pendingInquiryCount > 0 && (
-                    <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInquiryCount}</span>
-                  )}
-                  {item.title === 'My Companies' && (pendingInactiveCount > 0 || pendingDeleteCount > 0) && (
-                    <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount + pendingDeleteCount}</span>
-                  )}
-                  {!collapsed && (
-                    <span className="ml-auto">
-                      {openSections[item.title] ? <RxCaretDown size={15} /> : <RxCaretLeft size={15} />}
-                    </span>
-                  )}
-                </button>
-
-                {/* Submenu */}
-                <div className={`overflow-hidden transition-all duration-300 ease-in-out text-gray-900 ${openSections[item.title] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}>
-                  {openSections[item.title] && !collapsed && (
-                    <div>
-                      {item.subItems.map((subItem, subIndex) => (
-                        <Link
-                          key={subIndex}
-                          href={subItem.href}
-                          prefetch={true}
-                          className="flex items-center w-full p-4 bg-gray-200 hover:bg-orange-400 hover:text-white transition-all border-transparent duration-300 ease-in-out"
-                        >
-                          <FaRegCircle size={10} className="mr-2 ml-2" />
-                          {subItem.title}
-                          {subItem.title === 'CSR Inquiries' && pendingInquiryCount > 0 && (
-                            <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInquiryCount}</span>
-                          )}
-                          {subItem.title === 'Inactive Companies' && pendingInactiveCount > 0 && (
-                            <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingInactiveCount}</span>
-                          )}
-                          {subItem.title === 'For Deletion' && pendingDeleteCount > 0 && (
-                            <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 pl-2 pr-2 text-white">{pendingDeleteCount}</span>
-                          )}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-        </div>
       </div>
     </>
   );

@@ -8,6 +8,7 @@ interface Post {
   typeclient: string;
   actualsales: number | string;
   date_created: string;
+  targetquota: number;
 }
 
 interface UsersCardProps {
@@ -91,11 +92,13 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
 
       const averageSales = filteredEntries.length > 0 ? totalSales / filteredEntries.length : 0;
 
+      const targetQuota = filteredEntries[0]?.targetquota || "";
+
       const typeClients = Array.from(
         new Set(filteredEntries.map((e) => e.typeclient.toUpperCase()))
       ).join(", ");
 
-      return { companyName, totalSales, averageSales, typeClients };
+      return { companyName, totalSales, averageSales, typeClients, targetQuota };
     });
 
     // Sort by average sales descending
@@ -216,17 +219,17 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
         {/* Right side: Export Button */}
         <div className="flex-shrink-0 flex items-center gap-2">
           <select
-              id="itemsPerPage"
-              value={itemsPerPage}
-              onChange={handleItemsPerPageChange}
-              className="border px-3 py-2 rounded text-xs"
-            >
-              {[10, 25, 50, 100, 500, 1000].map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
-              ))}
-            </select>
+            id="itemsPerPage"
+            value={itemsPerPage}
+            onChange={handleItemsPerPageChange}
+            className="border px-3 py-2 rounded text-xs"
+          >
+            {[10, 25, 50, 100, 500, 1000].map((num) => (
+              <option key={num} value={num}>
+                {num}
+              </option>
+            ))}
+          </select>
           <button
             onClick={handleExportToExcel}
             className="bg-green-600 text-white text-xs px-4 py-2 rounded hover:bg-green-700 whitespace-nowrap"
@@ -244,6 +247,7 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
               <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
               <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
               <th className="px-6 py-4 font-semibold text-gray-700">Actual Sales (SI)</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Achievement</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -252,11 +256,17 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
                 <td colSpan={4} className="text-center py-4 text-xs">No records available</td>
               </tr>
             ) : (
-              paginatedData.map(({ companyName, totalSales, typeClients, averageSales }) => (
+              paginatedData.map(({ companyName, totalSales, typeClients, averageSales, targetQuota }) => (
                 <tr key={companyName} className="bg-white hover:bg-gray-50">
                   <td className="px-6 py-4 text-xs uppercase">{companyName}</td>
                   <td className="px-6 py-4 text-xs">{typeClients}</td>
                   <td className="px-6 py-4 text-xs">{formatSales(totalSales)}</td>
+                  <td className="px-6 py-4 text-xs">
+                    {totalSales !== 0 && !isNaN(Number(String(targetQuota).replace(/,/g, "")))
+                      ? `${((Number(String(targetQuota).replace(/,/g, "")) / totalSales) * 100).toFixed(2)}%`
+                      : "N/A"}
+                  </td>
+
                 </tr>
               ))
             )}

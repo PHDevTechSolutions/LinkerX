@@ -16,6 +16,7 @@ interface AddUserFormProps {
   };
   companyData?: {
     companyname: string;
+    companygroup: string;
     typeclient: string;
     contactperson: string;
     contactnumber: string;
@@ -50,6 +51,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [targetquota, setTargetQuota] = useState(userDetails.targetquota || "");
 
   const [companyname, setcompanyname] = useState(editUser ? editUser.companyname : companyData?.companyname || "");
+  const [companygroup, setcompanygroup] = useState(editUser ? editUser.companygroup : companyData?.companygroup || "");
   const [typeclient, settypeclient] = useState(editUser ? editUser.typeclient : companyData?.typeclient || "");
   const [contactperson, setcontactperson] = useState(editUser ? editUser.contactperson : companyData?.contactperson || "");
   const [contactnumber, setcontactnumber] = useState(editUser ? editUser.contactnumber : companyData?.contactnumber || "");
@@ -164,7 +166,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        id: editUser?.id, referenceid, manager, tsm, targetquota, companyname, contactperson, contactnumber, emailaddress, typeclient,
+        id: editUser?.id, referenceid, manager, tsm, targetquota, companyname, companygroup, contactperson, contactnumber, emailaddress, typeclient,
         address, deliveryaddress, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, remarks,
         callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus, ticketreferencenumber, wrapup, inquiries, csragent,
       }),
@@ -302,6 +304,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           targetquota={targetquota} settargetquota={setTargetQuota}
           //
           companyname={companyname} setcompanyname={setcompanyname}
+          companygroup={companygroup} setcompanygroup={setcompanygroup}
           contactperson={contactperson} setcontactperson={setcontactperson}
           contactnumber={contactnumber} setcontactnumber={setcontactnumber}
           emailaddress={emailaddress} setemailaddress={setemailaddress}

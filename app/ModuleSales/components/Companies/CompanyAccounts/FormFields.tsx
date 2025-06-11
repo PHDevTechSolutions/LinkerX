@@ -338,8 +338,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         </div>
 
         <div className={fieldWidthClass}>
-          <label className="block text-xs font-bold mb-2" htmlFor="area">Status</label>
-          <select id="typeclient" value={area ?? ""} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+          <label className="block text-xs font-bold mb-2" htmlFor="status">Status</label>
+          <select id="status" value={status ?? ""} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
             <option value="">Select Status</option>
             <option value="Active">Active</option>
             <option value="New Client">New Client</option>

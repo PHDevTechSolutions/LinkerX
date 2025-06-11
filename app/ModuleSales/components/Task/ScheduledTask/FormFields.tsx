@@ -6,7 +6,6 @@ import HiddenFields from "./Form/HiddenFields";
 import SelectCompany, { CompanyOption } from "./Form/SelectCompany";
 import Accordion from "./Form/Accordion";
 import Submenu from "./Form/Submenu";
-import Remarks from "./Form/Remarks";
 
 interface Activity {
     id: number;
@@ -30,6 +29,7 @@ interface FormFieldsProps {
     targetquota: string; settargetquota: (value: string) => void;
 
     companyname: string; setcompanyname: (value: string) => void;
+    companygroup: string; setcompanygroup: (value: string) => void;
     contactperson: string; setcontactperson: (value: string) => void;
     contactnumber: string; setcontactnumber: (value: string) => void;
     emailaddress: string; setemailaddress: (value: string) => void;
@@ -72,8 +72,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     manager, setmanager,
     tsm, settsm,
     targetquota, settargetquota,
-
     companyname, setcompanyname,
+    companygroup, setcompanygroup,
     contactperson, setcontactperson,
     contactnumber, setcontactnumber,
     emailaddress, setemailaddress,
@@ -150,6 +150,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <SelectCompany
                 referenceid={referenceid}
                 setcompanyname={setcompanyname} companyname={companyname}
+                setcompanygroup={setcompanygroup} companygroup={companygroup}
                 setcontactperson={setcontactperson} contactperson={contactperson}
                 setcontactnumber={setcontactnumber} contactnumber={contactnumber}
                 setemailaddress={setemailaddress} emailaddress={emailaddress}

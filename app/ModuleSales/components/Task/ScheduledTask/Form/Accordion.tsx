@@ -22,26 +22,11 @@ const Accordion: React.FC<AccordionProps> = ({
     source,
     setsource,
 }) => {
-    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <div className="mb-4">
-            <div className="border rounded-lg shadow-sm">
-                {/* Accordion Header */}
-                <div
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="flex justify-between items-center px-4 py-3 bg-gray-100 cursor-pointer transition"
-                >
-                    <span className="text-xs text-dark">Project Information</span>
-                    {isOpen ? (
-                        <CiSquareMinus className="text-xl text-black" />
-                    ) : (
-                        <CiSquarePlus className="text-xl text-black" />
-                    )}
-                </div>
-
+            <div>
                 {/* Accordion Content */}
-                <div className={`overflow-hidden transition-all duration-300 ${isOpen ? "p-4" : "max-h-0 p-0"}`}>
                     <div className="flex flex-wrap -mx-4 rounded">
                         {/* Project Name */}
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -65,7 +50,7 @@ const Accordion: React.FC<AccordionProps> = ({
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-1 text-black">Product Category</label>
                             <select value={projectcategory ?? ""} onChange={(e) => setprojectcategory(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
-                                <option value="">Select Category</option>
+                                <option value="">Select Item</option>
                                 <option value="Bollard Light">Bollard Light</option>
                                 <option value="Bulb Light">Bulb Light</option>
                                 <option value="Canopy Light">Canopy Light</option>
@@ -107,13 +92,12 @@ const Accordion: React.FC<AccordionProps> = ({
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-1 text-black">Project Type</label>
                             <select value={projecttype ?? ""} onChange={(e) => setprojecttype(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
-                                <option value="">Select Category</option>
+                                <option value="">Select Type</option>
                                 <option value="B2B">B2B</option>
                                 <option value="B2C">B2C</option>
                                 <option value="B2G">B2G</option>
-                                <option value="General Trade">General Trade</option>
-                                <option value="Personal">Personal</option>
-                                <option value="Building Maintenance">Building Maintenance</option>
+                                <option value="General Trade">GENTRADE</option>
+                                <option value="Modern Trade">MODERN TRADE</option>
                             </select>
                         </div>
 
@@ -121,7 +105,7 @@ const Accordion: React.FC<AccordionProps> = ({
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-1 text-black">Source</label>
                             <select value={source ?? ""} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
-                                <option value="">Select Category</option>
+                                <option value="">Select Source</option>
                                 <option value="Existing Client">Existing Client</option>
                                 <option value="CSR Inquiry">CSR Inquiry</option>
                                 <option value="Outbound - Follow-up">Outbound - Follow-up</option>
@@ -135,7 +119,7 @@ const Accordion: React.FC<AccordionProps> = ({
                             </select>
                         </div>
                     </div>
-                </div>
+               
             </div>
         </div>
     );

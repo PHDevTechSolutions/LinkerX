@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { CiMenuKebab, CiRead } from "react-icons/ci";
-import { Menu } from "@headlessui/react";
-import axios from "axios";
+import { CiRead } from "react-icons/ci";
 
 interface UsersCardProps {
   posts: any[];
-  handleEdit: (post: any) => void;
   referenceid?: string;
 }
 
-const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid }) => {
+const UsersCard: React.FC<UsersCardProps> = ({ posts }) => {
   const [updatedUser, setUpdatedUser] = useState<any[]>([]);
   const [groupedCompanies, setGroupedCompanies] = useState<Map<string, any[]>>(new Map());
   const [modalData, setModalData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [groupSortKey, setGroupSortKey] = useState<'name' | 'count'>('name');
+  const [modalSortKey, setModalSortKey] = useState<'companyname' | 'contactperson'>('companyname');
   const itemsPerPage = 5;
 
   useEffect(() => {
@@ -42,9 +41,13 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
     setSearchTerm("");
   };
 
-  const filteredCompanies = modalData.filter((company) =>
-    company.companygroup.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCompanies = modalData
+    .filter((company) =>
+      company.companygroup.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) =>
+      a[modalSortKey]?.toLowerCase().localeCompare(b[modalSortKey]?.toLowerCase())
+    );
 
   const totalPages = Math.ceil(filteredCompanies.length / itemsPerPage);
   const paginatedCompanies = filteredCompanies.slice(
@@ -54,7 +57,18 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
 
   return (
     <div className="mb-4">
-      {/* Cards Grid */}
+      <div className="flex justify-end mb-2 text-xs">
+        <label className="mr-2">Sort Groups by:</label>
+        <select
+          value={groupSortKey}
+          onChange={(e) => setGroupSortKey(e.target.value as 'name' | 'count')}
+          className="border px-2 py-1 rounded text-xs"
+        >
+          <option value="name">Group Name</option>
+          <option value="count">Number of Companies</option>
+        </select>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto">
           <thead className="bg-gray-100">
@@ -65,23 +79,27 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {Array.from(groupedCompanies.entries()).map(([companygroup, companies]) =>
-              companies.length ? (
-                <tr key={companygroup} className="bg-white border-b hover:bg-gray-50">
-                  <td className="px-6 py-4 text-xs uppercase">{companygroup}</td>
-                  <td className="px-6 py-4 text-xs uppercase">{companies.length}</td>
-                  <td className="px-6 py-4 text-xs">
-                    <button
-                      className="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-300 hover:rounded-full w-full text-left flex items-center gap-1"
-                      onClick={() => handleViewCompanies(companygroup)}
-                    >
-                      <CiRead /> View Companies
-                    </button>
-                  </td>
-
-                </tr>
-              ) : null
-            )}
+            {Array.from(groupedCompanies.entries())
+              .sort(([aKey, aVal], [bKey, bVal]) => {
+                if (groupSortKey === 'name') return aKey.localeCompare(bKey);
+                return bVal.length - aVal.length;
+              })
+              .map(([companygroup, companies]) =>
+                companies.length ? (
+                  <tr key={companygroup} className="bg-white border-b hover:bg-gray-50">
+                    <td className="px-6 py-4 text-xs uppercase">{companygroup}</td>
+                    <td className="px-6 py-4 text-xs uppercase">{companies.length}</td>
+                    <td className="px-6 py-4 text-xs">
+                      <button
+                        className="block px-4 py-2 text-xs text-gray-700 hover:bg-orange-300 hover:rounded-full w-full text-left flex items-center gap-1"
+                        onClick={() => handleViewCompanies(companygroup)}
+                      >
+                        <CiRead /> View Companies
+                      </button>
+                    </td>
+                  </tr>
+                ) : null
+              )}
             {!groupedCompanies.size && (
               <tr>
                 <td colSpan={3} className="text-center text-xs py-4 text-gray-500">
@@ -93,7 +111,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
         </table>
       </div>
 
-      {/* Modal */}
       {modalData.length > 0 && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[999]">
           <div className="bg-white p-6 rounded-md w-full max-w-5xl shadow-lg overflow-y-auto max-h-[90vh]">
@@ -109,6 +126,18 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-md text-xs mb-4"
             />
+
+            <div className="flex justify-end mb-2 text-xs">
+              <label className="mr-2">Sort Companies by:</label>
+              <select
+                value={modalSortKey}
+                onChange={(e) => setModalSortKey(e.target.value as 'companyname' | 'contactperson')}
+                className="border px-2 py-1 rounded text-xs"
+              >
+                <option value="companyname">Company Name</option>
+                <option value="contactperson">Contact Person</option>
+              </select>
+            </div>
 
             <div className="overflow-x-auto">
               <table className="min-w-full table-auto">
@@ -139,7 +168,6 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, referenceid })
               </table>
             </div>
 
-            {/* Pagination */}
             <div className="flex justify-between items-center mt-4 text-xs">
               <span>
                 Page {currentPage} of {totalPages}

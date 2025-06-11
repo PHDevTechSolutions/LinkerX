@@ -5,26 +5,18 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../components/ClientActivityBoard/ListofCompanies/AddUserForm";
-import SearchFilters from "../../../components/Companies/GroupCompanies/SearchFilters";
-import UsersTable from "../../../components/Companies/GroupCompanies/UsersTable";
-import Pagination from "../../../components/ClientActivityBoard/ListofCompanies/Pagination";
-
+import Filters from "../../../components/Companies/GroupCompanies/Filters";
+import Table from "../../../components/Companies/GroupCompanies/Table";
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-
-const ListofUser: React.FC = () => {
-    const [showForm, setShowForm] = useState(false);
-    const [showImportForm, setShowImportForm] = useState(false);
-    const [editUser, setEditUser] = useState<any>(null);
+const GroupAccounts: React.FC = () => {
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedClientType, setSelectedClientType] = useState("");
     const [startDate, setStartDate] = useState(""); // Default to null
     const [endDate, setEndDate] = useState(""); // Default to null
-
     const [userDetails, setUserDetails] = useState({
         UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
     });
@@ -120,12 +112,6 @@ const ListofUser: React.FC = () => {
         })
         : [];
 
-    // Handle editing a post
-    const handleEdit = (post: any) => {
-        setEditUser(post);
-        setShowForm(true);
-    };
-
     return (
         <SessionChecker>
             <ParentLayout>
@@ -133,37 +119,22 @@ const ListofUser: React.FC = () => {
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
                             <div className="grid grid-cols-1 md:grid-cols-1">
-                                {showForm ? (
-                                    <AddPostForm
-                                        onCancel={() => {
-                                            setShowForm(false);
-                                            setEditUser(null);
-                                        }}
-                                        refreshPosts={fetchAccount}  // Pass the refreshPosts callback
-                                        userDetails={{ id: editUser ? editUser.id : userDetails.UserId }}  // Ensure id is passed correctly
-                                        editUser={editUser}
-                                    />
-                                ) : (
-                                    <>
-                                        <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">List of Accounts - Company Groups</h2>
-                                            <p className="text-xs text-gray-600 mb-4">
-                                                This section allows you to filter and search through different company groups.
-                                                You can use the search bar to search for company names and apply various filters based on client type and the date range.
-                                                The filter options help you narrow down your results efficiently, making it easier to manage and track company groups.
-                                            </p>
-                                            <SearchFilters
-                                                searchTerm={searchTerm}
-                                                setSearchTerm={setSearchTerm}
-                                            />
-                                            <UsersTable
-                                                posts={filteredAccounts}
-                                                handleEdit={handleEdit}
-                                            />
-                                        </div>
-                                    </>
-                                )}
 
+                                <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                                    <h2 className="text-lg font-bold mb-2">List of Accounts - Company Groups</h2>
+                                    <p className="text-xs text-gray-600 mb-4">
+                                        This section allows you to filter and search through different company groups.
+                                        You can use the search bar to search for company names and apply various filters based on client type and the date range.
+                                        The filter options help you narrow down your results efficiently, making it easier to manage and track company groups.
+                                    </p>
+                                    <Filters
+                                        searchTerm={searchTerm}
+                                        setSearchTerm={setSearchTerm}
+                                    />
+                                    <Table
+                                        posts={filteredAccounts}
+                                    />
+                                </div>
                                 <ToastContainer className="text-xs" autoClose={1000} />
                             </div>
                         </div>
@@ -174,4 +145,4 @@ const ListofUser: React.FC = () => {
     );
 };
 
-export default ListofUser;
+export default GroupAccounts;

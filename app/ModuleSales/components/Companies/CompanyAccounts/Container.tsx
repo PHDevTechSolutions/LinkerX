@@ -21,7 +21,7 @@ const Container: React.FC<UsersCardProps> = ({ posts, handleEdit, Role }) => {
 
   // Checkbox
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
-  
+
   // Accounts
   const [tsaList, setTsaList] = useState<any[]>([]);
   const [selectedTsa, setSelectedTsa] = useState("");
@@ -134,6 +134,10 @@ const Container: React.FC<UsersCardProps> = ({ posts, handleEdit, Role }) => {
     }
   }, [selectedUsers, updatedUser]);
 
+  const handleDeselectAll = () => {
+    setSelectedUsers(new Set());
+  };
+
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
 
@@ -177,6 +181,7 @@ const Container: React.FC<UsersCardProps> = ({ posts, handleEdit, Role }) => {
         toggleBulkRemoveMode={toggleBulkRemoveMode}
         toggleBulkChangeMode={toggleBulkChangeMode}
         handleSelectAll={handleSelectAll}
+        handleDeselectAll={handleDeselectAll}
         handleBulkEdit={handleBulkEdit}
         handleBulkRemove={handleBulkRemove}
         handleBulkChange={handleBulkChange}

@@ -17,7 +17,7 @@ async function update(userDetails: any) {
   try {
     const {
       id, referenceid, manager,
-      tsm, companyname, contactperson,
+      tsm, companyname, companygroup, contactperson,
       contactnumber, emailaddress, typeclient,
       address, area, projectname,
       projectcategory, projecttype, source,
@@ -33,7 +33,7 @@ async function update(userDetails: any) {
     // ✅ Update the activity table
     const Xchire_update = await Xchire_sql`
       UPDATE activity
-      SET contactperson = ${contactperson}, contactnumber = ${contactnumber}, emailaddress = ${emailaddress},
+      SET companygroup = ${companygroup}, contactperson = ${contactperson}, contactnumber = ${contactnumber}, emailaddress = ${emailaddress},
       typeclient = ${typeclient}, address = ${address}, area = ${area}, projectname = ${projectname},
       projectcategory = ${projectcategory}, projecttype = ${projecttype}, source = ${source},
       activitystatus = ${activitystatus}, date_updated = CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
@@ -48,14 +48,14 @@ async function update(userDetails: any) {
     // ✅ Insert all fields including ticketreferencenumber, wrapup, inquiries, and csragent into the progress table
     await Xchire_sql`
       INSERT INTO progress (
-        ticketreferencenumber, wrapup, inquiries, referenceid, manager, tsm, companyname, contactperson,
+        ticketreferencenumber, wrapup, inquiries, referenceid, manager, tsm, companyname, companygroup, contactperson,
         contactnumber, emailaddress, typeclient, address, area, projectname, projectcategory, projecttype,
         source, startdate, enddate, activitynumber, typeactivity, activitystatus, remarks, callback,
         typecall, quotationnumber, quotationamount, sonumber, soamount, callstatus, date_created,
         actualsales, targetquota, csragent
       ) VALUES (
         ${ticketreferencenumber}, ${wrapup}, ${inquiries}, ${referenceid}, ${manager}, ${tsm},
-        ${companyname}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${address},
+        ${companyname}, ${companygroup}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${address},
         ${area}, ${projectname}, ${projectcategory}, ${projecttype}, ${source}, ${startdate}, ${enddate},
         ${activitynumber}, ${typeactivity}, ${activitystatus}, ${remarks}, ${callback}, ${typecall},
         ${quotationnumber}, ${quotationamount}, ${sonumber}, ${soamount}, ${callstatus},

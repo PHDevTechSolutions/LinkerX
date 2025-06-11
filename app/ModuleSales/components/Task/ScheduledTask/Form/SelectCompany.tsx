@@ -5,6 +5,7 @@ import Area from "./Area";
 export interface CompanyOption {
     id: string | number;
     companyname: string;
+    companygroup: string;
     value: string;
     label: string;
     contactperson: string;
@@ -18,24 +19,19 @@ export interface CompanyOption {
 
 interface SelectCompanyProps {
     referenceid: string;
-    setcompanyname: (val: string) => void;
-    setcontactperson: (val: string) => void;
-    setcontactnumber: (val: string) => void;
-    setemailaddress: (val: string) => void;
-    settypeclient: (val: string) => void;
-    setaddress: (val: string) => void;
-    setdeliveryaddress: (val: string) => void;
-    setarea: (val: string) => void;
-    companyname: string;
-    contactperson: string;
-    contactnumber: string;
-    emailaddress: string;
-    typeclient: string;
-    address: string;
-    deliveryaddress: string;
-    area: string;
+    companyname: string; setcompanyname: (val: string) => void;
+    companygroup: string; setcompanygroup: (value: string) => void;
+    contactperson: string; setcontactperson: (val: string) => void;
+    contactnumber: string; setcontactnumber: (val: string) => void;
+    emailaddress: string; setemailaddress: (val: string) => void;
+    typeclient: string; settypeclient: (val: string) => void;
+    address: string; setaddress: (val: string) => void;
+    deliveryaddress: string; setdeliveryaddress: (val: string) => void;
+    area: string; setarea: (val: string) => void;
+
     editPost?: {
         companyname?: string;
+        companygroup: string;
         contactperson: string;
         contactnumber: string;
         emailaddress: string;
@@ -48,22 +44,15 @@ interface SelectCompanyProps {
 
 const SelectCompany: React.FC<SelectCompanyProps> = ({
     referenceid,
-    setcompanyname,
-    setcontactperson,
-    setcontactnumber,
-    setemailaddress,
-    settypeclient,
-    setaddress,
-    setdeliveryaddress,
-    setarea,
-    companyname,
-    contactperson,
-    contactnumber,
-    emailaddress,
-    typeclient,
-    address,
-    deliveryaddress,
-    area,
+    companyname, setcompanyname,
+    companygroup, setcompanygroup,
+    contactperson, setcontactperson,
+    contactnumber, setcontactnumber,
+    emailaddress, setemailaddress,
+    typeclient, settypeclient,
+    address, setaddress,
+    deliveryaddress, setdeliveryaddress,
+    area, setarea,
     editPost,
 }) => {
 
@@ -85,6 +74,25 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                             const input = e.target.value;
                             const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
                             setcompanyname(sanitized);
+                        }}
+                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    />
+                </div>
+
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <label className="block text-xs font-bold" htmlFor="companygroup">
+                            Affiliate Name
+                        </label>
+                    </div>
+                    <input
+                        type="text"
+                        id="companygroup"
+                        value={companygroup ?? ""}
+                        onChange={(e) => {
+                            const input = e.target.value;
+                            const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                            setcompanygroup(sanitized);
                         }}
                         className="w-full px-3 py-2 border rounded text-xs capitalize"
                     />
@@ -128,21 +136,9 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                     <Email emailaddress={emailaddress} setemailaddress={setemailaddress} />
                 </div>
 
-                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Type Client</label>
-                    <select id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
-                        <option value="">Select Client</option>
-                        <option value="Top 50">Top 50</option>
-                        <option value="Next 30">Next 30</option>
-                        <option value="Balance 20">Balance 20</option>
-                        <option value="CSR Client">CSR Client</option>
-                        <option value="TSA Client">TSA Client</option>
-                    </select>
-                </div>
-
                 {/* Address */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Complete Address</label>
+                    <label className="block text-xs font-bold mb-2">Registered Address</label>
                     <input
                         type="text"
                         id="address"
@@ -172,10 +168,23 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                     />
                 </div>
 
-                {/* Area */}
+                {/* Region */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Region</label>
                     <Area area={area} setarea={setarea} />
+                </div>
+                
+                {/* Type Client */}
+                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2">Type Client</label>
+                    <select id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+                        <option value="">Select Client</option>
+                        <option value="Top 50">Top 50</option>
+                        <option value="Next 30">Next 30</option>
+                        <option value="Balance 20">Balance 20</option>
+                        <option value="CSR Client">CSR Client</option>
+                        <option value="TSA Client">TSA Client</option>
+                    </select>
                 </div>
             </div>
         </>

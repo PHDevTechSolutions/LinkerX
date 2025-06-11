@@ -5,16 +5,16 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../components/Companies/DeletionCompanies/AddUserForm";
-import SearchFilters from "../../../components/Companies/DeletionCompanies/SearchFilters";
-import UsersTable from "../../../components/Companies/DeletionCompanies/UsersTable";
+import Form from "../../../components/Companies/CompanyAccounts/Form";
+import Filters from "../../../components/Companies/DeletionCompanies/Filters";
+import Table from "../../../components/Companies/DeletionCompanies/Table";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-const ListofUser: React.FC = () => {
+const DeletionAccounts: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
     const [showImportForm, setShowImportForm] = useState(false);
     const [editUser, setEditUser] = useState<any>(null);
@@ -170,7 +170,7 @@ const ListofUser: React.FC = () => {
                                         }`}
                                 >
                                     {showForm && (
-                                        <AddPostForm
+                                        <Form
                                             onCancel={() => {
                                                 setShowForm(false);
                                                 setEditUser(null);
@@ -192,7 +192,7 @@ const ListofUser: React.FC = () => {
                                     <p className="text-xs text-gray-600 mb-4">
                                         This section displays a list of <strong>Deletion Companies</strong> within the system. You can filter the companies based on various criteria such as client type, start date, end date, and search term. Use the filters to narrow down your search and quickly find the relevant inactive companies you need to manage or review.
                                     </p>
-                                    <SearchFilters
+                                    <Filters
                                         searchTerm={searchTerm}
                                         setSearchTerm={setSearchTerm}
                                         postsPerPage={postsPerPage}
@@ -204,11 +204,12 @@ const ListofUser: React.FC = () => {
                                         endDate={endDate}
                                         setEndDate={setEndDate}
                                     />
-                                    <UsersTable
+                                    <Table
                                         posts={currentPosts}
                                         handleEdit={handleEdit}
                                         referenceid={referenceid}
                                         Role={userDetails.Role}
+                                        fetchAccount={fetchAccount}
                                     />
                                     <Pagination
                                         currentPage={currentPage}
@@ -233,4 +234,4 @@ const ListofUser: React.FC = () => {
     );
 };
 
-export default ListofUser;
+export default DeletionAccounts;

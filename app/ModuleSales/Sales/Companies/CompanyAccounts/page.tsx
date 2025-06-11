@@ -18,7 +18,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // Icons
 import { CiImport } from "react-icons/ci";
 
-const ListofUser: React.FC = () => {
+const ActiveAccounts: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
     const [showImportForm, setShowImportForm] = useState(false);
     const [editUser, setEditUser] = useState<any>(null);
@@ -107,7 +107,7 @@ const ListofUser: React.FC = () => {
         ? posts
             .filter((post) => {
                 // Only allow Top 50, Next 30, Balance 20
-                const validClientTypes = ["Top 50", "Next 30", "Balance 20"];
+                const validClientTypes = ["Top 50", "Next 30", "Balance 20", "TSA Client", "CSR Client"];
                 const isValidTypeClient = validClientTypes.includes(post?.typeclient);
 
                 const matchesSearchTerm =
@@ -290,4 +290,4 @@ const ListofUser: React.FC = () => {
     );
 };
 
-export default ListofUser;
+export default ActiveAccounts;

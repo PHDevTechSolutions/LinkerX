@@ -34,6 +34,7 @@ const TableXchire: React.FC<TableXchireProps> = ({
           {Role !== "Special Access" && (
             <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
           )}
+          <th className="px-6 py-4 font-semibold text-gray-700">Remarks / Reason</th>
           <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
           <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
           <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
@@ -98,6 +99,7 @@ const TableXchire: React.FC<TableXchireProps> = ({
                     </button>
                   </td>
                 )}
+                <td className="px-6 py-4 text-xs uppercase">{post.remarks}</td>
                 <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
                 <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
                 <td className="px-6 py-4 text-xs capitalize">{post.contactnumber}</td>
