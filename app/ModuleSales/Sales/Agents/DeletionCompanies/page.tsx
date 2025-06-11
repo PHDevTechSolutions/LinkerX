@@ -5,8 +5,8 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../components/Companies/DeletionCompanies/AddUserForm";
-import SearchFilters from "../../../components/Companies/DeletionCompanies/SearchFilters";
+import AddPostForm from "../../../components/Companies/CompanyAccounts/Form";
+import Filters from "../../../components/Companies/CompanyAccounts/Filters";
 import UsersTable from "../../../components/Agents/DeletionCompanies/UsersTable";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
 
@@ -182,18 +182,6 @@ const ListofUser: React.FC = () => {
                                             <p className="text-xs text-gray-600 mb-4">
                                                 This section displays a list of <strong>Deletion Companies</strong> within the system. You can filter the companies based on various criteria such as client type, start date, end date, and search term. Use the filters to narrow down your search and quickly find the relevant inactive companies you need to manage or review.
                                             </p>
-                                            <SearchFilters
-                                                searchTerm={searchTerm}
-                                                setSearchTerm={setSearchTerm}
-                                                postsPerPage={postsPerPage}
-                                                setPostsPerPage={setPostsPerPage}
-                                                selectedClientType={selectedClientType}
-                                                setSelectedClientType={setSelectedClientType}
-                                                startDate={startDate}
-                                                setStartDate={setStartDate}
-                                                endDate={endDate}
-                                                setEndDate={setEndDate}
-                                            />
                                             <UsersTable
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}
