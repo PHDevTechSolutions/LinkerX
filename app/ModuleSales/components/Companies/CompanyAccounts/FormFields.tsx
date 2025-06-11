@@ -283,7 +283,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
         {/* Complete Address */}
         <div className={fieldWidthClass}>
-          <label className="block text-xs font-bold mb-2" htmlFor="address">Complete Address</label>
+          <label className="block text-xs font-bold mb-2" htmlFor="address">Registered Address</label>
           <input
             type="text"
             id="address"
@@ -334,6 +334,17 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="Bangsamoro Autonomous Region in Muslim Mindanao">BARMM</option>
             <option value="Caraga">Region XIII</option>
             <option value="Mimaropa Region">MIMAROPA Region</option>
+          </select>
+        </div>
+
+        <div className={fieldWidthClass}>
+          <label className="block text-xs font-bold mb-2" htmlFor="area">Status</label>
+          <select id="typeclient" value={area ?? ""} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+            <option value="">Select Status</option>
+            <option value="Active">Active</option>
+            <option value="New Client">New Client</option>
+            <option value="Non-Buying">Non-Buying</option>
+            <option value="Inactive">Inactive</option>
           </select>
         </div>
       </div>

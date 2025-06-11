@@ -61,10 +61,10 @@ const Accordion: React.FC<AccordionProps> = ({
                             <span className="text-[10px] text-red-500 capitalize">(enter "N/A" if not applicable)</span>
                         </div>
 
-                        {/* Project Category */}
+                        {/* Product Category */}
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                            <label className="block text-xs font-bold mb-1 text-black">Project Category</label>
-                            <select value={projectcategory ?? ""} onChange={(e) => setprojectcategory(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+                            <label className="block text-xs font-bold mb-1 text-black">Product Category</label>
+                            <select value={projectcategory ?? ""} onChange={(e) => setprojectcategory(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                 <option value="">Select Category</option>
                                 <option value="Bollard Light">Bollard Light</option>
                                 <option value="Bulb Light">Bulb Light</option>
@@ -106,7 +106,7 @@ const Accordion: React.FC<AccordionProps> = ({
                         {/* Project Type */}
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-1 text-black">Project Type</label>
-                            <select value={projecttype ?? ""} onChange={(e) => setprojecttype(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+                            <select value={projecttype ?? ""} onChange={(e) => setprojecttype(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                 <option value="">Select Category</option>
                                 <option value="B2B">B2B</option>
                                 <option value="B2C">B2C</option>
@@ -120,14 +120,18 @@ const Accordion: React.FC<AccordionProps> = ({
                         {/* Source */}
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                             <label className="block text-xs font-bold mb-1 text-black">Source</label>
-                            <select value={source ?? ""} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
+                            <select value={source ?? ""} onChange={(e) => setsource(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
                                 <option value="">Select Category</option>
-                                <option value="Direct Client">Direct Client</option>
-                                <option value="CSR Inquiries">CSR Inquiries</option>
-                                <option value="Outbound">Outbound</option>
-                                <option value="Philgeps">Philgeps</option>
+                                <option value="Existing Client">Existing Client</option>
+                                <option value="CSR Inquiry">CSR Inquiry</option>
+                                <option value="Outbound - Follow-up">Outbound - Follow-up</option>
+                                <option value="Outbound - Touchbase">Outbound - Touchbase</option>
+                                <option value="Government">Government</option>
+                                <option value="Philgeps- Website">Philgeps- Website</option>
                                 <option value="Distributor">Distributor</option>
                                 <option value="Modern Trade">Modern Trade</option>
+                                <option value="Facebook Marketplace">Facebook Marketplace</option>
+                                <option value="Walk-in / Showroom">Walk-in / Showroom</option>
                             </select>
                         </div>
                     </div>

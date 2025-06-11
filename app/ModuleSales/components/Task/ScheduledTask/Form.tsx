@@ -285,7 +285,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         <div className="flex justify-end gap-2">
           <button type="submit" className="bg-blue-400 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
             {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}
-            {editUser ? "Update" : "Submit"}
+            {editUser ? "Save" : "Submit"}
           </button>
           <button type="button" className="border text-black px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiTurnL1 size={15} /> Back</button>
         </div>

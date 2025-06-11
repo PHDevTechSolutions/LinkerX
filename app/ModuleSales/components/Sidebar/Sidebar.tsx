@@ -189,7 +189,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ],
     },
     {
-      title: 'My Companies',
+      title: 'Customer Database',
       icon: BsBuildings,
       subItems: [
         { title: 'Active', href: `/ModuleSales/Sales/Companies/CompanyAccounts${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
@@ -298,7 +298,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
 
     if (userDetails.Role === "Special Access") {
       return [
-        "My Companies",
+        "Customer Database",
         "Activity",
         "Sales Performance",
         "Conversion Rates",
@@ -327,7 +327,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       ];
 
       const agentModeMenu = [
-        "My Companies",
+        "Customer Database",
         "Activities",
         "Projects",
         "Xend Mail",
@@ -343,7 +343,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
 
     if (userDetails.Role === "Territory Sales Associate") {
       return [
-        "My Companies",
+        "Customer Database",
         "Activities",
         "Reports",
         "Projects",
@@ -389,7 +389,6 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         </div>
 
         {/* User Details Section */}
-        {/* User Details Section */}
         {!collapsed && (
           <div className="p-6 text-xs text-left">
 
@@ -409,16 +408,16 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
             <div className="flex items-center gap-1">
               <span
                 className={`text-white text-[8px] font-semibold px-3 py-1 rounded-full inline-block mt-2 ${userDetails.Status === "Active"
-                    ? "bg-green-600"
-                    : userDetails.Status === "Inactive"
-                      ? "bg-red-400"
-                      : userDetails.Status === "Locked"
-                        ? "bg-gray-400"
-                        : userDetails.Status === "Busy"
-                          ? "bg-yellow-400"
-                          : userDetails.Status === "Do not Disturb"
-                            ? "bg-gray-800"
-                            : "bg-blue-500"
+                  ? "bg-green-600"
+                  : userDetails.Status === "Inactive"
+                    ? "bg-red-400"
+                    : userDetails.Status === "Locked"
+                      ? "bg-gray-400"
+                      : userDetails.Status === "Busy"
+                        ? "bg-yellow-400"
+                        : userDetails.Status === "Do not Disturb"
+                          ? "bg-gray-800"
+                          : "bg-blue-500"
                   }`}
               >
                 {userDetails.Status}

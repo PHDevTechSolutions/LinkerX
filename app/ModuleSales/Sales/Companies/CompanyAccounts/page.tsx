@@ -5,18 +5,18 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../components/Companies/CompanyAccounts/AddUserForm";
-import SearchFilters from "../../../components/Companies/CompanyAccounts/SearchFilters";
-import UsersTable from "../../../components/Companies/CompanyAccounts/UsersTable";
+import Form from "../../../components/Companies/CompanyAccounts/Form";
+import ImportForm from "../../../components/Companies/CompanyAccounts/ImportForm";
+import SearchFilters from "../../../components/Companies/CompanyAccounts/Filters";
+import Container from "../../../components/Companies/CompanyAccounts/Container";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import ExcelJS from "exceljs";
 
 // Icons
-import { CiExport, CiSquarePlus, CiImport, CiSaveUp2, CiTurnL1, CiCircleMinus, CiCirclePlus } from "react-icons/ci";
+import { CiImport } from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -42,82 +42,7 @@ const ListofUser: React.FC = () => {
     const [tsm, setTsm] = useState("");
     const [status, setstatus] = useState("");
     const [file, setFile] = useState<File | null>(null);
-    const [jsonData, setJsonData] = useState<any[]>([]);
     const [isMaximized, setIsMaximized] = useState(false);
-
-    // Handle file selection and read data
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedFile = e.target.files?.[0];
-        if (!selectedFile) return;
-
-        setFile(selectedFile);
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-            const data = event.target?.result as ArrayBuffer;
-            const workbook = new ExcelJS.Workbook();
-            await workbook.xlsx.load(data);
-            const worksheet = workbook.worksheets[0];
-
-            const parsedData: any[] = [];
-            worksheet.eachRow((row, rowNumber) => {
-                if (rowNumber === 1) return; // Skip header row
-
-                parsedData.push({
-                    referenceid,
-                    tsm,
-                    manager,
-                    status,
-                    companyname: row.getCell(1).value || "",
-                    contactperson: row.getCell(2).value || "",
-                    contactnumber: row.getCell(3).value || "",
-                    emailaddress: row.getCell(4).value || "",
-                    typeclient: row.getCell(5).value || "",
-                    address: row.getCell(6).value || "",
-                    deliveryaddress: row.getCell(7).value || "",
-                    area: row.getCell(8).value || "",
-                });
-            });
-
-            console.log("Parsed Excel Data:", parsedData);
-            setJsonData(parsedData);
-        };
-        reader.readAsArrayBuffer(selectedFile);
-    };
-
-    // Handle file upload
-    const handleFileUpload = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!file || jsonData.length === 0) {
-            toast.error("Please upload a valid file.");
-            return;
-        }
-
-        try {
-            const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/ImportAccounts", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    referenceid,
-                    tsm,
-                    manager,
-                    status,
-                    data: jsonData,
-                }),
-            });
-
-            const result = await response.json();
-            if (result.success) {
-                toast.success(`${result.insertedCount} records imported successfully!`);
-                setFile(null);
-                setJsonData([]);
-            } else {
-                toast.error(result.message || "Import failed.");
-            }
-        } catch (error) {
-            toast.error("Error uploading file.");
-        }
-    };
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -214,7 +139,7 @@ const ListofUser: React.FC = () => {
                             ? post?.referenceid === referenceID
                             : false;
 
-                const isActiveOrUsed = post?.status === "Active" || post?.status === "On Hold" || post?.status === "Used";
+                const isActiveOrUsed = post?.status === "Active" || post?.status === "Used";
 
                 return (
                     isValidTypeClient && // ✅ Only allow Top 50, Next 30, Balance 20
@@ -279,7 +204,7 @@ const ListofUser: React.FC = () => {
                                             }`}
                                     >
                                         {showForm ? (
-                                            <AddPostForm
+                                            <Form
                                                 onCancel={() => {
                                                     setShowForm(false);
                                                     setEditUser(null);
@@ -294,126 +219,17 @@ const ListofUser: React.FC = () => {
                                                 editUser={editUser}
                                             />
                                         ) : showImportForm ? (
-                                            <div className={`bg-white text-gray-900 rounded-lg p-4 text-xs mt-20 transition-all duration-300 fixed right-0 w-full ${isMaximized ? "max-w-7xl" : "max-w-md"
-                                                }`}>
-
-                                                <form onSubmit={handleFileUpload}>
-                                                    {/* Buttons */}
-                                                    <div className="flex justify-end mb-4 gap-1">
-                                                        <button
-                                                            type="button"
-                                                            className="px-4 py-2 border rounded text-xs flex gap-1"
-                                                            onClick={() => setIsMaximized(!isMaximized)}
-                                                        >
-                                                            {isMaximized ? <CiCircleMinus size={15} /> : <CiCirclePlus size={15} />}
-                                                            {isMaximized ? "Minimize" : "Maximize"}
-                                                        </button>
-                                                        <button type="submit" className="bg-blue-500 text-xs text-white px-4 py-2 rounded flex items-center gap-1">
-                                                            <CiSaveUp2 size={15} /> Upload
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className="border text-xs px-4 py-2 rounded flex items-center gap-1"
-                                                            onClick={() => setShowImportForm(false)}
-                                                        >
-                                                            <CiTurnL1 size={15} /> Back
-                                                        </button>
-                                                    </div>
-
-                                                    <h2 className="text-lg font-bold mb-2">Account Import Section</h2>
-                                                    <p className="text-xs text-gray-600 mb-4">
-                                                        The <strong>Account Import Section</strong> allows users to upload and integrate bulk account data into the system.
-                                                    </p>
-                                                    <div className={`flex flex-wrap -mx-4`}>
-                                                        {/* Reference Info */}
-                                                        <div className={fieldWidthClass}>
-                                                            <label className="block text-xs font-bold mb-2">Territory Sales Associate</label>
-                                                            <input type="text" id="referenceid" value={referenceid} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
-                                                            <input type="hidden" id="manager" value={manager} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                                                            <input type="hidden" id="tsm" value={tsm} className="w-full px-3 py-2 border rounded text-xs capitalize" />
-                                                        </div>
-
-                                                        {/* Status */}
-                                                        <div className={fieldWidthClass}>
-                                                            <label className="block text-xs font-bold mb-2">Status</label>
-                                                            <select
-                                                                value={status}
-                                                                onChange={(e) => setstatus(e.target.value)}
-                                                                className="w-full px-3 py-2 border rounded text-xs capitalize"
-                                                            >
-                                                                <option value="">Select Status</option>
-                                                                <option value="Active">Active</option>
-                                                            </select>
-                                                            <p className="text-xs text-gray-600 mt-2">
-                                                                Select the <strong>Status</strong> of the account.
-                                                            </p>
-                                                        </div>
-
-                                                        {/* File Upload - Excel Only */}
-                                                        <div className={fieldWidthClass}>
-                                                            <label className="block text-xs font-bold mb-2">Excel File</label>
-                                                            <input
-                                                                type="file"
-                                                                accept=".xls,.xlsx"
-                                                                className="w-full px-3 py-2 border rounded text-xs"
-                                                                onChange={(e) => {
-                                                                    const file = e.target.files?.[0];
-                                                                    if (file) {
-                                                                        const isExcel = file.name.endsWith(".xls") || file.name.endsWith(".xlsx");
-                                                                        if (!isExcel) {
-                                                                            alert("Only Excel files (.xls, .xlsx) are allowed.");
-                                                                            e.target.value = ""; // Reset file input
-                                                                            return;
-                                                                        }
-                                                                        handleFileChange(e);
-                                                                    }
-                                                                }}
-                                                            />
-                                                            <p className="text-xs text-gray-600 mt-2">
-                                                                Upload an Excel file (.xls, .xlsx) from your device.
-                                                            </p>
-                                                        </div>
-
-                                                    </div>
-                                                </form>
-
-                                                {/* Preview Table */}
-                                                {jsonData.length > 0 && (
-                                                    <div className="mt-4">
-                                                        <h3 className="text-sm font-bold mb-2">Preview Data ({jsonData.length} records)</h3>
-                                                        <div className="overflow-auto max-h-64 border rounded-md">
-                                                            <table className="min-w-full table-auto">
-                                                                <thead className="bg-gray-100">
-                                                                    <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
-                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
-                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
-                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Email Address</th>
-                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
-                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Complete Address</th>
-                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Delivery Address</th>
-                                                                        <th className="px-6 py-4 font-semibold text-gray-700">Region</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody className="divide-y divide-gray-100">
-                                                                    {jsonData.map((item, index) => (
-                                                                        <tr key={index} className="border-b whitespace-nowrap">
-                                                                            <td className="px-6 py-4 text-xs uppercase">{item.companyname}</td>
-                                                                            <td className="px-6 py-4 text-xs capitalize">{item.contactperson}</td>
-                                                                            <td className="px-6 py-4 text-xs">{item.contactnumber}</td>
-                                                                            <td className="px-6 py-4 text-xs">{item.emailaddress}</td>
-                                                                            <td className="px-6 py-4 text-xs">{item.typeclient}</td>
-                                                                            <td className="px-6 py-4 text-xs">{item.address}</td>
-                                                                            <td className="px-6 py-4 text-xs">{item.deliveryaddress}</td>
-                                                                            <td className="px-6 py-4 text-xs">{item.area}</td>
-                                                                        </tr>
-                                                                    ))}
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
+                                            <ImportForm
+                                                referenceid={userDetails.ReferenceID}
+                                                manager={userDetails.Manager}
+                                                tsm={userDetails.TSM}
+                                                isMaximized={isMaximized}
+                                                setIsMaximized={setIsMaximized}
+                                                setShowImportForm={setShowImportForm}
+                                                status={status}
+                                                setstatus={setstatus}
+                                                fieldWidthClass={fieldWidthClass}
+                                            />
                                         ) : null}
                                     </div>
 
@@ -444,7 +260,7 @@ const ListofUser: React.FC = () => {
                                             endDate={endDate}
                                             setEndDate={setEndDate}
                                         />
-                                        <UsersTable
+                                        <Container
                                             posts={currentPosts}
                                             handleEdit={handleEdit}
                                             referenceid={referenceid}
