@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
-
 // Components
 import Form from "../../../components/Companies/CompanyAccounts/Form";
 import Filters from "../../../components/Companies/DeletionCompanies/Filters";
