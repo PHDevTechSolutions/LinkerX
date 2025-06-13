@@ -245,6 +245,7 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
         <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
         <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
         <th className="px-6 py-4 font-semibold text-gray-700">Actual Sales (SI)</th>
+        <th className="px-6 py-4 font-semibold text-gray-700">Target</th>
         <th className="px-6 py-4 font-semibold text-gray-700">Achievement</th> 
       
       </tr>
@@ -259,6 +260,7 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
           <tr key={companyName} className="bg-white hover:bg-gray-50">
             <td className="px-6 py-4 text-xs uppercase">{companyName}</td>
             <td className="px-6 py-4 text-xs">{typeClients}</td>
+            <td className="px-6 py-4 text-xs">{target}</td>
             <td className="px-6 py-4 text-xs">{formatSales(totalSales)}</td>
            
 <td className="px-6 py-4 text-xs">
