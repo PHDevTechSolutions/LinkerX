@@ -261,7 +261,7 @@ const Login: React.FC = () => {
               <select
                 value={Department}
                 onChange={(e) => setDepartment(e.target.value)}
-                className={`w-full px-4 py-2 bg-transparent border ${isDark ? 'border-white/30 text-white' : 'border-black/30 text-black'
+                className={`w-full px-4 py-2 bg-white border ${isDark ? 'border-white/30 text-black' : 'border-black/30 text-black'
                   } text-xs rounded-md backdrop-blur-md focus:ring-2 focus:ring-cyan-400 outline-none transition duration-300 ease-in-out transform focus:scale-[1.01]`}
               >
                 <option value="">Select Department</option>
@@ -291,7 +291,7 @@ const Login: React.FC = () => {
           </form>
 
           <p className="mt-6 text-center text-xs font-light tracking-wider">
-            XentrixFlow | ERP System – Developed by the IT Department
+            Taskflow | ERP System – Developed by the IT Department
           </p>
         </motion.div>
     </div>
