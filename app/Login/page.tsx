@@ -8,7 +8,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { CiDark, CiSun } from 'react-icons/ci';
 import { VscEye, VscEyeClosed } from 'react-icons/vsc';
 import { motion } from 'framer-motion';
-import Tilt from 'react-parallax-tilt';
 
 type LoadingPageProps = {
   userId: string;
@@ -202,16 +201,6 @@ const Login: React.FC = () => {
       </div>
 
       {/* Login Card with tilt and entrance animation */}
-      <Tilt
-        tiltMaxAngleX={10}
-        tiltMaxAngleY={10}
-        glareEnable={true}
-        glareMaxOpacity={0.2}
-        glareColor={isDark ? '#00ffff' : '#00cccc'}
-        glarePosition="all"
-        transitionSpeed={400}
-        className="relative z-10 max-w-md w-full"
-      >
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -305,7 +294,6 @@ const Login: React.FC = () => {
             XentrixFlow | ERP System – Developed by the IT Department
           </p>
         </motion.div>
-      </Tilt>
     </div>
   );
 };
