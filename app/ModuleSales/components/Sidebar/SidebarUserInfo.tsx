@@ -58,7 +58,7 @@ const SidebarUserInfo: React.FC<SidebarUserInfoProps> = ({
       audioRef.current.play();
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 2500));
+    await new Promise((resolve) => setTimeout(resolve, 3500));
     await fetch("/api/logout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -69,7 +69,7 @@ const SidebarUserInfo: React.FC<SidebarUserInfoProps> = ({
 
   return (
     <div
-      className="relative p-6 border-t bg-white dark:bg-gray-900 dark:border-gray-700 flex items-center justify-between flex-shrink-0 overflow-hidden"
+      className="relative p-6  bg-white dark:bg-gray-900 dark:border-gray-700 flex items-center justify-between flex-shrink-0 overflow-hidden"
       style={{ position: "sticky", bottom: 0, zIndex: 10 }}
     >
       {/* Logout Sound */}
@@ -77,7 +77,7 @@ const SidebarUserInfo: React.FC<SidebarUserInfoProps> = ({
 
       {/* Logging Out Overlay */}
       {isLoggingOut && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-gray-900/90 backdrop-blur-sm">
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-gray-900 backdrop-blur-sm">
           <div className="absolute inset-0 opacity-20 animate-pulse-slow bg-[radial-gradient(circle,_#00ffff33_1px,_transparent_1px)] bg-[length:20px_20px]" />
           <div className="relative w-24 h-24 flex items-center justify-center">
             <div className="absolute inset-0 rounded-full border-[3px] border-cyan-400 animate-spin-slow shadow-lg shadow-cyan-500/30" />
@@ -103,7 +103,7 @@ const SidebarUserInfo: React.FC<SidebarUserInfoProps> = ({
           />
         </div>
 
-        <div className="text-[10px]">
+        <div className="text-[10px] text-black">
           <p className="font-bold uppercase">
             {userDetails.Firstname}, {userDetails.Lastname}
           </p>
