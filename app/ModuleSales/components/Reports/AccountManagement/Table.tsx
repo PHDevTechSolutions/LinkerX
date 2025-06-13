@@ -281,7 +281,7 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
       </tr>
     </tfoot>
   </table>
-</div>git p
+</div>
 
       {/* Pagination Controls */}
       <div className="flex justify-between items-center mt-4 text-xs text-gray-600">
