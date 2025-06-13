@@ -263,7 +263,7 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
            
 <td className="px-6 py-4 text-xs">
   {totalSales !== 0 && !isNaN(Number(String(targetQuota).replace(/,/g, "")))
-    ? `${((Number(String(targetQuota).replace(/,/g, "")) / totalSales) * 100).toFixed(2)}%`
+    ? `${((Number(String(targetQuota).replace(/,/g, "")) / totalSales) * .100).toFixed(2)}%`
     : "N/A"}
 </td>
            
