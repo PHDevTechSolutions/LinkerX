@@ -19,7 +19,7 @@ async function update(userDetails: any) {
       id, referenceid, manager,
       tsm, companyname, companygroup, contactperson,
       contactnumber, emailaddress, typeclient,
-      address, area, projectname,
+      address, deliveryaddress, area, projectname,
       projectcategory, projecttype, source,
       startdate, enddate, activitynumber,
       typeactivity, activitystatus, remarks,
@@ -27,14 +27,14 @@ async function update(userDetails: any) {
       quotationamount, sonumber, soamount,
       callstatus, actualsales, targetquota,
       ticketreferencenumber, wrapup, inquiries,
-      csragent, // Added csragent
+      csragent, paymentterm,
     } = userDetails;
 
     // ✅ Update the activity table
     const Xchire_update = await Xchire_sql`
       UPDATE activity
       SET companygroup = ${companygroup}, contactperson = ${contactperson}, contactnumber = ${contactnumber}, emailaddress = ${emailaddress},
-      typeclient = ${typeclient}, address = ${address}, area = ${area}, projectname = ${projectname},
+      typeclient = ${typeclient}, address = ${address}, deliveryaddress = ${deliveryaddress}, area = ${area}, projectname = ${projectname},
       projectcategory = ${projectcategory}, projecttype = ${projecttype}, source = ${source},
       activitystatus = ${activitystatus}, date_updated = CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
       WHERE id = ${id}
@@ -49,17 +49,17 @@ async function update(userDetails: any) {
     await Xchire_sql`
       INSERT INTO progress (
         ticketreferencenumber, wrapup, inquiries, referenceid, manager, tsm, companyname, companygroup, contactperson,
-        contactnumber, emailaddress, typeclient, address, area, projectname, projectcategory, projecttype,
+        contactnumber, emailaddress, typeclient, address, deliveryaddress, area, projectname, projectcategory, projecttype,
         source, startdate, enddate, activitynumber, typeactivity, activitystatus, remarks, callback,
         typecall, quotationnumber, quotationamount, sonumber, soamount, callstatus, date_created,
-        actualsales, targetquota, csragent
+        actualsales, targetquota, csragent, paymentterm
       ) VALUES (
         ${ticketreferencenumber}, ${wrapup}, ${inquiries}, ${referenceid}, ${manager}, ${tsm},
-        ${companyname}, ${companygroup}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${address},
+        ${companyname}, ${companygroup}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${address}, ${deliveryaddress},
         ${area}, ${projectname}, ${projectcategory}, ${projecttype}, ${source}, ${startdate}, ${enddate},
         ${activitynumber}, ${typeactivity}, ${activitystatus}, ${remarks}, ${callback}, ${typecall},
         ${quotationnumber}, ${quotationamount}, ${sonumber}, ${soamount}, ${callstatus},
-        CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', ${actualsales}, ${targetquota}, ${csragent}
+        CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', ${actualsales}, ${targetquota}, ${csragent}, ${paymentterm}
       );
     `;
 

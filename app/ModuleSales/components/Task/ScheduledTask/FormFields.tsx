@@ -61,7 +61,7 @@ interface FormFieldsProps {
     wrapup: string; setwrapup: (value: string) => void;
     inquiries: string; setinquiries: (value: string) => void;
     csragent: string; setcsragent: (value: string) => void;
-
+    paymentterm: string; setpaymentterm: (value: string) => void;
 
     currentRecords: Activity[];
     editPost?: any;
@@ -105,6 +105,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     wrapup, setwrapup,
     inquiries, setinquiries,
     csragent, setcsragent,
+
+    paymentterm, setpaymentterm,
     editPost,
 }) => {
     const [showFields, setShowFields] = useState(false);
@@ -171,6 +173,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 typeactivity={typeactivity} settypeactivity={settypeactivity}
                 setemailaddress={setemailaddress} emailaddress={emailaddress}
                 remarks={remarks} setremarks={setremarks}
+                paymentterm={paymentterm} setpaymentterm={setpaymentterm}
                 callback={callback} setcallback={setcallback}
                 typecall={typecall} settypecall={settypecall}
                 quotationnumber={quotationnumber} setquotationnumber={setquotationnumber}

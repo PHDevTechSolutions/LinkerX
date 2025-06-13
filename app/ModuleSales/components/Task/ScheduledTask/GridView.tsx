@@ -235,12 +235,22 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
 
                   <span
                     className={`px-2 py-0.5 rounded-full text-[8px] font-semibold select-none
-                      ${post.activitystatus.toLowerCase() === "cold"
-                        ? "bg-gray-400 text-white"
-                        : post.activitystatus.toLowerCase() === "warm"
-                          ? "bg-yellow-500 text-white"
-                          : post.activitystatus.toLowerCase() === "hot"
-                            ? "bg-red-400 text-white"
+                      ${post.activitystatus.toLowerCase() === "assisted"
+                        ? "bg-blue-400 text-white"
+                        : post.activitystatus.toLowerCase() === "paid"
+                        ? "bg-green-500 text-white"
+                        : post.activitystatus.toLowerCase() === "delivered"
+                        ? "bg-cyan-400 text-white"
+                        : post.activitystatus.toLowerCase() === "collected"
+                        ? "bg-indigo-500 text-white"
+                        : post.activitystatus.toLowerCase() === "quote-done"
+                        ? "bg-slate-500 text-white"
+                        : post.activitystatus.toLowerCase() === "so-done"
+                        ? "bg-purple-500 text-white"
+                        : post.activitystatus.toLowerCase() === "cancelled"
+                        ? "bg-red-500 text-white"
+                        : post.activitystatus.toLowerCase() === "loss"
+                        ? "bg-red-800 text-white"
                             : "bg-green-500 text-white"
                       }`}
 

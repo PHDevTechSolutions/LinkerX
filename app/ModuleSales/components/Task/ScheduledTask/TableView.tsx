@@ -21,10 +21,14 @@ interface TableViewProps {
 }
 
 const statusColors: Record<string, string> = {
-  Cold: "bg-blue-400",
-  Warm: "bg-yellow-400 text-black",
-  Hot: "bg-red-300",
-  Done: "bg-green-500",
+  Assisted: "bg-blue-400 text-white",
+  Paid: "bg-green-500 text-white",
+  Delivered: "bg-cyan-400 text-white",
+  Collected: "bg-indigo-500 text-white",
+  "Quote-Done": "bg-slate-500 text-white",
+  "SO-Done": "bg-purple-500 text-white",
+  Cancelled: "bg-red-500 text-white",
+  Loss: "bg-red-800 text-white",
 };
 
 const formatDate = (dateStr: string | null): string => {

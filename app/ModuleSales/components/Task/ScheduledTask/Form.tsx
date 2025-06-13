@@ -86,6 +86,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [inquiries, setinquiries] = useState(editUser ? editUser.inquiries : "");
   const [csragent, setcsragent] = useState(editUser ? editUser.csragent : "");
 
+  const [paymentterm, setpaymentterm] = useState(editUser ? editUser.paymentterm : "");
+
   const [currentPage, setCurrentPage] = useState(1);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -168,7 +170,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       body: JSON.stringify({
         id: editUser?.id, referenceid, manager, tsm, targetquota, companyname, companygroup, contactperson, contactnumber, emailaddress, typeclient,
         address, deliveryaddress, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, remarks,
-        callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus, ticketreferencenumber, wrapup, inquiries, csragent,
+        callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus, ticketreferencenumber, wrapup, inquiries, csragent, paymentterm,
       }),
     });
 
@@ -335,6 +337,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           wrapup={wrapup} setwrapup={setwrapup}
           inquiries={inquiries} setinquiries={setinquiries}
           csragent={csragent} setcsragent={setcsragent}
+
+          paymentterm={paymentterm} setpaymentterm={setpaymentterm}
 
           //PassedRecords
           currentRecords={currentRecords}
