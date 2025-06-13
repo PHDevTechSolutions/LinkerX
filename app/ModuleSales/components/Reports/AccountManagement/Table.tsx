@@ -245,6 +245,7 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
         <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
         <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
         <th className="px-6 py-4 font-semibold text-gray-700">Actual Sales (SI)</th>
+        <th className="px-6 py-4 font-semibold text-gray-700">Target</th>
         <th className="px-6 py-4 font-semibold text-gray-700">Achievement</th> 
       
       </tr>
@@ -260,10 +261,11 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
             <td className="px-6 py-4 text-xs uppercase">{companyName}</td>
             <td className="px-6 py-4 text-xs">{typeClients}</td>
             <td className="px-6 py-4 text-xs">{formatSales(totalSales)}</td>
+            <td className="px-6 py-4 text-xs">{targetQuota}</td>            
            
 <td className="px-6 py-4 text-xs">
   {totalSales !== 0 && !isNaN(Number(String(targetQuota).replace(/,/g, "")))
-    ? `${((Number(String(targetQuota).replace(/,/g, "")) / totalSales) * 100).toFixed(2)}%`
+    ? `${((Number(String(targetQuota).replace(/,/g, "")) / totalSales) / .01).toFixed(2)}%`
     : "N/A"}
 </td>
            
@@ -281,7 +283,7 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
       </tr>
     </tfoot>
   </table>
-</div>git p
+</div>
 
       {/* Pagination Controls */}
       <div className="flex justify-between items-center mt-4 text-xs text-gray-600">
