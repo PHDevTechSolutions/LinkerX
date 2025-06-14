@@ -64,6 +64,7 @@
     "react-toastify": "^11.0.3",
     "react-tooltip": "^5.28.1",
     "react-window": "^1.8.11",
+    "recharts": "^2.15.3",
     "socket.io-client": "^4.8.1",
     "three": "^0.174.0",
     "three-stdlib": "^2.35.14",

@@ -218,6 +218,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
         { title: 'SO Summary', href: `/ModuleSales/Sales/Reports/SOSummary${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Pending SO', href: `/ModuleSales/Sales/Reports/PendingSO${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'CSR Inquiry Summary', href: `/ModuleSales/Sales/Reports/CSRSummary${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Client History', href: `/ModuleSales/Sales/Reports/ClientHistory${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
