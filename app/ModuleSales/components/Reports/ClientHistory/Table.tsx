@@ -83,12 +83,12 @@ const Table: React.FC<UsersTableProps> = ({ posts }) => {
   return (
     <div>
       <div className="overflow-x-auto relative">
-        <table className="min-w-full table-auto border-collapse border border-gray-200">
-          <thead className="bg-gray-100 sticky top-0 z-10">
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
             <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-              <th className="px-4 py-2 font-semibold text-gray-700 border border-gray-300">Company Name</th>
-              <th className="px-4 py-2 font-semibold text-gray-700 border border-gray-300">Actual Sales (Sum)</th>
-              <th className="px-4 py-2 font-semibold text-gray-700 border border-gray-300 text-center">Action</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Actual Sales (Sum)</th>
+              <th className="px-6 py-4 font-semibold text-gray-700">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -108,10 +108,10 @@ const Table: React.FC<UsersTableProps> = ({ posts }) => {
                 }, 0);
 
                 return (
-                  <tr key={companyName} className="bg-white hover:bg-gray-50">
-                    <td className="px-4 py-2 text-xs uppercase border border-gray-300">{companyName}</td>
-                    <td className="px-4 py-2 text-xs border border-gray-300">{totalSales}</td>
-                    <td className="px-4 py-2 text-xs text-center border border-gray-300">
+                  <tr key={companyName} className="border-b whitespace-nowrap">
+                    <td className="px-6 py-4 text-xs uppercase">{companyName}</td>
+                    <td className="px-6 py-4 text-xs capitalize">{totalSales}</td>
+                    <td className="px-6 py-4 text-xs capitalize">
                       <button
                         onClick={() => setSelectedCompanyPosts(postsForCompany)}
                         className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
