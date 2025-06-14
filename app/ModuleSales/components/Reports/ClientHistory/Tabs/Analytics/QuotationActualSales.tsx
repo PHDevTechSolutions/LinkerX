@@ -121,14 +121,14 @@ const QuotationActualSales: React.FC<QuotationActualSalesProps> = ({ records }) 
   ];
 
   return (
-    <section ref={containerRef} style={{ width: "100%" }}>
+    <section ref={containerRef} style={{ width: "100%" }} className="border p-4 rounded-md shadow-md">
       <h2 className="text-sm font-semibold mb-4">
         Conversion Rate (Quotation vs Actual Sales)
       </h2>
       <svg
         width={width}
         height={height}
-        style={{ overflow: "visible" }} className="p-4"
+        style={{ overflow: "visible" }}
       >
         {/* Axes */}
         <line

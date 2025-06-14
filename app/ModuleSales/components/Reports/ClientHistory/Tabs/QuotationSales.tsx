@@ -156,7 +156,7 @@ const QuotationSales: React.FC<QuotationSalesProps> = ({ groupedPosts }) => {
         };
 
         return (
-          <div key={companyname} className="mb-8 border rounded-md p-4">
+          <div key={companyname} className="mb-8 border rounded-md p-4 shadow-md">
             <p className="text-xs font-semibold text-gray-800 truncate max-w-[70%]">
               Company: <span className="font-normal">{companyname}</span>
             </p>

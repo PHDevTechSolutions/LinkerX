@@ -67,7 +67,7 @@ const TrendAnalysis: React.FC<TrendAnalysisProps> = ({ records }) => {
   const totalLegendWidth = Object.keys(COLORS).length * legendItemWidth;
 
   return (
-    <section>
+    <section className="border p-4 rounded-md shadow-md">
       <h2 className="text-sm font-semibold mb-4">Trend Analysis (Monthly)</h2>
       <div ref={containerRef} style={{ width: "100%" }}>
         <svg width={width} height={height} style={{ borderRadius: 4 }}>

@@ -44,40 +44,40 @@ const SalesPipeline: React.FC<SalesPipelineProps> = ({ records }) => {
   }, []);
 
   const pipelineData = useMemo(() => {
-  const stages: Record<string, { deals: number; totalTimeToClose: number; totalSales: number }> = {};
+    const stages: Record<string, { deals: number; totalTimeToClose: number; totalSales: number }> = {};
 
-  records.forEach(({ callstatus, startdate, enddate, actualsales }) => {
-    if (!callstatus) return;
+    records.forEach(({ callstatus, startdate, enddate, actualsales }) => {
+      if (!callstatus) return;
 
-    if (!stages[callstatus]) {
-      stages[callstatus] = { deals: 0, totalTimeToClose: 0, totalSales: 0 };
-    }
+      if (!stages[callstatus]) {
+        stages[callstatus] = { deals: 0, totalTimeToClose: 0, totalSales: 0 };
+      }
 
-    stages[callstatus].deals += 1;
-    stages[callstatus].totalSales += actualsales || 0;
+      stages[callstatus].deals += 1;
+      stages[callstatus].totalSales += actualsales || 0;
 
-    // Calculate time to close only if both dates exist and valid
-    if (startdate && enddate) {
-      const start = new Date(startdate);
-      const end = new Date(enddate);
-      const days = (end.getTime() - start.getTime()) / (1000 * 3600 * 24);
-      if (days >= 0) stages[callstatus].totalTimeToClose += days;
-    }
-  });
+      // Calculate time to close only if both dates exist and valid
+      if (startdate && enddate) {
+        const start = new Date(startdate);
+        const end = new Date(enddate);
+        const days = (end.getTime() - start.getTime()) / (1000 * 3600 * 24);
+        if (days >= 0) stages[callstatus].totalTimeToClose += days;
+      }
+    });
 
-  const raw = Object.entries(stages).map(([status, data]) => ({
-    callstatus: status,
-    deals: data.deals,
-    avgTimeToClose: data.deals > 0 ? +(data.totalTimeToClose / data.deals).toFixed(2) : 0,
-    avgSales: data.deals > 0 ? +(data.totalSales / data.deals).toFixed(2) : 0,
-  }));
+    const raw = Object.entries(stages).map(([status, data]) => ({
+      callstatus: status,
+      deals: data.deals,
+      avgTimeToClose: data.deals > 0 ? +(data.totalTimeToClose / data.deals).toFixed(2) : 0,
+      avgSales: data.deals > 0 ? +(data.totalSales / data.deals).toFixed(2) : 0,
+    }));
 
-  return raw.map((item, i) => {
-    const prev = raw[i - 1];
-    const conversionRate = i === 0 || !prev ? 100 : +(item.deals / prev.deals * 100).toFixed(2);
-    return { ...item, conversionRate };
-  });
-}, [records]);
+    return raw.map((item, i) => {
+      const prev = raw[i - 1];
+      const conversionRate = i === 0 || !prev ? 100 : +(item.deals / prev.deals * 100).toFixed(2);
+      return { ...item, conversionRate };
+    });
+  }, [records]);
 
 
   const maxTime = Math.max(...pipelineData.map(d => d.avgTimeToClose), 1);
@@ -100,11 +100,11 @@ const SalesPipeline: React.FC<SalesPipelineProps> = ({ records }) => {
   );
 
   return (
-    <section>
+    <section className="border p-4 rounded-md shadow-md">
       <h2 className="text-sm font-semibold mb-4">Sales Pipeline Velocity</h2>
       <div
         ref={containerRef}
-        className="relative bg-white p-4"
+        className="relative bg-white"
         style={{ width: "100%" }}
       >
         <svg
@@ -189,19 +189,43 @@ const SalesPipeline: React.FC<SalesPipelineProps> = ({ records }) => {
                 key={index}
                 onMouseEnter={(e) => {
                   const bounds = containerRef.current?.getBoundingClientRect();
+                  if (!bounds) return;
+
+                  let x = e.clientX - bounds.left + 10;
+                  let y = e.clientY - bounds.top - 20;
+
+                  // Clamp tooltip X/Y so it stays within container
+                  const tooltipWidth = 160;
+                  if (x + tooltipWidth > bounds.width) {
+                    x = bounds.width - tooltipWidth - 10;
+                  }
+                  if (x < 0) x = 0;
+                  if (y < 0) y = 0;
+
                   setTooltip({
-                    x: e.clientX - (bounds?.left || 0) + 10,
-                    y: e.clientY - (bounds?.top || 0) - 20,
+                    x,
+                    y,
                     data: item,
                     visible: true,
                   });
                 }}
                 onMouseMove={(e) => {
                   const bounds = containerRef.current?.getBoundingClientRect();
+                  if (!bounds) return;
+
+                  let x = e.clientX - bounds.left + 10;
+                  let y = e.clientY - bounds.top - 20;
+
+                  if (x + 160 > bounds.width) {
+                    x = bounds.width - 160 - 10;
+                  }
+                  if (x < 0) x = 0;
+                  if (y < 0) y = 0;
+
                   setTooltip(prev => ({
                     ...prev,
-                    x: e.clientX - (bounds?.left || 0) + 10,
-                    y: e.clientY - (bounds?.top || 0) - 20,
+                    x,
+                    y,
                   }));
                 }}
                 onMouseLeave={() => setTooltip(prev => ({ ...prev, visible: false }))}
@@ -237,6 +261,7 @@ const SalesPipeline: React.FC<SalesPipelineProps> = ({ records }) => {
               </g>
             );
           })}
+
         </svg>
 
         {/* Tooltip */}

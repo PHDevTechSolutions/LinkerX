@@ -75,7 +75,7 @@ const CallStatusBreakDown: React.FC<{ records: { callstatus: string }[] }> = ({ 
   };
 
   return (
-    <section>
+    <section className="border p-4 rounded-md shadow-md">
       <h2 className="text-sm font-semibold mb-4">Call Status Breakdown</h2>
       <div
         ref={containerRef}

@@ -88,7 +88,7 @@ const Sales: React.FC<SalesProps> = ({ groupedPosts }) => {
                                 Company: <span className="font-normal">{companyname}</span>
                             </p>
                             <span
-                                className={`px-3 py-1 text-xs rounded-full font-semibold ${isOnTrack ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                className={`px-3 py-1 text-[10px] rounded-full font-semibold ${isOnTrack ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                                     }`}
                             >
                                 {isOnTrack ? "On Track" : "Below Target"}

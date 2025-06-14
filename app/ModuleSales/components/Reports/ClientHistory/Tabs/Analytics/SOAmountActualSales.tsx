@@ -42,7 +42,7 @@ const SOAmountActualSales: React.FC<SOAmountActualSalesProps> = ({ records }) =>
   }, [records]);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(800);
+  const [width, setWidth] = useState(100);
   useEffect(() => {
     const updateWidth = () => {
       if (containerRef.current) setWidth(containerRef.current.offsetWidth);
@@ -71,7 +71,7 @@ const SOAmountActualSales: React.FC<SOAmountActualSalesProps> = ({ records }) =>
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
-    <section>
+    <section className="border p-4 rounded-md shadow-md">
       <h2 className="text-sm font-semibold mb-4">SO Amount vs Actual Sales</h2>
       <div ref={containerRef} style={{ width: "100%", overflowX: "auto" }}>
         <svg width={Math.max(width, totalBarsWidth + margin.left + margin.right)} height={height} style={{ background: "#fff", borderRadius: 4 }}>

@@ -145,7 +145,7 @@ const TimelineProgress: React.FC<TimelineProgressProps> = ({ calls }) => {
 
     return (
         <div
-            className="border rounded-md shadow-sm bg-white p-4 overflow-x-auto relative"
+            className="border rounded-md shadow-md bg-white p-4 overflow-x-auto relative"
             ref={containerRef}
         >
             <style>{`

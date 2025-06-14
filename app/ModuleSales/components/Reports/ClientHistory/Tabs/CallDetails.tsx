@@ -148,11 +148,11 @@ const CallDetails: React.FC<CallDetailsProps> = ({ groupedPosts }) => {
 
             <div className="flex flex-col md:flex-row gap-4">
                 {/* LEFT: Call History + Timeline */}
-                <div className="md:w-1/2 space-y-4 border rounded-md p-4">
+                <div className="md:w-1/2 space-y-4 border rounded-md shadow-md p-4">
                     <h2 className="font-semibold text-sm text-gray-700">Timeline Progress</h2>
                     <TimelineProgress calls={filteredCalls} />
                     <h2 className="font-semibold text-sm text-gray-700">Call History</h2>
-                    <div className="overflow-x-auto shadow-sm bg-white">
+                    <div className="overflow-x-auto bg-white">
                         <table className="w-full text-xs">
                             <thead className="bg-gray-100">
                                 <tr className="whitespace-nowrap text-left">
@@ -192,11 +192,11 @@ const CallDetails: React.FC<CallDetailsProps> = ({ groupedPosts }) => {
 
                 {/* RIGHT: Pie Charts */}
                 <div className="md:w-1/2 flex flex-col gap-6">
-                    <div className="border rounded-md shadow-sm bg-white p-4">
+                    <div className="border rounded-md shadow-md bg-white p-4">
                         <h3 className="font-semibold text-sm text-gray-700 mb-2">Call Status Distribution</h3>
                         <CustomPieChart data={callStatusData} />
                     </div>
-                    <div className="border rounded-md shadow-sm bg-white p-4">
+                    <div className="border rounded-md shadow-md bg-white p-4">
                         <h3 className="font-semibold text-sm text-gray-700 mb-2">Type of Call Distribution</h3>
                         <CustomPieChart data={typeCallData} />
                     </div>

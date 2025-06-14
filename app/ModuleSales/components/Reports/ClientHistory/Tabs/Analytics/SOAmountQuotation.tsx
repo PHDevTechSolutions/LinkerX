@@ -73,7 +73,7 @@ const SOAmountQuotation: React.FC<SOAmountQuotationProps> = ({ records }) => {
   }, [records]);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(800);
+  const [width, setWidth] = useState(500);
   useEffect(() => {
     const updateWidth = () => {
       if (containerRef.current) setWidth(containerRef.current.offsetWidth);
@@ -106,7 +106,7 @@ const SOAmountQuotation: React.FC<SOAmountQuotationProps> = ({ records }) => {
     data.map((d, i) => ({ x: margin.left + i * xStep, y: scale(d[key] as number) }));
 
   return (
-    <section>
+    <section className="border p-4 rounded-md shadow-md">
       <h2 className="text-sm font-semibold mb-4">Conversion Rate (SO Amount vs Quotation)</h2>
       <div ref={containerRef} style={{ width: "100%" }}>
         <svg width={width} height={height} style={{ borderRadius: 4, background: "#fff" }}>
@@ -198,22 +198,44 @@ const SOAmountQuotation: React.FC<SOAmountQuotationProps> = ({ records }) => {
           })}
 
           {/* Tooltip */}
-          {hoveredIndex !== null && (
-            <foreignObject
-              x={margin.left + hoveredIndex * xStep - 70}
-              y={margin.top}
-              width={150}
-              height={150}
-              pointerEvents="none"
-            >
-              <div className="absolute bg-white border border-gray-200 rounded-md shadow-md p-2 text-xs z-50 pointer-events-none">
-                <strong>{formatMonth(data[hoveredIndex].month)}</strong>
-                <p className="text-indigo-600">Quotation Total: {data[hoveredIndex].quotationTotal.toLocaleString()}</p>
-                <p className="text-orange-600">SO Amount Total: {data[hoveredIndex].soAmountTotal.toLocaleString()}</p>
-                <p className="text-green-600">Conversion Rate: {(data[hoveredIndex].conversionRate * 100).toFixed(2)}%</p>
-              </div>
-            </foreignObject>
-          )}
+          {hoveredIndex !== null && (() => {
+            const tooltipWidth = 300;
+            const tooltipHeight = 150;
+            // Compute dot x pos based on hovered index
+            const dotX = margin.left + hoveredIndex * xStep;
+
+            // Clamp tooltip x so hindi lumalabas sa left or right edge ng chart
+            let tooltipX = dotX - tooltipWidth / 2;
+            if (tooltipX < margin.left) tooltipX = margin.left;
+            if (tooltipX + tooltipWidth > width - margin.right) tooltipX = width - margin.right - tooltipWidth;
+
+            // Y pos ng tooltip sa itaas ng chart area, pwede i-adjust depende sa gusto mo
+            const tooltipY = margin.top;
+
+            return (
+              <foreignObject
+                x={tooltipX}
+                y={tooltipY}
+                width={tooltipWidth}
+                height={tooltipHeight}
+                pointerEvents="none"
+              >
+                <div className="absolute bg-white border border-gray-200 rounded-md shadow-md p-2 text-xs z-50 pointer-events-none">
+                  <strong>{formatMonth(data[hoveredIndex].month)}</strong>
+                  <p className="text-indigo-600">
+                    Quotation Total: {data[hoveredIndex].quotationTotal.toLocaleString()}
+                  </p>
+                  <p className="text-orange-600">
+                    SO Amount Total: {data[hoveredIndex].soAmountTotal.toLocaleString()}
+                  </p>
+                  <p className="text-green-600">
+                    Conversion Rate: {(data[hoveredIndex].conversionRate * 100).toFixed(2)}%
+                  </p>
+                </div>
+              </foreignObject>
+            );
+          })()}
+
 
           {/* Legend centered */}
           <g transform={`translate(${width / 2}, ${height - margin.bottom + 40})`}>
@@ -222,7 +244,7 @@ const SOAmountQuotation: React.FC<SOAmountQuotationProps> = ({ records }) => {
                 key={key}
                 transform={`translate(${(idx - (arr.length - 1) / 2) * 150}, 0)`}
               >
-                <rect width={15} height={15} fill={color} rx={3} ry={3}/>
+                <rect width={15} height={15} fill={color} rx={3} ry={3} />
                 <text
                   x={20}
                   y={12}

@@ -70,7 +70,7 @@ const Seasonality: React.FC<SeasonalityProps> = ({ records }) => {
   const scaleY = (val: number) => ((height - margin.top - margin.bottom) * val) / maxVal;
 
   return (
-    <section>
+    <section className="border p-4 rounded-md shadow-md">
       <h2 className="text-sm font-semibold mb-4">Seasonality / Monthly Sales Patterns</h2>
       <div
         ref={containerRef}
@@ -78,7 +78,6 @@ const Seasonality: React.FC<SeasonalityProps> = ({ records }) => {
           width: "100%",
           backgroundColor: "#fff",
           borderRadius: 8,
-          padding: 12,
           userSelect: "none",
           fontFamily: "sans-serif",
           position: "relative",

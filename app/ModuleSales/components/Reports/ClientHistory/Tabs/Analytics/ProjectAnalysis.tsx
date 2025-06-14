@@ -54,7 +54,7 @@ const ProjectAnalysis: React.FC<ProjectAnalysisProps> = ({ records }) => {
   const totalHeight = aggregatedData.length * (BAR_HEIGHT + BAR_GAP) + 40;
 
   return (
-    <section className="w-full">
+    <section className="border p-4 rounded-md shadow-md">
       <h2 className="text-sm font-semibold mb-4 text-gray-800">Top Projects by Sales</h2>
       <div ref={containerRef} className="relative w-full bg-white">
         <svg width="100%" height={totalHeight}>

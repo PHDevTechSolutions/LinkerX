@@ -94,7 +94,7 @@ const LeadTimeResponseAnalysis: React.FC<LeadTimeResponseAnalysisProps> = ({
   };
 
   return (
-    <section>
+    <section className="border p-4 rounded-md shadow-md">
       <h2 className="text-sm font-semibold mb-4">Lead Response Time Analysis</h2>
       <div
         ref={containerRef}

@@ -131,7 +131,7 @@ const SalesGrowthRate: React.FC<SalesGrowthRateProps> = ({ records }) => {
   const legendY = height - margin.bottom + 40;
 
   return (
-    <section>
+    <section className="border p-4 rounded-md shadow-md">
       <h2 className="text-sm font-semibold mb-4">
         Sales Growth Rate (Month-over-Month %)
       </h2>

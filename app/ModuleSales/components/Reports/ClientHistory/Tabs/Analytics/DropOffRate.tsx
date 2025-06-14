@@ -10,8 +10,7 @@ interface DropOffRateProps {
 }
 
 const CHART_HEIGHT = 300;
-const Y_AXIS_WIDTH = 40;
-const MARGIN = { top: 20, right: 30, bottom: 40, left: 50 };
+const MARGIN = { top: 20, right: 60, bottom: 40, left: 40 };
 
 const DropOffRate: React.FC<DropOffRateProps> = ({ records }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -126,7 +125,7 @@ const DropOffRate: React.FC<DropOffRateProps> = ({ records }) => {
   };
 
   return (
-    <section>
+    <section className="border p-4 rounded-md shadow-md">
       <h2 className="text-sm font-semibold mb-4">Cancellation / Drop-off Rate (Monthly %)</h2>
       <div
         ref={containerRef}
