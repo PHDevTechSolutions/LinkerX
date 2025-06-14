@@ -66,7 +66,7 @@ interface MainModalProps {
 }
 
 const tabs = [
-  "Overview",
+  "Details",
   "Sales Data",
   "Quotations & SO",
   "Call Details",
@@ -130,7 +130,7 @@ const MainModal: React.FC<MainModalProps> = ({ selectedPosts, onClose }) => {
         >
           ✕
         </button>
-        <h2 className="text-2xl font-bold mb-6">
+        <h2 className="text-md font-bold mb-6">
           {selectedPosts[0].companyname} - History ({selectedPosts.length} records)
         </h2>
 
@@ -162,15 +162,7 @@ const MainModal: React.FC<MainModalProps> = ({ selectedPosts, onClose }) => {
           aria-labelledby={`tab-${activeTab}`}
           className="overflow-auto max-h-[60vh]"
         >
-          {activeTab === 0 && (
-            <>
-              {Object.entries(groupedPosts).map(([companyname, posts]) => (
-                <div key={companyname} className="mb-4 border-b pb-4">
-                  <Overview post={posts[0]} />
-                </div>
-              ))}
-            </>
-          )}
+          {activeTab === 0 && ( <> {Object.entries(groupedPosts).map(([companyname, posts]) => ( <div key={companyname} className="mb-4 border-b pb-4"> <Overview post={posts[0]} /> </div> ))} </> )}
 
           {activeTab === 1 && <Sales groupedPosts={groupedPosts} />}
 

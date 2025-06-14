@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import TimelineProgress from "./Analytics/TimelineProgress";
 
 interface Call {
     callstatus: string;
@@ -8,8 +9,8 @@ interface Call {
     inquiries: string;
     csragent: string;
     remarks: string;
-    startdate: string; // added
-    enddate: string;   // added
+    startdate: string;
+    enddate: string;
 }
 
 interface GroupedPosts {
@@ -90,27 +91,21 @@ const CustomPieChart = ({
     );
 };
 
+// ✅ Main Component
 const CallDetails: React.FC<CallDetailsProps> = ({ groupedPosts }) => {
     const allCalls: Call[] = Object.values(groupedPosts).flat();
-
-    // Date range state
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
 
-    // Filter calls based on date range if set
     const filteredCalls = useMemo(() => {
         if (!startDate && !endDate) return allCalls;
-
         const start = startDate ? new Date(startDate) : null;
         const end = endDate ? new Date(endDate) : null;
-
         return allCalls.filter((call) => {
             const callStart = new Date(call.startdate);
             const callEnd = new Date(call.enddate);
-
-            // Check if call overlaps with date range
-            if (start && callEnd < start) return false; // call ends before range start
-            if (end && callStart > end) return false; // call starts after range end
+            if (start && callEnd < start) return false;
+            if (end && callStart > end) return false;
             return true;
         });
     }, [allCalls, startDate, endDate]);
@@ -120,23 +115,24 @@ const CallDetails: React.FC<CallDetailsProps> = ({ groupedPosts }) => {
 
     return (
         <>
+            {/* Date Picker */}
             <div className="flex gap-4 mb-2 items-center">
                 <label className="text-xs text-gray-600">
-                    Start Date:{" "}
+                    Start Date:
                     <input
                         type="date"
                         value={startDate}
                         onChange={(e) => setStartDate(e.target.value)}
-                        className="border px-2 py-1 rounded"
+                        className="border px-2 py-1 rounded ml-1"
                     />
                 </label>
                 <label className="text-xs text-gray-600">
-                    End Date:{" "}
+                    End Date:
                     <input
                         type="date"
                         value={endDate}
                         onChange={(e) => setEndDate(e.target.value)}
-                        className="border px-2 py-1 rounded"
+                        className="border px-2 py-1 rounded ml-1"
                     />
                 </label>
                 <button
@@ -149,36 +145,40 @@ const CallDetails: React.FC<CallDetailsProps> = ({ groupedPosts }) => {
                     Clear
                 </button>
             </div>
+
             <div className="flex flex-col md:flex-row gap-4">
-                {/* LEFT SIDE - Call History Table + Date Range Picker */}
+                {/* LEFT: Call History + Timeline */}
                 <div className="md:w-1/2 space-y-4 border rounded-md p-4">
+                    <h2 className="font-semibold text-sm text-gray-700">Timeline Progress</h2>
+                    <TimelineProgress calls={filteredCalls} />
                     <h2 className="font-semibold text-sm text-gray-700">Call History</h2>
                     <div className="overflow-x-auto shadow-sm bg-white">
                         <table className="w-full text-xs">
                             <thead className="bg-gray-100">
-                                <tr className="whitespace-nowrap text-xs text-left">
-                                    <th className="px-6 py-4">Call Status</th>
-                                    <th className="px-6 py-4">Type</th>
-                                    <th className="px-6 py-4">Callback</th>
-                                    <th className="px-6 py-4">Wrap-Up</th>
-                                    <th className="px-6 py-4">Inquiries</th>
-                                    <th className="px-6 py-4">Agent</th>
-                                    <th className="px-6 py-4">Remarks</th>
+                                <tr className="whitespace-nowrap text-left">
+                                    <th className="px-4 py-2">Status</th>
+                                    <th className="px-4 py-2">Type</th>
+                                    <th className="px-4 py-2">Callback</th>
+                                    <th className="px-4 py-2">Wrap-Up</th>
+                                    <th className="px-4 py-2">Inquiries</th>
+                                    <th className="px-4 py-2">Agent</th>
+                                    <th className="px-4 py-2">Remarks</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredCalls.map((call, i) => (
-                                    <tr key={i} className="hover:bg-gray-50 whitespace-nowrap">
-                                        <td className="px-6 py-4">{call.callstatus}</td>
-                                        <td className="px-6 py-4">{call.typecall}</td>
-                                        <td className="px-6 py-4">{call.callback}</td>
-                                        <td className="px-6 py-4">{call.wrapup}</td>
-                                        <td className="px-6 py-4">{call.inquiries}</td>
-                                        <td className="px-6 py-4">{call.csragent}</td>
-                                        <td className="px-6 py-4 capitalize">{call.remarks}</td>
-                                    </tr>
-                                ))}
-                                {filteredCalls.length === 0 && (
+                                {filteredCalls.length > 0 ? (
+                                    filteredCalls.map((call, i) => (
+                                        <tr key={i} className="hover:bg-gray-50 whitespace-nowrap">
+                                            <td className="px-4 py-2">{call.callstatus}</td>
+                                            <td className="px-4 py-2">{call.typecall}</td>
+                                            <td className="px-4 py-2">{call.callback}</td>
+                                            <td className="px-4 py-2">{call.wrapup}</td>
+                                            <td className="px-4 py-2">{call.inquiries}</td>
+                                            <td className="px-4 py-2">{call.csragent}</td>
+                                            <td className="px-4 py-2 capitalize">{call.remarks}</td>
+                                        </tr>
+                                    ))
+                                ) : (
                                     <tr>
                                         <td colSpan={7} className="text-center py-4 text-gray-500">
                                             No calls found in the selected date range.
@@ -190,19 +190,19 @@ const CallDetails: React.FC<CallDetailsProps> = ({ groupedPosts }) => {
                     </div>
                 </div>
 
-                {/* RIGHT SIDE - Custom Pie Charts */}
+                {/* RIGHT: Pie Charts */}
                 <div className="md:w-1/2 flex flex-col gap-6">
                     <div className="border rounded-md shadow-sm bg-white p-4">
                         <h3 className="font-semibold text-sm text-gray-700 mb-2">Call Status Distribution</h3>
                         <CustomPieChart data={callStatusData} />
                     </div>
-
                     <div className="border rounded-md shadow-sm bg-white p-4">
                         <h3 className="font-semibold text-sm text-gray-700 mb-2">Type of Call Distribution</h3>
                         <CustomPieChart data={typeCallData} />
                     </div>
                 </div>
-            </div></>
+            </div>
+        </>
     );
 };
 
