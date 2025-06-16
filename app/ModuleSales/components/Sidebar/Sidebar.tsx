@@ -212,7 +212,6 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       title: 'Reports',
       icon: SlChart,
       subItems: [
-        { title: 'Generate Activities', href: `/ModuleSales/Sales/Task/HistoricalRecords${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Account Management', href: `/ModuleSales/Sales/Reports/AccountManagement${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Quotation Summary', href: `/ModuleSales/Sales/Reports/QuotationSummary${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'SO Summary', href: `/ModuleSales/Sales/Reports/SOSummary${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },

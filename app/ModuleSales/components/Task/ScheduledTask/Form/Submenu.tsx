@@ -143,7 +143,7 @@ const Submenu: React.FC<SubmenuProps> = ({
           <SoFields {...{ sonumber, setsonumber, soamount, setsoamount, typecall, settypecall }} />
         )}
 
-        {typeactivity === "Delivery Concern" && (
+        {activitystatus === "Paid" && (
           <DeliveryFields {...{ actualsales, setactualsales, emailaddress, setemailaddress }} />
         )}
       </div>
