@@ -6,7 +6,8 @@ import SessionChecker from "../../components/Session/SessionChecker";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import Developers from "../../components/Information/ViewInformation"; // Import the form component
+import Developers from "../../components/Information/ViewInformation";
+import FuturisticSpinner from "../../components/Spinner/FuturisticSpinner";
 
 const ProfilePage: React.FC = () => {
     const [userDetails, setUserDetails] = useState({
@@ -16,8 +17,10 @@ const ProfilePage: React.FC = () => {
         Email: "",
         Role: "", // Added Role to state
     });
-    const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const [postsLoading, setPostsLoading] = useState<boolean>(true);
+    const [showSpinner, setShowSpinner] = useState(true);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -40,43 +43,26 @@ const ProfilePage: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
-                    setLoading(false);
+                    setShowSpinner(false);
                 }
             } else {
                 setError("User ID is missing.");
-                setLoading(false);
+                setShowSpinner(false);
             }
         };
 
         fetchUserData();
     }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-
-        try {
-            const response = await fetch("/api/Setting/UpdateProfile", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(userDetails), // Send the whole userDetails object with id
-            });
-
-            if (response.ok) {
-                toast.success("Profile updated successfully");
-            } else {
-                throw new Error("Failed to update profile");
-            }
-        } catch (err: unknown) {
-            toast.error("Failed to update profile");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) return <div>Loading...</div>;
+    if (postsLoading || showSpinner) {
+        return (
+            <SessionChecker>
+                <ParentLayout>
+                    <FuturisticSpinner setShowSpinner={setShowSpinner} />
+                </ParentLayout>
+            </SessionChecker>
+        );
+    }
 
     return (
         <SessionChecker>

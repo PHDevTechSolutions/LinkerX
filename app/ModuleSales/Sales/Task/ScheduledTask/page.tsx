@@ -7,6 +7,7 @@ import UserFetcher from "../../../components/User/UserFetcher";
 // Components
 import Filters from "../../../components/Task/ScheduledTask/Filters";
 import Main from "../../../components/Task/ScheduledTask/Main";
+import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -26,6 +27,9 @@ const ListofUser: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [postsLoading, setPostsLoading] = useState<boolean>(true);
+  const [showSpinner, setShowSpinner] = useState(true);
+
   useEffect(() => {
     const fetchUserData = async () => {
       const params = new URLSearchParams(window.location.search);
@@ -33,7 +37,7 @@ const ListofUser: React.FC = () => {
 
       if (!userId) {
         setError("User ID is missing.");
-        setLoading(false);
+        setShowSpinner(false);
         return;
       }
 
@@ -58,7 +62,7 @@ const ListofUser: React.FC = () => {
         console.error("Error fetching user data:", err);
         setError("Failed to load user data.");
       } finally {
-        setLoading(false);
+        setShowSpinner(false);
       }
     };
 
@@ -66,6 +70,7 @@ const ListofUser: React.FC = () => {
   }, []);
 
   const fetchAccount = async () => {
+    setPostsLoading(true);
     try {
       const res = await fetch("/api/ModuleSales/Reports/AccountManagement/FetchActivity");
       const data = await res.json();
@@ -76,6 +81,8 @@ const ListofUser: React.FC = () => {
     } catch (error) {
       toast.error("Error fetching users.");
       console.error("Fetch error:", error);
+    } finally {
+      setPostsLoading(false);
     }
   };
 
@@ -83,6 +90,16 @@ const ListofUser: React.FC = () => {
     fetchAccount();
 
   }, []);
+
+  if (postsLoading || showSpinner) {
+    return (
+      <SessionChecker>
+        <ParentLayout>
+          <FuturisticSpinner setShowSpinner={setShowSpinner} />
+        </ParentLayout>
+      </SessionChecker>
+    );
+  }
 
   const filteredAccounts = posts.filter((post) => {
     const companyMatch = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -99,18 +116,6 @@ const ListofUser: React.FC = () => {
   }).sort((a, b) =>
     new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
   );
-
-  if (loading) {
-    return (
-      <div className="p-4 text-center text-sm text-gray-500">Loading user data...</div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-4 text-center text-red-500 text-sm">{error}</div>
-    );
-  }
 
   return (
     <SessionChecker>

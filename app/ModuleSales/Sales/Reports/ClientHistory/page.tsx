@@ -7,6 +7,7 @@ import UserFetcher from "../../../components/User/UserFetcher";
 // Components
 import Filters from "../../../components/Reports/ClientHistory/Filters";
 import Table from "../../../components/Reports/ClientHistory/Table";
+import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -23,6 +24,9 @@ const ListofUser: React.FC = () => {
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const [postsLoading, setPostsLoading] = useState<boolean>(true);
+    const [showSpinner, setShowSpinner] = useState(true);
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -50,11 +54,11 @@ const ListofUser: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
-                    setLoading(false);
+                    setShowSpinner(false);
                 }
             } else {
                 setError("User ID is missing.");
-                setLoading(false);
+                setShowSpinner(false);
             }
         };
 
@@ -63,6 +67,7 @@ const ListofUser: React.FC = () => {
 
     // Fetch all users from the API
     const fetchAccount = async () => {
+        setPostsLoading(true);
         try {
             const response = await fetch("/api/ModuleSales/Reports/AccountManagement/FetchSales");
             const data = await response.json();
@@ -71,12 +76,24 @@ const ListofUser: React.FC = () => {
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
+        } finally {
+            setPostsLoading(false);
         }
     };
 
     useEffect(() => {
         fetchAccount();
     }, []);
+
+    if (postsLoading || showSpinner) {
+        return (
+            <SessionChecker>
+                <ParentLayout>
+                    <FuturisticSpinner setShowSpinner={setShowSpinner} />
+                </ParentLayout>
+            </SessionChecker>
+        );
+    }
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)

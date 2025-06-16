@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
@@ -10,11 +11,12 @@ import ImportForm from "../../../components/Companies/CompanyAccounts/ImportForm
 import SearchFilters from "../../../components/Companies/CompanyAccounts/Filters";
 import Container from "../../../components/Companies/CompanyAccounts/Container";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
+import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
-
+import "react-toastify/dist/ReactToastify.css";
+import Image from "next/image";
 // Icons
 import { CiImport } from "react-icons/ci";
 
@@ -28,13 +30,25 @@ const ActiveAccounts: React.FC = () => {
     const [postsPerPage, setPostsPerPage] = useState(12);
     const [selectedClientType, setSelectedClientType] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("");
-    const [startDate, setStartDate] = useState(""); // Default to null
-    const [endDate, setEndDate] = useState(""); // Default to null
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
     const [userDetails, setUserDetails] = useState({
-        UserId: "", ReferenceID: "", Manager: "", TSM: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
+        UserId: "",
+        ReferenceID: "",
+        Manager: "",
+        TSM: "",
+        Firstname: "",
+        Lastname: "",
+        Email: "",
+        Role: "",
+        Department: "",
+        Company: "",
     });
-    const [loading, setLoading] = useState<boolean>(true);
+
+    // Loading states
+
+    const [postsLoading, setPostsLoading] = useState<boolean>(true); // for posts data
     const [error, setError] = useState<string | null>(null);
 
     const [referenceid, setReferenceID] = useState("");
@@ -43,6 +57,7 @@ const ActiveAccounts: React.FC = () => {
     const [status, setstatus] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const [isMaximized, setIsMaximized] = useState(false);
+    const [showSpinner, setShowSpinner] = useState(true);
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -74,11 +89,11 @@ const ActiveAccounts: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
-                    setLoading(false);
+                    setShowSpinner(false);
                 }
             } else {
                 setError("User ID is missing.");
-                setLoading(false);
+                setShowSpinner(false);
             }
         };
 
@@ -87,20 +102,33 @@ const ActiveAccounts: React.FC = () => {
 
     // Fetch all users from the API
     const fetchAccount = async () => {
+        setPostsLoading(true);
         try {
             const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
             const data = await response.json();
-            console.log("Fetched data:", data); // Debugging line
-            setPosts(data.data); // Make sure you're setting `data.data` if API response has `{ success: true, data: [...] }`
+            setPosts(data.data); // Make sure to adjust if your API returns different structure
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
+        } finally {
+            setPostsLoading(false);
         }
     };
 
     useEffect(() => {
         fetchAccount();
     }, []);
+
+    // Show loading spinner while fetching user details or posts
+    if (postsLoading || showSpinner) {
+        return (
+            <SessionChecker>
+                <ParentLayout>
+                    <FuturisticSpinner setShowSpinner={setShowSpinner} />
+                </ParentLayout>
+            </SessionChecker>
+        );
+    }
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
@@ -200,7 +228,7 @@ const ActiveAccounts: React.FC = () => {
                                     )}
 
                                     <div
-                                        className={`fixed top-0 right-0 h-full w-full shadow-lg z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${(showForm || showImportForm) ? "translate-x-0" : "translate-x-full"
+                                        className={`fixed top-0 right-0 h-full w-full shadow-lg z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${showForm || showImportForm ? "translate-x-0" : "translate-x-full"
                                             }`}
                                     >
                                         {showForm ? (
@@ -235,7 +263,10 @@ const ActiveAccounts: React.FC = () => {
 
                                     <div className="flex justify-between items-center mb-4">
                                         <div className="flex gap-2">
-                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-600 hover:text-white transition" onClick={() => setShowImportForm(true)}>
+                                            <button
+                                                className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-green-600 hover:text-white transition"
+                                                onClick={() => setShowImportForm(true)}
+                                            >
                                                 <CiImport size={15} /> Import Account
                                             </button>
                                         </div>
@@ -260,23 +291,11 @@ const ActiveAccounts: React.FC = () => {
                                             endDate={endDate}
                                             setEndDate={setEndDate}
                                         />
-                                        <Container
-                                            posts={currentPosts}
-                                            handleEdit={handleEdit}
-                                            referenceid={referenceid}
-                                            fetchAccount={fetchAccount}
-                                            Role={userDetails.Role}
-                                        />
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                        />
+                                        <Container posts={currentPosts} handleEdit={handleEdit} referenceid={referenceid} fetchAccount={fetchAccount} Role={userDetails.Role} />
+                                        <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
 
                                         <div className="text-xs mt-2">
-                                            Showing {indexOfFirstPost + 1} to{" "}
-                                            {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                            {filteredAccounts.length} entries
+                                            Showing {indexOfFirstPost + 1} to {Math.min(indexOfLastPost, filteredAccounts.length)} of {filteredAccounts.length} entries
                                         </div>
                                     </div>
                                 </div>

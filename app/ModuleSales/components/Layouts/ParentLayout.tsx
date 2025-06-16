@@ -2,7 +2,6 @@ import React, { useState, useEffect, ReactNode } from "react";
 import Sidebar from "../Sidebar/Sidebar";
 import Navbar from "../Navbar/Navbar";
 import Footer from "../Footer/Footer";
-import { useRouter } from "next/router";
 
 interface ParentLayoutProps {
   children: ReactNode;
@@ -25,7 +24,6 @@ const ParentLayout: React.FC<ParentLayoutProps> = ({ children }) => {
     typeof window !== "undefined" && localStorage.getItem("theme") === "dark"
   );
   const [userId, setUserId] = useState<string | null>(null);
-  const [sidebarLinks, setSidebarLinks] = useState<SidebarLink[]>([]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

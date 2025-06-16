@@ -10,6 +10,7 @@ import ImportForm from "../../../components/Companies/CompanyAccounts/ImportForm
 import SearchFilters from "../../../components/Companies/CompanyAccounts/Filters";
 import Container from "../../../components/Companies/CompanyAccounts/Container";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
+import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -43,6 +44,9 @@ const NewClientAccounts: React.FC = () => {
     const [status, setstatus] = useState("");
     const [isMaximized, setIsMaximized] = useState(false);
 
+    const [postsLoading, setPostsLoading] = useState<boolean>(true);
+    const [showSpinner, setShowSpinner] = useState(true);
+
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
         const fetchUserData = async () => {
@@ -73,11 +77,11 @@ const NewClientAccounts: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
-                    setLoading(false);
+                    setPostsLoading(false);
                 }
             } else {
                 setError("User ID is missing.");
-                setLoading(false);
+                setPostsLoading(false);
             }
         };
 
@@ -86,6 +90,7 @@ const NewClientAccounts: React.FC = () => {
 
     // Fetch all users from the API
     const fetchAccount = async () => {
+        setPostsLoading(true);
         try {
             const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
             const data = await response.json();
@@ -94,12 +99,24 @@ const NewClientAccounts: React.FC = () => {
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
+        } finally {
+            setPostsLoading(false);
         }
     };
 
     useEffect(() => {
         fetchAccount();
     }, []);
+
+    if (postsLoading || showSpinner) {
+        return (
+            <SessionChecker>
+                <ParentLayout>
+                    <FuturisticSpinner setShowSpinner={setShowSpinner} />
+                </ParentLayout>
+            </SessionChecker>
+        );
+    }
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)

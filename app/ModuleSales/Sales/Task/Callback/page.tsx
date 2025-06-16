@@ -5,8 +5,8 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../components/Task/DailyActivity/AddUserForm";
 import UsersTable from "../../../components/Task/Callback/UsersTable";
+import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -31,6 +31,9 @@ const ListofUser: React.FC = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
     const [modalCompanyName, setModalCompanyName] = useState("");
+
+    const [postsLoading, setPostsLoading] = useState<boolean>(true);
+    const [showSpinner, setShowSpinner] = useState(true);
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -59,11 +62,11 @@ const ListofUser: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
-                    setLoading(false);
+                    setShowSpinner(false);
                 }
             } else {
                 setError("User ID is missing.");
-                setLoading(false);
+                setShowSpinner(false);
             }
         };
 
@@ -72,6 +75,7 @@ const ListofUser: React.FC = () => {
 
     // Fetch all callbacks from the API
     const fetchAccount = async () => {
+        setPostsLoading(true);
         try {
             const response = await fetch("/api/ModuleSales/Task/Callback/FetchProgress");
             const data = await response.json();
@@ -80,6 +84,8 @@ const ListofUser: React.FC = () => {
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
+        } finally {
+            setPostsLoading(false);
         }
     };
 
@@ -129,56 +135,65 @@ const ListofUser: React.FC = () => {
         };
     }, [posts]);
 
+    if (postsLoading || showSpinner) {
+        return (
+            <SessionChecker>
+                <ParentLayout>
+                    <FuturisticSpinner setShowSpinner={setShowSpinner} />
+                </ParentLayout>
+            </SessionChecker>
+        );
+    }
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-  ? posts
-      .filter((post) => {
-        const isRelevantCall =
-          post?.typeactivity === "Outbound Call" || post?.typeactivity === "Inbound Call";
+        ? posts
+            .filter((post) => {
+                const isRelevantCall =
+                    post?.typeactivity === "Outbound Call" || post?.typeactivity === "Inbound Call";
 
-        const hasCallback = post?.callback && post.callback.trim() !== "";
+                const hasCallback = post?.callback && post.callback.trim() !== "";
 
-        const hasCompanyName = !!post?.companyname;
+                const hasCompanyName = !!post?.companyname;
 
-        const matchesSearchTerm =
-          (hasCompanyName &&
-            post.companyname.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (hasCallback && post.callback.toLowerCase().includes(searchTerm.toLowerCase()));
+                const matchesSearchTerm =
+                    (hasCompanyName &&
+                        post.companyname.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                    (hasCallback && post.callback.toLowerCase().includes(searchTerm.toLowerCase()));
 
-        const postDate = post.date_created ? new Date(post.date_created) : null;
-        const isWithinDateRange =
-          (!startDate || (postDate && postDate >= new Date(startDate))) &&
-          (!endDate || (postDate && postDate <= new Date(endDate)));
+                const postDate = post.date_created ? new Date(post.date_created) : null;
+                const isWithinDateRange =
+                    (!startDate || (postDate && postDate >= new Date(startDate))) &&
+                    (!endDate || (postDate && postDate <= new Date(endDate)));
 
-        const matchesClientType = selectedClientType
-          ? post?.typeclient === selectedClientType
-          : true;
+                const matchesClientType = selectedClientType
+                    ? post?.typeclient === selectedClientType
+                    : true;
 
-        const userReferenceID = userDetails.ReferenceID;
-        const role = userDetails.Role;
+                const userReferenceID = userDetails.ReferenceID;
+                const role = userDetails.Role;
 
-        const isAdmin = role === "Super Admin" || role === "Special Access";
-        const isTSAorTSM = role === "Territory Sales Associate" || role === "Territory Sales Manager";
+                const isAdmin = role === "Super Admin" || role === "Special Access";
+                const isTSAorTSM = role === "Territory Sales Associate" || role === "Territory Sales Manager";
 
-        const matchesReferenceID =
-          post?.referenceid === userReferenceID || post?.ReferenceID === userReferenceID;
+                const matchesReferenceID =
+                    post?.referenceid === userReferenceID || post?.ReferenceID === userReferenceID;
 
-        return (
-          isRelevantCall &&
-          hasCallback &&
-          hasCompanyName &&
-          matchesSearchTerm &&
-          isWithinDateRange &&
-          matchesClientType &&
-          (isAdmin || (isTSAorTSM && matchesReferenceID))
-        );
-      })
-      .sort(
-        (a, b) =>
-          new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
-      )
-  : [];
+                return (
+                    isRelevantCall &&
+                    hasCallback &&
+                    hasCompanyName &&
+                    matchesSearchTerm &&
+                    isWithinDateRange &&
+                    matchesClientType &&
+                    (isAdmin || (isTSAorTSM && matchesReferenceID))
+                );
+            })
+            .sort(
+                (a, b) =>
+                    new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
+            )
+        : [];
 
     const currentPosts = filteredAccounts.slice();
     const totalPages = Math.ceil(filteredAccounts.length);

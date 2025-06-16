@@ -7,32 +7,26 @@ import UserFetcher from "../../../components/User/UserFetcher";
 // Components
 import Filters from "../../../components/Reports/SOSummary/Filters";
 import Table from "../../../components/Reports/SOSummary/Table";
+import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 const ListofUser: React.FC = () => {
-    const [showForm, setShowForm] = useState(false);
-    const [showImportForm, setShowImportForm] = useState(false);
-    const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage, setPostsPerPage] = useState(10);
-    const [selectedClientType, setSelectedClientType] = useState("");
     const [startDate, setStartDate] = useState(""); // Default to null
     const [endDate, setEndDate] = useState(""); // Default to null
 
     const [userDetails, setUserDetails] = useState({
         UserId: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "", TargetQuota: "", ReferenceID: "",
     });
-    const [TargetQuota, setTargetQuota] = useState("");
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const [showAccessModal, setShowAccessModal] = useState(false);
-
+    const [postsLoading, setPostsLoading] = useState<boolean>(true);
+    const [showSpinner, setShowSpinner] = useState(true);
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -60,11 +54,11 @@ const ListofUser: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
-                    setLoading(false);
+                    setShowSpinner(false);
                 }
             } else {
                 setError("User ID is missing.");
-                setLoading(false);
+                setShowSpinner(false);
             }
         };
 
@@ -73,6 +67,7 @@ const ListofUser: React.FC = () => {
 
     // Fetch all users from the API
     const fetchAccount = async () => {
+        setPostsLoading(true);
         try {
             const response = await fetch("/api/ModuleSales/Reports/AccountManagement/FetchSales");
             const data = await response.json();
@@ -81,12 +76,24 @@ const ListofUser: React.FC = () => {
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
+        } finally {
+            setPostsLoading(false);
         }
     };
 
     useEffect(() => {
         fetchAccount();
     }, []);
+
+    if (postsLoading || showSpinner) {
+        return (
+            <SessionChecker>
+                <ParentLayout>
+                    <FuturisticSpinner setShowSpinner={setShowSpinner} />
+                </ParentLayout>
+            </SessionChecker>
+        );
+    }
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)

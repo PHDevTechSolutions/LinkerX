@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { FaRegCircle } from "react-icons/fa";
-import { CiTimer, CiUser, CiGrid42, CiBullhorn, CiSettings, CiCoins1, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo, CiMail, CiCalendar } from "react-icons/ci";
-import { RxCaretLeft, RxCaretDown } from "react-icons/rx";
+import { CiUser, CiSettings, CiCoins1, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo, } from "react-icons/ci";
 import { SlChart } from "react-icons/sl";
 import { IoHelp } from "react-icons/io5";
 import { BsBuildings } from "react-icons/bs";
@@ -19,7 +18,6 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
   const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", profilePicture: "", ReferenceID: "" });
-  const router = useRouter();
   const [userNotifications, setUserNotifications] = useState<any>(null);
   const [inactiveAccount, setInactiveAccount] = useState<any>(null);
   const [deleteAccount, setDeleteAccount] = useState<any>(null);

@@ -10,6 +10,7 @@ import ImportForm from "../../../components/Companies/CompanyAccounts/ImportForm
 import SearchFilters from "../../../components/Companies/CompanyAccounts/Filters";
 import Container from "../../../components/Companies/CompanyAccounts/Container";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
+import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -34,7 +35,6 @@ const NewClientAccounts: React.FC = () => {
     const [userDetails, setUserDetails] = useState({
         UserId: "", ReferenceID: "", Manager: "", TSM: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
     });
-    const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     const [referenceid, setReferenceID] = useState("");
@@ -43,6 +43,9 @@ const NewClientAccounts: React.FC = () => {
     const [status, setstatus] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const [isMaximized, setIsMaximized] = useState(false);
+
+    const [postsLoading, setPostsLoading] = useState<boolean>(true);
+    const [showSpinner, setShowSpinner] = useState(true);
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -74,33 +77,45 @@ const NewClientAccounts: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
-                    setLoading(false);
+                    setShowSpinner(false);
                 }
             } else {
                 setError("User ID is missing.");
-                setLoading(false);
+                setShowSpinner(false);
             }
         };
 
         fetchUserData();
     }, []);
 
-    // Fetch all users from the API
     const fetchAccount = async () => {
-        try {
-            const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
-            const data = await response.json();
-            console.log("Fetched data:", data); // Debugging line
-            setPosts(data.data); // Make sure you're setting `data.data` if API response has `{ success: true, data: [...] }`
-        } catch (error) {
-            toast.error("Error fetching users.");
-            console.error("Error Fetching", error);
-        }
-    };
+            setPostsLoading(true);
+            try {
+                const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
+                const data = await response.json();
+                setPosts(data.data); // Make sure to adjust if your API returns different structure
+            } catch (error) {
+                toast.error("Error fetching users.");
+                console.error("Error Fetching", error);
+            } finally {
+                setPostsLoading(false);
+            }
+        };
+    
+        useEffect(() => {
+            fetchAccount();
+        }, []);
 
-    useEffect(() => {
-        fetchAccount();
-    }, []);
+    // Show loading spinner while fetching user details or posts
+    if (postsLoading || showSpinner) {
+        return (
+            <SessionChecker>
+                <ParentLayout>
+                    <FuturisticSpinner setShowSpinner={setShowSpinner} />
+                </ParentLayout>
+            </SessionChecker>
+        );
+    }
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
