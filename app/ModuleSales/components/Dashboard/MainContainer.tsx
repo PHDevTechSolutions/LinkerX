@@ -99,6 +99,7 @@ const MainContainer: React.FC<MainContainerProps> = ({ filteredAccounts }) => {
         <CSRMetrics filteredAccounts={filteredByDate} />
         <OutboundCalls filteredCalls={filteredByDate} dateRange={dateRange} />
         <Quotation records={filteredByDate} />
+        {/* Sales Order */}
       </div>
     </div>
   );

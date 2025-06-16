@@ -77,7 +77,7 @@ const Quotation: React.FC<QuotationProps> = ({ records }) => {
         if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end > start) {
           handlingMs = end.getTime() - start.getTime();
         }
-      } catch {}
+      } catch { }
 
       const current = map.get(company) || { totalCount: 0, totalQuoteAmount: 0, totalHandlingMs: 0 };
       map.set(company, {
@@ -132,32 +132,34 @@ const Quotation: React.FC<QuotationProps> = ({ records }) => {
         {aggregatedData.length === 0 ? (
           <p className="text-gray-500 text-xs">No quotations with status "Quote-Done".</p>
         ) : (
-          <table className="w-full text-xs table-auto">
-            <thead className="bg-gray-100">
-              <tr className="text-left">
-                <th className="px-4 py-2">Total Count</th>
-                <th className="px-4 py-2">Total Amount</th>
-                <th className="px-4 py-2">Handling Time</th>
-                <th className="px-4 py-2">Quote to SO Conversion</th>
-                <th className="px-4 py-2">Quote to SO Conversion (Peso Value)</th>
-                <th className="px-4 py-2">Quotation to SI Conversion (Peso Value)</th> {/* New column */}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {aggregatedData.map(
-                ({ company, totalCount, totalQuoteAmount, handlingTimeFormatted }, idx) => (
-                  <tr key={idx} className="hover:bg-gray-50">
-                    <td className="px-4 py-2">{totalCount}</td>
-                    <td className="px-4 py-2">{totalQuoteAmount.toFixed(2)}</td>
-                    <td className="px-4 py-2">{handlingTimeFormatted}</td>
-                    <td className="px-4 py-2">{quoteToSO.toFixed(2)}%</td>
-                    <td className="px-4 py-2">₱{valuePeso.toFixed(2)}</td>
-                    <td className="px-4 py-2">₱{quoteToSIValuePeso.toFixed(2)}</td> {/* New value */}
-                  </tr>
-                )
-              )}
-            </tbody>
-          </table>
+          <div className="overflow-auto border rounded">
+            <table className="w-full text-xs table-auto">
+              <thead className="bg-gray-100">
+                <tr className="text-left">
+                  <th className="px-4 py-2">Total Count</th>
+                  <th className="px-4 py-2">Total Amount</th>
+                  <th className="px-4 py-2">Handling Time</th>
+                  <th className="px-4 py-2">Quote to SO Conversion</th>
+                  <th className="px-4 py-2">Quote to SO Conversion</th>
+                  <th className="px-4 py-2">Quotation to SI Conversion</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {aggregatedData.map(
+                  ({ company, totalCount, totalQuoteAmount, handlingTimeFormatted }, idx) => (
+                    <tr key={idx} className="hover:bg-gray-50">
+                      <td className="px-4 py-2">{totalCount}</td>
+                      <td className="px-4 py-2">{totalQuoteAmount.toFixed(2)}</td>
+                      <td className="px-4 py-2">{handlingTimeFormatted}</td>
+                      <td className="px-4 py-2">{quoteToSO.toFixed(2)}%</td>
+                      <td className="px-4 py-2">₱{valuePeso.toFixed(2)}</td>
+                      <td className="px-4 py-2">₱{quoteToSIValuePeso.toFixed(2)}</td> {/* New value */}
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
