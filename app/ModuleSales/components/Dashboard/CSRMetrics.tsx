@@ -197,7 +197,7 @@ const CSRMetrics: React.FC<CSRMetricsProps> = ({ filteredAccounts }) => {
 
     return (
         <div className="bg-white shadow-md rounded-lg p-6 font-sans overflow-x-auto">
-            <h2 className="text-sm font-bold mb-2">CSR Metrics Area Chart</h2>
+            <h2 className="text-sm font-bold mb-2">CSR Metrics</h2>
 
             {data.length === 0 ? (
                 <p className="text-center text-gray-500 text-xs">No CSR metrics available.</p>

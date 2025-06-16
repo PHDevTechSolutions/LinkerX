@@ -98,7 +98,7 @@ const OutboundCalls: React.FC<OutboundCallsProps> = ({ filteredCalls, dateRange 
     <div className="space-y-8">
       {/* Typecall Breakdown */}
       <div className="bg-white shadow-md rounded-lg p-6 font-sans overflow-x-auto">
-        <h2 className="text-sm font-bold mb-4">Outbound Calls</h2>
+        <h2 className="text-sm font-bold mb-4">Outbound Calls (Touch-Based Only)</h2>
         {groupedByTypeCall.length === 0 ? (
           <p className="text-gray-500 text-xs">No calls found in selected date range.</p>
         ) : (
