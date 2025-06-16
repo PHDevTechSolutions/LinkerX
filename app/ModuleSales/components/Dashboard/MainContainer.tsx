@@ -106,12 +106,7 @@ const MainContainer: React.FC<MainContainerProps> = ({ filteredAccounts }) => {
       {/* Date inputs + Preset select */}
       <div className="mb-4 flex flex-wrap gap-4 items-center">
         <div>
-          <label
-            htmlFor="datePreset"
-            className="block text-xs font-medium text-gray-700"
-          >
-            Filter
-          </label>
+          <label htmlFor="datePreset" className="block text-xs font-medium">Filter</label>
           <select
             id="datePreset"
             onChange={handlePresetChange}
@@ -120,7 +115,7 @@ const MainContainer: React.FC<MainContainerProps> = ({ filteredAccounts }) => {
                 ([, fn]) => JSON.stringify(fn()) === JSON.stringify(dateRange)
               )?.[0] || ""
             }
-            className="border px-3 py-2 rounded text-xs"
+            className="border px-3 py-2 rounded text-xs text-black"
           >
             <option value="">Custom</option>
             <option value="today">Today</option>
@@ -133,36 +128,26 @@ const MainContainer: React.FC<MainContainerProps> = ({ filteredAccounts }) => {
         </div>
 
         <div>
-          <label
-            htmlFor="start"
-            className="block text-xs font-medium text-gray-700"
-          >
-            Start Date
-          </label>
+          <label htmlFor="start" className="block text-xs font-medium">Start Date</label>
           <input
             type="date"
             id="start"
             name="start"
             value={dateRange.start}
             onChange={handleDateChange}
-            className="border px-3 py-2 rounded text-xs"
+            className="border px-3 py-2 rounded text-xs text-black"
           />
         </div>
 
         <div>
-          <label
-            htmlFor="end"
-            className="block text-xs font-medium text-gray-700"
-          >
-            End Date
-          </label>
+          <label htmlFor="end" className="block text-xs font-medium">End Date</label>
           <input
             type="date"
             id="end"
             name="end"
             value={dateRange.end}
             onChange={handleDateChange}
-            className="border px-3 py-2 rounded text-xs"
+            className="border px-3 py-2 rounded text-xs text-black"
           />
         </div>
       </div>

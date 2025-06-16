@@ -51,7 +51,7 @@ const SalesOrder: React.FC<SalesOrderProps> = ({ records }) => {
   return (
     <div className="space-y-8">
       {/* Sales Orders Table */}
-      <div className="bg-white shadow-md rounded-lg p-6 font-sans overflow-x-auto">
+      <div className="bg-white shadow-md rounded-lg p-6 font-sans overflow-x-auto text-black">
         <h2 className="text-sm font-bold mb-4">Sales Orders</h2>
         {soDoneSummary.totalCount === 0 ? (
           <p className="text-gray-500 text-xs">

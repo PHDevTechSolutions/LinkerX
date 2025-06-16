@@ -69,7 +69,7 @@ const SidebarUserInfo: React.FC<SidebarUserInfoProps> = ({
 
   return (
     <div
-      className="relative p-6  bg-white dark:bg-gray-900 dark:border-gray-700 flex items-center justify-between flex-shrink-0 overflow-hidden"
+      className="relative p-6 dark:bg-gray-900 dark:border-gray-700 flex items-center justify-between flex-shrink-0 overflow-hidden"
       style={{ position: "sticky", bottom: 0, zIndex: 10 }}
     >
       {/* Logout Sound */}
@@ -103,7 +103,7 @@ const SidebarUserInfo: React.FC<SidebarUserInfoProps> = ({
           />
         </div>
 
-        <div className="text-[10px] text-black">
+        <div className="text-[10px]">
           <p className="font-bold uppercase">
             {userDetails.Firstname}, {userDetails.Lastname}
           </p>

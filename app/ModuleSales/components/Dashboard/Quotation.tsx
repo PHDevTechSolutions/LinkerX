@@ -127,7 +127,7 @@ const Quotation: React.FC<QuotationProps> = ({ records }) => {
   return (
     <div className="space-y-8">
       {/* Quotations Table */}
-      <div className="bg-white shadow-md rounded-lg p-6 font-sans overflow-x-auto">
+      <div className="bg-white shadow-md rounded-lg p-6 font-sans overflow-x-auto text-black">
         <h2 className="text-sm font-bold mb-4">Quotations</h2>
         {aggregatedData.length === 0 ? (
           <p className="text-gray-500 text-xs">No quotations with status "Quote-Done".</p>
