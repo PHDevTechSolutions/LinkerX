@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FaRegCircle } from "react-icons/fa";
 import { CiUser, CiSettings, CiCoins1, CiViewBoard, CiMemoPad, CiWavePulse1, CiPhone, CiCircleInfo, } from "react-icons/ci";
 import { SlChart } from "react-icons/sl";
 import { IoHelp } from "react-icons/io5";
@@ -12,6 +11,7 @@ import { useRouter } from "next/navigation";
 
 import SidebarMenu from "./SidebarMenu";
 import SidebarUserInfo from "./SidebarUserInfo";
+import { Description } from "@headlessui/react";
 
 const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: boolean; }> = ({ isOpen, onClose, isDarkMode }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -19,7 +19,6 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const [userId, setUserId] = useState<string | null>(null);
   const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", profilePicture: "", ReferenceID: "" });
   const [userNotifications, setUserNotifications] = useState<any>(null);
-  const [inactiveAccount, setInactiveAccount] = useState<any>(null);
   const [deleteAccount, setDeleteAccount] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -155,33 +154,33 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       title: 'Customer Database',
       icon: BsBuildings,
       subItems: [
-        { title: 'Active', href: `/ModuleSales/Sales/Companies/CompanyAccounts${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'New Client', href: `/ModuleSales/Sales/Companies/NewClient${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Inactive', href: `/ModuleSales/Sales/Companies/Inactive${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Non-Buying', href: `/ModuleSales/Sales/Companies/NonBuying${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Group / Affiliate', href: `/ModuleSales/Sales/Companies/GroupCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'For Deletion', href: `/ModuleSales/Sales/Companies/DeletionCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Active', description: 'Regular Client', href: `/ModuleSales/Sales/Companies/CompanyAccounts${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'New Client', description: 'Outbound / CSR Endorsement / Client Dev', href: `/ModuleSales/Sales/Companies/NewClient${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Non-Buying', description: 'Existing Client / Continous Quote / No SO', href: `/ModuleSales/Sales/Companies/NonBuying${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Inactive', description: 'Order 6 Months Ago - Last Purchased', href: `/ModuleSales/Sales/Companies/Inactive${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Group / Affiliate', description: 'Grouped or Affiliated Companies', href: `/ModuleSales/Sales/Companies/GroupCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'For Deletion Companies', description: 'Companies to be Deleted', href: `/ModuleSales/Sales/Companies/DeletionCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
       title: 'Activities',
       icon: CiMemoPad,
       subItems: [
-        { title: 'Scheduled Task', href: `/ModuleSales/Sales/Task/ScheduledTask${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Callbacks', href: `/ModuleSales/Sales/Task/Callback${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Client Coverage Guide', href: `/ModuleSales/Sales/Task/ClientCoverageGuide${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Scheduled Task', description: 'Upcoming Tasks and Reminders', href: `/ModuleSales/Sales/Task/ScheduledTask${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Callbacks', description: 'Follow-Up Calls to Clients', href: `/ModuleSales/Sales/Task/Callback${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Client Coverage Guide', description: 'Client Management Overview', href: `/ModuleSales/Sales/Task/ClientCoverageGuide${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
       title: 'Reports',
       icon: SlChart,
       subItems: [
-        { title: 'Account Management', href: `/ModuleSales/Sales/Reports/AccountManagement${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Quotation Summary', href: `/ModuleSales/Sales/Reports/QuotationSummary${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'SO Summary', href: `/ModuleSales/Sales/Reports/SOSummary${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Pending SO', href: `/ModuleSales/Sales/Reports/PendingSO${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'CSR Inquiry Summary', href: `/ModuleSales/Sales/Reports/CSRSummary${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Client History', href: `/ModuleSales/Sales/Reports/ClientHistory${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Account Management', description: 'Manage Client Accounts', href: `/ModuleSales/Sales/Reports/AccountManagement${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Quotation Summary', description: 'Summary of Quotations', href: `/ModuleSales/Sales/Reports/QuotationSummary${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'SO Summary', description: 'Sales Order Overview', href: `/ModuleSales/Sales/Reports/SOSummary${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Pending SO', description: 'Outstanding Sales Orders', href: `/ModuleSales/Sales/Reports/PendingSO${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'CSR Inquiry Summary', description: 'Customer Service Inquiries', href: `/ModuleSales/Sales/Reports/CSRSummary${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Client History', description: 'Past Client Interactions', href: `/ModuleSales/Sales/Reports/ClientHistory${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
@@ -243,83 +242,92 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   ];
 
   // Filter menu items based on the user's role
-  const filteredMenuItems = userDetails.Role === "Admin" || userDetails.Role === "Super Admin" ? menuItems : menuItems.filter((item) => {
-    if (userDetails.Role === "Manager") {
-      return [
-        "Sales Performance",
-        "Conversion Rates",
-        "National",
-        "My Team",
-        "Client Activity Board",
-        "Help Center",
-        "Xend Mail",
-        "Global Employees",
-        "My Profile",
-        "What is Taskflow?"
-      ].includes(item.title);
+  const filteredMenuItems = (() => {
+    const role = userDetails.Role;
+    const agentModeMenu = [
+      "Customer Database",
+      "Activities",
+      "Projects",
+      "Xend Mail",
+      "Boards",
+      "Help Center",
+      "Global Employees",
+      "My Profile",
+      "What is Taskflow?",
+    ];
+    const tsmDefault = [
+      "Sales Performance",
+      "Xend Mail",
+      "National",
+      "My Team",
+      "Client Activity Board",
+      "Help Center",
+      "Global Employees",
+      "My Profile",
+      "What is Taskflow?",
+    ];
+
+    if (role === "Admin" || role === "Super Admin") {
+      return menuItems; // full access
+    }
+    if (role === "Manager") {
+      return menuItems.filter(item =>
+        [
+          "Sales Performance",
+          "Conversion Rates",
+          "National",
+          "My Team",
+          "Client Activity Board",
+          "Help Center",
+          "Xend Mail",
+          "Global Employees",
+          "My Profile",
+          "What is Taskflow?"
+        ].includes(item.title)
+      );
+    }
+    if (role === "Special Access") {
+      return menuItems.filter(item =>
+        [
+          "Customer Database",
+          "Activities",  // Note: You had "Activity" but your menu title is "Activities"
+          "Sales Performance",
+          "Conversion Rates",
+          "National",
+          "My Team",
+          "Client Activity Board",
+          "Help Center",
+          "Xend Mail",
+          "Global Employees",
+          "My Profile",
+          "What is Taskflow?"
+        ].includes(item.title)
+      );
+    }
+    if (role === "Territory Sales Manager") {
+      return menuItems.filter(item =>
+        (agentMode ? agentModeMenu : tsmDefault).includes(item.title)
+      );
+    }
+    if (role === "Territory Sales Associate") {
+      return menuItems.filter(item =>
+        [
+          "Customer Database",
+          "Activities",
+          "Reports",
+          "Projects",
+          "Xend Mail",
+          "Boards",
+          "Help Center",
+          "Global Employees",
+          "My Profile",
+          "What is Taskflow?"
+        ].includes(item.title)
+      );
     }
 
-    if (userDetails.Role === "Special Access") {
-      return [
-        "Customer Database",
-        "Activity",
-        "Sales Performance",
-        "Conversion Rates",
-        "National",
-        "My Team",
-        "Client Activity Board",
-        "Help Center",
-        "Xend Mail",
-        "Global Employees",
-        "My Profile",
-        "What is Taskflow?"
-      ].includes(item.title);
-    }
-
-    if (userDetails.Role === "Territory Sales Manager") {
-      const tsmDefault = [
-        "Sales Performance",
-        "Xend Mail",
-        "National",
-        "My Team",
-        "Client Activity Board",
-        "Help Center",
-        "Global Employees",
-        "My Profile",
-        "What is Taskflow?",
-      ];
-
-      const agentModeMenu = [
-        "Customer Database",
-        "Activities",
-        "Projects",
-        "Xend Mail",
-        "Boards",
-        "Help Center",
-        "Global Employees",
-        "My Profile",
-        "What is Taskflow?",
-      ];
-
-      return (agentMode ? agentModeMenu : tsmDefault).includes(item.title);
-    }
-
-    if (userDetails.Role === "Territory Sales Associate") {
-      return [
-        "Customer Database",
-        "Activities",
-        "Reports",
-        "Projects",
-        "Xend Mail",
-        "Boards",
-        "Help Center",
-        "Global Employees",
-        "My Profile",
-        "What is Taskflow?"
-      ].includes(item.title);
-    }
-    return false; // Default: walang access
-  });
+    return [];
+  })();
 
   return (
     <>

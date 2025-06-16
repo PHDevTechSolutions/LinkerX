@@ -7,6 +7,7 @@ import { CiSettings } from "react-icons/ci"; // For My Profile icon
 interface SubItem {
   title: string;
   href: string;
+  description?: string; // added description field
 }
 
 interface MenuItem {
@@ -57,9 +58,8 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
       <div className="w-full">
         <button
           onClick={() => handleToggle(myProfileItem.title)}
-          className={`flex items-center w-full p-4 hover:bg-orange-400 rounded hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${
-            collapsed ? "justify-center" : ""
-          }`}
+          className={`flex items-center w-full p-4 hover:bg-orange-400 rounded hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""
+            }`}
         >
           <myProfileItem.icon size={18} />
           {!collapsed && <span className="ml-2">{myProfileItem.title}</span>}
@@ -71,9 +71,8 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
         </button>
 
         <div
-          className={`overflow-hidden transition-all duration-300 ease-in-out text-gray-900 ${
-            openSections[myProfileItem.title] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-          }`}
+          className={`overflow-hidden transition-all duration-300 ease-in-out text-gray-900 ${openSections[myProfileItem.title] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+            }`}
         >
           {openSections[myProfileItem.title] && !collapsed && (
             <div>
@@ -114,9 +113,8 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
           <div key={index} className="w-full">
             <button
               onClick={() => handleToggle(item.title)}
-              className={`flex items-center w-full p-4 hover:bg-orange-400 rounded hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${
-                collapsed ? "justify-center" : ""
-              }`}
+              className={`flex items-center w-full p-4 hover:bg-orange-400 rounded hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""
+                }`}
             >
               <item.icon size={18} />
               {!collapsed && <span className="ml-2">{item.title}</span>}
@@ -128,33 +126,40 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
             </button>
 
             <div
-              className={`overflow-hidden transition-all duration-300 ease-in-out text-gray-900 ${
-                openSections[item.title] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-              }`}
+              className={`overflow-hidden transition-all duration-300 ease-in-out text-gray-900 ${openSections[item.title] ? "max-h-200 opacity-100" : "max-h-0 opacity-0"
+                }`}
             >
-              {openSections[item.title] && !collapsed && (
-                <div>
-                  {item.subItems.map((subItem, subIndex) => (
-                    <Link
-                      key={subIndex}
-                      href={subItem.href}
-                      className="flex items-center w-full p-4 bg-gray-200 hover:bg-orange-400 hover:text-white transition-all duration-300 ease-in-out"
-                    >
-                      <FaRegCircle size={10} className="mr-2 ml-2" />
-                      {subItem.title}
+              {item.subItems.map((subItem, subIndex) => (
+                <div key={subIndex} className="w-full">
+                  <Link
+                    href={subItem.href}
+                    className="flex flex-col mb-1 p-4 bg-gray-200 hover:bg-orange-400 hover:text-white transition-all duration-300 ease-in-out rounded"
+                  >
+                    <div className="flex items-center">
+                      <FaRegCircle size={10} className="mr-2" />
+                      <span className="text-[11px]">{subItem.title}</span>
+
+                      {/* Badges */}
                       {subItem.title === "CSR Inquiries" && pendingInquiryCount > 0 && (
-                        <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 px-2 text-white">{pendingInquiryCount}</span>
+                        <span className="ml-2 text-[8px] bg-red-400 rounded-lg px-2 text-white">{pendingInquiryCount}</span>
                       )}
                       {subItem.title === "Inactive Companies" && pendingInactiveCount > 0 && (
-                        <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 px-2 text-white">{pendingInactiveCount}</span>
+                        <span className="ml-2 text-[8px] bg-red-400 rounded-lg px-2 text-white">{pendingInactiveCount}</span>
                       )}
                       {subItem.title === "For Deletion" && pendingDeleteCount > 0 && (
-                        <span className="ml-2 text-[8px] bg-red-400 rounded-lg m-1 px-2 text-white">{pendingDeleteCount}</span>
+                        <span className="ml-2 text-[8px] bg-red-400 rounded-lg px-2 text-white">{pendingDeleteCount}</span>
                       )}
-                    </Link>
-                  ))}
+                    </div>
+
+                    {/* Description displayed below the title */}
+                    {subItem.description && (
+                      <p className="mt-1 text-[10px]">
+                        {subItem.description}
+                      </p>
+                    )}
+                  </Link>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         ))}
