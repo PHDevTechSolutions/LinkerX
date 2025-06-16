@@ -53,9 +53,9 @@ const ActivityStatus: React.FC<ActivityStatusProps> = ({
           required
         >
           <option value="">Select Status</option>
-          <option value="Assisted">Assisted</option>
-          <option value="Paid">Paid</option>
-          <option value="Delivered">Delivered</option>
+          <option value="Assisted">Assisted (Client Assistance - Touchbase such as calls)</option>
+          <option value="Paid">Paid (Identity - Have SO# (All fields should be completed SAP))</option>
+          <option value="Delivered">Delivered (All fields should be completed SAP-SI and DR)</option>
           <option value="Collected">Collected</option>
           <option value="Quote-Done">Quote-Done</option>
           <option value="SO-Done">SO-Done</option>

@@ -148,7 +148,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <HiddenFields activitynumber={activitynumber} referenceid={referenceid} setreferenceid={setreferenceid} manager={manager} setmanager={setmanager}
                 tsm={tsm} settsm={settsm} targetquota={targetquota} settargetquota={settargetquota} startdate={startdate} setstartdate={setstartdate} enddate={enddate} setenddate={setenddate} ticketreferencenumber={ticketreferencenumber} setticketreferencenumber={setticketreferencenumber}
                 wrapup={wrapup} setwrapup={setwrapup} inquiries={inquiries} setinquiries={setinquiries} csragent={csragent} setcsragent={setcsragent} editPost={editPost} />
-            
+         
+           <div className="border-t border-gray-200 my-4"></div>
             <SelectCompany
                 referenceid={referenceid}
                 setcompanyname={setcompanyname} companyname={companyname}
@@ -161,6 +162,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 setdeliveryaddress={setdeliveryaddress} deliveryaddress={deliveryaddress}
                 setarea={setarea} area={area}
             />
+            <div className="border-t border-gray-200 my-4"></div>
             {typeactivity === "Quotation Preparation" && (
             <Accordion
                 projectname={projectname} setprojectname={setprojectname}
@@ -192,6 +194,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 setShowSOField={setShowSOField}
                 setShowDeliverField={setShowDeliverField}
             />
+            <div className="border-t border-gray-200 my-4"></div>
         </>
     );
 };
