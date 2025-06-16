@@ -142,10 +142,6 @@ const Submenu: React.FC<SubmenuProps> = ({
         {typeactivity === "Sales Order Preparation" && (
           <SoFields {...{ sonumber, setsonumber, soamount, setsoamount, typecall, settypecall }} />
         )}
-
-        {activitystatus === "Paid" && (
-          <DeliveryFields {...{ actualsales, setactualsales, emailaddress, setemailaddress }} />
-        )}
       </div>
 
       <div className="flex flex-wrap -mx-4 mt-4">
@@ -162,6 +158,10 @@ const Submenu: React.FC<SubmenuProps> = ({
           paymentterm={paymentterm}
           setpaymentterm={setpaymentterm}
         />
+        
+        {activitystatus === "Delivered" && (
+          <DeliveryFields {...{ actualsales, setactualsales, emailaddress, setemailaddress }} />
+        )}
         
       </div>
     </div>
