@@ -6,8 +6,7 @@ import SessionChecker from "../../components/Session/SessionChecker";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import Developers from "../../components/Information/ViewInformation";
-import FuturisticSpinner from "../../components/Spinner/FuturisticSpinner";
+import Developers from "../../components/Information/ViewInformation"; // Import the form component
 
 const ProfilePage: React.FC = () => {
     const [userDetails, setUserDetails] = useState({
@@ -17,10 +16,8 @@ const ProfilePage: React.FC = () => {
         Email: "",
         Role: "", // Added Role to state
     });
+    const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
-    const [postsLoading, setPostsLoading] = useState<boolean>(true);
-    const [showSpinner, setShowSpinner] = useState(true);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -43,26 +40,16 @@ const ProfilePage: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
-                    setShowSpinner(false);
+                    setLoading(false);
                 }
             } else {
                 setError("User ID is missing.");
-                setShowSpinner(false);
+                setLoading(false);
             }
         };
 
         fetchUserData();
     }, []);
-
-    if (postsLoading || showSpinner) {
-        return (
-            <SessionChecker>
-                <ParentLayout>
-                    <FuturisticSpinner setShowSpinner={setShowSpinner} />
-                </ParentLayout>
-            </SessionChecker>
-        );
-    }
 
     return (
         <SessionChecker>
