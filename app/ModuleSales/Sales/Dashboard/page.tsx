@@ -5,7 +5,6 @@ import ParentLayout from "../../components/Layouts/ParentLayout";
 import SessionChecker from "../../components/Session/SessionChecker";
 import { ToastContainer, toast } from "react-toastify";
 import MainContainer from "../../components/Dashboard/MainContainer";
-import FuturisticSpinner from "../../components/Spinner/FuturisticSpinner";
 
 const DashboardPage: React.FC = () => {
   const [userDetails, setUserDetails] = useState({
@@ -24,11 +23,7 @@ const DashboardPage: React.FC = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const [postsLoading, setPostsLoading] = useState<boolean>(true);
-  const [showSpinner, setShowSpinner] = useState(true);
-
   const fetchData = async () => {
-    setPostsLoading(true);
     try {
       const response = await fetch("/api/ModuleSales/Reports/AccountManagement/FetchSales");
       const data = await response.json();
@@ -37,8 +32,6 @@ const DashboardPage: React.FC = () => {
     } catch (error) {
       toast.error("Error fetching users.");
       console.error("Error Fetching", error);
-    } finally {
-      setPostsLoading(false);
     }
   };
 
@@ -46,35 +39,25 @@ const DashboardPage: React.FC = () => {
     fetchData();
   }, []);
 
-  if (postsLoading || showSpinner) {
-    return (
-      <SessionChecker>
-        <ParentLayout>
-          <FuturisticSpinner setShowSpinner={setShowSpinner} />
-        </ParentLayout>
-      </SessionChecker>
-    );
-  }
-
   const filteredAccounts = Array.isArray(posts)
     ? posts
-      .filter((post) => {
-        const postDate = post.date_created ? new Date(post.date_created) : null;
+        .filter((post) => {
+          const postDate = post.date_created ? new Date(post.date_created) : null;
 
-        const isWithinDateRange =
-          (!startDate || (postDate && postDate >= new Date(startDate))) &&
-          (!endDate || (postDate && postDate <= new Date(endDate)));
+          const isWithinDateRange =
+            (!startDate || (postDate && postDate >= new Date(startDate))) &&
+            (!endDate || (postDate && postDate <= new Date(endDate)));
 
-        const matchesReferenceID =
-          post?.referenceid === userDetails.ReferenceID ||
-          post?.ReferenceID === userDetails.ReferenceID;
+          const matchesReferenceID =
+            post?.referenceid === userDetails.ReferenceID ||
+            post?.ReferenceID === userDetails.ReferenceID;
 
-        return isWithinDateRange && matchesReferenceID;
-      })
-      .sort(
-        (a, b) =>
-          new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
-      )
+          return isWithinDateRange && matchesReferenceID;
+        })
+        .sort(
+          (a, b) =>
+            new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
+        )
     : [];
 
   useEffect(() => {

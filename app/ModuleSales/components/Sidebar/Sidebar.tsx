@@ -107,40 +107,6 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   }, [userDetails.ReferenceID]);
 
   useEffect(() => {
-    const fetchAccountInactive = async () => {
-      try {
-        // Fetch accounts and pass ReferenceID from MongoDB
-        const response = await fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchInactiveCount?referenceId=${userDetails.ReferenceID}`);
-
-        if (!response.ok) throw new Error("Failed to fetch inactive accounts");
-
-        const result = await response.json();
-
-        if (!result.success) {
-          console.error(result.error);
-          return;
-        }
-
-        const data = result.data; // Access the accounts array
-        setInactiveAccount(data); // Set the fetched data to state
-
-        // Count "Inactive" accounts
-        const inactiveCount = data.filter(
-          (account: any) => account.status?.toLowerCase() === "inactive"
-        ).length;
-
-        setPendingInactiveCount(inactiveCount); // Update state with the count
-      } catch (error) {
-        console.error("Error fetching inactive accounts:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (userDetails.ReferenceID) fetchAccountInactive();
-  }, [userDetails.ReferenceID]);
-
-  useEffect(() => {
     const fetchAccountDeletion = async () => {
       try {
         // Fetch accounts and pass ReferenceID from MongoDB
