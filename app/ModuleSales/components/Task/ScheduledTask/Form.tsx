@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormFields from "./FormFields";
+import HistoricalRecordsTable from "./HistoricalRecordsTable";
+import EditRecordModal from "./Modal/EditRecordModal";
+
 import { CiTrash, CiCircleRemove, CiSaveUp1, CiEdit, CiTurnL1 } from "react-icons/ci";
 
 interface AddUserFormProps {
@@ -231,13 +234,23 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     setShowModal(false);
   };
 
-  const handleEditClick = (activityId: number) => {
-    const selected = activityList.find((act) => act.id === activityId);
+  const handleEditClick = (activityId: number | string) => {
+    // If activityId is string, convert to number
+    const idNumber = typeof activityId === "string" ? parseInt(activityId, 10) : activityId;
+
+    if (isNaN(idNumber)) {
+      console.warn("Invalid activityId", activityId);
+      return; // or handle error
+    }
+
+    const selected = activityList.find((act) => act.id === idNumber || act.id === activityId);
+
     if (selected) {
       setSelectedActivity(selected);
       setIsEditModalOpen(true);
     }
   };
+
 
   // Handle input change inside modal
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -339,10 +352,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           csragent={csragent} setcsragent={setcsragent}
 
           paymentterm={paymentterm} setpaymentterm={setpaymentterm}
-
           //PassedRecords
           currentRecords={currentRecords}
-
           editPost={editUser}
         />
         {/* Historical Records Table */}
@@ -354,230 +365,20 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
           {/* Desktop View */}
           <div className="overflow-x-auto">
-            <table className="min-w-full table-auto">
-              <thead className="bg-gray-100">
-                <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-                  <th className="px-6 py-4 font-semibold text-gray-700">Time Spent</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Type of Activity</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Callback</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Call Status</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Type of Call</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Q# Number</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Q-Amount</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">SO-Amount</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">SO-Number</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Actual Sales (Final Amount)</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Remarks</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
-                  <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {currentRecords.length > 0 ? (
-                  currentRecords.map((activity, index) => (
-                    <tr key={index} className="border-b whitespace-nowrap">
-                      <td className="px-6 py-4 text-xs">
-                        {(() => {
-                          const start = new Date(activity.startdate);
-                          const end = new Date(activity.enddate);
-
-                          if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
-                            const diffMs = end.getTime() - start.getTime();
-                            const hours = Math.floor(diffMs / (1000 * 60 * 60));
-                            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-                            const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-                            return `${hours}h ${minutes}m ${seconds}s`;
-                          } else {
-                            return "Invalid date";
-                          }
-                        })()}
-                      </td>
-
-                      <td className="px-6 py-4 text-xs">{activity.typeactivity}</td>
-                      <td className="px-6 py-4 text-xs">
-                        {activity.callback
-                          ? new Date(activity.callback).toLocaleString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "numeric",
-                            minute: "2-digit",
-                            hour12: true,
-                          })
-                          : ""}
-                      </td>
-                      <td className="px-6 py-4 text-xs">{activity.callstatus}</td>
-                      <td className="px-6 py-4 text-xs">{activity.typecall}</td>
-                      <td className="px-6 py-4 text-xs uppercase">{activity.quotationnumber}</td>
-                      <td className="px-6 py-4 text-xs">{activity.quotationamount}</td>
-                      <td className="px-6 py-4 text-xs">{activity.soamount}</td>
-                      <td className="px-6 py-4 text-xs uppercase">{activity.sonumber}</td>
-                      <td className="px-6 py-4 text-xs">{activity.actualsales}</td>
-                      <td className="px-6 py-4 border break-words truncate max-w-xs cursor-pointer capitalize" onClick={() => handleShowRemarks(activity.remarks)}>
-                        {activity.remarks}
-                      </td>
-                      <td className="px-6 py-4 text-xs">
-                        <span
-                          className={`px-2 py-1 text-[8px] font-semibold rounded-full whitespace-nowrap ${activity.activitystatus === "Cold"
-                            ? "bg-blue-200 text-black"
-                            : activity.activitystatus === "Warm"
-                              ? "bg-yellow-200 text-black"
-                              : activity.activitystatus === "Hot"
-                                ? "bg-red-200 text-black"
-                                : activity.activitystatus === "Done"
-                                  ? "bg-green-200 text-black"
-                                  : "bg-green-100 text-green-700"
-                            }`}
-                        >
-                          {activity.activitystatus}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-xs flex">
-                        <button onClick={() => handleDeleteClick(activity.id.toString())} className="bg-white p-2 rounded-md flex mr-1 text-red-600">
-                          <CiTrash size={15} />
-                        </button>
-                        <button onClick={() => handleEditClick(activity.id)} className="bg-white p-2 rounded-md flex text-blue-900">
-                          <CiEdit size={15} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={11} className="text-center py-2 border">No activities found.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+            <HistoricalRecordsTable
+              records={currentRecords}
+              handleShowRemarks={handleShowRemarks}
+              handleDeleteClick={handleDeleteClick}
+              handleEditClick={handleEditClick}
+            />
 
             {isEditModalOpen && selectedActivity && (
-              <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white p-6 rounded-lg w-full max-w-xl">
-                  <h2 className="text-md font-bold mb-4">Edit Activity</h2>
-
-                  <div className="grid grid-cols-2 gap-4 text-xs">
-                    <input
-                      name="typeactivity"
-                      value={selectedActivity.typeactivity || ""}
-                      onChange={handleInputChange}
-                      className="border p-2 rounded"
-                      placeholder="Type of Activity"
-                      disabled
-                    />
-                    <input
-                      name="callback"
-                      value={selectedActivity.callback || ""}
-                      onChange={handleInputChange}
-                      className="border p-2 rounded"
-                      placeholder="Callback"
-                      disabled
-                    />
-
-                    <select
-                      name="callstatus"
-                      value={selectedActivity.callstatus || ""}
-                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleInputChange(e)}
-                      className="w-full px-3 py-2 border rounded text-xs capitalize"
-                      required
-                      disabled={!selectedActivity.callstatus} // Disable if empty
-                    >
-                      <option value="">Select Status</option>
-                      <option value="Successful">Successful</option>
-                      <option value="Unsuccessful">Unsuccessful</option>
-                    </select>
-
-                    <select
-                      name="typecall"
-                      value={selectedActivity.typecall || ""}
-                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleInputChange(e)}
-                      className="border p-2 rounded"
-                      required
-                      disabled={!selectedActivity.typecall} // Disable if empty
-                    >
-                      <option value="">Select Status</option>
-                      <option value="Cannot Be Reached">Cannot Be Reached</option>
-                      <option value="Follow Up Pending">Follow Up Pending</option>
-                      <option value="Inactive">Inactive</option>
-                      <option value="Requirements">No Requirements</option>
-                      <option value="Not Connected with the Company">Not Connected with the Company</option>
-                      <option value="Request for Quotation">Request for Quotation</option>
-                      <option value="Ringing Only">Ringing Only</option>
-                      <option value="Sent Quotation - Standard">Sent Quotation - Standard</option>
-                      <option value="Sent Quotation - With Special Price">Sent Quotation - With Special Price</option>
-                      <option value="Sent Quotation - With SPF">Sent Quotation - With SPF</option>
-                      <option value="Touch Base">Touch Base</option>
-                      <option value="Waiting for Future Projects">Waiting for Future Projects</option>
-                      <option value="With SPFS">With SPFS</option>
-                    </select>
-
-                    <input
-                      name="quotationnumber"
-                      value={selectedActivity.quotationnumber || ""}
-                      onChange={handleInputChange}
-                      className="border p-2 rounded uppercase"
-                      placeholder="Q# Number"
-                    />
-                    <input
-                      name="quotationamount"
-                      value={selectedActivity.quotationamount || ""}
-                      onChange={handleInputChange}
-                      className="border p-2 rounded"
-                      placeholder="Q-Amount"
-                    />
-                    <input
-                      name="soamount"
-                      value={selectedActivity.soamount || ""}
-                      onChange={handleInputChange}
-                      className="border p-2 rounded"
-                      placeholder="SO-Amount"
-                    />
-                    <input
-                      name="sonumber"
-                      value={selectedActivity.sonumber || ""}
-                      onChange={handleInputChange}
-                      className="border p-2 rounded uppercase"
-                      placeholder="SO-Number"
-                    />
-                    <input
-                      name="actualsales"
-                      value={selectedActivity.actualsales || ""}
-                      onChange={handleInputChange}
-                      className="border p-2 rounded"
-                      placeholder="Actual Sales"
-                    />
-                    <textarea
-                      name="remarks"
-                      value={selectedActivity.remarks || ""}
-                      onChange={handleInputChange}
-                      className="border p-2 rounded col-span-2 capitalize"
-                      placeholder="Remarks"
-                    />
-                    <input
-                      name="activitystatus"
-                      value={selectedActivity.activitystatus || ""}
-                      onChange={handleInputChange}
-                      className="border p-2 rounded col-span-2"
-                      placeholder="Status"
-                      disabled
-                    />
-                  </div>
-
-                  <div className="flex justify-end gap-2 mt-4">
-                    <button
-                      onClick={handleModalClose}
-                      className="bg-gray-400 text-xs text-white px-5 py-2 rounded mr-2 flex items-center gap-1"
-                    >
-                      <CiCircleRemove size={20} />Cancel
-                    </button>
-                    <button
-                      onClick={handleSaveEdit}
-                      className="bg-blue-900 text-white text-xs px-5 py-2 rounded flex items-center gap-1"
-                    >
-                      <CiSaveUp1 size={20} />Submit
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <EditRecordModal
+                selectedActivity={selectedActivity}
+                handleInputChange={handleInputChange}
+                handleModalClose={handleModalClose}
+                handleSaveEdit={handleSaveEdit}
+              />
             )}
 
             {/* Modal for showing full remarks */}

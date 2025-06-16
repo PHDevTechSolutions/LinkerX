@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
-import ReactMarkdown from "react-markdown";
 
 const Picker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
@@ -8,7 +7,6 @@ interface RemarksProps {
   remarks: string;
   setremarks: (value: string) => void;
   maxLength?: number;
-  allowNumbers?: boolean;
   placeholder?: string;
   required?: boolean;
 }
@@ -17,7 +15,6 @@ const Remarks: React.FC<RemarksProps> = ({
   remarks,
   setremarks,
   maxLength = 500,
-  allowNumbers = false,
   placeholder = "Enter remarks here...",
   required = true,
 }) => {
@@ -31,11 +28,15 @@ const Remarks: React.FC<RemarksProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     let input = e.target.value;
 
-    const pattern = allowNumbers
-      ? /[^a-zA-Z0-9\s.,!?'"-]/g
-      : /[^a-zA-Z\s.,!?'"-]/g;
+    // Remove all characters except letters, numbers, spaces, dot, comma, and #
+    const pattern = /[^a-zA-Z0-9\s.,#]/g;
+    let filtered = input.replace(pattern, "");
 
-    const filtered = input.replace(pattern, "");
+    // Convert to lowercase first
+    filtered = filtered.toLowerCase();
+
+    // Capitalize first letter of each word
+    filtered = filtered.replace(/\b\w/g, (c) => c.toUpperCase());
 
     if (filtered.length > maxLength) {
       setError(`Maximum ${maxLength} characters allowed.`);
@@ -54,6 +55,7 @@ const Remarks: React.FC<RemarksProps> = ({
       setHistoryIndex(newHistory.length - 1);
     }
   };
+
 
   const undo = () => {
     if (historyIndex > 0) {
@@ -118,7 +120,7 @@ const Remarks: React.FC<RemarksProps> = ({
   }, [isDirty]);
 
   return (
-    <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+    <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4 relative">
       <label className="block text-xs font-bold mb-2">
         Remarks {required && <span className="text-red-500">*</span>}
       </label>
@@ -127,9 +129,8 @@ const Remarks: React.FC<RemarksProps> = ({
         ref={textareaRef}
         value={typeof remarks === "string" ? remarks : String(remarks ?? "")}
         onChange={handleChange}
-        className={`w-full px-3 py-2 border rounded text-xs capitalize resize-y ${
-          error ? "border-red-500" : "border-gray-300"
-        }`}
+        className={`w-full px-3 py-2 border rounded text-xs capitalize resize-y ${error ? "border-red-500" : "border-gray-300"
+          }`}
         rows={5}
         maxLength={maxLength}
         placeholder={placeholder}
@@ -152,9 +153,8 @@ const Remarks: React.FC<RemarksProps> = ({
           type="button"
           onClick={undo}
           disabled={historyIndex === 0}
-          className={`text-xs px-2 py-1 border rounded ${
-            historyIndex === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"
-          }`}
+          className={`text-xs px-2 py-1 border rounded ${historyIndex === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"
+            }`}
           aria-label="Undo"
         >
           Undo
@@ -164,9 +164,8 @@ const Remarks: React.FC<RemarksProps> = ({
           type="button"
           onClick={redo}
           disabled={historyIndex === history.length - 1}
-          className={`text-xs px-2 py-1 border rounded ${
-            historyIndex === history.length - 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"
-          }`}
+          className={`text-xs px-2 py-1 border rounded ${historyIndex === history.length - 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"
+            }`}
           aria-label="Redo"
         >
           Redo
@@ -184,7 +183,6 @@ const Remarks: React.FC<RemarksProps> = ({
       </p>
 
       {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
-
     </div>
   );
 };

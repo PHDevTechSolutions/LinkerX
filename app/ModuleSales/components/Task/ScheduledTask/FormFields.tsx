@@ -161,13 +161,14 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 setdeliveryaddress={setdeliveryaddress} deliveryaddress={deliveryaddress}
                 setarea={setarea} area={area}
             />
-
+            {typeactivity === "Quotation Preparation" && (
             <Accordion
                 projectname={projectname} setprojectname={setprojectname}
                 projectcategory={projectcategory} setprojectcategory={setprojectcategory}
                 projecttype={projecttype} setprojecttype={setprojecttype}
                 source={source} setsource={setsource}
             />
+            )}
 
             <Submenu
                 typeactivity={typeactivity} settypeactivity={settypeactivity}
