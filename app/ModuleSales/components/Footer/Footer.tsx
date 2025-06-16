@@ -36,11 +36,11 @@ const Footer: React.FC<FooterProps> = ({ userRole = "Sales Associate", systemSta
         </button>
       )}
 
-      <footer className="bg-green-600 text-white py-4 w-full relative">
+      <footer className="bg-orange-400 text-white py-4 w-full relative p-2 rounded-t-lg">
         <div className="container mx-auto text-center text-xs px-4">
           <p className="font-bold">
             &copy; {new Date().getFullYear()} Ecoshift Corporation | ERP Module - Taskflow
-            <span className="bg-orange-700 ml-2 px-2 py-1 rounded-md text-[10px]">Version 3.2</span>
+            <span className="bg-orange-700 ml-2 px-2 py-1 rounded-md text-[10px]">Version 3.9</span>
           </p>
 
           <div className="mt-2 text-[10px] italic flex justify-center items-center gap-2">
