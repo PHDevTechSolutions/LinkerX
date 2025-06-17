@@ -2,19 +2,17 @@ import React, { useState, useEffect, useCallback } from "react";
 import { CiPaperplane } from "react-icons/ci";
 
 interface DeliveryFieldsProps {
-  actualsales: string;
-  setactualsales: (value: string) => void;
-  emailaddress: string;
-  setemailaddress: (value: string) => void;
+  actualsales: string; setactualsales: (value: string) => void;
+  emailaddress: string; setemailaddress: (value: string) => void;
+  deliverydate: string; setdeliverydate: (value: string) => void;
 }
 
 const EMAIL_STORAGE_KEY = "recentEmails";
 
 const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
-  actualsales,
-  setactualsales,
-  emailaddress,
-  setemailaddress,
+  actualsales, setactualsales,
+  emailaddress, setemailaddress,
+  deliverydate, setdeliverydate
 }) => {
   // Local state
   const [emailOptions, setEmailOptions] = useState<string[]>([]);
@@ -99,25 +97,19 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[999]"
     >
       <div className="bg-white rounded p-6 max-w-sm w-full shadow-lg">
-        <h2 id="confirm-dialog-title" className="text-lg font-bold mb-4">
-          Confirm Send Email
-        </h2>
-        <p className="mb-4">
-          Are you sure you want to send the survey to <strong>{emailaddress}</strong>?
-        </p>
+        <h2 id="confirm-dialog-title" className="text-lg font-bold mb-4">Confirm Send Email</h2>
+        <p className="mb-4">Are you sure you want to send the survey to <strong>{emailaddress}</strong>?</p>
         <div className="flex justify-end space-x-3">
           <button
             onClick={() => setShowConfirm(false)}
             className="px-4 py-2 border rounded hover:bg-gray-100"
-            disabled={isSending}
-          >
+            disabled={isSending}>
             Cancel
           </button>
           <button
             onClick={sendEmail}
-            className={`px-4 py-2 rounded text-white ${
-              isSending ? "bg-gray-400 cursor-not-allowed" : "bg-green-700 hover:bg-green-800"
-            }`}
+            className={`px-4 py-2 rounded text-white ${isSending ? "bg-gray-400 cursor-not-allowed" : "bg-green-700 hover:bg-green-800"
+              }`}
             disabled={isSending}
           >
             {isSending ? "Sending..." : "Send"}
@@ -130,9 +122,7 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
   return (
     <>
       <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-        <label htmlFor="actualsales" className="block text-xs font-bold mb-2">
-          SI (Actual Sales)
-        </label>
+        <label htmlFor="actualsales" className="block text-xs font-bold mb-2">SI (Actual Sales)</label>
         <input
           id="actualsales"
           type="text"
@@ -153,11 +143,25 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
         />
       </div>
 
+      <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+        <label htmlFor="actualsales" className="block text-xs font-bold mb-2">Delivery Date</label>
+        <input
+          id="deliverydate"
+          type="date"
+          value={deliverydate}
+          onChange={(e) => setdeliverydate(e.target.value)}
+          className="w-full px-3 py-2 border rounded text-xs"
+          required
+          placeholder="Enter actual sales amount"
+          disabled={isSending}
+          aria-describedby="actualsales-desc"
+        />
+
+      </div>
+
       <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4 flex flex-col space-y-4">
         <div>
-          <label htmlFor="emailaddress" className="block text-xs font-bold mb-2">
-            Send Email Survey
-          </label>
+          <label htmlFor="emailaddress" className="block text-xs font-bold mb-2">Send Email Survey</label>
           <select
             id="emailaddress"
             value={emailaddress}
@@ -183,46 +187,26 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
           )}
         </div>
 
-        <div>
-          <label htmlFor="customMessage" className="block text-xs font-bold mb-2">
-            Custom Message (optional)
-          </label>
-          <textarea
-            id="customMessage"
-            value={customMessage}
-            maxLength={MESSAGE_CHAR_LIMIT}
-            onChange={(e) => setCustomMessage(e.target.value)}
-            className="w-full px-3 py-2 border rounded text-xs resize-none"
-            placeholder="Add a custom message to include in the email"
-            disabled={isSending}
-            aria-describedby="charcount"
-          />
-          <div id="charcount" className="text-right text-gray-500 text-xs">
-            {customMessage.length}/{MESSAGE_CHAR_LIMIT}
-          </div>
-        </div>
-
-        <div className="flex space-x-3">
+        <div className="flex space-x-2">
           <button
             onClick={() => setShowConfirm(true)}
             disabled={!emailaddress || isSending}
-            className={`p-2 rounded flex items-center space-x-2 ${
-              emailaddress && !isSending
-                ? "bg-green-800 text-white hover:bg-green-900"
+            className={`p-2 rounded flex items-center space-x-2 ${emailaddress && !isSending
+                ? "bg-blue-500 text-white hover:bg-blue-600"
                 : "bg-gray-300 text-gray-600 cursor-not-allowed"
-            }`}
+              }`}
             type="button"
             aria-disabled={!emailaddress || isSending}
           >
             <CiPaperplane size={15} />
-            <span>Send</span>
+            <span className="text-[10px]">Send</span>
           </button>
 
           <button
             onClick={resetForm}
             type="button"
             disabled={isSending && !emailaddress}
-            className="p-2 rounded border border-gray-400 text-gray-700 hover:bg-gray-100 text-xs"
+            className="p-2 rounded border border-gray-400 text-gray-700 hover:bg-gray-100 text-[10px]"
           >
             Reset
           </button>

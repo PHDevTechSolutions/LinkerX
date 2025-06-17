@@ -90,6 +90,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [csragent, setcsragent] = useState(editUser ? editUser.csragent : "");
 
   const [paymentterm, setpaymentterm] = useState(editUser ? editUser.paymentterm : "");
+  const [deliverydate, setdeliverydate] = useState(editUser ? editUser.deliverydate: "");
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -173,7 +174,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       body: JSON.stringify({
         id: editUser?.id, referenceid, manager, tsm, targetquota, companyname, companygroup, contactperson, contactnumber, emailaddress, typeclient,
         address, deliveryaddress, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, remarks,
-        callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus, ticketreferencenumber, wrapup, inquiries, csragent, paymentterm,
+        callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus, ticketreferencenumber, wrapup, inquiries, csragent, paymentterm, deliverydate,
       }),
     });
 
@@ -300,17 +301,14 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     <>
       <form onSubmit={handleSubmit} className="bg-white text-xs border-t p-2">
         <div className="flex justify-end gap-2">
-          <button type="submit" className="bg-blue-400 text-white px-4 py-2 rounded text-xs flex items-center gap-1">
-            {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}
-            {editUser ? "Save" : "Submit"}
-          </button>
-          <button type="button" className="border text-black px-4 py-2 rounded text-xs flex items-center gap-1" onClick={onCancel}><CiTurnL1 size={15} /> Back</button>
+          <button type="button" className="hover:bg-gray-100 border text-black px-3 py-2 rounded text-[10px] flex items-center gap-1" onClick={onCancel}><CiTurnL1 size={15} /> Back</button>
         </div>
-        <h2 className="text-xs font-bold mb-4">
-          {editUser ? "Edit Account Information" : "Add New Account"}
+
+        <h2 className="text-xs font-bold mb-4 mt-4">
+          {editUser ? "Update Activity Information" : "Add New Activity"}
         </h2>
         <p className="text-xs text-gray-600 mb-4">
-          The process of <strong>creating</strong> or <strong>editing an account</strong> involves updating key information associated with a company. When adding or editing an account, fields such as company name, contact details, client type, and status play an essential role in maintaining accurate and up-to-date records. These fields ensure smooth management and tracking of company accounts within the system, allowing for better organization and coordination. Properly updating these details is crucial for improving communication and ensuring the integrity of the data throughout the process.
+          The process of <strong>creating</strong> or <strong>editing an activity</strong> involves updating key information associated with a company. When adding or editing an account, fields such as company name, contact details, client type, and status play an essential role in maintaining accurate and up-to-date records. These fields ensure smooth management and tracking of company accounts within the system, allowing for better organization and coordination. Properly updating these details is crucial for improving communication and ensuring the integrity of the data throughout the process.
         </p>
         <FormFields
           referenceid={referenceid} setreferenceid={setReferenceid}
@@ -352,10 +350,21 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           csragent={csragent} setcsragent={setcsragent}
 
           paymentterm={paymentterm} setpaymentterm={setpaymentterm}
-          //PassedRecords
+          deliverydate={deliverydate} setdeliverydate={setdeliverydate}
+          
           currentRecords={currentRecords}
           editPost={editUser}
         />
+        
+        <div className="flex justify-end gap-2">
+          <button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-[10px] flex items-center gap-1">
+            {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}
+            {editUser ? "Save" : "Submit"}
+          </button>
+        </div>
+
+        <div className="border-t border-gray-200 my-4"></div>
+
         {/* Historical Records Table */}
         <div className="mt-6">
           <h3 className="text-xs font-bold mb-2">Progress</h3>

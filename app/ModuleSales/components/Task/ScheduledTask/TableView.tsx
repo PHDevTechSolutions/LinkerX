@@ -1,5 +1,6 @@
 import React, { useMemo, useCallback } from "react";
 import { IoIosSettings } from "react-icons/io";
+import { RiEditCircleLine } from "react-icons/ri";
 
 export interface Post {
   id: string;
@@ -73,7 +74,7 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
 
       return (
         <React.Fragment key={date}>
-          <tr className="bg-gray-200 font-semibold text-xs text-gray-600">
+          <tr className="bg-gray-200 font-semibold text-[10px] text-gray-600">
             <td colSpan={9} className="px-6 py-2 sticky top-10 z-10">
               <div className="flex items-center gap-2">
                 <span>{date}</span>
@@ -104,17 +105,16 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
                     e.stopPropagation();
                     onEdit(post);
                   }}
-                  className="absolute top-3 right-3 bg-green-500 text-white text-xs px-3 py-1 rounded hover:bg-green-700 transition"
+                  className="flex items-center gap-1 bg-blue-500 text-white text-[10px] px-2 py-1 rounded hover:bg-blue-700 transition-colors"
                 >
-                  Create
+                  <RiEditCircleLine size={12} /> Update
                 </button>
               </td>
 
-              <td className="px-6 py-4 text-xs">
+              <td className="px-6 py-4">
                 <span
-                  className={`px-2 py-1 text-[10px] rounded-full font-semibold ${
-                    statusColors[post.activitystatus] || "bg-gray-300 text-black"
-                  }`}
+                  className={`px-2 py-1 text-[8px] rounded-full font-semibold ${statusColors[post.activitystatus] || "bg-gray-300 text-black"
+                    }`}
                 >
                   {post.activitystatus}
                 </span>

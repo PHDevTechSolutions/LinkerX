@@ -117,9 +117,9 @@ const FilterTop50: React.FC<FilterCardProps> = ({
                                             handleSubmit(post);
                                         }
                                     }}
-                                    className="flex items-center gap-1 bg-blue-400 hover:bg-blue-700 text-white text-xs px-3 py-1 rounded-full shadow"
+                                    className="flex items-center gap-1 bg-blue-400 hover:bg-blue-700 text-white text-[10px] px-3 py-1 rounded-full shadow"
                                 >
-                                    <FaPlusCircle size={12} />
+                                    <FaPlusCircle size={10} />
                                     Add
                                 </button>
                             </div>

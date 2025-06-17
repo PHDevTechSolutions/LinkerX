@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import TableView from "./TableView";
 import Pagination from "./Pagination";
 import GridView from "./GridView";
@@ -53,16 +53,20 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
     const [editUser, setEditUser] = useState<Post | null>(null);
 
     // Pagination logic
-    const totalPages = Math.ceil(posts.length / itemsPerPage);
-    const paginatedData = posts.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
+    const postsByDate = useMemo(() => {
+        const map = new Map<string, Post[]>();
+        for (const post of posts) {
+            const dateKey = new Date(post.date_created).toISOString().split("T")[0]; // "YYYY-MM-DD"
+            if (!map.has(dateKey)) map.set(dateKey, []);
+            map.get(dateKey)!.push(post);
+        }
 
-    const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setItemsPerPage(Number(e.target.value));
-        setCurrentPage(1);
-    };
+        // Sorted by date descending (today first)
+        return Array.from(map.entries()).sort((a, b) => (a[0] < b[0] ? 1 : -1));
+    }, [posts]);
+
+    const totalPages = postsByDate.length;
+    const currentDatePosts = postsByDate[currentPage - 1]?.[1] || [];
 
     const handleEdit = (post: Post) => {
         setEditUser(post);
@@ -74,7 +78,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
             {/* View switcher and items per page */}
             <div className="mb-2 flex flex-col md:flex-row md:justify-between md:items-center space-y-2 md:space-y-0">
                 {/* View Buttons */}
-                <div className="flex flex-wrap gap-2 text-xs justify-center md:justify-start">
+                <div className="flex flex-wrap gap-2 text-[10px] justify-center md:justify-start">
                     <button
                         onClick={() => setView("table")}
                         className={`flex items-center gap-1 px-3 py-1 rounded ${view === "table" ? "bg-blue-400 text-white" : "bg-gray-100"
@@ -104,18 +108,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
                 </div>
 
                 {/* Items Per Page + Pagination */}
-                <div className="flex flex-col md:flex-row items-center justify-center md:justify-end gap-2 text-[10px] text-gray-600">
-                    <select
-                        value={itemsPerPage}
-                        onChange={handleItemsPerPageChange}
-                        className="border px-3 py-2 rounded text-[10px]"
-                    >
-                        {[10, 25, 50, 100].map((num) => (
-                            <option key={num} value={num}>
-                                {num}
-                            </option>
-                        ))}
-                    </select>
+                <div className="flex items-center justify-center md:justify-end gap-2 text-[10px] text-gray-600">
                     <Pagination
                         currentPage={currentPage}
                         totalPages={totalPages}
@@ -142,9 +135,9 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
                 />
             ) : (
                 <>
-                    {view === "table" && (<TableView posts={paginatedData} handleEdit={handleEdit} refreshPosts={fetchAccount} />)}
-                    {view === "grid" && <GridView posts={paginatedData} handleEdit={handleEdit} />}
-                    {view === "card" && <CardView posts={paginatedData} handleEdit={handleEdit} />}
+                    {view === "table" && <TableView posts={currentDatePosts} handleEdit={handleEdit} refreshPosts={fetchAccount} />}
+                    {view === "grid" && <GridView posts={currentDatePosts} handleEdit={handleEdit} />}
+                    {view === "card" && <CardView posts={currentDatePosts} handleEdit={handleEdit} />}
                 </>
             )}
         </div>

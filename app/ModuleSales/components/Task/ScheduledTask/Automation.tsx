@@ -248,7 +248,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
       <div className="flex justify-end">
         <button
           onClick={toggleAll}
-          className="bg-blue-400 text-white text-xs px-3 py-1 rounded hover:bg-blue-700 transition"
+          className="bg-blue-400 text-white text-[10px] px-3 py-1 rounded hover:bg-blue-700 transition"
         >
           {allExpanded ? "Collapse All" : "Expand All"}
         </button>

@@ -24,6 +24,7 @@ interface SubmenuProps {
   activitystatus: string; setactivitystatus: (value: string) => void;
   remarks: string; setremarks: (value: string) => void;
   paymentterm: string; setpaymentterm: (value: string) => void;
+  deliverydate: string; setdeliverydate: (value: string) => void;
   setShowFields: (value: boolean) => void;
   setShowOutboundFields: (value: boolean) => void;
   setShowInboundFields: (value: boolean) => void;
@@ -69,6 +70,7 @@ const Submenu: React.FC<SubmenuProps> = ({
   activitystatus, setactivitystatus,
   remarks, setremarks,
   paymentterm, setpaymentterm,
+  deliverydate, setdeliverydate,
   setShowFields,
   setShowOutboundFields,
   setShowInboundFields,
@@ -160,7 +162,7 @@ const Submenu: React.FC<SubmenuProps> = ({
         />
         
         {activitystatus === "Delivered" && (
-          <DeliveryFields {...{ actualsales, setactualsales, emailaddress, setemailaddress }} />
+          <DeliveryFields {...{ actualsales, setactualsales, emailaddress, setemailaddress, deliverydate, setdeliverydate }} />
         )}
         
       </div>

@@ -62,6 +62,7 @@ interface FormFieldsProps {
     inquiries: string; setinquiries: (value: string) => void;
     csragent: string; setcsragent: (value: string) => void;
     paymentterm: string; setpaymentterm: (value: string) => void;
+    deliverydate: string; setdeliverydate: (value: string) => void;
 
     currentRecords: Activity[];
     editPost?: any;
@@ -107,6 +108,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     csragent, setcsragent,
 
     paymentterm, setpaymentterm,
+    deliverydate, setdeliverydate,
     editPost,
 }) => {
     const [showFields, setShowFields] = useState(false);
@@ -163,6 +165,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 setarea={setarea} area={area}
             />
             <div className="border-t border-gray-200 my-4"></div>
+            
             {typeactivity === "Quotation Preparation" && (
             <Accordion
                 projectname={projectname} setprojectname={setprojectname}
@@ -177,6 +180,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 setemailaddress={setemailaddress} emailaddress={emailaddress}
                 remarks={remarks} setremarks={setremarks}
                 paymentterm={paymentterm} setpaymentterm={setpaymentterm}
+                deliverydate={deliverydate} setdeliverydate={setdeliverydate}
                 callback={callback} setcallback={setcallback}
                 typecall={typecall} settypecall={settypecall}
                 quotationnumber={quotationnumber} setquotationnumber={setquotationnumber}
@@ -194,7 +198,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 setShowSOField={setShowSOField}
                 setShowDeliverField={setShowDeliverField}
             />
-            <div className="border-t border-gray-200 my-4"></div>
         </>
     );
 };

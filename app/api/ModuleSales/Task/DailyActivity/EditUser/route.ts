@@ -7,7 +7,6 @@ if (!Xchire_databaseUrl) {
 }
 
 const Xchire_sql = neon(Xchire_databaseUrl);
-
 /**
  * Updates an existing user in the database and inserts progress and notification.
  * @param userDetails - The updated details of the user.
@@ -27,7 +26,7 @@ async function update(userDetails: any) {
       quotationamount, sonumber, soamount,
       callstatus, actualsales, targetquota,
       ticketreferencenumber, wrapup, inquiries,
-      csragent, paymentterm,
+      csragent, paymentterm, deliverydate,
     } = userDetails;
 
     // ✅ Update the activity table
@@ -52,14 +51,14 @@ async function update(userDetails: any) {
         contactnumber, emailaddress, typeclient, address, deliveryaddress, area, projectname, projectcategory, projecttype,
         source, startdate, enddate, activitynumber, typeactivity, activitystatus, remarks, callback,
         typecall, quotationnumber, quotationamount, sonumber, soamount, callstatus, date_created,
-        actualsales, targetquota, csragent, paymentterm
+        actualsales, targetquota, csragent, paymentterm, deliverydate
       ) VALUES (
         ${ticketreferencenumber}, ${wrapup}, ${inquiries}, ${referenceid}, ${manager}, ${tsm},
         ${companyname}, ${companygroup}, ${contactperson}, ${contactnumber}, ${emailaddress}, ${typeclient}, ${address}, ${deliveryaddress},
         ${area}, ${projectname}, ${projectcategory}, ${projecttype}, ${source}, ${startdate}, ${enddate},
         ${activitynumber}, ${typeactivity}, ${activitystatus}, ${remarks}, ${callback}, ${typecall},
         ${quotationnumber}, ${quotationamount}, ${sonumber}, ${soamount}, ${callstatus},
-        CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', ${actualsales}, ${targetquota}, ${csragent}, ${paymentterm}
+        CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila', ${actualsales}, ${targetquota}, ${csragent}, ${paymentterm}, ${deliverydate}
       );
     `;
 

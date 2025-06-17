@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaCaretRight, FaCaretDown } from "react-icons/fa";
+import { RiEditCircleLine } from "react-icons/ri";
 
 interface Post {
   id: string;
@@ -317,11 +318,11 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({ posts, handleEdit }
                             e.stopPropagation();
                             handleEdit(post);
                           }}
-                          className="bg-blue-400 text-white text-xs px-3 py-1 rounded hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="flex items-center gap-1 bg-blue-500 text-white text-[10px] px-2 py-1 rounded hover:bg-blue-700 transition-colors"
                           aria-label={`Edit ${post.companyname}`}
                           type="button"
                         >
-                          Create
+                          <RiEditCircleLine size={12} /> Update
                         </button>
                       </div>
 
