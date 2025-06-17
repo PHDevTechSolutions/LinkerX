@@ -129,8 +129,8 @@ const OutboundCalls: React.FC<OutboundCallsProps> = ({ filteredCalls, dateRange 
                     <th className="px-4 py-2">OB Target</th>
                     <th className="px-4 py-2">Total OB</th>
                     <th className="px-4 py-2">OB Achievement</th>
-                    <th className="px-4 py-2">Calls to Quote Conversion (%)</th>
-                    <th className="px-4 py-2">Outbound to Sales Conversion (%)</th>
+                    <th className="px-4 py-2">Calls to Quote Conversion</th>
+                    <th className="px-4 py-2">Outbound to Sales Conversion</th>
                     <th className="px-4 py-2">Actual Sales from Outbound</th>
                   </tr>
                 </thead>

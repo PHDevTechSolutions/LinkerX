@@ -153,9 +153,9 @@ const Quotation: React.FC<QuotationProps> = ({ records }) => {
                   <th className="px-4 py-2">Total Count</th>
                   <th className="px-4 py-2">Total Amount</th>
                   <th className="px-4 py-2">Handling Time</th>
-                  <th className="px-4 py-2">Quote to SO Conversion (Count %)</th>
-                  <th className="px-4 py-2">Quote to SO Conversion (Amount %)</th>
-                  <th className="px-4 py-2">Quotation to SI Conversion (Amount %)</th>
+                  <th className="px-4 py-2">Quote to SO Conversion</th>
+                  <th className="px-4 py-2">Quote to SO Conversion</th>
+                  <th className="px-4 py-2">Quotation to SI Conversion</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -166,8 +166,8 @@ const Quotation: React.FC<QuotationProps> = ({ records }) => {
                       <td className="px-4 py-2">{totalQuoteAmount.toFixed(2)}</td>
                       <td className="px-4 py-2">{handlingTimeFormatted}</td>
                       <td className="px-4 py-2">{quoteToSO.toFixed(2)}%</td>
-                      <td className="px-4 py-2">{valuePeso.toFixed(2)}%</td>
-                      <td className="px-4 py-2">{quoteToSIValuePeso.toFixed(2)}%</td>
+                      <td className="px-4 py-2">₱{valuePeso.toFixed(2)}</td>
+                      <td className="px-4 py-2">₱{quoteToSIValuePeso.toFixed(2)}</td>
                     </tr>
                   )
                 )}

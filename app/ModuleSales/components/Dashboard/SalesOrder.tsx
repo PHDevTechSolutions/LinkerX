@@ -150,22 +150,20 @@ const SalesOrder: React.FC<SalesOrderProps> = ({ records }) => {
               <table className="w-full text-xs table-auto mb-6">
                 <thead className="bg-gray-100">
                   <tr className="text-left">
-                    <th className="px-4 py-2">Activity Status</th>
                     <th className="px-4 py-2">Total Count</th>
                     <th className="px-4 py-2">SO Amount</th>
-                    <th className="px-4 py-2">SO to SI Conversion (%)</th>
-                    <th className="px-4 py-2">SO to SI Peso Value (%)</th>
+                    <th className="px-4 py-2">SO to SI Conversion</th>
+                    <th className="px-4 py-2">SO to SI Peso Value</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   <tr className="hover:bg-gray-50">
-                    <td className="px-4 py-2">SO-Done</td>
-                    <td className="px-4 py-2">{soDoneSummary.totalCount}</td>
+                    <td className="px-4 py-2 font-bold">{soDoneSummary.totalCount}</td>
                     <td className="px-4 py-2">
                       ₱{soDoneSummary.totalAmount.toFixed(2)}
                     </td>
                     <td className="px-4 py-2">{conversionRate.toFixed(2)}%</td>
-                    <td className="px-4 py-2">{pesoValueRate.toFixed(2)}%</td>
+                    <td className="px-4 py-2">₱{pesoValueRate.toFixed(2)}</td>
                   </tr>
                 </tbody>
               </table>

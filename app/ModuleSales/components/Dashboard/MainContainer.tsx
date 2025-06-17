@@ -88,14 +88,16 @@ const MainContainer: React.FC<MainContainerProps> = ({ filteredAccounts }) => {
     if (!dateRange.start && !dateRange.end) return filteredAccounts;
 
     const startFilter = dateRange.start ? new Date(dateRange.start) : null;
-    const endFilter = dateRange.end ? new Date(dateRange.end) : null;
+    const endFilter = dateRange.end
+      ? new Date(new Date(dateRange.end).setDate(new Date(dateRange.end).getDate() + 1))
+      : null;
 
     return filteredAccounts.filter((acc) => {
       const startDate = acc.startdate ? new Date(acc.startdate) : null;
       const endDate = acc.enddate ? new Date(acc.enddate) : null;
       if (!startDate || !endDate) return false;
       return (
-        (!endFilter || startDate <= endFilter) &&
+        (!endFilter || startDate < endFilter) &&
         (!startFilter || endDate >= startFilter)
       );
     });
