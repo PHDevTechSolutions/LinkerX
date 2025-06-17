@@ -40,7 +40,7 @@ const OutboundCalls: React.FC<OutboundCallsProps> = ({ filteredCalls, dateRange 
 
   const doneActivityCount = useMemo(() => {
     return filteredCalls.filter(
-      (call) => (call.activitystatus || "").toLowerCase() === "done"
+      (call) => (call.activitystatus || "").toLowerCase() === "delivered"
     ).length;
   }, [filteredCalls]);
 

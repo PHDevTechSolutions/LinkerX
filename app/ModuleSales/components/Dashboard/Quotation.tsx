@@ -143,12 +143,6 @@ const Quotation: React.FC<QuotationProps> = ({ records }) => {
           </div>
         </div>
 
-        {/* Handling Time Distribution Histogram */}
-        <h3 className="text-sm font-bold mb-2">Handling Time Distribution</h3>
-        <div className="bg-white shadow-md rounded-lg p-4 font-sans text-black mb-4">
-          <Histogram data={handlingTimesMs} bins={10} color="#3B82F6" />
-        </div>
-
         {aggregatedData.length === 0 ? (
           <p className="text-gray-500 text-xs">No quotations with status "Quote-Done".</p>
         ) : (

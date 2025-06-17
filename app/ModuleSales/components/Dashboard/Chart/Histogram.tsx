@@ -8,7 +8,8 @@ interface HistogramProps {
   xAxisLabel?: string;
   yAxisLabel?: string;
   logScale?: boolean;
-  height?: number;
+  height?: number; // optional fixed height, will fallback to responsive height if not provided
+  onBarClick?: (binIndex: number) => void;
 }
 
 const Histogram: React.FC<HistogramProps> = ({
@@ -19,7 +20,8 @@ const Histogram: React.FC<HistogramProps> = ({
   xAxisLabel,
   yAxisLabel,
   logScale = false,
-  height = 220,
+  height,
+  onBarClick,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -52,29 +54,23 @@ const Histogram: React.FC<HistogramProps> = ({
 
   const maxCount = Math.max(...counts);
 
+  // Use responsive height if not provided, 40% of container width
+  const computedHeight = height ?? Math.floor(containerWidth * 0.4);
+
   const scaleY = (count: number) => {
     if (logScale) {
       const logMax = Math.log10(maxCount + 1);
-      return ((Math.log10(count + 1) / logMax) || 0) * height;
+      return ((Math.log10(count + 1) / logMax) || 0) * computedHeight;
     } else {
-      return (count / maxCount) * height;
+      return (count / maxCount) * computedHeight;
     }
   };
 
-  // Format milliseconds to H M S format
+  // Format milliseconds simplified to seconds (if < 1000 ms, show ms)
   const formatInterval = (ms: number) => {
     if (ms < 1000) return `${ms}ms`;
     const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    const parts = [];
-    if (hours) parts.push(`${hours}h`);
-    if (minutes) parts.push(`${minutes}m`);
-    if (seconds) parts.push(`${seconds}s`);
-    if (parts.length === 0) return "0s";
-    return parts.join(" ");
+    return `${totalSeconds}s`;
   };
 
   const getTooltip = (binIndex: number) => {
@@ -91,13 +87,13 @@ const Histogram: React.FC<HistogramProps> = ({
     <div ref={containerRef} className="relative select-none w-full">
       <svg
         width={containerWidth}
-        height={height + 40}
+        height={computedHeight + 40}
         role="img"
         aria-label="Histogram chart"
       >
         {yAxisLabel && (
           <text
-            x={-height / 2}
+            x={-computedHeight / 2}
             y={15}
             transform="rotate(-90)"
             textAnchor="middle"
@@ -111,7 +107,10 @@ const Histogram: React.FC<HistogramProps> = ({
         {counts.map((count, i) => {
           const barHeight = scaleY(count);
           const x = i * (barWidth + barGap);
-          const y = height - barHeight;
+          const y = computedHeight - barHeight;
+
+          // Dynamic color on hover
+          const fillColor = hoveredIndex === i ? "#2563EB" : color;
 
           return (
             <g key={i}>
@@ -120,12 +119,16 @@ const Histogram: React.FC<HistogramProps> = ({
                 y={y}
                 width={barWidth}
                 height={barHeight}
-                fill={color}
+                fill={fillColor}
                 rx={3}
                 ry={3}
-                style={{ cursor: "pointer", transition: "fill 0.3s" }}
+                style={{
+                  cursor: "pointer",
+                  transition: "fill 0.3s, height 0.5s ease",
+                }}
                 onMouseEnter={() => setHoveredIndex(i)}
                 onMouseLeave={() => setHoveredIndex(null)}
+                onClick={() => onBarClick?.(i)}
                 aria-label={getTooltip(i)}
                 role="img"
               />
@@ -145,15 +148,17 @@ const Histogram: React.FC<HistogramProps> = ({
           );
         })}
 
+        {/* X axis baseline */}
         <line
           x1={0}
-          y1={height}
+          y1={computedHeight}
           x2={containerWidth}
-          y2={height}
+          y2={computedHeight}
           stroke="#aaa"
           strokeWidth={1}
         />
 
+        {/* X axis labels */}
         {counts.map((_, i) => {
           const x = i * (barWidth + barGap) + barWidth / 2;
           const labelVal = min + i * binSize;
@@ -161,7 +166,7 @@ const Histogram: React.FC<HistogramProps> = ({
             <text
               key={i}
               x={x}
-              y={height + 15}
+              y={computedHeight + 15}
               textAnchor="middle"
               fontSize={10}
               fill="#666"
@@ -173,7 +178,7 @@ const Histogram: React.FC<HistogramProps> = ({
 
         <text
           x={containerWidth}
-          y={height + 15}
+          y={computedHeight + 15}
           textAnchor="end"
           fontSize={10}
           fill="#666"
@@ -184,7 +189,7 @@ const Histogram: React.FC<HistogramProps> = ({
         {xAxisLabel && (
           <text
             x={containerWidth / 2}
-            y={height + 35}
+            y={computedHeight + 35}
             textAnchor="middle"
             fontSize={12}
             fill="#444"
@@ -193,8 +198,9 @@ const Histogram: React.FC<HistogramProps> = ({
           </text>
         )}
 
+        {/* Y axis grid lines and labels */}
         {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
-          const y = height - ratio * height;
+          const y = computedHeight - ratio * computedHeight;
           const countVal = logScale
             ? Math.round(Math.pow(10, ratio * Math.log10(maxCount + 1)) - 1)
             : Math.round(ratio * maxCount);
@@ -224,11 +230,11 @@ const Histogram: React.FC<HistogramProps> = ({
           style={{
             position: "absolute",
             pointerEvents: "none",
-            top: height - scaleY(counts[hoveredIndex]) - 35,
+            top: computedHeight - scaleY(counts[hoveredIndex]) - 35,
             left: hoveredIndex * (barWidth + barGap) + barWidth / 2 - 40,
             width: 80,
-            backgroundColor: "#fff",
-            color: "#000",
+            backgroundColor: "#1e40af",
+            color: "#fff",
             padding: "6px 10px",
             borderRadius: 8,
             fontSize: 12,
