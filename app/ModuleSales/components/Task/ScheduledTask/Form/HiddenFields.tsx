@@ -1,7 +1,8 @@
-import React from "react";
+import { useEffect } from "react";
 
 interface HiddenFieldsProps {
-    activitynumber: string;
+    companyname: string;
+    activitynumber: string; setactivitynumber: (value: string) => void;
     referenceid: string; setreferenceid: (value: string) => void;
     manager: string; setmanager: (value: string) => void;
     tsm: string; settsm: (value: string) => void;
@@ -16,7 +17,8 @@ interface HiddenFieldsProps {
 }
 
 const HiddenFields: React.FC<HiddenFieldsProps> = ({
-    activitynumber,
+    companyname,
+    activitynumber, setactivitynumber,
     referenceid, setreferenceid,
     manager, setmanager,
     tsm, settsm,
@@ -29,10 +31,46 @@ const HiddenFields: React.FC<HiddenFieldsProps> = ({
     csragent, setcsragent,
     editPost
 }) => {
+
+    const generateActivityNumber = () => {
+        if (editPost?.activitynumber) return; // Don't regenerate if editing
+        if (!companyname || !referenceid) return;
+
+        const firstLetter = companyname.charAt(0).toUpperCase();
+        const firstTwoRef = referenceid.substring(0, 2).toUpperCase();
+
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+        }).replace("/", "");
+
+        const randomNumber = String(Math.floor(100000 + Math.random() * 900000)).slice(0, 6);
+        const generatedNumber = `${firstLetter}-${firstTwoRef}-${formattedDate}-${randomNumber}`;
+        setactivitynumber(generatedNumber);
+    };
+
+    useEffect(() => {
+        if (!editPost) {
+            generateActivityNumber();
+        } else {
+            setactivitynumber(editPost.activitynumber);
+        }
+    }, [editPost, companyname, referenceid]);
+
     return (
         <div className="flex flex-wrap -mx-4">
-            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                <input type="hidden" id="activitynumber" value={activitynumber ?? ""} readOnly={!!editPost} />
+            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4 space-y-2">
+                {/* Visible but read-only */}
+                <input
+                    type="hidden"
+                    id="activitynumber"
+                    value={activitynumber ?? ""}
+                    readOnly
+                    className="bg-gray-100 text-gray-700 w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                />
+
+                {/* Hidden fields */}
                 <input type="hidden" id="referenceid" value={referenceid ?? ""} onChange={(e) => setreferenceid(e.target.value)} />
                 <input type="hidden" id="manager" value={manager ?? ""} onChange={(e) => setmanager(e.target.value)} />
                 <input type="hidden" id="tsm" value={tsm ?? ""} onChange={(e) => settsm(e.target.value)} />

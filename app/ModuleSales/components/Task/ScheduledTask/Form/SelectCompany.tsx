@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import Select from 'react-select';
 import Email from "./Email";
 import Area from "./Area";
 
@@ -55,6 +56,88 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
     area, setarea,
     editPost,
 }) => {
+    const [previousCompany, setPreviousCompany] = useState<any>(null);
+    const [companies, setCompanies] = useState<any[]>([]);
+    const [contactPersons, setContactPersons] = useState<string[]>([]);
+    const [contactNumbers, setContactNumbers] = useState<string[]>([]);
+    const [emailAddresses, setEmailAddresses] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (referenceid) {
+            // API call to fetch company data
+            fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        // Filter companies with status 'Active' or 'Used'
+                        const filteredCompanies = data.data.filter((company: any) =>
+                            company.status === 'Active' || company.status === 'Used'
+                        );
+
+                        setCompanies(filteredCompanies.map((company: any) => ({
+                            id: company.id,  // Ensure `id` is included in the mapped object
+                            companyname: company.companyname,
+                            value: company.companyname,
+                            label: company.companyname,
+                            contactperson: company.contactperson,
+                            contactnumber: company.contactnumber,
+                            emailaddress: company.emailaddress,
+                            typeclient: company.typeclient,
+                            address: company.address,
+                            deliveryaddress: company.deliveryaddress,
+                            companygroup: company.companygroup,
+                            area: company.area,
+                        })));
+                    } else {
+                        console.error("Error fetching companies:", data.error);
+                    }
+                })
+                .catch((error) => console.error("Error fetching companies:", error));
+        }
+    }, [referenceid]);
+
+    useEffect(() => {
+        setContactPersons(contactperson ? contactperson.split(", ") : [""]);
+        setContactNumbers(contactnumber ? contactnumber.split(", ") : [""]);
+        setEmailAddresses(emailaddress ? emailaddress.split(", ") : [""]);
+    }, [contactperson, contactnumber, emailaddress]);
+
+    const handleCompanySelect = async (selectedOption: any) => {
+        try {
+            // If a company is selected
+            if (selectedOption && selectedOption.id) {
+                console.log("Selected Company Data:", selectedOption);
+
+                setPreviousCompany(selectedOption);
+                setcompanyname(selectedOption.companyname);
+                setcontactperson(selectedOption.contactperson);
+                setcontactnumber(selectedOption.contactnumber);
+                setemailaddress(selectedOption.emailaddress);
+                settypeclient(selectedOption.typeclient);
+                setaddress(selectedOption.address);
+                setarea(selectedOption.area);
+                setdeliveryaddress(selectedOption.deliveryaddress);
+                setcompanygroup(selectedOption.companygroup);
+            } else {
+                // No company selected, reset all fields
+                console.log("No selected company, resetting form fields.");
+                setPreviousCompany(null);
+                setcompanyname("");
+                setcontactperson("");
+                setcontactnumber("");
+                setemailaddress("");
+                settypeclient("");
+                setaddress("");
+                setarea("");
+                setdeliveryaddress("");
+                setcompanygroup("");
+            }
+        } catch (error) {
+            console.error("Unexpected error while selecting company:", error);
+        }
+    };
+
+    const [isManual, setIsManual] = useState(false); // toggle state
 
     return (
         <>
@@ -62,21 +145,61 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                 {/* Company Name */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <div className="flex items-center justify-between mb-2">
-                        <label className="block text-xs font-bold" htmlFor="companyname">
-                            Company Name
-                        </label>
+                        <label className="block text-xs font-bold" htmlFor="companyname">Company Name</label>
                     </div>
-                    <input
-                        type="text"
-                        id="companyname"
-                        value={companyname ?? ""}
-                        onChange={(e) => {
-                            const input = e.target.value;
-                            const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
-                            setcompanyname(sanitized);
-                        }}
-                        className="w-full px-3 py-2 border rounded text-xs capitalize"
-                    />
+                    {!isManual ? (
+                        <>
+                            <Select
+                                id="CompanyName"
+                                options={companies}
+                                onChange={handleCompanySelect}
+                                className="w-full text-xs capitalize"
+                                placeholder="Select Company"
+                                isClearable
+                            />
+                            {editPost ? (
+                                <input
+                                    type="text"
+                                    id="companyname"
+                                    value={editPost.companyname || ""}
+                                    disabled
+                                    className="text-xs capitalize w-full p-2 border border-gray-300 rounded-md mt-2"
+                                />
+                            ) : (
+                                <input
+                                    type="text"
+                                    id="companyname"
+                                    value={companyname ?? ""}
+                                    onChange={(e) => {
+                                        const input = e.target.value;
+                                        const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                        setcompanyname(sanitized);
+                                    }}
+                                    className="w-full px-3 py-2 border rounded text-xs capitalize mt-2"
+                                    disabled
+                                />
+                            )}
+                        </>
+                    ) : (
+                        <input
+                            type="text"
+                            id="companyname"
+                            value={companyname ?? ""}
+                            onChange={(e) => {
+                                const input = e.target.value;
+                                const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
+                                setcompanyname(sanitized);
+                            }}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                        />
+                    )}
+                    <button
+                        type="button"
+                        onClick={() => setIsManual(prev => !prev)}
+                        className="text-blue-500 text-[10px] underline"
+                    >
+                        {isManual ? "If Account Exists Switch to Select" : "If Account is New Switch to Manual"}
+                    </button>
                 </div>
 
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
@@ -173,7 +296,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                     <label className="block text-xs font-bold mb-2">Region</label>
                     <Area area={area} setarea={setarea} />
                 </div>
-                
+
                 {/* Type Client */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2">Type Client</label>

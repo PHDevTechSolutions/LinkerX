@@ -113,7 +113,7 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
 
               <td className="px-6 py-4">
                 <span
-                  className={`px-2 py-1 text-[8px] rounded-full font-semibold ${statusColors[post.activitystatus] || "bg-gray-300 text-black"
+                  className={`px-2 py-1 text-[8px] rounded-full shadow-md font-semibold ${statusColors[post.activitystatus] || "bg-gray-300 text-black"
                     }`}
                 >
                   {post.activitystatus}

@@ -164,7 +164,7 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
           <label htmlFor="emailaddress" className="block text-xs font-bold mb-2">Send Email Survey</label>
           <select
             id="emailaddress"
-            value={emailaddress}
+            value={emailaddress ?? ""}
             onChange={(e) => setemailaddress(e.target.value)}
             className="w-full px-3 py-2 border rounded text-xs"
             required

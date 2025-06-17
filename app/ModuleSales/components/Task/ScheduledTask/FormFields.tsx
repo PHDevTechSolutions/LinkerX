@@ -147,7 +147,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     return (
         <>
             <TimeSpent startdate={startdate} enddate={enddate} />
-            <HiddenFields activitynumber={activitynumber} referenceid={referenceid} setreferenceid={setreferenceid} manager={manager} setmanager={setmanager}
+            <HiddenFields activitynumber={activitynumber} setactivitynumber={setactivitynumber} companyname={companyname} referenceid={referenceid} setreferenceid={setreferenceid} manager={manager} setmanager={setmanager}
                 tsm={tsm} settsm={settsm} targetquota={targetquota} settargetquota={settargetquota} startdate={startdate} setstartdate={setstartdate} enddate={enddate} setenddate={setenddate} ticketreferencenumber={ticketreferencenumber} setticketreferencenumber={setticketreferencenumber}
                 wrapup={wrapup} setwrapup={setwrapup} inquiries={inquiries} setinquiries={setinquiries} csragent={csragent} setcsragent={setcsragent} editPost={editPost} />
          

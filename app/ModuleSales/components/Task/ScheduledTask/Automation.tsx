@@ -212,23 +212,31 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
       });
 
       if (res.ok) {
-        // Calculate date_updated here before updating status
         const date_updated = getDateUpdated(post.typeclient);
 
-        // Send id, status, and date_updated to update status & date
         const statusUpdateRes = await fetch("/api/ModuleSales/Task/ScheduleTask/EditStatus", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             id: post.id,
             status: "Used",
-            date_updated,  // <-- isama dito
+            date_updated,
           }),
         });
 
         if (statusUpdateRes.ok) {
           toast.success("Activity added and status updated!");
-          fetchData();
+
+          // Reload fresh data to refresh UI
+          await fetchData();
+
+          // Optional: reset expandedIds or other UI states if needed
+          // setExpandedIds([]);  // if you want to collapse all expanded rows after submit
+
+          // Optional: scroll to top or focus as needed
+
+          // If you want a full page reload instead (usually not needed):
+          // window.location.reload();
         } else {
           const updateErr = await statusUpdateRes.json();
           toast.warn(`Activity added, but failed to update status: ${updateErr.message}`);
@@ -242,6 +250,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
       toast.error("Something went wrong!");
     }
   };
+
 
   return (
     <div className="bg-white col-span-3 space-y-4">
