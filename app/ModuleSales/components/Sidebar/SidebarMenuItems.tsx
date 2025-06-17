@@ -52,6 +52,11 @@ const getMenuItems = (userId: string | null = "") => [
                 description: "Companies to be Deleted", 
                 href: `/ModuleSales/Sales/Companies/DeletionCompanies${userId ? `?id=${encodeURIComponent(userId)}` : ""}` 
             },
+            { 
+                title: "Client History", 
+                description: "Past Client Interactions", 
+                href: `/ModuleSales/Sales/Reports/ClientHistory${userId ? `?id=${encodeURIComponent(userId)}` : ""}` 
+            },
         ],
     },
     {
@@ -103,11 +108,6 @@ const getMenuItems = (userId: string | null = "") => [
                 title: "CSR Inquiry Summary", 
                 description: "Customer Service Inquiries", 
                 href: `/ModuleSales/Sales/Reports/CSRSummary${userId ? `?id=${encodeURIComponent(userId)}` : ""}` 
-            },
-            { 
-                title: "Client History", 
-                description: "Past Client Interactions", 
-                href: `/ModuleSales/Sales/Reports/ClientHistory${userId ? `?id=${encodeURIComponent(userId)}` : ""}` 
             },
         ],
     },
