@@ -28,7 +28,7 @@ const Pagination: React.FC<PaginationProps> = ({
         aria-label="First Page"
         className="bg-gray-200 px-2 py-2 rounded disabled:opacity-50 flex items-center focus:outline-none focus:ring"
       >
-        <AiOutlineDoubleLeft size={14} />
+        <AiOutlineDoubleLeft size={12} />
       </button>
 
       {/* Previous Page */}
@@ -39,7 +39,7 @@ const Pagination: React.FC<PaginationProps> = ({
         aria-label="Previous Page"
         className="bg-gray-200 px-2 py-2 rounded disabled:opacity-50 flex items-center space-x-1 focus:outline-none focus:ring"
       >
-        <MdNavigateBefore size={15} />
+        <MdNavigateBefore size={12} />
         <span>Prev</span>
       </button>
 
@@ -52,7 +52,7 @@ const Pagination: React.FC<PaginationProps> = ({
         className="bg-gray-200 px-2 py-2 rounded disabled:opacity-50 flex items-center space-x-1 focus:outline-none focus:ring"
       >
         <span>Next</span>
-        <MdNavigateNext size={15} />
+        <MdNavigateNext size={12} />
       </button>
 
       {/* Last Page */}
@@ -63,11 +63,11 @@ const Pagination: React.FC<PaginationProps> = ({
         aria-label="Last Page"
         className="bg-gray-200 px-2 py-2 rounded disabled:opacity-50 flex items-center focus:outline-none focus:ring"
       >
-        <AiOutlineDoubleRight size={14} />
+        <AiOutlineDoubleRight size={12} />
       </button>
 
       {/* Page Info */}
-      <span className="ml-2 text-[11px]">
+      <span className="ml-2 text-[10px]">
         Page {currentPage} of {totalPages || 1}
       </span>
     </div>
