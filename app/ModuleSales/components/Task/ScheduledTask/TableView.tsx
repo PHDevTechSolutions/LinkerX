@@ -105,7 +105,7 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
                     e.stopPropagation();
                     onEdit(post);
                   }}
-                  className="flex items-center gap-1 bg-blue-500 text-white text-[10px] px-2 py-1 rounded hover:bg-blue-700 transition-colors"
+                  className="flex items-center shadow-md gap-1 bg-blue-500 text-white text-[10px] px-2 py-1 rounded hover:bg-blue-700 hover:rounded-full transition-colors"
                 >
                   <RiEditCircleLine size={12} /> Update
                 </button>
@@ -120,13 +120,13 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
                 </span>
               </td>
 
-              <td className="px-6 py-4 text-xs">{formatDate(post.date_created)}</td>
-              <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
-              <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
-              <td className="px-6 py-4 text-xs">{post.contactnumber}</td>
-              <td className="px-6 py-4 text-xs">{post.typeclient}</td>
-              <td className="px-6 py-4 text-xs">{post.ticketreferencenumber}</td>
-              <td className="px-6 py-4 text-xs">{formatDate(post.date_updated)}</td>
+              <td className="px-6 py-4 text-[10px]">{formatDate(post.date_created)}</td>
+              <td className="px-6 py-4 text-[10px] uppercase">{post.companyname}</td>
+              <td className="px-6 py-4 text-[10px] capitalize">{post.contactperson}</td>
+              <td className="px-6 py-4 text-[10px]">{post.contactnumber}</td>
+              <td className="px-6 py-4 text-[10px]">{post.typeclient}</td>
+              <td className="px-6 py-4 text-[10px]">{post.ticketreferencenumber}</td>
+              <td className="px-6 py-4 text-[10px]">{formatDate(post.date_updated)}</td>
             </tr>
           ))}
         </React.Fragment>
