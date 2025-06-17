@@ -1,18 +1,17 @@
 import React, { useMemo } from "react";
+import Histogram from "./Chart/Histogram";
+import GaugeQChart from "./Chart/GaugeQChart";
 
 interface QuotationProps {
   records: any[];
 }
 
 const Quotation: React.FC<QuotationProps> = ({ records }) => {
-  const invalid = ["", "n/a", "na", "none", "n.a", "n.a.", null, undefined];
-
   // Quote-Done records
   const quoteDoneRecords = useMemo(() => {
     return records.filter((rec) => {
-      const quotation = (rec.quotationnumber || "").toString().trim().toLowerCase();
       const activity = (rec.activitystatus || "").trim().toLowerCase();
-      return !invalid.includes(quotation) && activity === "quote-done";
+      return activity === "quote-done";
     });
   }, [records]);
 
@@ -40,76 +39,11 @@ const Quotation: React.FC<QuotationProps> = ({ records }) => {
     };
   }, [records]);
 
-  // Value as peso (totalSOAmount / totalQuoteAmount) * 100
-  const valuePeso = totalQuoteAmount > 0 ? (soStats.totalSOAmount / totalQuoteAmount) * 100 : 0;
-
-  // Quote to SO % by count (existing)
-  const quoteToSO = totalQuoteCount > 0 ? (soStats.quantity / totalQuoteCount) * 100 : 0;
-
-  // Aggregate Actual Sales by company
-  const actualSalesByCompany = useMemo(() => {
-    const map = new Map<string, number>();
-    records.forEach((rec) => {
-      const company = rec.companyname || "N/A";
-      const sales = Number(rec.actualsales) || 0;
-      if (sales > 0) {
-        map.set(company, (map.get(company) || 0) + sales);
-      }
-    });
-    return map;
-  }, [records]);
-
-  // Aggregated Quote-Done grouped by company
-  const aggregatedData = useMemo(() => {
-    const map = new Map<
-      string,
-      { totalCount: number; totalQuoteAmount: number; totalHandlingMs: number }
-    >();
-
-    quoteDoneRecords.forEach((rec) => {
-      const company = rec.companyname || "N/A";
-      const amount = Number(rec.quotationamount) || 0;
-
-      let handlingMs = 0;
-      try {
-        const start = new Date(rec.startdate);
-        const end = new Date(rec.enddate);
-        if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end > start) {
-          handlingMs = end.getTime() - start.getTime();
-        }
-      } catch { }
-
-      const current = map.get(company) || { totalCount: 0, totalQuoteAmount: 0, totalHandlingMs: 0 };
-      map.set(company, {
-        totalCount: current.totalCount + 1,
-        totalQuoteAmount: current.totalQuoteAmount + amount,
-        totalHandlingMs: current.totalHandlingMs + handlingMs,
-      });
-    });
-
-    const formatDuration = (ms: number) => {
-      const totalSeconds = Math.floor(ms / 1000);
-      const hours = Math.floor(totalSeconds / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-      const pad = (n: number) => n.toString().padStart(2, "0");
-      return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
-    };
-
-    // Combine actual sales totals per company here
-    return Array.from(map.entries()).map(([company, data]) => ({
-      company,
-      ...data,
-      handlingTimeFormatted: formatDuration(data.totalHandlingMs),
-      actualSalesTotal: actualSalesByCompany.get(company) || 0,
-    }));
-  }, [quoteDoneRecords, actualSalesByCompany]);
-
-  // Actual Sales records (no grouping)
+  // Actual Sales records (paid)
   const paidActualSalesRecords = useMemo(() => {
     return records.filter(
       (rec) =>
-        (rec.activitystatus || "").toLowerCase() === "paid" &&
+        (rec.activitystatus || "").toLowerCase() === "delivered" &&
         (Number(rec.actualsales) || 0) > 0
     );
   }, [records]);
@@ -121,14 +55,100 @@ const Quotation: React.FC<QuotationProps> = ({ records }) => {
     );
   }, [paidActualSalesRecords]);
 
-  // New: Quotation to SI Conversion (Peso Value)
+  // Quote to SO Conversion (percentage by count)
+  const quoteToSO = totalQuoteCount > 0 ? (soStats.quantity / totalQuoteCount) * 100 : 0;
+
+  // Quote to SO Conversion (percentage by amount)
+  const valuePeso = totalQuoteAmount > 0 ? (soStats.totalSOAmount / totalQuoteAmount) * 100 : 0;
+
+  // Quotation to SI Conversion (percentage by amount)
   const quoteToSIValuePeso = totalQuoteAmount > 0 ? (totalPaidActualSales / totalQuoteAmount) * 100 : 0;
+
+  // Aggregated quote data for table
+  const aggregatedData = useMemo(() => {
+    let totalCount = 0;
+    let totalQuoteAmount = 0;
+    let totalHandlingMs = 0;
+
+    quoteDoneRecords.forEach((rec) => {
+      const amount = Number(rec.quotationamount) || 0;
+
+      let handlingMs = 0;
+      try {
+        const start = new Date(rec.startdate);
+        const end = new Date(rec.enddate);
+        if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end > start) {
+          handlingMs = end.getTime() - start.getTime();
+        }
+      } catch {
+        // ignore
+      }
+
+      totalCount += 1;
+      totalQuoteAmount += amount;
+      totalHandlingMs += handlingMs;
+    });
+
+    const formatDuration = (ms: number) => {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      const pad = (n: number) => n.toString().padStart(2, "0");
+      return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    };
+
+    return [
+      {
+        totalCount,
+        totalQuoteAmount,
+        handlingTimeFormatted: formatDuration(totalHandlingMs),
+      },
+    ];
+  }, [quoteDoneRecords]);
+
+  // Handling times in ms array for histogram
+  const handlingTimesMs = useMemo(() => {
+    return quoteDoneRecords
+      .map((rec) => {
+        try {
+          const start = new Date(rec.startdate);
+          const end = new Date(rec.enddate);
+          if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end > start) {
+            return end.getTime() - start.getTime();
+          }
+        } catch {}
+        return 0;
+      })
+      .filter((ms) => ms > 0);
+  }, [quoteDoneRecords]);
 
   return (
     <div className="space-y-8">
-      {/* Quotations Table */}
-      <div className="bg-white shadow-md rounded-lg p-6 font-sans overflow-x-auto text-black">
+      <div className="bg-white shadow-md rounded-lg p-4 font-sans text-black">
         <h2 className="text-sm font-bold mb-4">Quotations</h2>
+
+        {/* Gauges Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+          <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
+            <GaugeQChart value={quoteToSO} label="Quote to SO Conversion" color="#3B82F6" />
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
+            <GaugeQChart value={valuePeso} label="Quote to SO Conversion" color="#10B981" />
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
+            <GaugeQChart value={quoteToSIValuePeso} label="Quotation to SI Conversion" color="#F59E0B" />
+          </div>
+        </div>
+
+        {/* Handling Time Distribution Histogram */}
+        <h3 className="text-sm font-bold mb-2">Handling Time Distribution</h3>
+        <div className="bg-white shadow-md rounded-lg p-4 font-sans text-black mb-4">
+          <Histogram data={handlingTimesMs} bins={10} color="#3B82F6" />
+        </div>
+
         {aggregatedData.length === 0 ? (
           <p className="text-gray-500 text-xs">No quotations with status "Quote-Done".</p>
         ) : (
@@ -139,21 +159,21 @@ const Quotation: React.FC<QuotationProps> = ({ records }) => {
                   <th className="px-4 py-2">Total Count</th>
                   <th className="px-4 py-2">Total Amount</th>
                   <th className="px-4 py-2">Handling Time</th>
-                  <th className="px-4 py-2">Quote to SO Conversion</th>
-                  <th className="px-4 py-2">Quote to SO Conversion</th>
-                  <th className="px-4 py-2">Quotation to SI Conversion</th>
+                  <th className="px-4 py-2">Quote to SO Conversion (Count %)</th>
+                  <th className="px-4 py-2">Quote to SO Conversion (Amount %)</th>
+                  <th className="px-4 py-2">Quotation to SI Conversion (Amount %)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {aggregatedData.map(
-                  ({ company, totalCount, totalQuoteAmount, handlingTimeFormatted }, idx) => (
+                  ({ totalCount, totalQuoteAmount, handlingTimeFormatted }, idx) => (
                     <tr key={idx} className="hover:bg-gray-50">
                       <td className="px-4 py-2">{totalCount}</td>
                       <td className="px-4 py-2">{totalQuoteAmount.toFixed(2)}</td>
                       <td className="px-4 py-2">{handlingTimeFormatted}</td>
                       <td className="px-4 py-2">{quoteToSO.toFixed(2)}%</td>
-                      <td className="px-4 py-2">₱{valuePeso.toFixed(2)}</td>
-                      <td className="px-4 py-2">₱{quoteToSIValuePeso.toFixed(2)}</td> {/* New value */}
+                      <td className="px-4 py-2">{valuePeso.toFixed(2)}%</td>
+                      <td className="px-4 py-2">{quoteToSIValuePeso.toFixed(2)}%</td>
                     </tr>
                   )
                 )}
