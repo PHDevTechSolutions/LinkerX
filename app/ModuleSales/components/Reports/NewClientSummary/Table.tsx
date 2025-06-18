@@ -94,7 +94,6 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                 <table className="min-w-full table-auto">
                     <thead className="bg-gray-100">
                         <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-                            <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
                             <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
@@ -110,15 +109,6 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
                         ) : (
                             paginatedData.map((post) => (
                                 <tr key={post.id} className="border-b whitespace-nowrap">
-                                    <td className="px-6 py-4 text-xs">
-                                        <button
-                                            className="block px-4 py-2 text-[10px] font-bold text-black bg-blue-300 rounded-lg hover:bg-orange-300 hover:rounded-full hover:shadow-md w-full text-left flex items-center gap-1"
-                                            onClick={() => handleEdit(post)}
-                                        >
-                                            <CiEdit /> Edit
-                                        </button>
-                                    </td>
-
                                     <td className="px-6 py-4 text-xs">{formatDate(post.date_created)}</td>
                                     <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
                                     <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>

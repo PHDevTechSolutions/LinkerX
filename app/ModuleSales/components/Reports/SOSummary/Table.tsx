@@ -174,12 +174,12 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
                 <table className="min-w-full table-auto text-xs">
                     <thead className="bg-gray-100 sticky top-0 z-10">
                         <tr className="text-left border-l-4 border-orange-400">
-                            <th className="px-6 py-3 font-semibold text-gray-700">Status</th>
-                            <th className="px-6 py-3 font-semibold text-gray-700">Date Created</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700">Date</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Company Name</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Contact Person</th>
-                            <th className="px-6 py-3 font-semibold text-gray-700">SO Number</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700">SO No.</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">SO Amount</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700">Status</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Remarks</th>
                         </tr>
                     </thead>
@@ -193,29 +193,21 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
                         ) : (
                             paginatedData.map((post) => (
                                 <tr key={post.id} className="bg-white hover:bg-gray-50">
-                                    <td className="px-6 py-3">
-                                        <span
-                                            className={`inline-block px-2 py-1 text-[10px] font-semibold rounded-full
-      ${post.activitystatus.toLowerCase() === "cold"
-                                                    ? "bg-blue-200 text-blue-800"
-                                                    : post.activitystatus.toLowerCase() === "warm"
-                                                        ? "bg-yellow-200 text-yellow-800"
-                                                        : post.activitystatus.toLowerCase() === "hot"
-                                                            ? "bg-red-200 text-red-800"
-                                                            : post.activitystatus.toLowerCase() === "done"
-                                                                ? "bg-green-200 text-green-800"
-                                                                : "bg-gray-200 text-gray-800"
-                                                }
-    `}
-                                        >
-                                            {post.activitystatus}
-                                        </span>
-                                    </td>
                                     <td className="px-6 py-3">{formatDate(post.date_created)}</td>
                                     <td className="px-6 py-3 uppercase">{post.companyname}</td>
                                     <td className="px-6 py-3 capitalize">{post.contactperson}</td>
                                     <td className="px-6 py-3 uppercase">{post.sonumber}</td>
                                     <td className="px-6 py-3">{formatCurrency(post.soamount)}</td>
+                                    <td className="px-6 py-3">
+                                        <span
+                                            className={`inline-block px-2 py-1 text-[8px] font-semibold rounded-full
+                                                ${post.activitystatus.toLowerCase() === "so-done"
+                                                    ? "bg-violet-500 text-white"
+                                                    : "bg-gray-200 text-gray-800"
+                                                }`}>
+                                            {post.activitystatus}
+                                        </span>
+                                    </td>
                                     <td className="px-6 py-3 capitalize">{post.remarks}</td>
                                 </tr>
                             ))

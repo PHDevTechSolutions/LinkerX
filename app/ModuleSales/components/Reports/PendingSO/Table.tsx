@@ -6,7 +6,7 @@ interface Post {
     companyname: string;
     contactperson: string;
     sonumber: string;
-    soamount: number | string;
+    soamount: number;
     activitystatus: string;
     remarks: string;
 }
@@ -26,21 +26,9 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
         return isNaN(d.getTime()) ? null : d;
     };
 
-    const isHotAndPending = (status: string, createdDate: string) => {
-        if (status.toLowerCase() !== "hot") return false;
-
-        const created = new Date(createdDate);
-        const now = new Date();
-        const diffInMs = now.getTime() - created.getTime();
-        const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
-        return diffInDays > 15;
-    };
-
     const filteredPosts = useMemo(() => {
         const start = parseDate(startDate);
         const end = parseDate(endDate);
-
         return posts.filter((post) => {
             const postDate = parseDate(post.date_created);
             return (!start || !postDate || postDate >= start) &&
@@ -81,13 +69,6 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
             currency: "PHP",
         });
     };
-
-    const totalSOAmount = useMemo(() => {
-        return filteredPosts.reduce((sum, post) => {
-            const amount = typeof post.soamount === "string" ? parseFloat(post.soamount) : post.soamount;
-            return sum + (amount || 0);
-        }, 0);
-    }, [filteredPosts]);
 
     const formatDate = (timestamp: string) => {
         const date = new Date(timestamp);
@@ -152,10 +133,12 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
                 <table className="min-w-full table-auto text-xs">
                     <thead className="bg-gray-100 sticky top-0 z-10">
                         <tr className="text-left border-l-4 border-orange-400">
-                            <th className="px-6 py-3 font-semibold text-gray-700">Status</th>
-                            <th className="px-6 py-3 font-semibold text-gray-700">Date Created</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700">Date</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Company Name</th>
                             <th className="px-6 py-3 font-semibold text-gray-700">Contact Person</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700">Amount</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700">Status</th>
+                            <th className="px-6 py-3 font-semibold text-gray-700">Remarks</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -166,31 +149,21 @@ const UsersTable: React.FC<UsersCardProps> = ({ posts }) => {
                         ) : (
                             paginatedData.map((post) => (
                                 <tr key={post.id} className="bg-white hover:bg-gray-50">
-                                    <td className="px-6 py-3">
-                                        {isHotAndPending(post.activitystatus, post.date_created) ? (
-                                            <span className="inline-block px-2 py-1 text-[10px] font-semibold rounded-full bg-orange-200 text-orange-800">
-                                                Pending
-                                            </span>
-                                        ) : (
-                                            <span className={`inline-block px-2 py-1 text-[10px] font-semibold rounded-full
-                                                ${post.activitystatus.toLowerCase() === "cold"
-                                                    ? "bg-blue-200 text-blue-800"
-                                                    : post.activitystatus.toLowerCase() === "warm"
-                                                        ? "bg-yellow-200 text-yellow-800"
-                                                        : post.activitystatus.toLowerCase() === "hot"
-                                                            ? "bg-red-200 text-red-800"
-                                                            : post.activitystatus.toLowerCase() === "done"
-                                                                ? "bg-green-200 text-green-800"
-                                                                : "bg-gray-200 text-gray-800"
-                                                }`
-                                            }>
-                                                {post.activitystatus}
-                                            </span>
-                                        )}
-                                    </td>
                                     <td className="px-6 py-3">{formatDate(post.date_created)}</td>
                                     <td className="px-6 py-3 uppercase">{post.companyname}</td>
                                     <td className="px-6 py-3 capitalize">{post.contactperson}</td>
+                                    <td className="px-6 py-3">{formatCurrency(post.soamount)}</td>
+                                    <td className="px-6 py-3">
+                                        <span
+                                            className={`inline-block px-2 py-1 text-[8px] font-semibold rounded-full
+                                                ${post.activitystatus.toLowerCase() === "so-done"
+                                                    ? "bg-violet-500 text-white"
+                                                    : "bg-gray-200 text-gray-800"
+                                                }`}>
+                                            {post.activitystatus}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-3 capitalize">{post.remarks || "-"}</td>
                                 </tr>
                             ))
                         )}

@@ -114,7 +114,7 @@ const ListofUser: React.FC = () => {
                     post?.referenceid === userDetails.ReferenceID ||
                     post?.ReferenceID === userDetails.ReferenceID;
 
-                const isWarmStatus = post?.activitystatus?.toLowerCase() === "warm";
+                const isWarmStatus = post?.activitystatus?.toLowerCase() === "quote-done";
 
                 return (
                     matchesSearchTerm &&

@@ -109,6 +109,16 @@ const getMenuItems = (userId: string | null = "") => [
                 description: "Customer Service Inquiries", 
                 href: `/ModuleSales/Sales/Reports/CSRSummary${userId ? `?id=${encodeURIComponent(userId)}` : ""}` 
             },
+            { 
+                title: "SPF Summary", 
+                description: "Special Pricing Form Breakdown",
+                href: `/ModuleSales/Sales/Reports/SPFSummary${userId ? `?id=${encodeURIComponent(userId)}` : ""}` 
+            },
+            { 
+                title: "New Client Summary", 
+                description: "Recently Onboarded Clients", 
+                href: `/ModuleSales/Sales/Reports/NewClientSummary${userId ? `?id=${encodeURIComponent(userId)}` : ""}` 
+            },
         ],
     },
     {

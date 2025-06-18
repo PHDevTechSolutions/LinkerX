@@ -22,9 +22,7 @@ const ListofUser: React.FC = () => {
     const [userDetails, setUserDetails] = useState({
         UserId: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "", TargetQuota: "", ReferenceID: "",
     });
-    const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
     const [postsLoading, setPostsLoading] = useState<boolean>(true);
     const [showSpinner, setShowSpinner] = useState(true);
 
@@ -69,7 +67,7 @@ const ListofUser: React.FC = () => {
     const fetchAccount = async () => {
         setPostsLoading(true);
         try {
-            const response = await fetch("/api/ModuleSales/Reports/AccountManagement/FetchActivity");
+            const response = await fetch("/api/ModuleSales/Reports/AccountManagement/FetchSales");
             const data = await response.json();
             console.log("Fetched data:", data); // Debugging line
             setPosts(data.data); // Make sure you're setting `data.data` if API response has `{ success: true, data: [...] }`
@@ -97,37 +95,41 @@ const ListofUser: React.FC = () => {
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
-        ? posts
-            .filter((post) => {
-                const matchesSearchTerm = post?.companyname
-                    ?.toLowerCase()
-                    .includes(searchTerm.toLowerCase());
+  ? posts
+      .filter((post) => {
+        const matchesSearchTerm = post?.companyname
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
 
-                const postDate = post.date_created ? new Date(post.date_created) : null;
+        const postDate = post.date_created ? new Date(post.date_created) : null;
 
-                const isWithinDateRange =
-                    (!startDate || (postDate && postDate >= new Date(startDate))) &&
-                    (!endDate || (postDate && postDate <= new Date(endDate)));
+        const isWithinDateRange =
+          (!startDate || (postDate && postDate >= new Date(startDate))) &&
+          (!endDate || (postDate && postDate <= new Date(endDate)));
 
-                const matchesReferenceID =
-                    post?.referenceid === userDetails.ReferenceID ||
-                    post?.ReferenceID === userDetails.ReferenceID;
+        const matchesReferenceID =
+          post?.referenceid === userDetails.ReferenceID ||
+          post?.ReferenceID === userDetails.ReferenceID;
 
-                const isWarmStatus = post?.activitystatus?.toLowerCase() === "hot";
+        // Only consider SO-DONE records that are overdue for more than 15 days
+        const isSoDone = post?.activitystatus?.toLowerCase() === "so-done";
+        const isOverdue =
+          isSoDone &&
+          postDate &&
+          (new Date().getTime() - postDate.getTime()) / (1000 * 60 * 60 * 24) > 15;
 
-                return (
-                    matchesSearchTerm &&
-                    isWithinDateRange &&
-                    matchesReferenceID &&
-                    isWarmStatus
-                );
-            })
-            .sort(
-                (a, b) =>
-                    new Date(b.date_created).getTime() -
-                    new Date(a.date_created).getTime()
-            )
-        : [];
+        return (
+          matchesSearchTerm &&
+          isWithinDateRange &&
+          matchesReferenceID &&
+          isOverdue
+        );
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
+      )
+  : [];
 
     return (
         <SessionChecker>
