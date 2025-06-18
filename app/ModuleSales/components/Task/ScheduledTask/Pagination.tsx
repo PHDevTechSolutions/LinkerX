@@ -37,7 +37,7 @@ const Pagination: React.FC<PaginationProps> = ({
         disabled={currentPage === 1}
         title="Previous Page"
         aria-label="Previous Page"
-        className="bg-gray-200 px-2 py-2 rounded disabled:opacity-50 flex items-center space-x-1 focus:outline-none focus:ring"
+        className="bg-gray-200 px-2 py-2 rounded disabled:opacity-50 flex items-center focus:outline-none focus:ring"
       >
         <MdNavigateBefore size={12} />
         <span>Prev</span>
@@ -49,7 +49,7 @@ const Pagination: React.FC<PaginationProps> = ({
         disabled={currentPage === totalPages || totalPages === 0}
         title="Next Page"
         aria-label="Next Page"
-        className="bg-gray-200 px-2 py-2 rounded disabled:opacity-50 flex items-center space-x-1 focus:outline-none focus:ring"
+        className="bg-gray-200 px-2 py-2 rounded disabled:opacity-50 flex items-center focus:outline-none focus:ring"
       >
         <span>Next</span>
         <MdNavigateNext size={12} />

@@ -90,7 +90,7 @@ const Accordion: React.FC<AccordionProps> = ({
 
                     {/* Product Category - replaced with react-select */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-1 text-black">Product Category</label>
+                        <label className="block text-xs font-bold mb-1 text-black">Item Category</label>
                         <Select
                             options={productCategoryOptions}
                             value={selectedCategory}

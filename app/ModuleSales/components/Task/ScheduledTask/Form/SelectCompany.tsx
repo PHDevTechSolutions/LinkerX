@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import Select from 'react-select';
 import Email from "./Email";
 import Area from "./Area";
+import { BsArrowsCollapseVertical, BsArrowsExpandVertical } from "react-icons/bs";
 
 export interface CompanyOption {
     id: string | number;
@@ -56,261 +57,197 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
     area, setarea,
     editPost,
 }) => {
-    const [previousCompany, setPreviousCompany] = useState<any>(null);
     const [companies, setCompanies] = useState<any[]>([]);
-    const [contactPersons, setContactPersons] = useState<string[]>([]);
-    const [contactNumbers, setContactNumbers] = useState<string[]>([]);
-    const [emailAddresses, setEmailAddresses] = useState<string[]>([]);
+    const [isManual, setIsManual] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false); // collapsible state
 
     useEffect(() => {
         if (referenceid) {
-            // API call to fetch company data
             fetch(`/api/ModuleSales/Companies/CompanyAccounts/FetchAccount?referenceid=${referenceid}`)
-                .then((response) => response.json())
-                .then((data) => {
+                .then(res => res.json())
+                .then(data => {
                     if (data.success) {
-                        // Filter companies with status 'Active' or 'Used'
-                        const filteredCompanies = data.data.filter((company: any) =>
-                            company.status === 'Active' || company.status === 'Used'
-                        );
-
-                        setCompanies(filteredCompanies.map((company: any) => ({
-                            id: company.id,  // Ensure `id` is included in the mapped object
-                            companyname: company.companyname,
-                            value: company.companyname,
-                            label: company.companyname,
-                            contactperson: company.contactperson,
-                            contactnumber: company.contactnumber,
-                            emailaddress: company.emailaddress,
-                            typeclient: company.typeclient,
-                            address: company.address,
-                            deliveryaddress: company.deliveryaddress,
-                            companygroup: company.companygroup,
-                            area: company.area,
+                        const filtered = data.data.filter((c: any) => c.status === 'Active' || c.status === 'Used');
+                        setCompanies(filtered.map((c: any) => ({
+                            ...c,
+                            value: c.companyname,
+                            label: c.companyname,
                         })));
                     } else {
                         console.error("Error fetching companies:", data.error);
                     }
                 })
-                .catch((error) => console.error("Error fetching companies:", error));
+                .catch(err => console.error("Error:", err));
         }
     }, [referenceid]);
 
-    useEffect(() => {
-        setContactPersons(contactperson ? contactperson.split(", ") : [""]);
-        setContactNumbers(contactnumber ? contactnumber.split(", ") : [""]);
-        setEmailAddresses(emailaddress ? emailaddress.split(", ") : [""]);
-    }, [contactperson, contactnumber, emailaddress]);
-
-    const handleCompanySelect = async (selectedOption: any) => {
-        try {
-            // If a company is selected
-            if (selectedOption && selectedOption.id) {
-                console.log("Selected Company Data:", selectedOption);
-
-                setPreviousCompany(selectedOption);
-                setcompanyname(selectedOption.companyname);
-                setcontactperson(selectedOption.contactperson);
-                setcontactnumber(selectedOption.contactnumber);
-                setemailaddress(selectedOption.emailaddress);
-                settypeclient(selectedOption.typeclient);
-                setaddress(selectedOption.address);
-                setarea(selectedOption.area);
-                setdeliveryaddress(selectedOption.deliveryaddress);
-                setcompanygroup(selectedOption.companygroup);
-            } else {
-                // No company selected, reset all fields
-                console.log("No selected company, resetting form fields.");
-                setPreviousCompany(null);
-                setcompanyname("");
-                setcontactperson("");
-                setcontactnumber("");
-                setemailaddress("");
-                settypeclient("");
-                setaddress("");
-                setarea("");
-                setdeliveryaddress("");
-                setcompanygroup("");
-            }
-        } catch (error) {
-            console.error("Unexpected error while selecting company:", error);
+    const handleCompanySelect = (selected: any) => {
+        if (selected?.id) {
+            setcompanyname(selected.companyname);
+            setcontactperson(selected.contactperson);
+            setcontactnumber(selected.contactnumber);
+            setemailaddress(selected.emailaddress);
+            settypeclient(selected.typeclient);
+            setaddress(selected.address);
+            setdeliveryaddress(selected.deliveryaddress);
+            setcompanygroup(selected.companygroup);
+            setarea(selected.area);
+        } else {
+            setcompanyname(""); setcontactperson(""); setcontactnumber("");
+            setemailaddress(""); settypeclient(""); setaddress("");
+            setdeliveryaddress(""); setcompanygroup(""); setarea("");
         }
     };
 
-    const [isManual, setIsManual] = useState(false); // toggle state
-
     return (
-        <>
-            <div className="flex flex-wrap -mx-4">
-                {/* Company Name */}
-                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                        <label className="block text-xs font-bold" htmlFor="companyname">Company Name</label>
-                    </div>
-                    {!isManual ? (
+        <div>
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-sm font-bold">Company Details</h2>
+                <button
+                    type="button"
+                    onClick={() => setIsExpanded(prev => !prev)}
+                    className="text-[10px] text-black border shadow-sm px-2 py-1 rounded-md flex items-center gap-1"
+                >
+                    {isExpanded ? (
                         <>
-                            <Select
-                                id="CompanyName"
-                                options={companies}
-                                onChange={handleCompanySelect}
-                                className="w-full text-xs capitalize"
-                                placeholder="Select Company"
-                                isClearable
-                            />
-                            {editPost ? (
-                                <input
-                                    type="text"
-                                    id="companyname"
-                                    value={editPost.companyname || ""}
-                                    disabled
-                                    className="text-xs capitalize w-full p-2 border border-gray-300 rounded-md mt-2"
-                                />
-                            ) : (
-                                <input
-                                    type="text"
-                                    id="companyname"
-                                    value={companyname ?? ""}
-                                    onChange={(e) => {
-                                        const input = e.target.value;
-                                        const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
-                                        setcompanyname(sanitized);
-                                    }}
-                                    className="w-full px-3 py-2 border rounded text-xs capitalize mt-2"
-                                    disabled
-                                />
-                            )}
+                            <BsArrowsCollapseVertical /> <span>Collapse</span>
                         </>
                     ) : (
+                        <>
+                            <BsArrowsExpandVertical /> <span>Expand</span>
+                        </>
+                    )}
+                </button>
+
+            </div>
+
+            {isExpanded && (
+                <div className="flex flex-wrap -mx-4 transition-all duration-300 ease-in-out">
+                    {/* Company Name */}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Company Name</label>
+                        {!isManual ? (
+                            <>
+                                <Select
+                                    options={companies}
+                                    onChange={handleCompanySelect}
+                                    className="text-xs capitalize"
+                                    placeholder="Select Company"
+                                    isClearable
+                                />
+                                <input
+                                    type="text"
+                                    value={companyname ?? ""}
+                                    disabled
+                                    className="w-full mt-2 text-xs capitalize p-2 border rounded"
+                                />
+                            </>
+                        ) : (
+                            <input
+                                type="text"
+                                value={companyname ?? ""}
+                                onChange={(e) =>
+                                    setcompanyname(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))
+                                }
+                                className="w-full text-xs capitalize p-2 border rounded"
+                            />
+                        )}
+                        <button
+                            type="button"
+                            onClick={() => setIsManual(prev => !prev)}
+                            className="text-[10px] text-blue-500 underline mt-1"
+                        >
+                            {isManual ? "If Account Exists Switch to Select" : "If Account is New Switch to Manual"}
+                        </button>
+                    </div>
+
+                    {/* Affiliate Name */}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Affiliate Name</label>
                         <input
                             type="text"
-                            id="companyname"
-                            value={companyname ?? ""}
-                            onChange={(e) => {
-                                const input = e.target.value;
-                                const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
-                                setcompanyname(sanitized);
-                            }}
+                            value={companygroup ?? ""}
+                            onChange={(e) => setcompanygroup(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))}
                             className="w-full px-3 py-2 border rounded text-xs capitalize"
                         />
-                    )}
-                    <button
-                        type="button"
-                        onClick={() => setIsManual(prev => !prev)}
-                        className="text-blue-500 text-[10px] underline"
-                    >
-                        {isManual ? "If Account Exists Switch to Select" : "If Account is New Switch to Manual"}
-                    </button>
-                </div>
-
-                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                        <label className="block text-xs font-bold" htmlFor="companygroup">
-                            Affiliate Name
-                        </label>
                     </div>
-                    <input
-                        type="text"
-                        id="companygroup"
-                        value={companygroup ?? ""}
-                        onChange={(e) => {
-                            const input = e.target.value;
-                            const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
-                            setcompanygroup(sanitized);
-                        }}
-                        className="w-full px-3 py-2 border rounded text-xs capitalize"
-                    />
-                </div>
 
-                {/* Contact Person */}
-                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Contact Person</label>
-                    <input
-                        type="text"
-                        id="contactperson"
-                        value={contactperson ?? ""}
-                        onChange={(e) => {
-                            const input = e.target.value;
-                            const lettersOnly = input.replace(/[^a-zA-Z\s]/g, "");
-                            setcontactperson(lettersOnly);
-                        }}
-                        className="w-full px-3 py-2 border rounded text-xs capitalize"
-                    />
-                </div>
+                    {/* Contact Person */}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Contact Person</label>
+                        <input
+                            type="text"
+                            value={contactperson ?? ""}
+                            onChange={(e) => setcontactperson(e.target.value.replace(/[^a-zA-Z\s]/g, ""))}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                        />
+                    </div>
 
-                {/* Contact Number */}
-                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Contact Number</label>
-                    <input
-                        type="text"
-                        id="contactnumber"
-                        value={contactnumber ?? ""}
-                        onChange={(e) => {
-                            const input = e.target.value;
-                            const numbersOnly = input.replace(/[^0-9]/g, "");
-                            setcontactnumber(numbersOnly);
-                        }}
-                        className="w-full px-3 py-2 border rounded text-xs"
-                    />
-                </div>
+                    {/* Contact Number */}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Contact Number</label>
+                        <input
+                            type="text"
+                            value={contactnumber ?? ""}
+                            onChange={(e) => setcontactnumber(e.target.value.replace(/[^0-9]/g, ""))}
+                            className="w-full px-3 py-2 border rounded text-xs"
+                        />
+                    </div>
 
-                {/* Email Address */}
-                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Email Address</label>
-                    <Email emailaddress={emailaddress} setemailaddress={setemailaddress} />
-                </div>
+                    {/* Email Address */}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Email Address</label>
+                        <Email emailaddress={emailaddress} setemailaddress={setemailaddress} />
+                    </div>
 
-                {/* Address */}
-                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Registered Address</label>
-                    <input
-                        type="text"
-                        id="address"
-                        value={address ?? ""}
-                        onChange={(e) => {
-                            const input = e.target.value;
-                            const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
-                            setaddress(sanitized);
-                        }}
-                        className="w-full px-3 py-2 border rounded text-xs capitalize"
-                    />
-                </div>
+                    {/* Registered Address */}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Registered Address</label>
+                        <input
+                            type="text"
+                            value={address ?? ""}
+                            onChange={(e) => setaddress(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                        />
+                    </div>
 
-                {/* Delivery Address */}
-                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Delivery Address</label>
-                    <input
-                        type="text"
-                        id="deliveryaddress"
-                        value={deliveryaddress ?? ""}
-                        onChange={(e) => {
-                            const input = e.target.value;
-                            const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
-                            setdeliveryaddress(sanitized);
-                        }}
-                        className="w-full px-3 py-2 border rounded text-xs capitalize"
-                    />
-                </div>
+                    {/* Delivery Address */}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Delivery Address</label>
+                        <input
+                            type="text"
+                            value={deliveryaddress ?? ""}
+                            onChange={(e) => setdeliveryaddress(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                        />
+                    </div>
 
-                {/* Region */}
-                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Region</label>
-                    <Area area={area} setarea={setarea} />
-                </div>
+                    {/* Area */}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Region</label>
+                        <Area area={area} setarea={setarea} />
+                    </div>
 
-                {/* Type Client */}
-                <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Type Client</label>
-                    <select id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required>
-                        <option value="">Select Client</option>
-                        <option value="Top 50">Top 50</option>
-                        <option value="Next 30">Next 30</option>
-                        <option value="Balance 20">Balance 20</option>
-                        <option value="CSR Client">CSR Client</option>
-                        <option value="TSA Client">TSA Client</option>
-                    </select>
+                    {/* Type Client */}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Type Client</label>
+                        <select
+                            value={typeclient ?? ""}
+                            onChange={(e) => settypeclient(e.target.value)}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                            required
+                        >
+                            <option value="">Select Client</option>
+                            <option value="Top 50">Top 50</option>
+                            <option value="Next 30">Next 30</option>
+                            <option value="Balance 20">Balance 20</option>
+                            <option value="CSR Client">CSR Client</option>
+                            <option value="TSA Client">TSA Client</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-        </>
+            )}
+        </div>
     );
 };
 
