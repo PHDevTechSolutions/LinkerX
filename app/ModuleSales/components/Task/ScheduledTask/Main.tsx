@@ -74,7 +74,6 @@ const Main: React.FC<UsersTableProps> = ({ posts, userDetails, fetchAccount }) =
               TargetQuota={userDetails.TargetQuota}
             />
           </div>
-          
         </aside>
       </div>
     </div>
