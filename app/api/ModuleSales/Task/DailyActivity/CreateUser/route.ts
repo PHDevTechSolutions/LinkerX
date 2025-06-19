@@ -16,7 +16,7 @@ async function create(data: any) {
       projectname, projectcategory, projecttype, source, typeactivity,
       callback, callstatus, typecall, remarks, quotationnumber,
       quotationamount, sonumber, soamount, startdate, enddate,
-      activitystatus, activitynumber, targetquota, status = "Active", companygroup,
+      activitystatus, activitynumber, targetquota, status, companygroup,
     } = data;
 
     if (!companyname || !typeclient) {
