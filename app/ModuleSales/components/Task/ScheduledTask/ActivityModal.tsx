@@ -62,25 +62,26 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
             name="typeactivity"
             value={activity.typeactivity}
             onChange={onChange}
-            className="border p-2 rounded"
+            className="border-b p-2 rounded"
             placeholder="Type of Activity"
-            disabled
+            
           />
 
           <input
-            name="callback"
+            type="datetime-local"
+            name="text"
             value={activity.callback || ""}
             onChange={onChange}
-            className="border p-2 rounded"
+            className="border-b p-2 rounded"
             placeholder="Callback"
-            disabled
+            
           />
 
           <select
             name="callstatus"
             value={activity.callstatus || ""}
             onChange={onChange}
-            className="w-full px-3 py-2 border rounded text-xs capitalize"
+            className="w-full px-3 py-2 border-b bg-white text-xs capitalize"
           >
             <option value="">Select Status</option>
             <option value="Successful">Successful</option>
@@ -91,7 +92,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
             name="typecall"
             value={activity.typecall || ""}
             onChange={onChange}
-            className="border p-2 rounded"
+            className="border-b bg-white p-2"
           >
             <option value="">Select Type</option>
             <option value="Cannot Be Reached">Cannot Be Reached</option>
@@ -129,7 +130,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
                 onChange(e);
               }
             }}
-            className="border p-2 rounded uppercase"
+            className="border-b p-2 uppercase"
             placeholder="Q# Number"
           />
 
@@ -144,7 +145,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
                 onChange(e);
               }
             }}
-            className="border p-2 rounded"
+            className="border-b p-2"
             placeholder="Q-Amount"
           />
 
@@ -158,7 +159,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
                 onChange(e);
               }
             }}
-            className="border p-2 rounded"
+            className="border-b p-2"
             placeholder="SO-Amount"
           />
 
@@ -172,7 +173,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
                 onChange(e);
               }
             }}
-            className="border p-2 rounded uppercase"
+            className="border-b p-2 uppercase"
             placeholder="SO-Number"
           />
 
@@ -186,7 +187,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
                 onChange(e);
               }
             }}
-            className="border p-2 rounded"
+            className="border-b p-2"
             placeholder="Actual Sales"
           />
         </div>
@@ -200,10 +201,10 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
                 onChange(e);
               }
             }}
-            className="border p-2 text-xs rounded w-full capitalize" rows={5}
+            className="border-b p-2 text-xs w-full capitalize" rows={1}
             placeholder="Remarks"
           />
-          <small className="absolute right-2 bottom-1 text-xs text-gray-400">
+          <small className="absolute right-2 bottom-1 text-[8px] text-green-800 font-bold">
             {(activity.remarks?.length || 0)}/200
           </small>
         </div>
@@ -212,7 +213,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
           name="activitystatus"
           value={activity.activitystatus || ""}
           onChange={onChange}
-          className="border p-2 text-xs rounded w-full mt-4"
+          className="border-b p-2 text-xs w-full mt-4"
           placeholder="Status"
           disabled
         />
@@ -220,15 +221,15 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
         <div className="flex justify-end gap-2 mt-6">
           <button
             onClick={onClose}
-            className="bg-gray-400 text-xs text-white px-5 py-2 rounded flex items-center gap-1"
+            className="hover:bg-gray-200 text-[10px] border text-black px-5 py-2 rounded flex items-center gap-1"
           >
-            <CiCircleRemove size={18} /> Cancel
+            <CiCircleRemove size={15} /> Cancel
           </button>
           <button
             onClick={onSave}
-            className="bg-blue-900 text-white text-xs px-5 py-2 rounded flex items-center gap-1"
+            className="bg-blue-700 hover:bg-blue-800 text-white text-[10px] px-5 py-2 rounded flex items-center gap-1"
           >
-            <CiSaveUp1 size={18} /> Submit
+            <CiSaveUp1 size={15} /> Submit
           </button>
         </div>
       </motion.div>
