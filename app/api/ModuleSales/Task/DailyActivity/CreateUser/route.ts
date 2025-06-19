@@ -23,7 +23,7 @@ async function create(data: any) {
       throw new Error("Company Name and Type of Client are required.");
     }
 
-    // Check if company already exists based on companyname only
+    // Check if company already exists
     const checkQuery = `
       SELECT * FROM accounts
       WHERE companyname = $1
@@ -61,7 +61,7 @@ async function create(data: any) {
 
     const newActivityNumber = insertedActivity.activitynumber;
 
-    // Insert into accounts table only if company is new
+    // Insert into accounts table if company is new
     if (!accountExists) {
       const accountsQuery = `
         INSERT INTO accounts (
@@ -83,6 +83,17 @@ async function create(data: any) {
       }
     }
 
+    // ✅ Update accounts.date_updated if callback has value
+    if (callback && accountExists) {
+      const updateCallbackQuery = `
+        UPDATE accounts
+        SET date_updated = $1
+        WHERE companyname = $2;
+      `;
+      const updateCallbackValues = [callback, companyname];
+      await Xchire_sql(updateCallbackQuery, updateCallbackValues);
+    }
+
     // Insert into progress table
     const progressColumns = [
       ...activityColumns,
@@ -96,8 +107,9 @@ async function create(data: any) {
       remarks || null, quotationnumber || null, quotationamount || null,
       sonumber || null, soamount || null, startdate || null, enddate || null
     ];
-    // Update activitynumber to the newly inserted one
+    // Update activitynumber
     progressValues[progressColumns.indexOf("activitynumber")] = newActivityNumber;
+
     const progressPlaceholders = progressValues.map((_, i) => `$${i + 1}`).join(", ");
     const progressQuery = `
       INSERT INTO progress (${progressColumns.join(", ")}, date_created)

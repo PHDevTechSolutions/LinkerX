@@ -1,6 +1,5 @@
 import React from "react";
 import Select from "react-select";
-import { CiSquarePlus, CiSquareMinus } from "react-icons/ci";
 
 interface AccordionProps {
     projectname: string;
@@ -122,7 +121,7 @@ const Accordion: React.FC<AccordionProps> = ({
                         <select
                             value={projecttype ?? ""}
                             onChange={(e) => setprojecttype(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white"
+                            className="w-full px-3 py-2 border rounded text-xs capitalize"
                         >
                             <option value="">Select Type</option>
                             <option value="B2B">B2B</option>
@@ -139,7 +138,7 @@ const Accordion: React.FC<AccordionProps> = ({
                         <select
                             value={source ?? ""}
                             onChange={(e) => setsource(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white"
+                            className="w-full px-3 py-2 border rounded text-xs capitalize"
                         >
                             <option value="">Select Source</option>
                             <option value="Existing Client">Existing Client</option>

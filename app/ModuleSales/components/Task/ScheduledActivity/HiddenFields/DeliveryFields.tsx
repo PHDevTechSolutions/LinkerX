@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { CiPaperplane } from "react-icons/ci";
-import { RiResetLeftFill } from "react-icons/ri";
 
 interface DeliveryFieldsProps {
   actualsales: string; setactualsales: (value: string) => void;
@@ -167,7 +166,7 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
             id="emailaddress"
             value={emailaddress ?? ""}
             onChange={(e) => setemailaddress(e.target.value)}
-            className="w-full px-3 py-2 border rounded text-xs bg-white"
+            className="w-full px-3 py-2 border rounded text-xs"
             required
             disabled={isSending}
             aria-required="true"
@@ -207,9 +206,9 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
             onClick={resetForm}
             type="button"
             disabled={isSending && !emailaddress}
-            className="p-2 rounded border border-gray-400 text-gray-700 hover:bg-gray-100 text-[10px] flex items-center"
+            className="p-2 rounded border border-gray-400 text-gray-700 hover:bg-gray-100 text-[10px]"
           >
-            <RiResetLeftFill /> Reset
+            Reset
           </button>
         </div>
       </div>

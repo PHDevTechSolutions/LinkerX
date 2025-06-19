@@ -5,7 +5,7 @@ import GridView from "./GridView";
 import CardView from "./CardView";
 import Form from "./Form";
 import { FaTable, FaTasks, FaCalendarAlt } from "react-icons/fa";
-import { CiSquarePlus, CiCircleRemove, CiSaveUp1, CiTrash, CiTurnL1 } from "react-icons/ci";
+import { CiSquarePlus } from "react-icons/ci";
 
 interface Post {
     id: string;
@@ -18,6 +18,8 @@ interface Post {
     date_created: string;
     date_updated: string | null;
     activitynumber: string;
+    startdate: string;
+    enddate: string;
 }
 
 interface UserDetails {
@@ -48,7 +50,6 @@ interface MainCardTableProps {
 
 const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetchAccount }) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(50);
     const [view, setView] = useState<"table" | "grid" | "card">("table");
     const [showForm, setShowForm] = useState(false);
     const [editUser, setEditUser] = useState<Post | null>(null);
@@ -89,23 +90,6 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
                         Table
                     </button>
 
-                    <button
-                        onClick={() => setView("grid")}
-                        className={`flex items-center gap-1 px-3 py-1 rounded ${view === "grid" ? "bg-blue-400 text-white" : "bg-gray-100"
-                            }`}
-                    >
-                        <FaTasks size={12} />
-                        Logs
-                    </button>
-
-                    <button
-                        onClick={() => setView("card")}
-                        className={`flex items-center gap-1 px-3 py-1 rounded ${view === "card" ? "bg-blue-400 text-white" : "bg-gray-100"
-                            }`}
-                    >
-                        <FaCalendarAlt size={12} />
-                        Calendar
-                    </button>
                     <button className="flex items-center gap-1 border bg-white text-black text-[10px] px-4 py-2 shadow-sm rounded hover:bg-orange-400 hover:text-white transition" onClick={() => setShowForm(true)} >
                         <CiSquarePlus size={15} /> Create Activity</button>
                 </div>
@@ -139,8 +123,6 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
             ) : (
                 <>
                     {view === "table" && <TableView posts={currentDatePosts} handleEdit={handleEdit} refreshPosts={fetchAccount} />}
-                    {view === "grid" && <GridView posts={currentDatePosts} handleEdit={handleEdit} />}
-                    {view === "card" && <CardView posts={currentDatePosts} handleEdit={handleEdit} />}
                 </>
             )}
         </div>

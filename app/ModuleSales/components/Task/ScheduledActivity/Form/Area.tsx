@@ -11,7 +11,7 @@ const Area: React.FC<AreaProps> = ({ area, setarea }) => {
       id="area"
       value={area ?? ""}
       onChange={(e) => setarea(e.target.value)}
-      className="w-full px-3 py-2 border rounded text-xs capitalize bg-white"
+      className="w-full px-3 py-2 border rounded text-xs capitalize"
       required
     >
       <option value="">Select Region</option>

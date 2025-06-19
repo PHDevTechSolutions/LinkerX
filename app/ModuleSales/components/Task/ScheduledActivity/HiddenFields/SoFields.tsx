@@ -61,7 +61,7 @@ const SoFields: React.FC<QuotationFieldsProps> = ({
                 <select
                     value={typecall || ""}
                     onChange={(e) => settypecall(e.target.value)}
-                    className="w-full px-3 py-2 border rounded text-xs capitalize bg-white"
+                    className="w-full px-3 py-2 border rounded text-xs capitalize"
                     required
                 >
                     <option value="">Select Status</option>

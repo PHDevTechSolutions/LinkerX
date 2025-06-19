@@ -160,7 +160,7 @@ const Submenu: React.FC<SubmenuProps> = ({
           paymentterm={paymentterm}
           setpaymentterm={setpaymentterm}
         />
-
+        
         {activitystatus === "Delivered" && (
           <DeliveryFields {...{ actualsales, setactualsales, emailaddress, setemailaddress, deliverydate, setdeliverydate }} />
         )}

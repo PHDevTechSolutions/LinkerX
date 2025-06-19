@@ -63,7 +63,7 @@ const ActivityStatus: React.FC<ActivityStatusProps> = ({
           <option value="Loss">Loss</option>
         </select>
       </div>
-  
+
       {activitystatus === "Delivered" && (
         <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4 relative">
           <label className="block text-xs font-bold mb-2">Payment Terms</label>

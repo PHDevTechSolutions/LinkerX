@@ -1,6 +1,7 @@
+// src/components/HiddenFields/InboundFields.tsx
 import React, { useState } from "react";
 
-interface OutboundFieldsProps {
+interface InboundFieldsProps {
     callback: string;
     setcallback: (val: string) => void;
     callstatus: string;
@@ -9,7 +10,7 @@ interface OutboundFieldsProps {
     settypecall: (val: string) => void;
 }
 
-const OutboundFields: React.FC<OutboundFieldsProps> = ({
+const InboundFields: React.FC<InboundFieldsProps> = ({
     callback,
     setcallback,
     callstatus,
@@ -17,7 +18,6 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
     typecall,
     settypecall,
 }) => {
-
     const [showInput, setShowInput] = useState(false);
 
     const handleCallbackChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -50,12 +50,6 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
             case "Callback After a Week":
                 futureDate.setDate(today.getDate() + 7);
                 break;
-            case "Callback After a Month":
-                futureDate.setMonth(today.getMonth() + 1);
-                break;
-            case "Callback After a Year":
-                futureDate.setFullYear(today.getFullYear() + 1);
-                break;
             default:
                 setcallback("");
                 return;
@@ -71,7 +65,7 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Callback</label>
                 <select
-                    className="w-full px-3 py-2 border rounded text-xs bg-white"
+                    className="w-full px-3 py-2 border rounded text-xs"
                     onChange={handleCallbackChange}
                 >
                     <option>Select Callback</option>
@@ -95,7 +89,7 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
                 <select
                     value={callstatus}
                     onChange={(e) => setcallstatus(e.target.value)}
-                    className="w-full px-3 py-2 border rounded text-xs capitalize bg-white"
+                    className="w-full px-3 py-2 border rounded text-xs capitalize"
                 >
                     <option value="">Select Status</option>
                     <option value="Successful">Successful</option>
@@ -108,20 +102,20 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
                 <select
                     value={typecall}
                     onChange={(e) => settypecall(e.target.value)}
-                    className="w-full px-3 py-2 border rounded text-xs capitalize bg-white"
+                    className="w-full px-3 py-2 border rounded text-xs capitalize"
                 >
                     <option value="">Select Type</option>
                     {callstatus === "Successful" ? (
                         <>
                             <option value="No Requirements">No Requirements</option>
                             <option value="Waiting for Future Projects">Waiting for Future Projects</option>
-                            <option value="Touch Base">Touch Base</option>
                         </>
                     ) : callstatus === "Unsuccessful" ? (
                         <>
                             <option value="Ringing Only">Ringing Only</option>
                             <option value="Cannot Be Reached">Cannot Be Reached</option>
                             <option value="Not Connected with the Company">Not Connected with the Company</option>
+                            <option value="Touch Base">Touch Base</option>
                         </>
                     ) : (
                         <>
@@ -139,4 +133,4 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
     );
 };
 
-export default OutboundFields;
+export default InboundFields;

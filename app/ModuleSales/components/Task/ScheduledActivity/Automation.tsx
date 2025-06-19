@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import FilterTop50 from "./Filters/FilterTop50";
-import FilterNext30 from "./Filters/FilterNext30";
-import FilterBalance20 from "./Filters/FilterBalance20";
-import FilterCSRClient from "./Filters/FilterCSRClient";
-import FilterTSAClient from "./Filters/FilterTSAClient";
+import FilterTop50 from "./ScheduleFilter/FilterTop50";
+import FilterNext30 from "./ScheduleFilter/FilterNext30";
+import FilterBalance20 from "./ScheduleFilter/FilterBalance20";
+import FilterCSRClient from "./ScheduleFilter/FilterCSRClient";
+import FilterTSAClient from "./ScheduleFilter/FilterTSAClient";
 
 interface Post {
   id: string;
@@ -226,8 +226,17 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
 
         if (statusUpdateRes.ok) {
           toast.success("Activity added and status updated!");
+
+          // Reload fresh data to refresh UI
           await fetchData();
 
+          // Optional: reset expandedIds or other UI states if needed
+          // setExpandedIds([]);  // if you want to collapse all expanded rows after submit
+
+          // Optional: scroll to top or focus as needed
+
+          // If you want a full page reload instead (usually not needed):
+          // window.location.reload();
         } else {
           const updateErr = await statusUpdateRes.json();
           toast.warn(`Activity added, but failed to update status: ${updateErr.message}`);
@@ -242,24 +251,6 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
     }
   };
 
- const isToday = (dateStr: string | null) => {
-  if (!dateStr) return false;
-  return dateStr.slice(0, 10) === todayStr;
-};
-
-const top50Count = filteredSortedAccounts.filter(
-  (p) => p.typeclient === "Top 50" && isToday(p.date_updated)
-).length;
-
-const next30Count = filteredSortedAccounts.filter(
-  (p) => p.typeclient === "Next 30" && isToday(p.date_updated)
-).length;
-
-const balance20Count = filteredSortedAccounts.filter(
-  (p) => p.typeclient === "Balance 20" && isToday(p.date_updated)
-).length;
-
-
 
   return (
     <div className="bg-white col-span-3 space-y-4">
@@ -272,7 +263,7 @@ const balance20Count = filteredSortedAccounts.filter(
         </button>
       </div>
 
-      <Section title="Top 50 Accounts" count={top50Count} open={expandedFilters.top50} onToggle={() => toggleFilter("top50")}>
+      <Section title="Top 50 Accounts" open={expandedFilters.top50} onToggle={() => toggleFilter("top50")}>
         <FilterTop50
           userDetails={userDetails}
           posts={filteredSortedAccounts}
@@ -282,7 +273,7 @@ const balance20Count = filteredSortedAccounts.filter(
         />
       </Section>
 
-      <Section title="Next 30 Accounts" count={next30Count} open={expandedFilters.next30} onToggle={() => toggleFilter("next30")}>
+      <Section title="Next 30 Accounts" open={expandedFilters.next30} onToggle={() => toggleFilter("next30")}>
         <FilterNext30
           userDetails={userDetails}
           posts={filteredSortedAccounts}
@@ -292,7 +283,7 @@ const balance20Count = filteredSortedAccounts.filter(
         />
       </Section>
 
-      <Section title="Balance 20 Accounts" count={balance20Count} open={expandedFilters.balance20} onToggle={() => toggleFilter("balance20")}>
+      <Section title="Balance 20 Accounts" open={expandedFilters.balance20} onToggle={() => toggleFilter("balance20")}>
         <FilterBalance20
           userDetails={userDetails}
           posts={filteredSortedAccounts}
@@ -325,34 +316,23 @@ const balance20Count = filteredSortedAccounts.filter(
   );
 };
 
+// Reusable expandable section wrapper
 const Section: React.FC<{
   title: string;
-  count?: number;
   open: boolean;
   onToggle: () => void;
   children: React.ReactNode;
-}> = ({ title, count, open, onToggle, children }) => (
+}> = ({ title, open, onToggle, children }) => (
   <div className="shadow-sm">
     <div
       className="cursor-pointer px-2 py-2 hover:bg-gray-200 flex justify-between items-center"
       onClick={onToggle}
     >
-      <span className="font-medium text-[10px] uppercase flex items-center gap-2">
-        {title}
-        {typeof count === "number" && count > 0 && (
-          <span
-            className="bg-red-600 text-white text-[8px] px-2 py-0.5 rounded-full"
-            title={`You have ${count} callback${count > 1 ? "s" : ""} today`}
-          >
-            {count}
-          </span>
-        )}
-      </span>
+      <span className="font-medium text-[10px] uppercase">{title}</span>
       <span className="text-[10px] text-gray-500">{open ? "Collapse ▲" : "Expand ▼"}</span>
     </div>
     {open && <div>{children}</div>}
   </div>
 );
-
 
 export default MainCardTable;

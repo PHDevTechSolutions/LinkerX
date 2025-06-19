@@ -59,7 +59,7 @@ const Main: React.FC<UsersTableProps> = ({ posts, userDetails, fetchAccount }) =
           
           {/* Scheduled Task */}
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Callbacks</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Scheduled Task</h2>
             <Automation posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
           </div>
 
@@ -74,7 +74,6 @@ const Main: React.FC<UsersTableProps> = ({ posts, userDetails, fetchAccount }) =
               TargetQuota={userDetails.TargetQuota}
             />
           </div>
-          
         </aside>
       </div>
     </div>

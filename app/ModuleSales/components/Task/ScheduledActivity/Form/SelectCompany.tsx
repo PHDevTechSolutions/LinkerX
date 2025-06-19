@@ -99,80 +99,10 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
         }
     };
 
-    const [contactpersonError, setContactpersonError] = useState<string | null>(null);
-
-    const validateContactPerson = (value: string) => {
-        const regex = /^\s*([a-zA-Z]+)\s*,\s*([a-zA-Z]+)\s*$/;
-        if (!regex.test(value)) {
-            setContactpersonError("Please enter in 'Lastname, Firstname' format");
-        } else {
-            setContactpersonError(null);
-        }
-    };
-
-    const handleContactpersonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const rawValue = e.target.value;
-        const cleanedValue = rawValue.replace(/[^a-zA-Z,\s]/g, "");
-        setcontactperson(cleanedValue);
-        validateContactPerson(cleanedValue);
-    };
-
     return (
         <div>
-            <div className="flex flex-wrap -mx-4 transition-all duration-300 ease-in-out">
-                {/* Company Name */}
-                <div className="w-full px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Company Name</label>
-                    <div className="flex gap-4">
-                        {/* Select or disabled input */}
-                        <div className="w-1/2">
-                            {!isManual ? (
-                                <Select
-                                    options={companies}
-                                    onChange={handleCompanySelect}
-                                    className="text-[10px] uppercase"
-                                    placeholder="Select Company"
-                                    isClearable
-                                />
-                            ) : (
-                                <input
-                                    type="text"
-                                    value={companyname ?? ""}
-                                    onChange={(e) =>
-                                        setcompanyname(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))
-                                    }
-                                    className="w-full text-xs capitalize p-2 border rounded"
-                                />
-                            )}
-                        </div>
-
-                        {/* Disabled input (showing companyname) */}
-                        {!isManual && (
-                            <div className="w-1/2">
-                                <input
-                                    type="text"
-                                    value={companyname ?? ""}
-                                    disabled
-                                    className="w-full mt-0 text-xs capitalize p-2 border rounded"
-                                />
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Toggle button below both inputs */}
-                    <button
-                        type="button"
-                        onClick={() => setIsManual(prev => !prev)}
-                        className="text-[10px] text-blue-500 underline mt-2"
-                    >
-                        {isManual ? "If Account Exists Switch to Select" : "If Account is New Switch to Manual"}
-                    </button>
-                </div>
-
-            </div>
-
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xs font-bold">Customer / Account Details</h2>
+                <h2 className="text-sm font-bold">Company Details</h2>
                 <button
                     type="button"
                     onClick={() => setIsExpanded(prev => !prev)}
@@ -180,11 +110,11 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                 >
                     {isExpanded ? (
                         <>
-                            <BsArrowsCollapseVertical /> <span>Hide Fields</span>
+                            <BsArrowsCollapseVertical /> <span>Collapse</span>
                         </>
                     ) : (
                         <>
-                            <BsArrowsExpandVertical /> <span>Show Fields</span>
+                            <BsArrowsExpandVertical /> <span>Expand</span>
                         </>
                     )}
                 </button>
@@ -193,6 +123,44 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
 
             {isExpanded && (
                 <div className="flex flex-wrap -mx-4 transition-all duration-300 ease-in-out">
+                    {/* Company Name */}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Company Name</label>
+                        {!isManual ? (
+                            <>
+                                <Select
+                                    options={companies}
+                                    onChange={handleCompanySelect}
+                                    className="text-xs capitalize"
+                                    placeholder="Select Company"
+                                    isClearable
+                                />
+                                <input
+                                    type="text"
+                                    value={companyname ?? ""}
+                                    disabled
+                                    className="w-full mt-2 text-xs capitalize p-2 border rounded"
+                                />
+                            </>
+                        ) : (
+                            <input
+                                type="text"
+                                value={companyname ?? ""}
+                                onChange={(e) =>
+                                    setcompanyname(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))
+                                }
+                                className="w-full text-xs capitalize p-2 border rounded"
+                            />
+                        )}
+                        <button
+                            type="button"
+                            onClick={() => setIsManual(prev => !prev)}
+                            className="text-[10px] text-blue-500 underline mt-1"
+                        >
+                            {isManual ? "If Account Exists Switch to Select" : "If Account is New Switch to Manual"}
+                        </button>
+                    </div>
+
                     {/* Affiliate Name */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Affiliate Name</label>
@@ -210,15 +178,9 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                         <input
                             type="text"
                             value={contactperson ?? ""}
-                            onChange={handleContactpersonChange}
-                            className={`w-full px-3 py-2 border rounded text-xs capitalize ${contactpersonError ? "border-red-500" : ""
-                                }`}
-                            required
-                            placeholder="Lastname, Firstname"
+                            onChange={(e) => setcontactperson(e.target.value.replace(/[^a-zA-Z\s]/g, ""))}
+                            className="w-full px-3 py-2 border rounded text-xs capitalize"
                         />
-                        {contactpersonError && (
-                            <p className="text-red-500 text-[10px] mt-1">{contactpersonError}</p>
-                        )}
                     </div>
 
                     {/* Contact Number */}
@@ -228,7 +190,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                             type="text"
                             value={contactnumber ?? ""}
                             onChange={(e) => setcontactnumber(e.target.value.replace(/[^0-9]/g, ""))}
-                            className="w-full px-3 py-2 border rounded text-xs" required
+                            className="w-full px-3 py-2 border rounded text-xs"
                         />
                     </div>
 
@@ -244,7 +206,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                         <input
                             type="text"
                             value={address ?? ""}
-                            onChange={(e) => setaddress(e.target.value.replace(/[^a-zA-Z0-9#.,\s]/g, ""))}
+                            onChange={(e) => setaddress(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))}
                             className="w-full px-3 py-2 border rounded text-xs capitalize"
                         />
                     </div>
@@ -255,7 +217,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                         <input
                             type="text"
                             value={deliveryaddress ?? ""}
-                            onChange={(e) => setdeliveryaddress(e.target.value.replace(/[^a-zA-Z0-9#.,\s]/g, ""))}
+                            onChange={(e) => setdeliveryaddress(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))}
                             className="w-full px-3 py-2 border rounded text-xs capitalize"
                         />
                     </div>
@@ -268,12 +230,13 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
 
                     {/* Type Client */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Type of Customer</label>
+                        <label className="block text-xs font-bold mb-2">Type Client</label>
                         <select
                             value={typeclient ?? ""}
                             onChange={(e) => settypeclient(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white"
-                            required>
+                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                            required
+                        >
                             <option value="">Select Client</option>
                             <option value="Top 50">Top 50</option>
                             <option value="Next 30">Next 30</option>
@@ -282,25 +245,6 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                             <option value="TSA Client">TSA Client</option>
                         </select>
                     </div>
-
-                    {/* Status */}
-                    {isManual && (
-                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Customer Status</label>
-                        <select
-                            value={typeclient ?? ""}
-                            onChange={(e) => settypeclient(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white"
-                            required
-                        >
-                            <option value="">Select Client</option>
-                            <option value="Active">Active</option>
-                            <option value="New Client">New Client</option>
-                            <option value="Non-Buying">Non-Buying</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
-                    </div>
-                    )}
                 </div>
             )}
         </div>

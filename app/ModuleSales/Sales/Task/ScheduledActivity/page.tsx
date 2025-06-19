@@ -6,7 +6,7 @@ import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
 import Filters from "../../../components/Task/ScheduledTask/Filters";
-import Main from "../../../components/Task/ScheduledTask/Main";
+import Main from "../../../components/Task/ScheduledActivity/Main";
 import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
 // Toast Notifications
@@ -72,7 +72,7 @@ const ListofUser: React.FC = () => {
   const fetchAccount = async () => {
     setPostsLoading(true);
     try {
-      const res = await fetch("/api/ModuleSales/Reports/AccountManagement/FetchActivity");
+      const res = await fetch("/api/ModuleSales/Reports/AccountManagement/FetchSales");
       const data = await res.json();
       if (process.env.NODE_ENV === "development") {
         console.log("Fetched data:", data);
@@ -124,7 +124,7 @@ const ListofUser: React.FC = () => {
           {(user) => (
             <div className="container mx-auto p-4 text-gray-900">
               <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                <h2 className="text-lg font-bold mb-2">Scheduled Task</h2>
+                <h2 className="text-lg font-bold mb-2">Activities</h2>
                 <p className="text-xs text-gray-600 mb-4">
                   An overview of your recent and upcoming actions, including <strong>scheduled tasks</strong>, <strong>callbacks</strong>, <strong>calendar events</strong>, and <strong>inquiries</strong>—all in one place to keep you on track.
                 </p>
