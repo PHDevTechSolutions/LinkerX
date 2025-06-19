@@ -83,6 +83,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [enddate, setenddate] = useState(editUser ? editUser.enddate : "");
   const [activitynumber, setactivitynumber] = useState(editUser?.activitynumber || "");
   const [activitystatus, setactivitystatus] = useState(editUser ? editUser.activitystatus : "");
+  const [status, setstatus] = useState(editUser ? editUser.status : "");
 
   const [ticketreferencenumber, setticketreferencenumber] = useState(editUser ? editUser.ticketreferencenumber : "");
   const [wrapup, setwrapup] = useState(editUser ? editUser.wrapup : "");
@@ -173,7 +174,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         id: editUser?.id, referenceid, manager, tsm, targetquota, companyname, companygroup, contactperson, contactnumber, emailaddress, typeclient,
-        address, deliveryaddress, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, remarks,
+        address, deliveryaddress, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, status, remarks,
         callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus, ticketreferencenumber, wrapup, inquiries, csragent, paymentterm, deliverydate,
       }),
     });
@@ -252,7 +253,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     }
   };
 
-
   // Handle input change inside modal
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -315,7 +315,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           manager={manager} setmanager={setManager}
           tsm={tsm} settsm={setTsm}
           targetquota={targetquota} settargetquota={setTargetQuota}
-          //
+         
           companyname={companyname} setcompanyname={setcompanyname}
           companygroup={companygroup} setcompanygroup={setcompanygroup}
           contactperson={contactperson} setcontactperson={setcontactperson}
@@ -343,6 +343,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           enddate={enddate} setenddate={setenddate}
           activitynumber={activitynumber} setactivitynumber={setactivitynumber}
           activitystatus={activitystatus} setactivitystatus={setactivitystatus}
+          status={status} setstatus={setstatus}
 
           ticketreferencenumber={ticketreferencenumber} setticketreferencenumber={setticketreferencenumber}
           wrapup={wrapup} setwrapup={setwrapup}

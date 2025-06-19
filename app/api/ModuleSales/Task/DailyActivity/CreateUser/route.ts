@@ -16,7 +16,7 @@ async function create(data: any) {
       projectname, projectcategory, projecttype, source, typeactivity,
       callback, callstatus, typecall, remarks, quotationnumber,
       quotationamount, sonumber, soamount, startdate, enddate,
-      activitystatus, activitynumber, targetquota,
+      activitystatus, activitynumber, targetquota, status = "Active", companygroup,
     } = data;
 
     if (!companyname || !typeclient) {
@@ -29,8 +29,7 @@ async function create(data: any) {
       WHERE companyname = $1
       LIMIT 1;
     `;
-    const checkValues = [companyname];
-    const existingAccount = await Xchire_sql(checkQuery, checkValues);
+    const existingAccount = await Xchire_sql(checkQuery, [companyname]);
     const accountExists = existingAccount.length > 0;
 
     // Insert into activity table
@@ -48,8 +47,8 @@ async function create(data: any) {
     ];
     const activityPlaceholders = activityValues.map((_, i) => `$${i + 1}`).join(", ");
     const activityQuery = `
-      INSERT INTO activity (${activityColumns.join(", ")}, date_created) 
-      VALUES (${activityPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila') 
+      INSERT INTO activity (${activityColumns.join(", ")}, date_created)
+      VALUES (${activityPlaceholders}, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila')
       RETURNING *;
     `;
     const activityResult = await Xchire_sql(activityQuery, activityValues);
@@ -66,15 +65,16 @@ async function create(data: any) {
       const accountsQuery = `
         INSERT INTO accounts (
           referenceid, manager, tsm, companyname, contactperson,
-          contactnumber, emailaddress, typeclient, address, deliveryaddress, area, status, date_created
+          contactnumber, emailaddress, typeclient, address, deliveryaddress, area, status, companygroup, date_created
         ) VALUES (
           $1, $2, $3, $4, $5,
-          $6, $7, $8, $9, $10, $11, 'Active', CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
+          $6, $7, $8, $9, $10, $11, $12, $13, CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila'
         ) RETURNING *;
       `;
       const accountsValues = [
         referenceid, manager, tsm, companyname, contactperson,
-        contactnumber, emailaddress, typeclient, address, deliveryaddress, area
+        contactnumber, emailaddress, typeclient, address, deliveryaddress, area,
+        status, companygroup
       ];
       const accountsResult = await Xchire_sql(accountsQuery, accountsValues);
 
@@ -83,15 +83,14 @@ async function create(data: any) {
       }
     }
 
-    // ✅ Update accounts.date_updated if callback has value
+    // Update date_updated if callback has value
     if (callback && accountExists) {
       const updateCallbackQuery = `
         UPDATE accounts
         SET date_updated = $1
         WHERE companyname = $2;
       `;
-      const updateCallbackValues = [callback, companyname];
-      await Xchire_sql(updateCallbackQuery, updateCallbackValues);
+      await Xchire_sql(updateCallbackQuery, [callback, companyname]);
     }
 
     // Insert into progress table
@@ -107,7 +106,8 @@ async function create(data: any) {
       remarks || null, quotationnumber || null, quotationamount || null,
       sonumber || null, soamount || null, startdate || null, enddate || null
     ];
-    // Update activitynumber
+
+    // Update activitynumber value for progress insert
     progressValues[progressColumns.indexOf("activitynumber")] = newActivityNumber;
 
     const progressPlaceholders = progressValues.map((_, i) => `$${i + 1}`).join(", ");

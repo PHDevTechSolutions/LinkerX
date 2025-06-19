@@ -242,24 +242,22 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
     }
   };
 
- const isToday = (dateStr: string | null) => {
-  if (!dateStr) return false;
-  return dateStr.slice(0, 10) === todayStr;
-};
+  const isToday = (dateStr: string | null) => {
+    if (!dateStr) return false;
+    return dateStr.slice(0, 10) === todayStr;
+  };
 
-const top50Count = filteredSortedAccounts.filter(
-  (p) => p.typeclient === "Top 50" && isToday(p.date_updated)
-).length;
+  const top50Count = filteredSortedAccounts.filter(
+    (p) => p.typeclient === "Top 50" && isToday(p.date_updated)
+  ).length;
 
-const next30Count = filteredSortedAccounts.filter(
-  (p) => p.typeclient === "Next 30" && isToday(p.date_updated)
-).length;
+  const next30Count = filteredSortedAccounts.filter(
+    (p) => p.typeclient === "Next 30" && isToday(p.date_updated)
+  ).length;
 
-const balance20Count = filteredSortedAccounts.filter(
-  (p) => p.typeclient === "Balance 20" && isToday(p.date_updated)
-).length;
-
-
+  const balance20Count = filteredSortedAccounts.filter(
+    (p) => p.typeclient === "Balance 20" && isToday(p.date_updated)
+  ).length;
 
   return (
     <div className="bg-white col-span-3 space-y-4">
@@ -334,7 +332,7 @@ const Section: React.FC<{
 }> = ({ title, count, open, onToggle, children }) => (
   <div className="shadow-sm">
     <div
-      className="cursor-pointer px-2 py-2 hover:bg-gray-200 flex justify-between items-center"
+      className="cursor-pointer px-2 py-2 hover:bg-gray-200 hover:rounded-md flex justify-between items-center"
       onClick={onToggle}
     >
       <span className="font-medium text-[10px] uppercase flex items-center gap-2">

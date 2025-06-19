@@ -17,6 +17,7 @@ export interface CompanyOption {
     address: string;
     deliveryaddress: string;
     area: string;
+    status: string;
 }
 
 interface SelectCompanyProps {
@@ -30,6 +31,7 @@ interface SelectCompanyProps {
     address: string; setaddress: (val: string) => void;
     deliveryaddress: string; setdeliveryaddress: (val: string) => void;
     area: string; setarea: (val: string) => void;
+    status: string; setstatus: (val: string) => void;
 
     editPost?: {
         companyname?: string;
@@ -41,6 +43,7 @@ interface SelectCompanyProps {
         address: string;
         deliveryaddress: string;
         area: string;
+        status: string;
     };
 }
 
@@ -55,6 +58,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
     address, setaddress,
     deliveryaddress, setdeliveryaddress,
     area, setarea,
+    status, setstatus,
     editPost,
 }) => {
     const [companies, setCompanies] = useState<any[]>([]);
@@ -179,13 +183,9 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                     className="text-[10px] text-black border shadow-sm px-2 py-1 rounded-md flex items-center gap-1"
                 >
                     {isExpanded ? (
-                        <>
-                            <BsArrowsCollapseVertical /> <span>Hide Fields</span>
-                        </>
+                        <><BsArrowsCollapseVertical /> <span>Hide Fields</span> </>
                     ) : (
-                        <>
-                            <BsArrowsExpandVertical /> <span>Show Fields</span>
-                        </>
+                        <><BsArrowsExpandVertical /> <span>Show Fields</span> </>
                     )}
                 </button>
 
@@ -288,8 +288,8 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Customer Status</label>
                         <select
-                            value={typeclient ?? ""}
-                            onChange={(e) => settypeclient(e.target.value)}
+                            value={status ?? ""}
+                            onChange={(e) => setstatus(e.target.value)}
                             className="w-full px-3 py-2 border rounded text-xs capitalize bg-white"
                             required
                         >

@@ -56,6 +56,7 @@ interface FormFieldsProps {
     enddate: string; setenddate: (value: string) => void;
     activitynumber: string; setactivitynumber: (value: string) => void;
     activitystatus: string; setactivitystatus: (value: string) => void;
+    status: string; setstatus: (value: string) => void;
 
     ticketreferencenumber: string; setticketreferencenumber: (value: string) => void;
     wrapup: string; setwrapup: (value: string) => void;
@@ -101,6 +102,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     enddate, setenddate,
     activitynumber, setactivitynumber,
     activitystatus, setactivitystatus,
+    status, setstatus,
 
     ticketreferencenumber, setticketreferencenumber,
     wrapup, setwrapup,
@@ -163,6 +165,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 setaddress={setaddress} address={address}
                 setdeliveryaddress={setdeliveryaddress} deliveryaddress={deliveryaddress}
                 setarea={setarea} area={area}
+                setstatus={setstatus} status={status} 
             />
             <div className="border-t border-gray-200 my-4"></div>
             
