@@ -1,10 +1,12 @@
+// MainCardTable.tsx
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import FilterTop50 from "./Filters/FilterTop50";
 import FilterNext30 from "./Filters/FilterNext30";
 import FilterBalance20 from "./Filters/FilterBalance20";
-import FilterCSRClient from "./Filters/FilterCSRClient";
-import FilterTSAClient from "./Filters/FilterTSAClient";
+import FilterNewClient from "./Filters/FilterNewClient";
+import FilterInactiveClient from "./Filters/FilterInactive";
+import FilterNonBuyingClient from "./Filters/FilterNonBuying";
 
 interface Post {
   id: string;
@@ -37,8 +39,6 @@ interface MainCardTableProps {
     Manager: string;
     TSM: string;
   };
-  posts: Post[];
-  fetchAccount: () => void;
 }
 
 const STORAGE_KEY = "expandedFiltersState";
@@ -47,82 +47,53 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
 
-  // Load expandedFilters from localStorage or fallback to defaults
   const [expandedFilters, setExpandedFilters] = useState<Record<string, boolean>>(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        try {
-          return JSON.parse(stored);
-        } catch {
-          // Invalid JSON fallback
-          return {
-            top50: false,
-            next30: false,
-            balance20: false,
-            csr: false,
-            tsa: false,
-          };
-        }
+      try {
+        return stored ? JSON.parse(stored) : defaultFilterState();
+      } catch {
+        return defaultFilterState();
       }
     }
-    return {
-      top50: false,
-      next30: false,
-      balance20: false,
-      csr: false,
-      tsa: false,
-    };
+    return defaultFilterState();
   });
 
-  // Save to localStorage whenever expandedFilters change
+  const defaultFilterState = () => ({
+    top50: false,
+    next30: false,
+    balance20: false,
+    newclient: false,
+    inactive: false,
+    nonbuying: false
+  });
+
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(expandedFilters));
-    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(expandedFilters));
   }, [expandedFilters]);
 
   const toggleFilter = (key: string) => {
-    setExpandedFilters((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+    setExpandedFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const allExpanded = Object.values(expandedFilters).every(Boolean);
 
   const toggleAll = () => {
-    if (allExpanded) {
-      // Collapse all
-      setExpandedFilters({
-        top50: false,
-        next30: false,
-        balance20: false,
-        csr: false,
-        tsa: false,
-      });
-    } else {
-      // Expand all
-      setExpandedFilters({
-        top50: true,
-        next30: true,
-        balance20: true,
-        csr: true,
-        tsa: true,
-      });
-    }
+    const newState = Object.fromEntries(
+      Object.keys(expandedFilters).map((k) => [k, !allExpanded])
+    );
+    setExpandedFilters(newState);
   };
 
   const fetchData = async () => {
     try {
-      const response = await fetch(
-        "/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount"
-      );
-      const data = await response.json();
-      setPosts(data.data || []);
-    } catch (error) {
-      toast.error("Error fetching users.");
-      console.error("Error Fetching", error);
+      const res = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
+      const json = await res.json();
+      if (json.success) setPosts(json.data || []);
+      else toast.error(json.error || "Fetch failed.");
+    } catch (err) {
+      toast.error("Error fetching accounts.");
+      console.error(err);
     }
   };
 
@@ -132,26 +103,24 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
 
   const referenceID = userDetails?.ReferenceID;
   const role = userDetails?.Role;
-
-  const today = new Date();
-  const todayStr = today.toISOString().slice(0, 10); // "YYYY-MM-DD" lang, walang time
+  const todayStr = new Date().toISOString().slice(0, 10);
 
   const filteredSortedAccounts = posts
     .filter((post) => {
-      const isAllowed =
+      const allowed =
         role === "Super Admin" ||
         role === "Special Access" ||
         (["Territory Sales Associate", "Territory Sales Manager"].includes(role) &&
           post.referenceid === referenceID);
-
-      // Exclude posts without date_updated
-      if (!post.date_updated) return false;
-
-      // Remove date_today filter — only check isAllowed now
-      return isAllowed;
+      return allowed && post.date_updated;
     })
     .sort((a, b) => new Date(a.date_updated!).getTime() - new Date(b.date_updated!).getTime());
 
+  const isToday = (dateStr: string | null) =>
+    dateStr?.slice(0, 10) === todayStr;
+
+  const countFiltered = (type: string, key: "typeclient" | "status") =>
+    filteredSortedAccounts.filter((p) => p[key] === type && isToday(p.date_updated)).length;
 
   const generateActivityNumber = (companyname: string, referenceid: string): string => {
     const firstLetter = companyname.charAt(0).toUpperCase();
@@ -164,44 +133,38 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
     return `${firstLetter}-${firstTwoRef}-${formattedDate}-${randomNumber}`;
   };
 
-  const getDateUpdated = (typeclient: string) => {
+  const getDateUpdated = (typeclient: string, status?: string) => {
     const now = new Date();
 
     if (typeclient === "Top 50") {
-      now.setDate(now.getDate() + 15);
-    } else if (typeclient === "Next 30" || typeclient === "Balance 20") {
-      now.setMonth(now.getMonth() + 1);
+      now.setDate(now.getDate() + 15); // every 15 days
+    } else if (["Next 30", "Balance 20"].includes(typeclient)) {
+      now.setMonth(now.getMonth() + 1); // monthly
     }
 
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
+    // Check status-based scheduling if provided
+    if (status === "New Client") {
+      now.setMonth(now.getMonth() + 1); // once a month
+    } else if (status === "Inactive" || status === "Non-Buying") {
+      now.setMonth(now.getMonth() + 3); // quarterly
+    }
 
-    return `${year}-${month}-${day}`;
+    return now.toISOString().slice(0, 10);
   };
 
   const handleSubmit = async (post: Post) => {
-    if (!post.id) {
-      toast.error("Missing ID for status update.");
-      return;
-    }
+    if (!post.id) return toast.error("Missing ID for status update.");
 
     const activitynumber = generateActivityNumber(post.companyname, userDetails.ReferenceID);
 
     const payload = {
-      companyname: post.companyname,
-      contactperson: post.contactperson,
-      contactnumber: post.contactnumber,
-      emailaddress: post.emailaddress,
-      address: post.address,
+      ...post,
       referenceid: userDetails.ReferenceID,
       tsm: userDetails.TSM,
       manager: userDetails.Manager,
       targetquota: userDetails.TargetQuota,
-      ticketreferencenumber: post.ticketreferencenumber || "",
-      typeclient: post.typeclient,
       activitystatus: "Cold",
-      activitynumber,
+      activitynumber
     };
 
     try {
@@ -211,53 +174,31 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
         body: JSON.stringify(payload),
       });
 
-      if (res.ok) {
-        const date_updated = getDateUpdated(post.typeclient);
-
-        const statusUpdateRes = await fetch("/api/ModuleSales/Task/ScheduleTask/EditStatus", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: post.id,
-            status: "Used",
-            date_updated,
-          }),
-        });
-
-        if (statusUpdateRes.ok) {
-          toast.success("Activity added and status updated!");
-          await fetchData();
-
-        } else {
-          const updateErr = await statusUpdateRes.json();
-          toast.warn(`Activity added, but failed to update status: ${updateErr.message}`);
-        }
-      } else {
+      if (!res.ok) {
         const err = await res.json();
-        toast.error(`Error: ${err.message || "Failed to add activity."}`);
+        return toast.error(err.message || "Failed to add activity.");
+      }
+
+      const date_updated = getDateUpdated(post.typeclient);
+
+      const statusUpdate = await fetch("/api/ModuleSales/Task/ScheduleTask/EditStatus", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: post.id, date_updated }),
+      });
+
+      if (statusUpdate.ok) {
+        toast.success("Activity added and status updated!");
+        fetchData();
+      } else {
+        const updateErr = await statusUpdate.json();
+        toast.warn(`Activity added, but failed to update status: ${updateErr.message}`);
       }
     } catch (err) {
-      console.error("Submit error:", err);
-      toast.error("Something went wrong!");
+      toast.error("Submission failed.");
+      console.error(err);
     }
   };
-
-  const isToday = (dateStr: string | null) => {
-    if (!dateStr) return false;
-    return dateStr.slice(0, 10) === todayStr;
-  };
-
-  const top50Count = filteredSortedAccounts.filter(
-    (p) => p.typeclient === "Top 50" && isToday(p.date_updated)
-  ).length;
-
-  const next30Count = filteredSortedAccounts.filter(
-    (p) => p.typeclient === "Next 30" && isToday(p.date_updated)
-  ).length;
-
-  const balance20Count = filteredSortedAccounts.filter(
-    (p) => p.typeclient === "Balance 20" && isToday(p.date_updated)
-  ).length;
 
   return (
     <div className="bg-white col-span-3 space-y-4">
@@ -270,54 +211,28 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
         </button>
       </div>
 
-      <Section title="Top 50 Accounts" count={top50Count} open={expandedFilters.top50} onToggle={() => toggleFilter("top50")}>
-        <FilterTop50
-          userDetails={userDetails}
-          posts={filteredSortedAccounts}
-          handleSubmit={handleSubmit}
-          expandedIds={expandedIds}
-          setExpandedIds={setExpandedIds}
-        />
+      <Section title="Top 50 Accounts" count={countFiltered("Top 50", "typeclient")} open={expandedFilters.top50} onToggle={() => toggleFilter("top50")}>
+        <FilterTop50 {...{ userDetails, posts: filteredSortedAccounts, handleSubmit, expandedIds, setExpandedIds }} />
       </Section>
 
-      <Section title="Next 30 Accounts" count={next30Count} open={expandedFilters.next30} onToggle={() => toggleFilter("next30")}>
-        <FilterNext30
-          userDetails={userDetails}
-          posts={filteredSortedAccounts}
-          handleSubmit={handleSubmit}
-          expandedIds={expandedIds}
-          setExpandedIds={setExpandedIds}
-        />
+      <Section title="Next 30 Accounts" count={countFiltered("Next 30", "typeclient")} open={expandedFilters.next30} onToggle={() => toggleFilter("next30")}>
+        <FilterNext30 {...{ userDetails, posts: filteredSortedAccounts, handleSubmit, expandedIds, setExpandedIds }} />
       </Section>
 
-      <Section title="Balance 20 Accounts" count={balance20Count} open={expandedFilters.balance20} onToggle={() => toggleFilter("balance20")}>
-        <FilterBalance20
-          userDetails={userDetails}
-          posts={filteredSortedAccounts}
-          handleSubmit={handleSubmit}
-          expandedIds={expandedIds}
-          setExpandedIds={setExpandedIds}
-        />
+      <Section title="Balance 20 Accounts" count={countFiltered("Balance 20", "typeclient")} open={expandedFilters.balance20} onToggle={() => toggleFilter("balance20")}>
+        <FilterBalance20 {...{ userDetails, posts: filteredSortedAccounts, handleSubmit, expandedIds, setExpandedIds }} />
       </Section>
 
-      <Section title="CSR Clients" open={expandedFilters.csr} onToggle={() => toggleFilter("csr")}>
-        <FilterCSRClient
-          userDetails={userDetails}
-          posts={filteredSortedAccounts}
-          handleSubmit={handleSubmit}
-          expandedIds={expandedIds}
-          setExpandedIds={setExpandedIds}
-        />
+      <Section title="New Clients Accounts" count={countFiltered("New Client", "status")} open={expandedFilters.newclient} onToggle={() => toggleFilter("newclient")}>
+        <FilterNewClient {...{ userDetails, posts: filteredSortedAccounts, handleSubmit, expandedIds, setExpandedIds }} />
       </Section>
 
-      <Section title="TSA Clients" open={expandedFilters.tsa} onToggle={() => toggleFilter("tsa")}>
-        <FilterTSAClient
-          userDetails={userDetails}
-          posts={filteredSortedAccounts}
-          handleSubmit={handleSubmit}
-          expandedIds={expandedIds}
-          setExpandedIds={setExpandedIds}
-        />
+      <Section title="New Inactive Accounts" count={countFiltered("Inactive", "status")} open={expandedFilters.inactive} onToggle={() => toggleFilter("inactive")}>
+        <FilterInactiveClient {...{ userDetails, posts: filteredSortedAccounts, handleSubmit, expandedIds, setExpandedIds }} />
+      </Section>
+
+      <Section title="Non-Buying Accounts" count={countFiltered("Non-Buying", "status")} open={expandedFilters.nonbuying} onToggle={() => toggleFilter("nonbuying")}>
+        <FilterNonBuyingClient {...{ userDetails, posts: filteredSortedAccounts, handleSubmit, expandedIds, setExpandedIds }} />
       </Section>
     </div>
   );
@@ -330,27 +245,20 @@ const Section: React.FC<{
   onToggle: () => void;
   children: React.ReactNode;
 }> = ({ title, count, open, onToggle, children }) => (
-  <div className="shadow-sm">
-    <div
-      className="cursor-pointer px-2 py-2 hover:bg-gray-200 hover:rounded-md flex justify-between items-center"
-      onClick={onToggle}
-    >
+  <div>
+    <div className="cursor-pointer px-2 py-2 hover:bg-gray-200 hover:rounded-md flex justify-between items-center" onClick={onToggle}>
       <span className="font-medium text-[10px] uppercase flex items-center gap-2">
         {title}
-        {typeof count === "number" && count > 0 && (
-          <span
-            className="bg-red-600 text-white text-[8px] px-2 py-0.5 rounded-full"
-            title={`You have ${count} callback${count > 1 ? "s" : ""} today`}
-          >
+        {count ? (
+          <span className="bg-red-600 text-white text-[8px] px-2 py-0.5 rounded-full">
             {count}
           </span>
-        )}
+        ) : null}
       </span>
       <span className="text-[10px] text-gray-500">{open ? "Collapse ▲" : "Expand ▼"}</span>
     </div>
     {open && <div>{children}</div>}
   </div>
 );
-
 
 export default MainCardTable;

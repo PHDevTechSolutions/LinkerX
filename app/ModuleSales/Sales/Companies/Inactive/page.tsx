@@ -74,11 +74,11 @@ const InactiveAccounts: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
-                    setPostsLoading(false);
+                    setLoading(false);
                 }
             } else {
                 setError("User ID is missing.");
-                setPostsLoading(false);
+                setLoading(false);
             }
         };
 
@@ -87,7 +87,7 @@ const InactiveAccounts: React.FC = () => {
 
     // Fetch all users from the API
     const fetchAccount = async () => {
-        setPostsLoading(true);
+        setLoading(true);
         try {
             const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
             const data = await response.json();
@@ -97,23 +97,13 @@ const InactiveAccounts: React.FC = () => {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
         } finally {
-            setPostsLoading(false);
+            setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchAccount();
     }, []);
-
-    if (postsLoading || showSpinner) {
-        return (
-            <SessionChecker>
-                <ParentLayout>
-                    <FuturisticSpinner setShowSpinner={setShowSpinner} />
-                </ParentLayout>
-            </SessionChecker>
-        );
-    }
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)

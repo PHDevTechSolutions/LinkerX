@@ -315,7 +315,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           manager={manager} setmanager={setManager}
           tsm={tsm} settsm={setTsm}
           targetquota={targetquota} settargetquota={setTargetQuota}
-         
+
           companyname={companyname} setcompanyname={setcompanyname}
           companygroup={companygroup} setcompanygroup={setcompanygroup}
           contactperson={contactperson} setcontactperson={setcontactperson}
@@ -360,10 +360,17 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
         <div className="flex justify-end gap-2">
           <button
             type="submit"
-            disabled={!companyname.trim()}
-            className={`px-3 py-2 rounded text-[10px] flex items-center gap-1 text-white ${companyname.trim()
-                ? "bg-green-600 hover:bg-green-700 cursor-pointer"
-                : "bg-gray-400 cursor-not-allowed"
+            disabled={
+              !companyname.trim() ||
+              !contactperson.trim() ||
+              !typeclient.trim()
+            }
+            className={`px-3 py-2 rounded text-[10px] flex items-center gap-1 text-white 
+              ${companyname.trim() &&
+              contactperson.trim() &&
+              typeclient.trim()
+              ? "bg-green-600 hover:bg-green-700 cursor-pointer"
+              : "bg-gray-400 cursor-not-allowed"
               }`}
           >
             {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}

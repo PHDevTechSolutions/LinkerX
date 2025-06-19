@@ -167,17 +167,17 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 setarea={setarea} area={area}
                 setstatus={setstatus} status={status} 
             />
-            <div className="border-t border-gray-200 my-4"></div>
             
-            {typeactivity === "Quotation Preparation" && (
+            <div className="border-t border-gray-400 border-dashed my-4"></div>
             <Accordion
+                typeactivity={typeactivity} settypeactivity={settypeactivity}
                 projectname={projectname} setprojectname={setprojectname}
                 projectcategory={projectcategory} setprojectcategory={setprojectcategory}
                 projecttype={projecttype} setprojecttype={setprojecttype}
                 source={source} setsource={setsource}
             />
-            )}
 
+            <div className="border-t border-gray-400 border-dashed my-4"></div>
             <Submenu
                 typeactivity={typeactivity} settypeactivity={settypeactivity}
                 setemailaddress={setemailaddress} emailaddress={emailaddress}

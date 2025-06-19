@@ -4,19 +4,16 @@ import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
-
 // Components
 import Form from "../../../components/Companies/CompanyAccounts/Form";
 import ImportForm from "../../../components/Companies/CompanyAccounts/ImportForm";
 import SearchFilters from "../../../components/Companies/CompanyAccounts/Filters";
 import Container from "../../../components/Companies/CompanyAccounts/Container";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
-import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Image from "next/image";
 // Icons
 import { CiImport } from "react-icons/ci";
 
@@ -47,9 +44,8 @@ const ActiveAccounts: React.FC = () => {
     });
 
     // Loading states
-
-    const [postsLoading, setPostsLoading] = useState<boolean>(true); // for posts data
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const [referenceid, setReferenceID] = useState("");
     const [manager, setManager] = useState("");
@@ -57,8 +53,6 @@ const ActiveAccounts: React.FC = () => {
     const [status, setstatus] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const [isMaximized, setIsMaximized] = useState(false);
-    const [showSpinner, setShowSpinner] = useState(true);
-
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
         const fetchUserData = async () => {
@@ -89,11 +83,11 @@ const ActiveAccounts: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
-                    setShowSpinner(false);
+                    setLoading(false);
                 }
             } else {
                 setError("User ID is missing.");
-                setShowSpinner(false);
+                setLoading(false);
             }
         };
 
@@ -102,7 +96,7 @@ const ActiveAccounts: React.FC = () => {
 
     // Fetch all users from the API
     const fetchAccount = async () => {
-        setPostsLoading(true);
+        setLoading(true);
         try {
             const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
             const data = await response.json();
@@ -111,24 +105,13 @@ const ActiveAccounts: React.FC = () => {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
         } finally {
-            setPostsLoading(false);
+            setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchAccount();
     }, []);
-
-    // Show loading spinner while fetching user details or posts
-    if (postsLoading || showSpinner) {
-        return (
-            <SessionChecker>
-                <ParentLayout>
-                    <FuturisticSpinner setShowSpinner={setShowSpinner} />
-                </ParentLayout>
-            </SessionChecker>
-        );
-    }
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)

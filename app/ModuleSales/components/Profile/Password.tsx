@@ -63,7 +63,7 @@ const Password: React.FC<PasswordProps> = ({
           onChange={onChange}
           maxLength={10}
           aria-describedby="passwordHelp passwordError"
-          className={`mt-1 block w-full px-4 py-2 pr-10 border rounded-md text-xs text-black ${
+          className={`mt-1 block w-full px-4 py-2 pr-10 border-b text-xs text-black ${
             passwordError ? "border-red-500" : "border-gray-300"
           }`}
         />
@@ -71,16 +71,16 @@ const Password: React.FC<PasswordProps> = ({
           type="button"
           onClick={() => setShowPassword((prev) => !prev)}
           aria-label={showPassword ? "Hide password" : "Show password"}
-          className="absolute inset-y-0 right-3 bottom-[10px] flex items-center cursor-pointer text-gray-500"
+          className="absolute inset-y-0 right-3 bottom-[20px] flex items-center cursor-pointer text-gray-500"
         >
           {showPassword ? <IoIosEyeOff size={18} /> : <IoIosEye size={18} />}
         </button>
 
         {/* Password Strength Meter */}
         {passwordStrength && (
-          <div className="mt-1 h-2 w-full bg-gray-300 rounded" id="passwordStrengthMeter">
+          <div className="mt-1 h-1 w-full bg-gray-300 rounded" id="passwordStrengthMeter">
             <div
-              className={`${strengthColor[passwordStrength]} h-2 rounded transition-all duration-300`}
+              className={`${strengthColor[passwordStrength]} h-1 rounded transition-all duration-300`}
               style={{
                 width:
                   passwordStrength === "weak"
@@ -124,7 +124,7 @@ const Password: React.FC<PasswordProps> = ({
           onChange={onChange}
           maxLength={10}
           aria-describedby="confirmPasswordError"
-          className={`mt-1 block w-full px-4 py-2 border rounded-md text-xs text-black ${
+          className={`mt-1 block w-full px-4 py-2 border-b text-xs text-black ${
             confirmError ? "border-red-500" : "border-gray-300"
           }`}
         />
@@ -132,7 +132,7 @@ const Password: React.FC<PasswordProps> = ({
           type="button"
           onClick={() => setShowConfirmPassword((prev) => !prev)}
           aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
-          className="absolute inset-y-0 right-3 top-[20px] flex items-center cursor-pointer text-gray-500"
+          className="absolute inset-y-0 right-3 bottom-[5px] flex items-center cursor-pointer text-gray-500"
         >
           {showConfirmPassword ? <IoIosEyeOff size={18} /> : <IoIosEye size={18} />}
         </button>

@@ -13,9 +13,9 @@ export async function POST(req: Request) {
     const Xchire_body = await req.json();
     console.log("Request body:", Xchire_body);
 
-    const { id, status, date_updated } = Xchire_body;
+    const { id, date_updated } = Xchire_body;
 
-    if (!id || !status) {
+    if (!id) {
       throw new Error("Missing 'id' or 'status' in the request body.");
     }
 
@@ -24,13 +24,7 @@ export async function POST(req: Request) {
     }
 
     const Xchire_update = await Xchire_sql`
-      UPDATE accounts
-      SET
-        status = ${status},
-        date_updated = ${date_updated}
-      WHERE id = ${id}
-      RETURNING *;
-    `;
+      UPDATE accounts SET date_updated = ${date_updated} WHERE id = ${id} RETURNING *;`;
 
     if (Xchire_update.length === 0) {
       throw new Error("No rows were updated. Please check the company ID.");

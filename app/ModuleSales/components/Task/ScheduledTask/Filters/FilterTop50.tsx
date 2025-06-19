@@ -77,7 +77,7 @@ const FilterTop50: React.FC<FilterCardProps> = ({
           return (
             <div
               key={post.id}
-              className="border-b border-gray-200 p-4 hover:rounded-xl hover:shadow-lg transition duration-300"
+              className="p-4 hover:rounded-xl hover:shadow-lg transition duration-300"
             >
               <input type="hidden" name="referenceid" value={userDetails.ReferenceID} />
               <input type="hidden" name="tsm" value={userDetails.TSM} />

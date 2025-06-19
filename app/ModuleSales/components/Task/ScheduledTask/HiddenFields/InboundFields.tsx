@@ -65,7 +65,7 @@ const InboundFields: React.FC<InboundFieldsProps> = ({
             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Callback</label>
                 <select
-                    className="w-full px-3 py-2 border rounded text-xs"
+                    className="w-full px-3 py-2 border-b text-xs bg-white"
                     onChange={handleCallbackChange}
                 >
                     <option>Select Callback</option>
@@ -79,7 +79,7 @@ const InboundFields: React.FC<InboundFieldsProps> = ({
                         type="datetime-local"
                         value={callback}
                         onChange={(e) => setcallback(e.target.value)}
-                        className="w-full px-3 py-2 border rounded text-xs mt-2"
+                        className="w-full px-3 py-2 border-b text-xs mt-2 bg-white"
                     />
                 )}
             </div>
@@ -89,7 +89,7 @@ const InboundFields: React.FC<InboundFieldsProps> = ({
                 <select
                     value={callstatus}
                     onChange={(e) => setcallstatus(e.target.value)}
-                    className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    className="w-full px-3 py-2 border-b text-xs capitalize bg-white"
                 >
                     <option value="">Select Status</option>
                     <option value="Successful">Successful</option>
@@ -102,7 +102,7 @@ const InboundFields: React.FC<InboundFieldsProps> = ({
                 <select
                     value={typecall}
                     onChange={(e) => settypecall(e.target.value)}
-                    className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    className="w-full px-3 py-2 border-b text-xs capitalize bg-white"
                 >
                     <option value="">Select Type</option>
                     {callstatus === "Successful" ? (

@@ -27,7 +27,7 @@ interface FilterCardProps {
   setExpandedIds: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const FilterCSRClient: React.FC<FilterCardProps> = ({
+const FilterNewClient: React.FC<FilterCardProps> = ({
   userDetails,
   posts,
   handleSubmit,
@@ -40,7 +40,7 @@ const FilterCSRClient: React.FC<FilterCardProps> = ({
     const todayStr = new Date().toISOString().slice(0, 10);
 
     return posts
-      .filter((post) => post.typeclient === "CSR Client")
+      .filter((post) => post.status === "New Client")
       .filter(
         (post) =>
           post.date_updated !== null &&
@@ -156,4 +156,4 @@ const FilterCSRClient: React.FC<FilterCardProps> = ({
   );
 };
 
-export default FilterCSRClient;
+export default FilterNewClient;

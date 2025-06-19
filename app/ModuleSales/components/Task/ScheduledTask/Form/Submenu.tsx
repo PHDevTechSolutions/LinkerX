@@ -125,7 +125,29 @@ const Submenu: React.FC<SubmenuProps> = ({
             onChange={handleActivitySelection}
             value={activityOptions.find(opt => opt.value === typeactivity)}
             placeholder="Select an activity"
-            className="text-xs"
+            isClearable
+            classNamePrefix="react-select"
+            styles={{
+              control: (provided, state) => ({
+                ...provided,
+                border: "none",
+                borderBottom: state.isFocused ? "2px solid #3B82F6" : "1px solid #D1D5DB", // blue on focus, gray otherwise
+                boxShadow: "none",
+                borderRadius: "0px",
+                minHeight: "36px",
+                fontSize: "12px",
+                backgroundColor: "white",
+              }),
+              menu: (provided) => ({
+                ...provided,
+                fontSize: "12px",
+                zIndex: 5,
+              }),
+              singleValue: (provided) => ({
+                ...provided,
+                textTransform: "capitalize",
+              }),
+            }}
           />
         </div>
 
@@ -160,11 +182,14 @@ const Submenu: React.FC<SubmenuProps> = ({
           paymentterm={paymentterm}
           setpaymentterm={setpaymentterm}
         />
+      </div>
 
+      <div className="border-t border-gray-200 my-4"></div>
+
+      <div className="flex flex-wrap -mx-4 mt-4">
         {activitystatus === "Delivered" && (
-          <DeliveryFields {...{ actualsales, setactualsales, emailaddress, setemailaddress, deliverydate, setdeliverydate }} />
+          <DeliveryFields {...{ paymentterm, setpaymentterm, activitystatus, setactivitystatus, actualsales, setactualsales, emailaddress, setemailaddress, deliverydate, setdeliverydate }} />
         )}
-        
       </div>
     </div>
   );

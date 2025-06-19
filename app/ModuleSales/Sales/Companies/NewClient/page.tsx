@@ -46,6 +46,7 @@ const NewClientAccounts: React.FC = () => {
 
     const [postsLoading, setPostsLoading] = useState<boolean>(true);
     const [showSpinner, setShowSpinner] = useState(true);
+    const [loading, setLoading] = useState<boolean>(true);
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -77,11 +78,11 @@ const NewClientAccounts: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
-                    setShowSpinner(false);
+                    setLoading(false);
                 }
             } else {
                 setError("User ID is missing.");
-                setShowSpinner(false);
+                setLoading(false);
             }
         };
 
@@ -89,7 +90,7 @@ const NewClientAccounts: React.FC = () => {
     }, []);
 
     const fetchAccount = async () => {
-            setPostsLoading(true);
+            setLoading(true);
             try {
                 const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
                 const data = await response.json();
@@ -98,7 +99,7 @@ const NewClientAccounts: React.FC = () => {
                 toast.error("Error fetching users.");
                 console.error("Error Fetching", error);
             } finally {
-                setPostsLoading(false);
+                setLoading(false);
             }
         };
     
@@ -106,16 +107,6 @@ const NewClientAccounts: React.FC = () => {
             fetchAccount();
         }, []);
 
-    // Show loading spinner while fetching user details or posts
-    if (postsLoading || showSpinner) {
-        return (
-            <SessionChecker>
-                <ParentLayout>
-                    <FuturisticSpinner setShowSpinner={setShowSpinner} />
-                </ParentLayout>
-            </SessionChecker>
-        );
-    }
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)

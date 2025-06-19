@@ -35,10 +35,6 @@ const ActivityStatus: React.FC<ActivityStatusProps> = ({
     setactivitystatus(e.target.value);
   };
 
-  const handlePaymentTermChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setpaymentterm(e.target.value);
-  };
-
   return (
     <>
       <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4 relative">
@@ -46,7 +42,7 @@ const ActivityStatus: React.FC<ActivityStatusProps> = ({
         <select
           value={activitystatus || ""}
           onChange={handleChange}
-          className={`w-full px-3 py-2 border rounded text-xs capitalize ${
+          className={`w-full px-3 py-2 border-b text-xs capitalize ${
             isLocked ? "bg-gray-200 cursor-not-allowed" : "bg-white cursor-pointer"
           }`}
           disabled={isLocked}
@@ -63,26 +59,6 @@ const ActivityStatus: React.FC<ActivityStatusProps> = ({
           <option value="Loss">Loss</option>
         </select>
       </div>
-  
-      {activitystatus === "Delivered" && (
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4 relative">
-          <label className="block text-xs font-bold mb-2">Payment Terms</label>
-          <select
-            value={paymentterm}
-            onChange={handlePaymentTermChange}
-            className="w-full px-3 py-2 border rounded text-xs bg-white capitalize"
-            required
-          >
-            <option value="">Select Payment Term</option>
-            <option value="COD">COD</option>
-            <option value="Check">Check</option>
-            <option value="Cash">Cash</option>
-            <option value="Bank Deposit">Bank Deposit</option>
-            <option value="GCash">GCash</option>
-            <option value="Terms">Terms</option>
-          </select>
-        </div>
-      )}
     </>
   );
 };

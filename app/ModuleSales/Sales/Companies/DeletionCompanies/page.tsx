@@ -8,7 +8,6 @@ import Form from "../../../components/Companies/CompanyAccounts/Form";
 import Filters from "../../../components/Companies/DeletionCompanies/Filters";
 import Table from "../../../components/Companies/DeletionCompanies/Table";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
-import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -16,7 +15,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const DeletionAccounts: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
-    const [showImportForm, setShowImportForm] = useState(false);
     const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -35,9 +33,6 @@ const DeletionAccounts: React.FC = () => {
     const [referenceid, setReferenceID] = useState("");
     const [manager, setManager] = useState("");
     const [tsm, setTsm] = useState("");
-
-    const [postsLoading, setPostsLoading] = useState<boolean>(true);
-    const [showSpinner, setShowSpinner] = useState(true);
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
@@ -69,11 +64,11 @@ const DeletionAccounts: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
-                    setPostsLoading(false);
+                    setLoading(false);
                 }
             } else {
                 setError("User ID is missing.");
-                setPostsLoading(false);
+                setLoading(false);
             }
         };
 
@@ -82,7 +77,7 @@ const DeletionAccounts: React.FC = () => {
 
     // Fetch all users from the API
     const fetchAccount = async () => {
-        setPostsLoading(true);
+        setLoading(true);
         try {
             const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
             const data = await response.json();
@@ -92,23 +87,13 @@ const DeletionAccounts: React.FC = () => {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
         } finally {
-            setPostsLoading(false);
+            setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchAccount();
     }, []);
-
-    if (postsLoading || showSpinner) {
-        return (
-            <SessionChecker>
-                <ParentLayout>
-                    <FuturisticSpinner setShowSpinner={setShowSpinner} />
-                </ParentLayout>
-            </SessionChecker>
-        );
-    }
 
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)

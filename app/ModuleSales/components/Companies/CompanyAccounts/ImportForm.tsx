@@ -190,15 +190,14 @@ const ImportForm: React.FC<ImportFormProps> = ({
 
                 <div className="flex flex-wrap -mx-4">
                     <div className={fieldWidthClass}>
-                        <label className="block text-xs font-bold mb-2">Territory Sales Associate</label>
-                        <input type="text" value={referenceid} className="w-full px-3 py-2 border rounded text-xs capitalize" readOnly />
+                        <input type="hidden" value={referenceid} readOnly />
                         <input type="hidden" value={manager} />
                         <input type="hidden" value={tsm} />
                     </div>
 
                     <div className={fieldWidthClass}>
                         <label className="block text-xs font-bold mb-2">Status</label>
-                        <select value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize">
+                        <select value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs capitalize">
                             <option value="">Select Status</option>
                             <option value="Active">Active</option>
                         </select>
@@ -206,7 +205,7 @@ const ImportForm: React.FC<ImportFormProps> = ({
 
                     <div className={fieldWidthClass}>
                         <label className="block text-xs font-bold mb-2">Excel File</label>
-                        <input type="file" accept=".xls,.xlsx" className="w-full px-3 py-2 border rounded text-xs" onChange={handleFileChange} />
+                        <input type="file" accept=".xls,.xlsx" className="w-full px-3 py-2 border-b text-xs" onChange={handleFileChange} />
                         <p className="text-xs text-gray-600 mt-1">Accepted formats: .xls, .xlsx | Max size: 2MB</p>
                     </div>
                 </div>

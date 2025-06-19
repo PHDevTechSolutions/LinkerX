@@ -251,30 +251,16 @@ const ProfileForm: React.FC = () => {
         <div className="md:col-span-2 bg-white ">
           <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
             <div>
-              <label htmlFor="Firstname" className="block text-xs font-medium text-gray-700">
-                First Name
-              </label>
-              <input
-                type="text"
-                id="Firstname"
-                name="Firstname"
-                value={userDetails.Firstname}
-                onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs text-black capitalize"
+              <label htmlFor="Firstname" className="block text-xs font-medium text-gray-700">First Name</label>
+              <input type="text" id="Firstname" name="Firstname" value={userDetails.Firstname} onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border-b text-xs text-black capitalize"
               />
             </div>
 
             <div>
-              <label htmlFor="Lastname" className="block text-xs font-medium text-gray-700">
-                Last Name
-              </label>
-              <input
-                type="text"
-                id="Lastname"
-                name="Lastname"
-                value={userDetails.Lastname}
-                onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs text-black capitalize"
+              <label htmlFor="Lastname" className="block text-xs font-medium text-gray-700">Last Name</label>
+              <input type="text" id="Lastname" name="Lastname" value={userDetails.Lastname} onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border-b text-xs text-black capitalize"
               />
             </div>
 
@@ -287,42 +273,26 @@ const ProfileForm: React.FC = () => {
             />
 
             <div>
-              <label htmlFor="Email" className="block text-xs font-medium text-gray-700">
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="Email"
-                name="Email"
-                value={userDetails.Email}
-                onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs text-black"
+              <label htmlFor="Email" className="block text-xs font-medium text-gray-700">Email Address</label>
+              <input type="email" id="Email" name="Email" value={userDetails.Email} onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border-b text-xs text-black"
               />
             </div>
 
             <div>
-              <label htmlFor="ContactNumber" className="block text-xs font-medium text-gray-700">
-                Contact Number
-              </label>
-              <input
-                type="text"
-                id="ContactNumber"
-                name="ContactNumber"
-                value={userDetails.ContactNumber}
-                onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md text-xs text-black"
+              <label htmlFor="ContactNumber" className="block text-xs font-medium text-gray-700">Contact Number</label>
+              <input type="text" id="ContactNumber" name="ContactNumber" value={userDetails.ContactNumber} onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border-b text-xs text-black"
               />
             </div>
 
             {/* Custom Status Dropdown */}
             <div className="relative">
-              <label htmlFor="Status" className="block text-xs font-medium text-gray-700 mb-1">
-                Change Status
-              </label>
+              <label htmlFor="Status" className="block text-xs font-medium text-gray-700 mb-1">Change Status</label>
               <button
                 type="button"
                 onClick={toggleStatusDropdown}
-                className="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-md text-xs text-black capitalize bg-white"
+                className="w-full flex items-center justify-between px-4 py-2 border-b rounded-md text-xs text-black capitalize bg-white"
                 aria-haspopup="listbox"
                 aria-expanded={statusDropdownOpen}
                 aria-label="Select status"

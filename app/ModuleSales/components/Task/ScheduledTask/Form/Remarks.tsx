@@ -129,9 +129,9 @@ const Remarks: React.FC<RemarksProps> = ({
         ref={textareaRef}
         value={typeof remarks === "string" ? remarks : String(remarks ?? "")}
         onChange={handleChange}
-        className={`w-full px-3 py-2 border rounded text-xs capitalize resize-y ${error ? "border-red-500" : "border-gray-300"
+        className={`w-full px-3 py-2 border-b text-xs capitalize resize-y ${error ? "border-red-500" : "border-gray-300"
           }`}
-        rows={5}
+        rows={1}
         maxLength={maxLength}
         placeholder={placeholder}
         required={required}

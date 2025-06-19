@@ -70,7 +70,7 @@ const InquiriesContainer: React.FC<InquiriesContainerProps> = ({
           return (
             <div
               key={post.id}
-              className={`border-b border-gray-200 p-4 hover:rounded-xl hover:shadow-lg transition duration-300
+              className={`p-4 hover:rounded-xl hover:shadow-lg transition duration-300
                 ${isLatest ? "animate-pulse ring-2 ring-red-400 rounded-xl" : ""}
               `}
             >

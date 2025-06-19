@@ -71,12 +71,13 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        const filtered = data.data.filter((c: any) => c.status === 'Active' || c.status === 'Used');
-                        setCompanies(filtered.map((c: any) => ({
-                            ...c,
-                            value: c.companyname,
-                            label: c.companyname,
-                        })));
+                        setCompanies(
+                            data.data.map((c: any) => ({
+                                ...c,
+                                value: c.companyname,
+                                label: c.companyname,
+                            }))
+                        );
                     } else {
                         console.error("Error fetching companies:", data.error);
                     }
@@ -134,9 +135,31 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                                 <Select
                                     options={companies}
                                     onChange={handleCompanySelect}
-                                    className="text-[10px] uppercase"
+                                    className="text-[10px] capitalize"
                                     placeholder="Select Company"
                                     isClearable
+                                    classNamePrefix="react-select"
+                                    styles={{
+                                        control: (provided, state) => ({
+                                            ...provided,
+                                            border: "none",
+                                            borderBottom: state.isFocused ? "2px solid #3B82F6" : "1px solid #D1D5DB",
+                                            boxShadow: "none",
+                                            borderRadius: "0px",
+                                            minHeight: "3px",
+                                            fontSize: "12px",
+                                            backgroundColor: "white",
+                                        }),
+                                        menu: (provided) => ({
+                                            ...provided,
+                                            fontSize: "12px",
+                                            zIndex: 5,
+                                        }),
+                                        singleValue: (provided) => ({
+                                            ...provided,
+                                            textTransform: "capitalize",
+                                        }),
+                                    }}
                                 />
                             ) : (
                                 <input
@@ -145,7 +168,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                                     onChange={(e) =>
                                         setcompanyname(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))
                                     }
-                                    className="w-full text-xs capitalize p-2 border rounded"
+                                    className="w-full text-xs capitalize p-2 border-b"
                                 />
                             )}
                         </div>
@@ -157,7 +180,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                                     type="text"
                                     value={companyname ?? ""}
                                     disabled
-                                    className="w-full mt-0 text-xs capitalize p-2 border rounded"
+                                    className="w-full mt-0 text-xs capitalize p-2 border-b"
                                 />
                             </div>
                         )}
@@ -200,7 +223,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                             type="text"
                             value={companygroup ?? ""}
                             onChange={(e) => setcompanygroup(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                            className="w-full px-3 py-2 border-b text-xs capitalize"
                         />
                     </div>
 
@@ -211,7 +234,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                             type="text"
                             value={contactperson ?? ""}
                             onChange={handleContactpersonChange}
-                            className={`w-full px-3 py-2 border rounded text-xs capitalize ${contactpersonError ? "border-red-500" : ""
+                            className={`w-full px-3 py-2 border-b text-xs capitalize ${contactpersonError ? "border-red-500" : ""
                                 }`}
                             required
                             placeholder="Lastname, Firstname"
@@ -228,7 +251,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                             type="text"
                             value={contactnumber ?? ""}
                             onChange={(e) => setcontactnumber(e.target.value.replace(/[^0-9]/g, ""))}
-                            className="w-full px-3 py-2 border rounded text-xs" required
+                            className="w-full px-3 py-2 border-b text-xs" required
                         />
                     </div>
 
@@ -245,7 +268,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                             type="text"
                             value={address ?? ""}
                             onChange={(e) => setaddress(e.target.value.replace(/[^a-zA-Z0-9#.,\s]/g, ""))}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                            className="w-full px-3 py-2 border-b text-xs capitalize"
                         />
                     </div>
 
@@ -256,7 +279,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                             type="text"
                             value={deliveryaddress ?? ""}
                             onChange={(e) => setdeliveryaddress(e.target.value.replace(/[^a-zA-Z0-9#.,\s]/g, ""))}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                            className="w-full px-3 py-2 border-b text-xs capitalize"
                         />
                     </div>
 
@@ -272,7 +295,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                         <select
                             value={typeclient ?? ""}
                             onChange={(e) => settypeclient(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white"
+                            className="w-full px-3 py-2 border-b text-xs capitalize bg-white"
                             required>
                             <option value="">Select Client</option>
                             <option value="Top 50">Top 50</option>
@@ -284,15 +307,13 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                     </div>
 
                     {/* Status */}
-                    {isManual && (
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Customer Status</label>
                         <select
                             value={status ?? ""}
                             onChange={(e) => setstatus(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize bg-white"
-                            required
-                        >
+                            className="w-full px-3 py-2 border-b text-xs capitalize bg-white"
+                            required>
                             <option value="">Select Client</option>
                             <option value="Active">Active</option>
                             <option value="New Client">New Client</option>
@@ -300,7 +321,6 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                             <option value="Inactive">Inactive</option>
                         </select>
                     </div>
-                    )}
                 </div>
             )}
         </div>
