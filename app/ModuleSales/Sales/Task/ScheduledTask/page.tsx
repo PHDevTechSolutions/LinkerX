@@ -129,7 +129,6 @@ const ListofUser: React.FC = () => {
                   An overview of your recent and upcoming actions, including <strong>scheduled tasks</strong>, <strong>callbacks</strong>, <strong>calendar events</strong>, and <strong>inquiries</strong>—all in one place to keep you on track.
                 </p>
 
-
                 <Filters
                   searchTerm={searchTerm}
                   setSearchTerm={setSearchTerm}
