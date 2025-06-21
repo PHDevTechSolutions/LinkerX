@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { FaCaretRight, FaCaretDown } from "react-icons/fa";
-import { RiEditCircleLine } from "react-icons/ri";
+import React, { useMemo, useState } from "react";
 
 interface Post {
   id: string;
@@ -11,7 +9,7 @@ interface Post {
   activitystatus: string;
   activityremarks: string;
   ticketreferencenumber: string;
-  date_created: string;
+  date_created: string; // YYYY-MM-DD or ISO string
   date_updated: string | null;
   activitynumber: string;
 }
@@ -21,90 +19,79 @@ interface CardCalendarViewProps {
   handleEdit: (post: Post) => void;
 }
 
-type ViewType = "day" | "week" | "month";
+const DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const formatDate = (dateStr: string) => {
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return "Invalid date";
-  return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+const statusColors: Record<string, string> = {
+  "On Progress": "bg-yellow-200 text-black",
+  Assisted: "bg-blue-400 text-white",
+  Paid: "bg-green-500 text-white",
+  Delivered: "bg-cyan-400 text-white",
+  Collected: "bg-indigo-500 text-white",
+  "Quote-Done": "bg-slate-500 text-white",
+  "SO-Done": "bg-purple-500 text-white",
+  Cancelled: "bg-red-500 text-white",
+  Loss: "bg-red-800 text-white",
+  "Client Visit": "bg-orange-500 text-white",
+  "Site Visit": "bg-yellow-500 text-black",
+  "On Field": "bg-teal-500 text-white",
+  "Assisting other Agents Client": "bg-blue-300 text-white",
+  "Coordination of SO to Warehouse": "bg-green-300 text-white",
+  "Coordination of SO to Orders": "bg-green-400 text-white",
+  "Updating Reports": "bg-indigo-300 text-white",
+  "Email and Viber Checking": "bg-purple-300 text-white",
+  "1st Break": "bg-yellow-300 text-black",
+  "Client Meeting": "bg-orange-300 text-white",
+  "Coffee Break": "bg-amber-300 text-black",
+  "Group Meeting": "bg-cyan-300 text-black",
+  "Last Break": "bg-yellow-400 text-black",
+  "Lunch Break": "bg-red-300 text-black",
+  "TSM Coaching": "bg-pink-300 text-white",
 };
 
-const getWeekNumber = (date: Date) => {
-  const target = new Date(date.valueOf());
-  const dayNr = (date.getDay() + 6) % 7;
-  target.setDate(target.getDate() - dayNr + 3);
-  const firstThursday = target.valueOf();
-  target.setMonth(0, 1);
-  if (target.getDay() !== 4) {
-    target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
-  }
-  return 1 + Math.ceil((firstThursday - target.valueOf()) / 604800000);
+const getMonthDays = (year: number, month: number) => {
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  return { firstDay, lastDay, daysInMonth: lastDay.getDate() };
 };
 
-const groupPostsByView = (posts: Post[], view: ViewType) => {
-  const groups: Record<string, Post[]> = {};
+const parseDateCreated = (dateStr: string): Date => {
+  return new Date(dateStr + "T00:00:00");
+};
 
-  posts.forEach((post) => {
-    const dateStr = post.date_updated || post.date_created;
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return;
+const isSameDate = (d1: Date, d2: Date) =>
+  d1.getFullYear() === d2.getFullYear() &&
+  d1.getMonth() === d2.getMonth() &&
+  d1.getDate() === d2.getDate();
 
-    let key = "";
-    switch (view) {
-      case "day":
-        key = date.toISOString().slice(0, 10);
-        break;
-      case "week": {
-        const year = date.getFullYear();
-        const week = getWeekNumber(date);
-        key = `${year}-W${week.toString().padStart(2, "0")}`;
-        break;
-      }
-      case "month":
-        key = date.toLocaleDateString(undefined, { year: "numeric", month: "long" });
-        break;
-    }
+const formatDateKey = (date: Date) => date.toISOString().slice(0, 10);
 
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(post);
+const getCalendarGridDates = (year: number, month: number): Date[] => {
+  const { firstDay } = getMonthDays(year, month);
+  const firstDayWeekday = firstDay.getDay();
+
+  const calendarStart = new Date(year, month, 1);
+  calendarStart.setDate(1 - firstDayWeekday);
+
+  const totalCells = 42;
+
+  return Array.from({ length: totalCells }).map((_, idx) => {
+    const d = new Date(calendarStart);
+    d.setDate(calendarStart.getDate() + idx);
+    return d;
   });
-
-  return groups;
 };
 
-const getRelativeTime = (dateStr: string) => {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  if (diffMs < 0) return "in the future";
+const CardCalendarView: React.FC<CardCalendarViewProps> = ({
+  posts,
+  handleEdit,
+}) => {
+  const today = new Date();
 
-  const seconds = Math.floor(diffMs / 1000);
-  if (seconds < 60) return `${seconds} sec ago`;
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes} min ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-  const days = Math.floor(hours / 24);
-  return `${days} day${days > 1 ? "s" : ""} ago`;
-};
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
 
-const isRecentlyUpdated = (post: Post, days = 3) => {
-  const dateStr = post.date_updated || post.date_created;
-  const date = new Date(dateStr);
-  const now = new Date();
-  return now.getTime() - date.getTime() <= days * 24 * 60 * 60 * 1000;
-};
-
-const CardCalendarView: React.FC<CardCalendarViewProps> = ({ posts, handleEdit }) => {
-  const [view, setView] = useState<ViewType>(() => {
-    const saved = localStorage.getItem("cardCalendarView");
-    if (saved === "day" || saved === "week" || saved === "month") return saved;
-    return "day";
-  });
-
-  useEffect(() => {
-    localStorage.setItem("cardCalendarView", view);
-  }, [view]);
+  // New state: selected status to highlight
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
 
   const fieldOnlyStatus = [
     "Client Visit",
@@ -121,250 +108,174 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({ posts, handleEdit }
     "Group Meeting",
     "Last Break",
     "Lunch Break",
-    "TSM Coaching"
+    "TSM Coaching",
   ];
 
-  const filteredPosts = posts.filter(
-    (post) => !fieldOnlyStatus.includes(post.activitystatus)
+  const filteredPosts = useMemo(
+    () => posts.filter((post) => !fieldOnlyStatus.includes(post.activitystatus)),
+    [posts]
   );
 
-  const groupedPosts = groupPostsByView(filteredPosts, view);
-
-  const sortedKeys = Object.keys(groupedPosts).sort((a, b) => {
-    // Para makuha yung latest date sa bawat grupo:
-    const getLatestDate = (posts: Post[]) => {
-      return posts.reduce((latest, post) => {
-        const dateStr = post.date_updated || post.date_created;
-        const date = new Date(dateStr).getTime();
-        return date > latest ? date : latest;
-      }, 0);
-    };
-
-    const latestA = getLatestDate(groupedPosts[a]);
-    const latestB = getLatestDate(groupedPosts[b]);
-
-    // Descending order ng latest date sa group (latest group first)
-    return latestB - latestA;
-  });
-
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => {
-    const init: Record<string, boolean> = {};
-    sortedKeys.forEach((k) => {
-      init[k] = true;
+  const postsByDate = useMemo(() => {
+    const map: Record<string, Post[]> = {};
+    filteredPosts.forEach((post) => {
+      const dateCreatedOnly = post.date_created.slice(0, 10);
+      const dateObj = parseDateCreated(dateCreatedOnly);
+      const dateKey = formatDateKey(dateObj);
+      if (!map[dateKey]) map[dateKey] = [];
+      map[dateKey].push(post);
     });
-    return init;
-  });
+    return map;
+  }, [filteredPosts]);
 
-  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+  const calendarGridDates = useMemo(
+    () => getCalendarGridDates(currentYear, currentMonth),
+    [currentYear, currentMonth]
+  );
 
-  const toggleGroup = (key: string) => {
-    setExpandedGroups((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const toggleCard = (id: string) => {
-    setExpandedCards((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const [jumpDate, setJumpDate] = useState<string>("");
-
-  const handleJump = () => {
-    if (!jumpDate) return;
-    const date = new Date(jumpDate);
-    if (isNaN(date.getTime())) return alert("Invalid date");
-    let key = "";
-    switch (view) {
-      case "day":
-        key = date.toISOString().slice(0, 10);
-        break;
-      case "week": {
-        const year = date.getFullYear();
-        const week = getWeekNumber(date);
-        key = `${year}-W${week.toString().padStart(2, "0")}`;
-        break;
+  // Count activities per status for current month
+  const activityStatusCount = useMemo(() => {
+    const counts: Record<string, number> = {};
+    filteredPosts.forEach((post) => {
+      const date = new Date(post.date_created);
+      if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {
+        counts[post.activitystatus] = (counts[post.activitystatus] || 0) + 1;
       }
-      case "month":
-        key = date.toLocaleDateString(undefined, { year: "numeric", month: "long" });
-        break;
-    }
+    });
+    return counts;
+  }, [filteredPosts, currentYear, currentMonth]);
 
-    if (groupedPosts[key]) {
-      setExpandedGroups((prev) => ({ ...prev, [key]: true }));
-      const el = document.getElementById(`group-${key}`);
-      if (el) el.scrollIntoView({ behavior: "smooth" });
+  const prevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentYear(currentYear - 1);
+      setCurrentMonth(11);
     } else {
-      alert("No posts found for that date group");
+      setCurrentMonth(currentMonth - 1);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "cold":
-        return "bg-blue-100 border-blue-400";
-      case "warm":
-        return "bg-yellow-100 border-yellow-400";
-      case "hot":
-        return "bg-red-100 border-red-400";
-      case "done":
-        return "bg-green-100 border-green-400";
-      default:
-        return "bg-white border-gray-300";
+  const nextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentYear(currentYear + 1);
+      setCurrentMonth(0);
+    } else {
+      setCurrentMonth(currentMonth + 1);
     }
+  };
+
+  // Handler for clicking legend status
+  const handleLegendClick = (status: string) => {
+    setSelectedStatus((prev) => (prev === status ? null : status));
   };
 
   return (
     <div>
-      {/* Controls */}
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        {(["day", "week", "month"] as ViewType[]).map((v) => (
+      {/* Month navigation */}
+      <div className="mb-4 flex items-center justify-between">
+        <div />
+        <div className="flex items-center gap-4">
           <button
-            key={v}
-            onClick={() => setView(v)}
-            className={`px-3 py-1 rounded ${view === v ? "bg-blue-600 text-white text-xs" : "bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs"
-              }`}
+            onClick={prevMonth}
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-xs"
+            aria-label="Previous month"
           >
-            {v.charAt(0).toUpperCase() + v.slice(1)}
+            &lt;
           </button>
-        ))}
-
-        <div className="ml-auto flex items-center space-x-2">
-          <input
-            type="date"
-            value={jumpDate}
-            onChange={(e) => setJumpDate(e.target.value)}
-            className="border rounded px-2 py-1 text-xs"
-            aria-label="Jump to date"
-          />
+          <div className="text-sm font-semibold">
+            {new Date(currentYear, currentMonth, 1).toLocaleDateString(
+              undefined,
+              { year: "numeric", month: "long" }
+            )}
+          </div>
           <button
-            onClick={handleJump}
-            className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
+            onClick={nextMonth}
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-xs"
+            aria-label="Next month"
           >
-            Jump
+            &gt;
           </button>
         </div>
       </div>
 
-      {/* Calendar groups */}
-      <div className="space-y-8">
-        {sortedKeys.length === 0 && (
-          <p className="text-center text-gray-500">No posts available</p>
-        )}
+      {/* Legend showing activity statuses + counts */}
+      <div className="mb-4 flex flex-wrap gap-2">
+        {Object.entries(activityStatusCount).map(([status, count]) => {
+          const badgeClass = statusColors[status] || "bg-gray-300 text-black";
+          const isSelected = selectedStatus === status;
+          return (
+            <button
+              key={status}
+              onClick={() => handleLegendClick(status)}
+              className={`flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold cursor-pointer select-none
+                ${
+                  isSelected
+                    ? "ring-2 ring-blue-600 bg-blue-600 text-white"
+                    : badgeClass
+                }
+              `}
+              title={`Show posts with status: ${status}`}
+            >
+              <span>{status}</span>
+              <span className="bg-white text-black rounded-full px-2">{count}</span>
+            </button>
+          );
+        })}
+      </div>
 
-        {sortedKeys.map((key) => {
-          let displayLabel = key;
-          if (view === "week") {
-            const [year, week] = key.split("-W");
-            displayLabel = `Week ${week}, ${year}`;
-          }
+      {/* Month view calendar */}
+      <div className="grid grid-cols-7 gap-1 border rounded p-2 text-xs">
+        {/* Weekday headers */}
+        {DAYS_OF_WEEK.map((day) => (
+          <div key={day} className="font-semibold text-center border-b pb-1">
+            {day}
+          </div>
+        ))}
 
-          const isExpanded = expandedGroups[key];
-          const postsInGroup = groupedPosts[key];
+        {/* Days grid */}
+        {calendarGridDates.map((dateObj) => {
+          const dateKey = formatDateKey(dateObj);
+          const postsForDay = postsByDate[dateKey] || [];
+          const isCurrentMonth = dateObj.getMonth() === currentMonth;
 
           return (
-            <section key={key} id={`group-${key}`}>
-              <h2
-                className="text-xs font-semibold mb-2 border-b pb-2 cursor-pointer select-none flex justify-between items-center"
-                onClick={() => toggleGroup(key)}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    toggleGroup(key);
-                  }
-                }}
-              >
-                <span>{displayLabel} ({postsInGroup.length} post{postsInGroup.length > 1 ? "s" : ""})</span>
-                <span
-                  aria-label={isExpanded ? "Collapse group" : "Expand group"}
-                  className="text-sm select-none"
-                >
-                  {isExpanded ? <FaCaretDown /> : <FaCaretRight />}
-                </span>
-              </h2>
-
-              <div
-                className={`grid grid-cols-1 md:grid-cols-2 gap-4 overflow-hidden transition-all duration-300 ${isExpanded ? "max-h-screen" : "max-h-0"
-                  }`}
-                style={{ transitionProperty: "max-height" }}
-                aria-hidden={!isExpanded}
-              >
-                {postsInGroup.map((post) => {
-                  const isCardExpanded = !!expandedCards[post.id];
-                  const recent = isRecentlyUpdated(post);
-
+            <div
+              key={dateKey}
+              className={`border min-h-[5rem] p-1 flex flex-col cursor-default
+                ${
+                  isSameDate(dateObj, today) ? "bg-blue-100" : ""
+                }
+                ${!isCurrentMonth ? "text-gray-400 bg-gray-50" : ""}
+              `}
+              aria-label={`Day ${dateObj.getDate()}, ${postsForDay.length} post${
+                postsForDay.length !== 1 ? "s" : ""
+              }`}
+            >
+              <div className="font-semibold text-right">{dateObj.getDate()}</div>
+              <div className="flex-grow overflow-auto mt-1 space-y-1">
+                {postsForDay.map((post) => {
+                  const highlight = selectedStatus === post.activitystatus;
                   return (
                     <div
                       key={post.id}
-                      onClick={() => toggleCard(post.id)}
                       tabIndex={0}
+                      className={`bg-white border text-black px-2 p-2 cursor-pointer truncate uppercase text-[10px] shadow-md rounded-md
+                        ${highlight ? "ring-1 ring-yellow-400 bg-yellow-50" : ""}
+                      `}
+                      title={`${post.companyname} - ${post.activitystatus}`}
+                      onClick={() => handleEdit(post)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
-                          toggleCard(post.id);
+                          handleEdit(post);
                         }
                       }}
-                      className={`rounded-md p-4 shadow hover:shadow-md transition cursor-pointer outline-none relative
-    ${getStatusColor(post.activitystatus)} ${recent ? "ring-2 m-1" : ""}`}
-                      aria-expanded={isCardExpanded}
-                      aria-controls={`card-details-${post.id}`}
                     >
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold uppercase text-xs">{post.companyname}</h3>
-                        {recent && (
-                          <span
-                            className="text-[10px] bg-orange-400 text-white px-1 rounded ml-2"
-                            title="Recently updated within last 3 days"
-                          >
-                            NEW
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="text-xs capitalize mt-1">
-                        <p>
-                          Contact: {post.contactperson} | Number: {post.contactnumber}
-                        </p>
-                        <p>Created: {formatDate(post.date_created)} ({getRelativeTime(post.date_created)})</p>
-                        <p>
-                          Updated:{" "}
-                          {post.date_updated
-                            ? `${formatDate(post.date_updated)} (${getRelativeTime(post.date_updated)})`
-                            : "N/A"}
-                        </p>
-                      </div>
-
-                      {/* Spacer div to push the button to the bottom */}
-                      <div className="h-4"></div>
-
-                      <div className="flex justify-end mt-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(post);
-                          }}
-                          className="flex items-center gap-1 bg-blue-500 text-white text-[10px] hover:rounded-full px-2 py-1 rounded hover:bg-blue-700 transition-colors"
-                          aria-label={`Edit ${post.companyname}`}
-                          type="button"
-                        >
-                          <RiEditCircleLine size={12} /> Update
-                        </button>
-                      </div>
-
-                      <div
-                        id={`card-details-${post.id}`}
-                        className={`mt-3 overflow-hidden transition-all duration-300 ${isCardExpanded ? "max-h-96" : "max-h-0"
-                          }`}
-                        aria-hidden={!isCardExpanded}
-                      >
-                        <p className="text-xs text-gray-600 italic">
-                          Detailed info can go here, e.g., address, notes, etc.
-                        </p>
-                      </div>
+                      {post.companyname}
                     </div>
-
                   );
                 })}
               </div>
-            </section>
+            </div>
           );
         })}
       </div>

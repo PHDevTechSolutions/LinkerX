@@ -161,7 +161,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({
                         <GridView posts={currentDatePosts} handleEdit={handleEdit} />
                     )}
                     {view === "card" && (
-                        <CardView posts={currentDatePosts} handleEdit={handleEdit} />
+                        <CardView posts={posts} handleEdit={handleEdit} />
                     )}
                 </>
             )}
