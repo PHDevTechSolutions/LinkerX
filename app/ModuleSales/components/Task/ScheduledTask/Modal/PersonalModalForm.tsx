@@ -156,10 +156,7 @@ const PersonalModalForm: React.FC<PersonalModalFormProps> = ({
             <input type="hidden" value={enddate.toISOString()} />
 
             <div>
-              <label className="block mb-1 text-gray-700 text-xs font-bold flex items-center">
-                Activity Status
-                <TooltipIcon tip="Select the current activity status from the list." />
-              </label>
+              <label className="block mb-1 text-gray-700 text-xs font-bold flex items-center">Activity<TooltipIcon tip="Select the current activity status from the list." /></label>
               <select
                 value={activitystatus}
                 onChange={(e) => setActivityStatus(e.target.value)}
