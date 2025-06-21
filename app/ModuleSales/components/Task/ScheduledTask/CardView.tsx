@@ -206,7 +206,7 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({
             <button
               key={status}
               onClick={() => handleLegendClick(status)}
-              className={`flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold cursor-pointer select-none
+              className={`flex items-center gap-1 rounded-full px-3 py-1 text-[8px] font-semibold cursor-pointer select-none
                 ${
                   isSelected
                     ? "ring-2 ring-blue-600 bg-blue-600 text-white"
@@ -223,7 +223,7 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({
       </div>
 
       {/* Month view calendar */}
-      <div className="grid grid-cols-7 gap-1 border rounded p-2 text-xs">
+      <div className="grid grid-cols-7 gap-1 border rounded-md shadow-sm p-2 text-xs">
         {/* Weekday headers */}
         {DAYS_OF_WEEK.map((day) => (
           <div key={day} className="font-semibold text-center border-b pb-1">
@@ -240,7 +240,7 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({
           return (
             <div
               key={dateKey}
-              className={`border min-h-[5rem] p-1 flex flex-col cursor-default
+              className={`border rounded min-h-[5rem] p-1 flex flex-col cursor-default
                 ${
                   isSameDate(dateObj, today) ? "bg-blue-100" : ""
                 }
