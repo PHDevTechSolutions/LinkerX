@@ -12,6 +12,7 @@ interface Post {
   contactnumber: string;
   typeclient: string;
   activitystatus: string;
+  activityremarks: string;
   ticketreferencenumber: string;
   date_created: string;
   date_updated: string | null;
@@ -188,9 +189,33 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
     return <p className="text-center text-gray-500 text-sm mt-10">No records available</p>;
   }
 
-  const pinnedPosts = posts.filter((p) => pinnedIds.has(p.id));
-  const unpinnedPosts = posts.filter((p) => !pinnedIds.has(p.id));
+  const fieldOnlyStatus = [
+    "Client Visit",
+    "Site Visit",
+    "On Field",
+    "Assisting other Agents Client",
+    "Coordination of SO to Warehouse",
+    "Coordination of SO to Orders",
+    "Updating Reports",
+    "Email and Viber Checking",
+    "1st Break",
+    "Client Meeting",
+    "Coffee Break",
+    "Group Meeting",
+    "Last Break",
+    "Lunch Break",
+    "TSM Coaching"
+  ];
+
+  // Filter posts to exclude those with activitystatus in fieldOnlyStatus
+  const visiblePosts = posts.filter(
+    (p) => !fieldOnlyStatus.includes(p.activitystatus)
+  );
+
+  const pinnedPosts = visiblePosts.filter((p) => pinnedIds.has(p.id));
+  const unpinnedPosts = visiblePosts.filter((p) => !pinnedIds.has(p.id));
   const sortedPosts = [...pinnedPosts, ...unpinnedPosts];
+
 
   return (
     <>
@@ -239,20 +264,20 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                       ${post.activitystatus.toLowerCase() === "assisted"
                         ? "bg-blue-400 text-white"
                         : post.activitystatus.toLowerCase() === "paid"
-                        ? "bg-green-500 text-white"
-                        : post.activitystatus.toLowerCase() === "delivered"
-                        ? "bg-cyan-400 text-white"
-                        : post.activitystatus.toLowerCase() === "collected"
-                        ? "bg-indigo-500 text-white"
-                        : post.activitystatus.toLowerCase() === "quote-done"
-                        ? "bg-slate-500 text-white"
-                        : post.activitystatus.toLowerCase() === "so-done"
-                        ? "bg-purple-500 text-white"
-                        : post.activitystatus.toLowerCase() === "cancelled"
-                        ? "bg-red-500 text-white"
-                        : post.activitystatus.toLowerCase() === "loss"
-                        ? "bg-red-800 text-white"
-                            : "bg-green-500 text-white"
+                          ? "bg-green-500 text-white"
+                          : post.activitystatus.toLowerCase() === "delivered"
+                            ? "bg-cyan-400 text-white"
+                            : post.activitystatus.toLowerCase() === "collected"
+                              ? "bg-indigo-500 text-white"
+                              : post.activitystatus.toLowerCase() === "quote-done"
+                                ? "bg-slate-500 text-white"
+                                : post.activitystatus.toLowerCase() === "so-done"
+                                  ? "bg-purple-500 text-white"
+                                  : post.activitystatus.toLowerCase() === "cancelled"
+                                    ? "bg-red-500 text-white"
+                                    : post.activitystatus.toLowerCase() === "loss"
+                                      ? "bg-red-800 text-white"
+                                      : "bg-green-500 text-white"
                       }`}
 
                     aria-label={`Status: ${post.activitystatus}`}>

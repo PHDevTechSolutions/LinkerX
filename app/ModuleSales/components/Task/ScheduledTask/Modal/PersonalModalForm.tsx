@@ -144,8 +144,6 @@ const PersonalModalForm: React.FC<PersonalModalFormProps> = ({
             <input type="hidden" value={startdate.toISOString()} />
             <input type="hidden" value={enddate.toISOString()} />
 
-            <Duration duration={duration} setDuration={setDuration} />
-
             <div>
               <label className="block mb-1 text-gray-700 text-xs font-bold flex items-center">Activity Status
                 <TooltipIcon tip="Select the current activity status from the list." />
@@ -176,6 +174,8 @@ const PersonalModalForm: React.FC<PersonalModalFormProps> = ({
                 <option value="On Field">On Field</option>
               </select>
             </div>
+
+            <Duration duration={duration} setDuration={setDuration} />
 
             <div>
               <label className="block mb-1 text-gray-700 text-xs font-bold flex items-center">

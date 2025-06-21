@@ -101,8 +101,11 @@ const ListofUser: React.FC = () => {
     );
   }
 
-  const filteredAccounts = posts.filter((post) => {
-    const companyMatch = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredAccounts = posts
+  .filter((post) => {
+    const company = post?.companyname || ""; // fallback to empty string
+    const companyMatch = company.toLowerCase().includes(searchTerm.toLowerCase());
+
     const postDate = post.date_created ? new Date(post.date_created) : null;
 
     const withinDateRange =
@@ -113,7 +116,8 @@ const ListofUser: React.FC = () => {
       post?.referenceid === userDetails.ReferenceID || post?.ReferenceID === userDetails.ReferenceID;
 
     return companyMatch && withinDateRange && matchReferenceID;
-  }).sort((a, b) =>
+  })
+  .sort((a, b) =>
     new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
   );
 

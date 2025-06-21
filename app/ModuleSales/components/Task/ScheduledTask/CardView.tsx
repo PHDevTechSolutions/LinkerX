@@ -9,6 +9,7 @@ interface Post {
   contactnumber: string;
   typeclient: string;
   activitystatus: string;
+  activityremarks: string;
   ticketreferencenumber: string;
   date_created: string;
   date_updated: string | null;
@@ -105,7 +106,29 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({ posts, handleEdit }
     localStorage.setItem("cardCalendarView", view);
   }, [view]);
 
-  const groupedPosts = groupPostsByView(posts, view);
+  const fieldOnlyStatus = [
+    "Client Visit",
+    "Site Visit",
+    "On Field",
+    "Assisting other Agents Client",
+    "Coordination of SO to Warehouse",
+    "Coordination of SO to Orders",
+    "Updating Reports",
+    "Email and Viber Checking",
+    "1st Break",
+    "Client Meeting",
+    "Coffee Break",
+    "Group Meeting",
+    "Last Break",
+    "Lunch Break",
+    "TSM Coaching"
+  ];
+
+  const filteredPosts = posts.filter(
+    (post) => !fieldOnlyStatus.includes(post.activitystatus)
+  );
+
+  const groupedPosts = groupPostsByView(filteredPosts, view);
 
   const sortedKeys = Object.keys(groupedPosts).sort((a, b) => {
     // Para makuha yung latest date sa bawat grupo:

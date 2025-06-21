@@ -17,6 +17,7 @@ interface Post {
     contactnumber: string;
     typeclient: string;
     activitystatus: string;
+    activityremarks: string;
     ticketreferencenumber: string;
     date_created: string;
     date_updated: string | null;

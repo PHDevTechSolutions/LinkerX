@@ -9,10 +9,12 @@ export interface Post {
   contactnumber: string;
   typeclient: string;
   activitystatus: string;
+  activityremarks: string;
   ticketreferencenumber: string;
   date_created: string;
   date_updated: string | null;
   activitynumber: string;
+  source?: string;
 }
 
 interface TableViewProps {
@@ -30,17 +32,51 @@ const statusColors: Record<string, string> = {
   "SO-Done": "bg-purple-500 text-white",
   Cancelled: "bg-red-500 text-white",
   Loss: "bg-red-800 text-white",
+  "Client Visit": "bg-orange-500 text-white",
+  "Site Visit": "bg-yellow-500 text-black",
+  "On Field": "bg-teal-500 text-white",
+  "Assisting other Agents Client": "bg-blue-300 text-white",
+  "Coordination of SO to Warehouse": "bg-green-300 text-white",
+  "Coordination of SO to Orders": "bg-green-400 text-white",
+  "Updating Reports": "bg-indigo-300 text-white",
+  "Email and Viber Checking": "bg-purple-300 text-white",
+  "1st Break": "bg-yellow-300 text-black",
+  "Client Meeting": "bg-orange-300 text-white",
+  "Coffee Break": "bg-amber-300 text-black",
+  "Group Meeting": "bg-cyan-300 text-black",
+  "Last Break": "bg-yellow-400 text-black",
+  "Lunch Break": "bg-red-300 text-black",
+  "TSM Coaching": "bg-pink-300 text-white",
 };
+
+const fieldOnlyStatus = [
+  "Client Visit", 
+  "Site Visit", 
+  "On Field", 
+  "Assisting other Agents Client",
+  "Coordination of SO to Warehouse",
+  "Coordination of SO to Orders",
+  "Updating Reports",
+  "Email and Viber Checking",
+  "1st Break",
+  "Client Meeting",
+  "Coffee Break",
+  "Group Meeting",
+  "Last Break",
+  "Lunch Break",
+  "TSM Coaching"
+];
 
 const formatDate = (dateStr: string | null): string => {
   if (!dateStr) return "N/A";
   const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return "Invalid date";
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  return isNaN(date.getTime())
+    ? "Invalid date"
+    : date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
 };
 
 const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
@@ -54,9 +90,12 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
     return map;
   }, [posts]);
 
-  const onEdit = useCallback((post: Post) => {
-    handleEdit(post);
-  }, [handleEdit]);
+  const onEdit = useCallback(
+    (post: Post) => {
+      handleEdit(post);
+    },
+    [handleEdit]
+  );
 
   const renderedRows = useMemo(() => {
     if (posts.length === 0) {
@@ -71,6 +110,8 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
 
     return Object.entries(groupedPosts).map(([date, postsForDate]) => {
       const showColdTag = postsForDate.some((p) => p.activitystatus === "Cold");
+      const hasCsrInquiry = postsForDate.some((p) => p.typeclient?.toLowerCase() === "csr inquiries");
+
 
       return (
         <React.Fragment key={date}>
@@ -79,7 +120,7 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
               <div className="flex items-center gap-2">
                 <span>{date}</span>
                 {showColdTag && (
-                  <span className="bg-orange-500 pl-2 pr-2 rounded-full flex items-center text-white text-[10px] font-semibold shadow-md">
+                  <span className="bg-orange-500 px-2 py-1 rounded-full flex items-center text-white text-[10px] font-semibold shadow-md">
                     <IoIosSettings className="animate-spin mr-1" />
                     On Progress
                   </span>
@@ -88,61 +129,93 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
             </td>
           </tr>
 
-          {postsForDate.map((post) => (
-            <tr
-              key={post.id}
-              className="whitespace-nowrap hover:bg-gray-100 cursor-pointer"
-              onClick={() => onEdit(post)}
-              tabIndex={0}
-              onKeyDown={(e) => e.key === "Enter" && onEdit(post)}
-            >
-              <td
-                className="px-6 py-4 text-xs sticky left-0 bg-white border-r border-gray-200 z-20"
-                onClick={(e) => e.stopPropagation()}
+          {postsForDate.map((post) => {
+            const isFieldStatus = fieldOnlyStatus.includes(post.activitystatus);
+            const isCsrInquiry = post.typeclient?.toLowerCase() === "csr inquiries";
+
+            return (
+              <tr
+                key={post.id}
+                className={`
+                  whitespace-nowrap
+                  ${isFieldStatus ? "bg-gray-50" : "hover:bg-gray-100 cursor-pointer"}
+                  ${isCsrInquiry ? "border-2 border-red-500 shadow-lg hover:bg-red-500 hover:text-white" : ""}
+                `}
+                onClick={() => !isFieldStatus && onEdit(post)}
+                tabIndex={0}
+                onKeyDown={(e) => !isFieldStatus && e.key === "Enter" && onEdit(post)}
               >
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(post);
-                  }}
-                  className="flex items-center shadow-md gap-1 bg-blue-500 text-white text-[10px] px-2 py-1 rounded hover:bg-blue-700 hover:rounded-full transition-colors"
+                <td
+                  className="px-6 py-4 text-xs sticky left-0 bg-white border-r border-gray-200 z-20"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <RiEditCircleLine size={12} /> Update
-                </button>
-              </td>
+                  {!isFieldStatus && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(post);
+                      }}
+                      className="flex items-center shadow-md gap-1 bg-blue-500 text-white text-[10px] px-2 py-1 rounded hover:bg-blue-700 hover:rounded-full transition-colors"
+                    >
+                      <RiEditCircleLine size={12} /> Update
+                    </button>
+                  )}
+                </td>
 
-              <td className="px-6 py-4">
-                <span
-                  className={`px-2 py-1 text-[8px] rounded-full shadow-md font-semibold ${statusColors[post.activitystatus] || "bg-gray-300 text-black"
-                    }`}
-                >
-                  {post.activitystatus}
-                </span>
-              </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`px-2 py-1 text-[8px] rounded-full shadow-md font-semibold ${statusColors[post.activitystatus] || "bg-gray-300 text-black"
+                      }`}
+                  >
+                    {post.activitystatus}
+                  </span>
+                </td>
 
-              <td className="px-6 py-4 text-[10px]">{formatDate(post.date_created)}</td>
-              <td className="px-6 py-4 text-[10px] uppercase">{post.companyname}</td>
-              <td className="px-6 py-4 text-[10px] capitalize">{post.contactperson}</td>
-              <td className="px-6 py-4 text-[10px]">{post.contactnumber}</td>
-              <td className="px-6 py-4 text-[10px]">{post.typeclient}</td>
-              <td className="px-6 py-4 text-[10px]">{post.ticketreferencenumber}</td>
-              <td className="px-6 py-4 text-[10px]">{formatDate(post.date_updated)}</td>
-            </tr>
-          ))}
+                {isFieldStatus ? (
+                  <>
+                    <td className="px-6 py-4 text-[10px]">{formatDate(post.date_created)}</td>
+                    <td className="px-6 py-4 text-[10px]" colSpan={6}>
+                      {post.activityremarks || "—"}
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td className="px-6 py-4 text-[10px]">{formatDate(post.date_created)}</td>
+                    <td className="px-6 py-4 text-[10px] uppercase">{post.companyname}</td>
+                    <td className="px-6 py-4 text-[10px] capitalize">{post.contactperson}</td>
+                    <td className="px-6 py-4 text-[10px]">{post.contactnumber}</td>
+                    <td className="px-6 py-4 text-[10px]">
+                      {isCsrInquiry ? (
+                        <span className="bg-red-500 text-white rounded-full px-2 py-1 text-[8px] font-bold capitalize">
+                          CSR Inquiry
+                        </span>
+                      ) : (
+                        post.typeclient
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-[10px]">{post.ticketreferencenumber}</td>
+                    <td className="px-6 py-4 text-[10px]">{formatDate(post.date_updated)}</td>
+                  </>
+                )}
+              </tr>
+            );
+          })}
         </React.Fragment>
       );
     });
-  }, [groupedPosts, onEdit]);
+  }, [groupedPosts, onEdit, posts]);
 
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full table-auto">
         <thead className="bg-gray-200 sticky top-0 z-10">
           <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-            <th className="px-6 py-4 font-semibold text-gray-700 sticky left-0 border-r border-gray-200 z-20">Actions</th>
+            <th className="px-6 py-4 font-semibold text-gray-700 sticky left-0 border-r border-gray-200 z-20">
+              Actions
+            </th>
             <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Date Created</th>
-            <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
+            <th className="px-6 py-4 font-semibold text-gray-700">Company / Remarks</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
