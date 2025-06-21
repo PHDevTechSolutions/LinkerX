@@ -141,6 +141,7 @@ const PersonalModalForm: React.FC<PersonalModalFormProps> = ({
   ].includes(activitystatus);
 
   const showMeetingLinks = ["Client Meeting", "Group Meeting"].includes(activitystatus);
+  const isFormValid = activitystatus && duration !== null && activityremarks.trim() !== "";
 
   return (
     <>
@@ -208,7 +209,7 @@ const PersonalModalForm: React.FC<PersonalModalFormProps> = ({
               <Maps location={location} locationAddress={locationAddress} setLocation={setLocation} setActivityRemarks={setActivityRemarks} setLocationAddress={setLocationAddress} />
             )}
 
-            {showCalendar && ( <Calendar title={activitystatus} details={activityremarks} start={startdate} end={enddate} />)}
+            {showCalendar && (<Calendar title={activitystatus} details={activityremarks} start={startdate} end={enddate} />)}
 
             {showMeetingLinks && <Meeting />}
 
@@ -216,13 +217,17 @@ const PersonalModalForm: React.FC<PersonalModalFormProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 bg-gray-300 text-gray-800 text-xs rounded hover:bg-gray-400"
+                className="px-4 py-2 border bg-white text-gray-800 text-[10px] rounded hover:bg-gray-200"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
+                disabled={!isFormValid}
+                className={`px-4 py-2 text-white rounded text-[10px] ${isFormValid
+                  ? "bg-blue-400 hover:bg-blue-600"
+                  : "bg-gray-300 cursor-not-allowed"
+                  }`}
               >
                 Submit
               </button>

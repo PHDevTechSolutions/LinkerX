@@ -185,9 +185,7 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
                     <td className="px-6 py-4 text-[10px]">{post.contactnumber}</td>
                     <td className="px-6 py-4 text-[10px]">
                       {isCsrInquiry ? (
-                        <span className="bg-red-500 text-white rounded-full px-2 py-1 text-[8px] font-bold capitalize">
-                          CSR Client
-                        </span>
+                        <span className="bg-red-500 text-white rounded-full px-2 py-1 text-[8px] font-bold capitalize">CSR Client</span>
                       ) : (
                         post.typeclient
                       )}
