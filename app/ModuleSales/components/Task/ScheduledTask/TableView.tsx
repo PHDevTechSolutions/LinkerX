@@ -74,12 +74,12 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
 
       return (
         <React.Fragment key={date}>
-          <tr className="bg-gray-200 font-semibold text-[10px] text-gray-600">
+          <tr className="bg-gray-100 font-semibold text-[10px] text-gray-600">
             <td colSpan={9} className="px-6 py-2 sticky top-10 z-10">
               <div className="flex items-center gap-2">
                 <span>{date}</span>
                 {showColdTag && (
-                  <span className="bg-orange-500 pl-2 pr-2 rounded-full flex items-center text-white text-[10px] font-semibold">
+                  <span className="bg-orange-500 pl-2 pr-2 rounded-full flex items-center text-white text-[10px] font-semibold shadow-md">
                     <IoIosSettings className="animate-spin mr-1" />
                     On Progress
                   </span>
@@ -137,11 +137,9 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full table-auto">
-        <thead className="bg-gray-100 sticky top-0 z-10">
+        <thead className="bg-gray-200 sticky top-0 z-10">
           <tr className="text-xs text-left whitespace-nowrap border-l-4 border-orange-400">
-            <th className="px-6 py-4 font-semibold text-gray-700 sticky left-0 bg-gray-100 border-r border-gray-200 z-20">
-              Actions
-            </th>
+            <th className="px-6 py-4 font-semibold text-gray-700 sticky left-0 border-r border-gray-200 z-20">Actions</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Date Created</th>
             <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>

@@ -115,7 +115,6 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
                         <>
                             <option value="No Requirements">No Requirements</option>
                             <option value="Waiting for Future Projects">Waiting for Future Projects</option>
-                            <option value="Touch Base">Touch Base</option>
                         </>
                     ) : callstatus === "Unsuccessful" ? (
                         <>
@@ -130,7 +129,6 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
                             <option value="Cannot Be Reached">Cannot Be Reached</option>
                             <option value="Not Connected with the Company">Not Connected with the Company</option>
                             <option value="Waiting for Future Projects">Waiting for Future Projects</option>
-                            <option value="Touch Base">Touch Base</option>
                         </>
                     )}
                 </select>

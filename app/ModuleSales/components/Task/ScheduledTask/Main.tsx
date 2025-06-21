@@ -50,7 +50,7 @@ const Main: React.FC<UsersTableProps> = ({ posts, userDetails, fetchAccount }) =
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
         
         {/* Main Table Section */}
-        <section className="lg:col-span-3 bg-white rounded-xl shadow-md p-6">
+        <section className="lg:col-span-3 bg-white rounded-xl">
           <MainCardTable posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
         </section>
 
