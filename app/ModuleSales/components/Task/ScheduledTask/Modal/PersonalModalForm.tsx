@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Duration from "./Features/Duration";
 import Maps from "./Features/Maps";
+import Calendar from "./Features/Calendar";
+import Meeting from "./Features/Meeting";
+
 import ConfirmationModal from "./ConfirmationModal";
+import { FaGoogle, FaMicrosoft, FaVideo } from "react-icons/fa";
 import "leaflet/dist/leaflet.css";
 
 interface PersonalModalFormProps {
@@ -35,9 +39,7 @@ const PersonalModalForm: React.FC<PersonalModalFormProps> = ({
   const [startdate, setStartDate] = useState(new Date());
   const [enddate, setEndDate] = useState(new Date());
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
-    null
-  );
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationAddress, setLocationAddress] = useState("");
 
   useEffect(() => {
@@ -50,9 +52,7 @@ const PersonalModalForm: React.FC<PersonalModalFormProps> = ({
           };
           setLocation(coords);
 
-          fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}`
-          )
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}`)
             .then((res) => res.json())
             .then((data) => {
               const address = data.display_name || `${coords.lat}, ${coords.lng}`;
@@ -132,6 +132,16 @@ const PersonalModalForm: React.FC<PersonalModalFormProps> = ({
     }
   };
 
+  const showCalendar = [
+    "Assisting other Agents Client",
+    "Coordination of SO to Warehouse",
+    "Coordination of SO to Orders",
+    "Updating Reports",
+    "Email and Viber Checking",
+  ].includes(activitystatus);
+
+  const showMeetingLinks = ["Client Meeting", "Group Meeting"].includes(activitystatus);
+
   return (
     <>
       <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-50">
@@ -145,14 +155,15 @@ const PersonalModalForm: React.FC<PersonalModalFormProps> = ({
             <input type="hidden" value={enddate.toISOString()} />
 
             <div>
-              <label className="block mb-1 text-gray-700 text-xs font-bold flex items-center">Activity Status
+              <label className="block mb-1 text-gray-700 text-xs font-bold flex items-center">
+                Activity Status
                 <TooltipIcon tip="Select the current activity status from the list." />
               </label>
               <select
                 value={activitystatus}
                 onChange={(e) => setActivityStatus(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded text-xs capitalize"
+                className="w-full px-3 py-2 border-b bg-white text-xs capitalize"
               >
                 <option value="">-- Select an Option --</option>
                 <option value="Assisting other Agents Client">Assisting other Agents Client</option>
@@ -187,23 +198,19 @@ const PersonalModalForm: React.FC<PersonalModalFormProps> = ({
                 onChange={(e) => setActivityRemarks(e.target.value)}
                 rows={3}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded text-xs resize-none"
+                className="w-full px-3 py-2 border-b text-xs resize-none"
                 placeholder="Enter remarks here..."
-                disabled={["Client Visit", "Site Visit", "On Field"].includes(
-                  activitystatus
-                )}
+                disabled={["Client Visit", "Site Visit", "On Field"].includes(activitystatus)}
               />
             </div>
 
             {location && (
-              <Maps
-                location={location}
-                locationAddress={locationAddress}
-                setLocation={setLocation}
-                setActivityRemarks={setActivityRemarks}
-                setLocationAddress={setLocationAddress}
-              />
+              <Maps location={location} locationAddress={locationAddress} setLocation={setLocation} setActivityRemarks={setActivityRemarks} setLocationAddress={setLocationAddress} />
             )}
+
+            {showCalendar && ( <Calendar title={activitystatus} details={activityremarks} start={startdate} end={enddate} />)}
+
+            {showMeetingLinks && <Meeting />}
 
             <div className="flex justify-end gap-2">
               <button

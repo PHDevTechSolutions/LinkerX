@@ -42,19 +42,16 @@ async function create(data: any) {
             wrapup,
             inquiries,
             remarks,
-            targetquota, // ✅ Added targetquota
+            targetquota,
             csragent,
         } = data;
 
-        // Validate required fields
         if (!companyname || !referenceid) {
             return { success: false, error: "Company Name and Reference ID are required." };
         }
 
-        // Generate the activity number
         const activitynumber = generateActivityNumber(companyname, referenceid);
 
-        // ✅ Insert into activity table
         const activityColumns = [
             "ticketreferencenumber",
             "referenceid",
@@ -69,7 +66,7 @@ async function create(data: any) {
             "activitystatus",
             "typeclient",
             "activitynumber",
-            "targetquota", // ✅ Added targetquota
+            "targetquota",
             "csragent",
         ];
 
@@ -84,10 +81,10 @@ async function create(data: any) {
             address,
             wrapup,
             inquiries,
-            "Cold",
-            "CSR Inquiries",
+            "On Progress",
+            "CSR Client",
             activitynumber,
-            targetquota || "0", // ✅ Default to "0" if targetquota is not provided
+            targetquota || "0",
             csragent || null,
         ];
 
@@ -103,7 +100,6 @@ async function create(data: any) {
             return { success: false, error: "Failed to insert into activity table." };
         }
 
-        // ✅ Insert into progress table with typeactivity, remarks, and targetquota
         const progressColumns = [
             "ticketreferencenumber",
             "referenceid",
@@ -120,7 +116,7 @@ async function create(data: any) {
             "activitystatus",
             "remarks",
             "typeactivity",
-            "targetquota", // ✅ Added targetquota
+            "targetquota",
             "csragent",
         ];
 
@@ -136,11 +132,11 @@ async function create(data: any) {
             wrapup,
             inquiries,
             activitynumber,
-            "CSR Inquiries",
+            "CSR Client",
             "Cold",
             remarks || "N/A",
-            "CSR Inquiries",
-            targetquota || "0", // ✅ Default to "0" if targetquota is not provided
+            "CSR Client",
+            targetquota || "0",
             csragent,
         ];
 
@@ -156,7 +152,6 @@ async function create(data: any) {
             return { success: false, error: "Failed to insert into progress table." };
         }
 
-        // ✅ Insert into accounts table with specific fields and 'status' set to 'Used'
         const accountsColumns = [
             "referenceid",
             "tsm",
@@ -166,7 +161,7 @@ async function create(data: any) {
             "emailaddress",
             "address",
             "typeclient",
-            "status", // ✅ Added status field
+            "status",
         ];
 
         const accountsValues = [
@@ -177,8 +172,8 @@ async function create(data: any) {
             contactnumber,
             emailaddress,
             address,
-            "CSR Inquiries",
-            "Active", // ✅ Setting status to 'Used'
+            "CSR Client",
+            "New Client",
         ];
 
         const accountsPlaceholders = accountsValues.map((_, index) => `$${index + 1}`).join(", ");

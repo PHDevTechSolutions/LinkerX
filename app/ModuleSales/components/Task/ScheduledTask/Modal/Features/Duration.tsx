@@ -24,7 +24,7 @@ const Duration: React.FC<DurationProps> = ({ duration, setDuration }) => {
                 value={duration ?? ""}
                 onChange={(e) => setDuration(Number(e.target.value))}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded text-xs"
+                className="w-full px-3 py-2 border-b bg-white text-xs"
             >
                 <option value="">-- Select Duration --</option>
                 {durationOptions.map((opt) => (

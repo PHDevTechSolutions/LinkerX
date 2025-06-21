@@ -24,6 +24,7 @@ interface TableViewProps {
 }
 
 const statusColors: Record<string, string> = {
+  "On Progress": "bg-yellow-200 text-black",
   Assisted: "bg-blue-400 text-white",
   Paid: "bg-green-500 text-white",
   Delivered: "bg-cyan-400 text-white",
@@ -109,9 +110,7 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
     }
 
     return Object.entries(groupedPosts).map(([date, postsForDate]) => {
-      const showColdTag = postsForDate.some((p) => p.activitystatus === "Cold");
-      const hasCsrInquiry = postsForDate.some((p) => p.typeclient?.toLowerCase() === "csr inquiries");
-
+      const showColdTag = postsForDate.some((p) => p.activitystatus === "On Progress");
 
       return (
         <React.Fragment key={date}>
@@ -131,7 +130,7 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
 
           {postsForDate.map((post) => {
             const isFieldStatus = fieldOnlyStatus.includes(post.activitystatus);
-            const isCsrInquiry = post.typeclient?.toLowerCase() === "csr inquiries";
+            const isCsrInquiry = post.typeclient?.toLowerCase() === "csr client";
 
             return (
               <tr
@@ -139,7 +138,7 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
                 className={`
                   whitespace-nowrap
                   ${isFieldStatus ? "bg-gray-50" : "hover:bg-gray-100 cursor-pointer"}
-                  ${isCsrInquiry ? "border-2 border-red-500 shadow-lg hover:bg-red-500 hover:text-white" : ""}
+                  ${isCsrInquiry ? "shadow-lg hover:bg-red-500 hover:text-white" : ""}
                 `}
                 onClick={() => !isFieldStatus && onEdit(post)}
                 tabIndex={0}
@@ -187,7 +186,7 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
                     <td className="px-6 py-4 text-[10px]">
                       {isCsrInquiry ? (
                         <span className="bg-red-500 text-white rounded-full px-2 py-1 text-[8px] font-bold capitalize">
-                          CSR Inquiry
+                          CSR Client
                         </span>
                       ) : (
                         post.typeclient
