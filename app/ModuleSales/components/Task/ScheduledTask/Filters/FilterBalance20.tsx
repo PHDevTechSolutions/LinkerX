@@ -73,10 +73,7 @@ const FilterBalance20: React.FC<FilterCardProps> = ({
           const isExpanded = expandedIds.includes(post.id);
 
           return (
-            <div
-              key={post.id}
-              className="p-4 hover:rounded-xl hover:shadow-lg transition duration-300"
-            >
+            <div key={post.id} className="p-4 hover:rounded-xl hover:shadow-lg border-b transition duration-300">
               <input
                 type="hidden"
                 name="referenceid"

@@ -8,6 +8,8 @@ import FilterNewClient from "./Filters/FilterNewClient";
 import FilterInactiveClient from "./Filters/FilterInactive";
 import FilterNonBuyingClient from "./Filters/FilterNonBuying";
 
+import { GoPlus, GoDash } from "react-icons/go";
+
 interface Post {
   id: string;
   companyname: string;
@@ -207,9 +209,9 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
       <div className="flex justify-end">
         <button
           onClick={toggleAll}
-          className="bg-blue-400 text-white text-[10px] px-3 py-1 rounded hover:bg-blue-700 transition"
+          className="border text-[10px] px-2 py-2 rounded-full transition"
         >
-          {allExpanded ? "Collapse All" : "Expand All"}
+          {allExpanded ? <GoDash /> : <GoPlus />}
         </button>
       </div>
 
@@ -248,7 +250,7 @@ const Section: React.FC<{
   children: React.ReactNode;
 }> = ({ title, count, open, onToggle, children }) => (
   <div>
-    <div className="cursor-pointer px-2 py-2 hover:bg-gray-200 hover:rounded-md flex justify-between items-center" onClick={onToggle}>
+    <div className="cursor-pointer px-2 py-2 hover:bg-gray-200 hover:text-black hover:rounded-md flex justify-between items-center" onClick={onToggle}>
       <span className="font-medium text-[10px] uppercase flex items-center gap-2">
         {title}
         {count ? (
@@ -257,7 +259,7 @@ const Section: React.FC<{
           </span>
         ) : null}
       </span>
-      <span className="text-[10px] text-gray-500">{open ? "Collapse ▲" : "Expand ▼"}</span>
+      <span className="hover: text-[10px] hover:text-black text-white">{open ? "Collapse ▲" : "Expand ▼"}</span>
     </div>
     {open && <div>{children}</div>}
   </div>

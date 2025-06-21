@@ -51,9 +51,9 @@ const statusColors: Record<string, string> = {
 };
 
 const fieldOnlyStatus = [
-  "Client Visit", 
-  "Site Visit", 
-  "On Field", 
+  "Client Visit",
+  "Site Visit",
+  "On Field",
   "Assisting other Agents Client",
   "Coordination of SO to Warehouse",
   "Coordination of SO to Orders",
@@ -119,11 +119,15 @@ const TableView: React.FC<TableViewProps> = ({ posts, handleEdit }) => {
               <div className="flex items-center gap-2">
                 <span>{date}</span>
                 {showColdTag && (
-                  <span className="bg-orange-500 px-2 py-1 rounded-full flex items-center text-white text-[10px] font-semibold shadow-md">
-                    <IoIosSettings className="animate-spin mr-1" />
-                    On Progress
+                  <span
+                    className="bg-orange-500 px-4 py-1 text-white text-[10px] font-semibold shadow-md inline-flex items-center"
+                    style={{ transform: "skew(-20deg)" }}
+                  >
+                    <IoIosSettings className="animate-spin mr-1" style={{ transform: "skew(20deg)" }} />
+                    <span style={{ transform: "skew(20deg)" }}>On Progress</span>
                   </span>
                 )}
+
               </div>
             </td>
           </tr>
