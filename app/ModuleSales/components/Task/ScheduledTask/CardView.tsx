@@ -242,7 +242,7 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({
               key={dateKey}
               className={`border rounded min-h-[5rem] p-1 flex flex-col cursor-default
                 ${
-                  isSameDate(dateObj, today) ? "bg-blue-100" : ""
+                  isSameDate(dateObj, today) ? "bg-orange-100" : ""
                 }
                 ${!isCurrentMonth ? "text-gray-400 bg-gray-50" : ""}
               `}
