@@ -11,7 +11,7 @@ import {
 
 interface BarChartProps {
   data: {
-    typecall: string;
+    source: string;
     obTarget: number;
     totalOB: number;
     actualSales: number;
