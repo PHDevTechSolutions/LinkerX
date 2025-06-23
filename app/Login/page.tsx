@@ -25,7 +25,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ userId, department }) => {
       audioRef.current.play().catch(console.error);
     }
 
-    const duration = 10000; // 10 seconds
+    const duration = 10000;
     const intervalTime = 50;
     let elapsed = 0;
 
@@ -58,8 +58,10 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ userId, department }) => {
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white font-sans">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white text-white font-sans">
       {/* Hidden audio element controlled by ref */}
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#00ffcc33_1px,transparent_1px)] bg-[size:40px_40px] z-0" />
+
       <audio ref={audioRef} src="/binary-logout-sfx.mp3" preload="auto" />
 
       <svg width={120} height={120} className="mb-4">
@@ -87,7 +89,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ userId, department }) => {
           transition={{ duration: 0.05, ease: 'linear' }}
         />
       </svg>
-      <p className="text-lg tracking-wide">Loading {progress}%</p>
+      <p className="text-md tracking-wide">Loading Taskflow {progress}%</p>
     </div>
   );
 };
