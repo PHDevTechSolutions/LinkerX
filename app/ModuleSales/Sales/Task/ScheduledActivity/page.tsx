@@ -5,7 +5,7 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
-import Filters from "../../../components/Task/ScheduledTask/Filters";
+import Filters from "../../../components/Task/ScheduledActivity/Filters/Filters";
 import Main from "../../../components/Task/ScheduledActivity/Main";
 import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
@@ -72,7 +72,7 @@ const ListofUser: React.FC = () => {
   const fetchAccount = async () => {
     setPostsLoading(true);
     try {
-      const res = await fetch("/api/ModuleSales/Reports/AccountManagement/FetchSales");
+      const res = await fetch("/api/ModuleSales/Reports/AccountManagement/FetchActivity");
       const data = await res.json();
       if (process.env.NODE_ENV === "development") {
         console.log("Fetched data:", data);
@@ -101,8 +101,11 @@ const ListofUser: React.FC = () => {
     );
   }
 
-  const filteredAccounts = posts.filter((post) => {
-    const companyMatch = post?.companyname?.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredAccounts = posts
+  .filter((post) => {
+    const company = post?.companyname || ""; // fallback to empty string
+    const companyMatch = company.toLowerCase().includes(searchTerm.toLowerCase());
+
     const postDate = post.date_created ? new Date(post.date_created) : null;
 
     const withinDateRange =
@@ -113,7 +116,8 @@ const ListofUser: React.FC = () => {
       post?.referenceid === userDetails.ReferenceID || post?.ReferenceID === userDetails.ReferenceID;
 
     return companyMatch && withinDateRange && matchReferenceID;
-  }).sort((a, b) =>
+  })
+  .sort((a, b) =>
     new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
   );
 
@@ -124,11 +128,10 @@ const ListofUser: React.FC = () => {
           {(user) => (
             <div className="container mx-auto p-4 text-gray-900">
               <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                <h2 className="text-lg font-bold mb-2">Activities</h2>
+                <h2 className="text-lg font-bold mb-2">Scheduled Task</h2>
                 <p className="text-xs text-gray-600 mb-4">
                   An overview of your recent and upcoming actions, including <strong>scheduled tasks</strong>, <strong>callbacks</strong>, <strong>calendar events</strong>, and <strong>inquiries</strong>—all in one place to keep you on track.
                 </p>
-
 
                 <Filters
                   searchTerm={searchTerm}

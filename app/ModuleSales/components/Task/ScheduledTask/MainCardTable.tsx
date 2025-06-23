@@ -150,7 +150,13 @@ const MainCardTable: React.FC<MainCardTableProps> = ({
                 />
             ) : (
                 <>
-                    
+                    {view === "table" && (
+                        <TableView
+                            posts={currentDatePosts}
+                            handleEdit={handleEdit}
+                            refreshPosts={fetchAccount}
+                        />
+                    )}
                     {view === "grid" && (
                         <GridView posts={currentDatePosts} handleEdit={handleEdit} />
                     )}

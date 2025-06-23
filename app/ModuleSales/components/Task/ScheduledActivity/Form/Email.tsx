@@ -34,7 +34,7 @@ const Email: React.FC<EmailProps> = ({ emailaddress, setemailaddress }) => {
           const allowed = input.replace(/[^a-zA-Z0-9@._-]/g, "");
           setemailaddress(allowed);
         }}
-        className={`w-full px-3 py-2 border rounded text-xs ${
+        className={`w-full px-3 py-2 border-b text-xs ${
           error ? "border-red-500" : "border-gray-300"
         }`}
         placeholder="Email Address"

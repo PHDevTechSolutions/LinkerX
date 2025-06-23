@@ -129,9 +129,9 @@ const Remarks: React.FC<RemarksProps> = ({
         ref={textareaRef}
         value={typeof remarks === "string" ? remarks : String(remarks ?? "")}
         onChange={handleChange}
-        className={`w-full px-3 py-2 border rounded text-xs capitalize resize-y ${error ? "border-red-500" : "border-gray-300"
+        className={`w-full px-3 py-2 border-b text-xs capitalize resize-y ${error ? "border-red-500" : "border-gray-300"
           }`}
-        rows={5}
+        rows={1}
         maxLength={maxLength}
         placeholder={placeholder}
         required={required}
@@ -143,7 +143,7 @@ const Remarks: React.FC<RemarksProps> = ({
         <button
           type="button"
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className="text-xs px-2 py-1 border rounded bg-gray-100 hover:bg-gray-200"
+          className="text-[10px] px-2 py-1 border rounded bg-gray-100 hover:bg-gray-200"
           aria-label="Toggle Emoji Picker"
         >
           😊
@@ -153,7 +153,7 @@ const Remarks: React.FC<RemarksProps> = ({
           type="button"
           onClick={undo}
           disabled={historyIndex === 0}
-          className={`text-xs px-2 py-1 border rounded ${historyIndex === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"
+          className={`text-[10px] px-2 py-1 border rounded ${historyIndex === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"
             }`}
           aria-label="Undo"
         >
@@ -164,7 +164,7 @@ const Remarks: React.FC<RemarksProps> = ({
           type="button"
           onClick={redo}
           disabled={historyIndex === history.length - 1}
-          className={`text-xs px-2 py-1 border rounded ${historyIndex === history.length - 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"
+          className={`text-[10px] px-2 py-1 border rounded ${historyIndex === history.length - 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"
             }`}
           aria-label="Redo"
         >

@@ -132,7 +132,6 @@ const Inquiries: React.FC<InquiriesProps> = ({
                 new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
         );
 
-
     return (
         <>
             <ToastContainer />

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormFields from "./FormFields";
+import HistoricalRecordsTable from "./HistoricalRecordTable";
 import EditRecordModal from "./Modal/EditRecordModal";
 
 import { CiTrash, CiCircleRemove, CiSaveUp1, CiEdit, CiTurnL1 } from "react-icons/ci";
@@ -82,6 +83,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [enddate, setenddate] = useState(editUser ? editUser.enddate : "");
   const [activitynumber, setactivitynumber] = useState(editUser?.activitynumber || "");
   const [activitystatus, setactivitystatus] = useState(editUser ? editUser.activitystatus : "");
+  const [status, setstatus] = useState(editUser ? editUser.status : "");
 
   const [ticketreferencenumber, setticketreferencenumber] = useState(editUser ? editUser.ticketreferencenumber : "");
   const [wrapup, setwrapup] = useState(editUser ? editUser.wrapup : "");
@@ -89,7 +91,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const [csragent, setcsragent] = useState(editUser ? editUser.csragent : "");
 
   const [paymentterm, setpaymentterm] = useState(editUser ? editUser.paymentterm : "");
-  const [deliverydate, setdeliverydate] = useState(editUser ? editUser.deliverydate: "");
+  const [deliverydate, setdeliverydate] = useState(editUser ? editUser.deliverydate : "");
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -172,7 +174,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         id: editUser?.id, referenceid, manager, tsm, targetquota, companyname, companygroup, contactperson, contactnumber, emailaddress, typeclient,
-        address, deliveryaddress, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, remarks,
+        address, deliveryaddress, area, projectname, projectcategory, projecttype, source, typeactivity, startdate, enddate, activitynumber, activitystatus, status, remarks,
         callback, typecall, quotationnumber, quotationamount, sonumber, soamount, actualsales, callstatus, ticketreferencenumber, wrapup, inquiries, csragent, paymentterm, deliverydate,
       }),
     });
@@ -251,7 +253,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     }
   };
 
-
   // Handle input change inside modal
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -314,7 +315,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           manager={manager} setmanager={setManager}
           tsm={tsm} settsm={setTsm}
           targetquota={targetquota} settargetquota={setTargetQuota}
-          //
+
           companyname={companyname} setcompanyname={setcompanyname}
           companygroup={companygroup} setcompanygroup={setcompanygroup}
           contactperson={contactperson} setcontactperson={setcontactperson}
@@ -342,6 +343,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
           enddate={enddate} setenddate={setenddate}
           activitynumber={activitynumber} setactivitynumber={setactivitynumber}
           activitystatus={activitystatus} setactivitystatus={setactivitystatus}
+          status={status} setstatus={setstatus}
 
           ticketreferencenumber={ticketreferencenumber} setticketreferencenumber={setticketreferencenumber}
           wrapup={wrapup} setwrapup={setwrapup}
@@ -350,13 +352,27 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
           paymentterm={paymentterm} setpaymentterm={setpaymentterm}
           deliverydate={deliverydate} setdeliverydate={setdeliverydate}
-          
+
           currentRecords={currentRecords}
           editPost={editUser}
         />
-        
+
         <div className="flex justify-end gap-2">
-          <button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-[10px] flex items-center gap-1">
+          <button
+            type="submit"
+            disabled={
+              !companyname.trim() ||
+              !contactperson.trim() ||
+              !typeclient.trim()
+            }
+            className={`px-3 py-2 rounded text-[10px] flex items-center gap-1 text-white 
+              ${companyname.trim() &&
+              contactperson.trim() &&
+              typeclient.trim()
+              ? "bg-green-600 hover:bg-green-700 cursor-pointer"
+              : "bg-gray-400 cursor-not-allowed"
+              }`}
+          >
             {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}
             {editUser ? "Save" : "Submit"}
           </button>
@@ -366,6 +382,48 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
 
         {/* Historical Records Table */}
         <div className="mt-6">
+          <h3 className="text-xs font-bold mb-2">Progress</h3>
+          <p className="text-xs text-gray-600 mb-4">
+            This section displays <strong>Progres</strong> of past activities, allowing users to view key details related to calls and related actions. It includes columns such as activity type, callback, call status, and related amounts. The table helps in tracking and reviewing past interactions for better decision-making and analysis.
+          </p>
+
+          {/* Desktop View */}
+          <div className="overflow-x-auto">
+            <HistoricalRecordsTable
+              records={currentRecords}
+              handleShowRemarks={handleShowRemarks}
+              handleDeleteClick={handleDeleteClick}
+              handleEditClick={handleEditClick}
+            />
+
+            {isEditModalOpen && selectedActivity && (
+              <EditRecordModal
+                selectedActivity={selectedActivity}
+                handleInputChange={handleInputChange}
+                handleModalClose={handleModalClose}
+                handleSaveEdit={handleSaveEdit}
+              />
+            )}
+
+            {/* Modal for showing full remarks */}
+            {showModal && (
+              <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-[999]">
+                <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-lg">
+                  <h3 className="font-semibold text-lg mb-4">Remarks</h3>
+                  <div className="modal-body">
+                    <p className="text-sm capitalize break-words">{modalRemarks}</p>
+                  </div>
+                  <button
+                    onClick={handleCloseModal}
+                    className="mt-4 text-blue-500 px-4 py-2 border border-blue-500 rounded text-xs"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Pagination Controls */}
           {totalPages > 1 && (
             <div className="flex justify-between mt-4">

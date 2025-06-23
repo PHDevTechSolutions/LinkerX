@@ -1,6 +1,5 @@
 import React from "react";
 import MainCardTable from "./MainCardTable";
-import Automation from "./Automation";
 import Inquiries from "./Inquiries";
 import { formatDistanceToNow } from "date-fns";
 import { CiLocationArrow1 } from "react-icons/ci";
@@ -50,7 +49,7 @@ const Main: React.FC<UsersTableProps> = ({ posts, userDetails, fetchAccount }) =
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
         
         {/* Main Table Section */}
-        <section className="lg:col-span-3 bg-white rounded-xl shadow-md p-6">
+        <section className="lg:col-span-3 bg-white rounded-xl">
           <MainCardTable posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
         </section>
 
@@ -59,8 +58,8 @@ const Main: React.FC<UsersTableProps> = ({ posts, userDetails, fetchAccount }) =
           
           {/* Scheduled Task */}
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Scheduled Task</h2>
-            <Automation posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Callbacks</h2>
+            
           </div>
 
           {/* CSR Inquiries */}

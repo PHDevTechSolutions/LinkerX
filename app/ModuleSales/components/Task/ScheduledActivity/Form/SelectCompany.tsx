@@ -17,6 +17,7 @@ export interface CompanyOption {
     address: string;
     deliveryaddress: string;
     area: string;
+    status: string;
 }
 
 interface SelectCompanyProps {
@@ -30,6 +31,7 @@ interface SelectCompanyProps {
     address: string; setaddress: (val: string) => void;
     deliveryaddress: string; setdeliveryaddress: (val: string) => void;
     area: string; setarea: (val: string) => void;
+    status: string; setstatus: (val: string) => void;
 
     editPost?: {
         companyname?: string;
@@ -41,6 +43,7 @@ interface SelectCompanyProps {
         address: string;
         deliveryaddress: string;
         area: string;
+        status: string;
     };
 }
 
@@ -55,6 +58,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
     address, setaddress,
     deliveryaddress, setdeliveryaddress,
     area, setarea,
+    status, setstatus,
     editPost,
 }) => {
     const [companies, setCompanies] = useState<any[]>([]);
@@ -67,12 +71,13 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        const filtered = data.data.filter((c: any) => c.status === 'Active' || c.status === 'Used');
-                        setCompanies(filtered.map((c: any) => ({
-                            ...c,
-                            value: c.companyname,
-                            label: c.companyname,
-                        })));
+                        setCompanies(
+                            data.data.map((c: any) => ({
+                                ...c,
+                                value: c.companyname,
+                                label: c.companyname,
+                            }))
+                        );
                     } else {
                         console.error("Error fetching companies:", data.error);
                     }
@@ -99,23 +104,111 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
         }
     };
 
+    const [contactpersonError, setContactpersonError] = useState<string | null>(null);
+
+    const validateContactPerson = (value: string) => {
+        const regex = /^\s*([a-zA-Z]+)\s*,\s*([a-zA-Z]+)\s*$/;
+        if (!regex.test(value)) {
+            setContactpersonError("Please enter in 'Lastname, Firstname' format");
+        } else {
+            setContactpersonError(null);
+        }
+    };
+
+    const handleContactpersonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rawValue = e.target.value;
+        const cleanedValue = rawValue.replace(/[^a-zA-Z,\s]/g, "");
+        setcontactperson(cleanedValue);
+        validateContactPerson(cleanedValue);
+    };
+
     return (
         <div>
+            <div className="flex flex-wrap -mx-4 transition-all duration-300 ease-in-out">
+                {/* Company Name */}
+                <div className="w-full px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2">Company Name</label>
+                    <div className="flex gap-4">
+                        {/* Select or disabled input */}
+                        <div className="w-1/2">
+                            {!isManual ? (
+                                <Select
+                                    options={companies}
+                                    onChange={handleCompanySelect}
+                                    className="text-[10px] capitalize"
+                                    placeholder="Select Company"
+                                    isClearable
+                                    classNamePrefix="react-select"
+                                    styles={{
+                                        control: (provided, state) => ({
+                                            ...provided,
+                                            border: "none",
+                                            borderBottom: state.isFocused ? "2px solid #3B82F6" : "1px solid #D1D5DB",
+                                            boxShadow: "none",
+                                            borderRadius: "0px",
+                                            minHeight: "3px",
+                                            fontSize: "12px",
+                                            backgroundColor: "white",
+                                        }),
+                                        menu: (provided) => ({
+                                            ...provided,
+                                            fontSize: "12px",
+                                            zIndex: 5,
+                                        }),
+                                        singleValue: (provided) => ({
+                                            ...provided,
+                                            textTransform: "capitalize",
+                                        }),
+                                    }}
+                                />
+                            ) : (
+                                <input
+                                    type="text"
+                                    value={companyname ?? ""}
+                                    onChange={(e) =>
+                                        setcompanyname(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))
+                                    }
+                                    className="w-full text-xs capitalize p-2 border-b"
+                                />
+                            )}
+                        </div>
+
+                        {/* Disabled input (showing companyname) */}
+                        {!isManual && (
+                            <div className="w-1/2">
+                                <input
+                                    type="text"
+                                    value={companyname ?? ""}
+                                    disabled
+                                    className="w-full mt-0 text-xs capitalize p-2 border-b"
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Toggle button below both inputs */}
+                    <button
+                        type="button"
+                        onClick={() => setIsManual(prev => !prev)}
+                        className="text-[10px] text-blue-500 underline mt-2"
+                    >
+                        {isManual ? "If Account Exists Switch to Select" : "If Account is New Switch to Manual"}
+                    </button>
+                </div>
+
+            </div>
+
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-sm font-bold">Company Details</h2>
+                <h2 className="text-xs font-bold">Customer / Account Details</h2>
                 <button
                     type="button"
                     onClick={() => setIsExpanded(prev => !prev)}
                     className="text-[10px] text-black border shadow-sm px-2 py-1 rounded-md flex items-center gap-1"
                 >
                     {isExpanded ? (
-                        <>
-                            <BsArrowsCollapseVertical /> <span>Collapse</span>
-                        </>
+                        <><BsArrowsCollapseVertical /> <span>Hide Fields</span> </>
                     ) : (
-                        <>
-                            <BsArrowsExpandVertical /> <span>Expand</span>
-                        </>
+                        <><BsArrowsExpandVertical /> <span>Show Fields</span> </>
                     )}
                 </button>
 
@@ -123,44 +216,6 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
 
             {isExpanded && (
                 <div className="flex flex-wrap -mx-4 transition-all duration-300 ease-in-out">
-                    {/* Company Name */}
-                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Company Name</label>
-                        {!isManual ? (
-                            <>
-                                <Select
-                                    options={companies}
-                                    onChange={handleCompanySelect}
-                                    className="text-xs capitalize"
-                                    placeholder="Select Company"
-                                    isClearable
-                                />
-                                <input
-                                    type="text"
-                                    value={companyname ?? ""}
-                                    disabled
-                                    className="w-full mt-2 text-xs capitalize p-2 border rounded"
-                                />
-                            </>
-                        ) : (
-                            <input
-                                type="text"
-                                value={companyname ?? ""}
-                                onChange={(e) =>
-                                    setcompanyname(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))
-                                }
-                                className="w-full text-xs capitalize p-2 border rounded"
-                            />
-                        )}
-                        <button
-                            type="button"
-                            onClick={() => setIsManual(prev => !prev)}
-                            className="text-[10px] text-blue-500 underline mt-1"
-                        >
-                            {isManual ? "If Account Exists Switch to Select" : "If Account is New Switch to Manual"}
-                        </button>
-                    </div>
-
                     {/* Affiliate Name */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                         <label className="block text-xs font-bold mb-2">Affiliate Name</label>
@@ -168,7 +223,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                             type="text"
                             value={companygroup ?? ""}
                             onChange={(e) => setcompanygroup(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                            className="w-full px-3 py-2 border-b text-xs capitalize"
                         />
                     </div>
 
@@ -178,9 +233,15 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                         <input
                             type="text"
                             value={contactperson ?? ""}
-                            onChange={(e) => setcontactperson(e.target.value.replace(/[^a-zA-Z\s]/g, ""))}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                            onChange={handleContactpersonChange}
+                            className={`w-full px-3 py-2 border-b text-xs capitalize ${contactpersonError ? "border-red-500" : ""
+                                }`}
+                            required
+                            placeholder="Lastname, Firstname"
                         />
+                        {contactpersonError && (
+                            <p className="text-red-500 text-[10px] mt-1">{contactpersonError}</p>
+                        )}
                     </div>
 
                     {/* Contact Number */}
@@ -190,7 +251,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                             type="text"
                             value={contactnumber ?? ""}
                             onChange={(e) => setcontactnumber(e.target.value.replace(/[^0-9]/g, ""))}
-                            className="w-full px-3 py-2 border rounded text-xs"
+                            className="w-full px-3 py-2 border-b text-xs" required
                         />
                     </div>
 
@@ -206,8 +267,8 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                         <input
                             type="text"
                             value={address ?? ""}
-                            onChange={(e) => setaddress(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                            onChange={(e) => setaddress(e.target.value.replace(/[^a-zA-Z0-9#.,\s]/g, ""))}
+                            className="w-full px-3 py-2 border-b text-xs capitalize"
                         />
                     </div>
 
@@ -217,8 +278,8 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
                         <input
                             type="text"
                             value={deliveryaddress ?? ""}
-                            onChange={(e) => setdeliveryaddress(e.target.value.replace(/[^a-zA-Z,\s]/g, ""))}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize"
+                            onChange={(e) => setdeliveryaddress(e.target.value.replace(/[^a-zA-Z0-9#.,\s]/g, ""))}
+                            className="w-full px-3 py-2 border-b text-xs capitalize"
                         />
                     </div>
 
@@ -230,19 +291,34 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
 
                     {/* Type Client */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Type Client</label>
+                        <label className="block text-xs font-bold mb-2">Type of Customer</label>
                         <select
                             value={typeclient ?? ""}
                             onChange={(e) => settypeclient(e.target.value)}
-                            className="w-full px-3 py-2 border rounded text-xs capitalize"
-                            required
-                        >
+                            className="w-full px-3 py-2 border-b text-xs capitalize bg-white"
+                            required>
                             <option value="">Select Client</option>
                             <option value="Top 50">Top 50</option>
                             <option value="Next 30">Next 30</option>
                             <option value="Balance 20">Balance 20</option>
                             <option value="CSR Client">CSR Client</option>
                             <option value="TSA Client">TSA Client</option>
+                        </select>
+                    </div>
+
+                    {/* Status */}
+                    <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                        <label className="block text-xs font-bold mb-2">Customer Status</label>
+                        <select
+                            value={status ?? ""}
+                            onChange={(e) => setstatus(e.target.value)}
+                            className="w-full px-3 py-2 border-b text-xs capitalize bg-white"
+                            required>
+                            <option value="">Select Client</option>
+                            <option value="Active">Active</option>
+                            <option value="New Client">New Client</option>
+                            <option value="Non-Buying">Non-Buying</option>
+                            <option value="Inactive">Inactive</option>
                         </select>
                     </div>
                 </div>

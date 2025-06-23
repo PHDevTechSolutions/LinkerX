@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from "react";
-import TableView from "./TableView";
+import TableView from "./TableXchire";
 import Pagination from "./Pagination";
-import GridView from "./GridView";
-import CardView from "./CardView";
 import Form from "./Form";
+
 import { FaTable, FaTasks, FaCalendarAlt } from "react-icons/fa";
 import { CiSquarePlus } from "react-icons/ci";
+import { PiHandTapThin } from "react-icons/pi";
 
 interface Post {
     id: string;
@@ -14,20 +14,11 @@ interface Post {
     contactnumber: string;
     typeclient: string;
     activitystatus: string;
+    activityremarks: string;
     ticketreferencenumber: string;
     date_created: string;
     date_updated: string | null;
     activitynumber: string;
-    startdate: string;
-    enddate: string;
-}
-
-interface UserDetails {
-    UserId: string;
-    ReferenceID: string;
-    Manager: string;
-    TSM: string;
-    TargetQuota: string;
 }
 
 interface MainCardTableProps {
@@ -45,25 +36,27 @@ interface MainCardTableProps {
         Manager: string;
         TSM: string;
     };
-    fetchAccount: () => void; // Callback to refresh data after editing
+    fetchAccount: () => void;
 }
 
-const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetchAccount }) => {
+const MainCardTable: React.FC<MainCardTableProps> = ({
+    posts,
+    userDetails,
+    fetchAccount,
+}) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [view, setView] = useState<"table" | "grid" | "card">("table");
-    const [showForm, setShowForm] = useState(false);
+    const [showMainForm, setShowMainForm] = useState(false);
+    const [showPersonalForm, setShowPersonalForm] = useState(false);
     const [editUser, setEditUser] = useState<Post | null>(null);
 
-    // Pagination logic
     const postsByDate = useMemo(() => {
         const map = new Map<string, Post[]>();
         for (const post of posts) {
-            const dateKey = new Date(post.date_created).toISOString().split("T")[0]; // "YYYY-MM-DD"
+            const dateKey = new Date(post.date_created).toISOString().split("T")[0];
             if (!map.has(dateKey)) map.set(dateKey, []);
             map.get(dateKey)!.push(post);
         }
-
-        // Sorted by date descending (today first)
         return Array.from(map.entries()).sort((a, b) => (a[0] < b[0] ? 1 : -1));
     }, [posts]);
 
@@ -72,29 +65,50 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
 
     const handleEdit = (post: Post) => {
         setEditUser(post);
-        setShowForm(true);
+        setShowMainForm(true);
+    };
+
+    const handleButtonClick = () => {
+        setShowPersonalForm(true);
+    };
+
+    const closePersonalForm = () => {
+        setShowPersonalForm(false);
     };
 
     return (
         <div className="bg-white col-span-3">
-            {/* View switcher and items per page */}
+            {/* View and Controls */}
             <div className="mb-2 flex flex-col md:flex-row md:justify-between md:items-center space-y-2 md:space-y-0">
-                {/* View Buttons */}
                 <div className="flex flex-wrap gap-2 text-[10px] justify-center md:justify-start">
-                    <button
-                        onClick={() => setView("table")}
+                    <button onClick={() => setView("table")}
                         className={`flex items-center gap-1 px-3 py-1 rounded ${view === "table" ? "bg-blue-400 text-white" : "bg-gray-100"
-                            }`}
-                    >
+                            }`}>
                         <FaTable size={12} />
                         Table
                     </button>
 
-                    <button className="flex items-center gap-1 border bg-white text-black text-[10px] px-4 py-2 shadow-sm rounded hover:bg-orange-400 hover:text-white transition" onClick={() => setShowForm(true)} >
-                        <CiSquarePlus size={15} /> Create Activity</button>
+                    <button onClick={() => setView("grid")}
+                        className={`flex items-center gap-1 px-3 py-1 rounded ${view === "grid" ? "bg-blue-400 text-white" : "bg-gray-100"
+                            }`}>
+                        <FaTasks size={12} />
+                        Logs
+                    </button>
+
+                    <button onClick={() => setView("card")}
+                        className={`flex items-center gap-1 px-3 py-1 rounded ${view === "card" ? "bg-blue-400 text-white" : "bg-gray-100"
+                            }`}>
+                        <FaCalendarAlt size={12} />
+                        Calendar
+                    </button>
+
+                    <button
+                        className="flex items-center gap-1 border bg-white text-black text-[10px] px-4 py-2 shadow-sm rounded hover:bg-orange-400 hover:text-white transition"
+                        onClick={() => setShowMainForm(true)}>
+                        <CiSquarePlus size={15} /> Create Activity
+                    </button>
                 </div>
 
-                {/* Items Per Page + Pagination */}
                 <div className="flex items-center justify-center md:justify-end gap-2 text-[10px] text-gray-600">
                     <Pagination
                         currentPage={currentPage}
@@ -104,25 +118,36 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ posts, userDetails, fetch
                 </div>
             </div>
 
-            {showForm ? (
+            {/* Forms */}
+            {showMainForm ? (
                 <Form
                     onCancel={() => {
-                        setShowForm(false);
+                        setShowMainForm(false);
                         setEditUser(null);
                     }}
-                    refreshPosts={fetchAccount} // Pass refresh callback
+                    refreshPosts={fetchAccount}
                     userDetails={{
                         id: editUser ? editUser.id : userDetails.UserId,
-                        referenceid: editUser ? (editUser as any).referenceid : userDetails.ReferenceID,
+                        referenceid: editUser
+                            ? (editUser as any).referenceid
+                            : userDetails.ReferenceID,
                         manager: editUser ? (editUser as any).manager : userDetails.Manager,
                         tsm: editUser ? (editUser as any).tsm : userDetails.TSM,
-                        targetquota: editUser ? (editUser as any).targetquota : userDetails.TargetQuota,
+                        targetquota: editUser
+                            ? (editUser as any).targetquota
+                            : userDetails.TargetQuota,
                     }}
                     editUser={editUser}
                 />
             ) : (
                 <>
-                    {view === "table" && <TableView posts={currentDatePosts} handleEdit={handleEdit} refreshPosts={fetchAccount} />}
+                    {view === "table" && (
+                        <TableView
+                            posts={currentDatePosts}
+                            handleEdit={handleEdit}
+                            refreshPosts={fetchAccount}
+                        />
+                    )}
                 </>
             )}
         </div>

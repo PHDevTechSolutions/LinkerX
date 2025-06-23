@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import TimeSpent from "./Form/TimeSpent";
 import HiddenFields from "./Form/HiddenFields";
 import SelectCompany, { CompanyOption } from "./Form/SelectCompany";
-import Accordion from "./Form/Projects";
+import Accordion from "./Form/Accordion";
 import Submenu from "./Form/Submenu";
 
 interface Activity {
@@ -56,6 +56,7 @@ interface FormFieldsProps {
     enddate: string; setenddate: (value: string) => void;
     activitynumber: string; setactivitynumber: (value: string) => void;
     activitystatus: string; setactivitystatus: (value: string) => void;
+    status: string; setstatus: (value: string) => void;
 
     ticketreferencenumber: string; setticketreferencenumber: (value: string) => void;
     wrapup: string; setwrapup: (value: string) => void;
@@ -101,6 +102,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     enddate, setenddate,
     activitynumber, setactivitynumber,
     activitystatus, setactivitystatus,
+    status, setstatus,
 
     ticketreferencenumber, setticketreferencenumber,
     wrapup, setwrapup,
@@ -163,18 +165,19 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 setaddress={setaddress} address={address}
                 setdeliveryaddress={setdeliveryaddress} deliveryaddress={deliveryaddress}
                 setarea={setarea} area={area}
+                setstatus={setstatus} status={status} 
             />
-            <div className="border-t border-gray-200 my-4"></div>
             
-            {typeactivity === "Quotation Preparation" && (
+            <div className="border-t border-gray-400 border-dashed my-4"></div>
             <Accordion
+                typeactivity={typeactivity} settypeactivity={settypeactivity}
                 projectname={projectname} setprojectname={setprojectname}
                 projectcategory={projectcategory} setprojectcategory={setprojectcategory}
                 projecttype={projecttype} setprojecttype={setprojecttype}
                 source={source} setsource={setsource}
             />
-            )}
 
+            <div className="border-t border-gray-400 border-dashed my-4"></div>
             <Submenu
                 typeactivity={typeactivity} settypeactivity={settypeactivity}
                 setemailaddress={setemailaddress} emailaddress={emailaddress}

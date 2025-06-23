@@ -71,7 +71,7 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Callback</label>
                 <select
-                    className="w-full px-3 py-2 border rounded text-xs"
+                    className="w-full px-3 py-2 border-b text-xs bg-white"
                     onChange={handleCallbackChange}
                 >
                     <option>Select Callback</option>
@@ -95,7 +95,7 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
                 <select
                     value={callstatus}
                     onChange={(e) => setcallstatus(e.target.value)}
-                    className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    className="w-full px-3 py-2 border-b text-xs capitalize bg-white"
                 >
                     <option value="">Select Status</option>
                     <option value="Successful">Successful</option>
@@ -108,14 +108,13 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
                 <select
                     value={typecall}
                     onChange={(e) => settypecall(e.target.value)}
-                    className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    className="w-full px-3 py-2 border-b text-xs capitalize bg-white"
                 >
                     <option value="">Select Type</option>
                     {callstatus === "Successful" ? (
                         <>
                             <option value="No Requirements">No Requirements</option>
                             <option value="Waiting for Future Projects">Waiting for Future Projects</option>
-                            <option value="Touch Base">Touch Base</option>
                         </>
                     ) : callstatus === "Unsuccessful" ? (
                         <>
@@ -130,7 +129,6 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
                             <option value="Cannot Be Reached">Cannot Be Reached</option>
                             <option value="Not Connected with the Company">Not Connected with the Company</option>
                             <option value="Waiting for Future Projects">Waiting for Future Projects</option>
-                            <option value="Touch Base">Touch Base</option>
                         </>
                     )}
                 </select>

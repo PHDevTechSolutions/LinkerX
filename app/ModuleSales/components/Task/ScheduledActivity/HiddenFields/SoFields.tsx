@@ -40,7 +40,7 @@ const SoFields: React.FC<QuotationFieldsProps> = ({
                     type="text"
                     value={sonumber || ""}
                     onChange={handleSONumberChange}
-                    className="w-full px-3 py-2 border rounded text-xs uppercase"
+                    className="w-full px-3 py-2 border-b text-xs uppercase"
                     required
                 />
             </div>
@@ -51,7 +51,7 @@ const SoFields: React.FC<QuotationFieldsProps> = ({
                     type="text"
                     value={soamount || ""}
                     onInput={handleSOAmountChange}
-                    className="w-full px-3 py-2 border rounded text-xs"
+                    className="w-full px-3 py-2 border-b text-xs"
                     required
                 />
             </div>
@@ -61,7 +61,7 @@ const SoFields: React.FC<QuotationFieldsProps> = ({
                 <select
                     value={typecall || ""}
                     onChange={(e) => settypecall(e.target.value)}
-                    className="w-full px-3 py-2 border rounded text-xs capitalize"
+                    className="w-full px-3 py-2 border-b text-xs capitalize bg-white"
                     required
                 >
                     <option value="">Select Status</option>

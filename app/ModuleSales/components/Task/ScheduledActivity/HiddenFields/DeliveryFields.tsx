@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { CiPaperplane } from "react-icons/ci";
+import { RiResetLeftFill } from "react-icons/ri";
 
 interface DeliveryFieldsProps {
   actualsales: string; setactualsales: (value: string) => void;
   emailaddress: string; setemailaddress: (value: string) => void;
   deliverydate: string; setdeliverydate: (value: string) => void;
+  activitystatus: string; setactivitystatus: (value: string) => void;
+  paymentterm: string; setpaymentterm: (value: string) => void;
 }
 
 const EMAIL_STORAGE_KEY = "recentEmails";
@@ -12,7 +15,9 @@ const EMAIL_STORAGE_KEY = "recentEmails";
 const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
   actualsales, setactualsales,
   emailaddress, setemailaddress,
-  deliverydate, setdeliverydate
+  deliverydate, setdeliverydate,
+  activitystatus, setactivitystatus,
+  paymentterm, setpaymentterm
 }) => {
   // Local state
   const [emailOptions, setEmailOptions] = useState<string[]>([]);
@@ -119,8 +124,32 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
     </div>
   );
 
+  const handlePaymentTermChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setpaymentterm(e.target.value);
+    };
+
   return (
     <>
+      {activitystatus === "Delivered" && (
+        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4 relative">
+          <label className="block text-xs font-bold mb-2">Payment Terms</label>
+          <select
+            value={paymentterm}
+            onChange={handlePaymentTermChange}
+            className="w-full px-3 py-2 border-b text-xs bg-white capitalize"
+            required
+          >
+            <option value="">Select Payment Term</option>
+            <option value="COD">COD</option>
+            <option value="Check">Check</option>
+            <option value="Cash">Cash</option>
+            <option value="Bank Deposit">Bank Deposit</option>
+            <option value="GCash">GCash</option>
+            <option value="Terms">Terms</option>
+          </select>
+        </div>
+      )}
+
       <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
         <label htmlFor="actualsales" className="block text-xs font-bold mb-2">SI (Actual Sales)</label>
         <input
@@ -135,7 +164,7 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
               .replace(/(\..*)\./g, "$1");
             setactualsales(formattedValue);
           }}
-          className="w-full px-3 py-2 border rounded text-xs"
+          className="w-full px-3 py-2 border-b text-xs"
           required
           placeholder="Enter actual sales amount"
           disabled={isSending}
@@ -150,7 +179,7 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
           type="date"
           value={deliverydate}
           onChange={(e) => setdeliverydate(e.target.value)}
-          className="w-full px-3 py-2 border rounded text-xs"
+          className="w-full px-3 py-2 border-b text-xs"
           required
           placeholder="Enter actual sales amount"
           disabled={isSending}
@@ -166,7 +195,7 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
             id="emailaddress"
             value={emailaddress ?? ""}
             onChange={(e) => setemailaddress(e.target.value)}
-            className="w-full px-3 py-2 border rounded text-xs"
+            className="w-full px-3 py-2 border-b text-xs bg-white"
             required
             disabled={isSending}
             aria-required="true"
@@ -206,9 +235,9 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
             onClick={resetForm}
             type="button"
             disabled={isSending && !emailaddress}
-            className="p-2 rounded border border-gray-400 text-gray-700 hover:bg-gray-100 text-[10px]"
+            className="p-2 rounded border border-gray-400 text-gray-700 hover:bg-gray-100 text-[10px] flex items-center"
           >
-            Reset
+            <RiResetLeftFill /> Reset
           </button>
         </div>
       </div>
