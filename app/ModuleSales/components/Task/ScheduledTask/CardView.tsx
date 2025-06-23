@@ -48,49 +48,40 @@ const statusColors: Record<string, string> = {
   "TSM Coaching": "bg-pink-300 text-white",
 };
 
-const getMonthDays = (year: number, month: number) => {
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  return { firstDay, lastDay, daysInMonth: lastDay.getDate() };
+// Safe date parser
+const parseDate = (str: string): Date | null => {
+  const d = new Date(str);
+  return isNaN(d.getTime()) ? null : d;
 };
 
-const parseDateCreated = (dateStr: string): Date => {
-  return new Date(dateStr + "T00:00:00");
-};
+const formatDateKey = (date: Date) => date.toISOString().slice(0, 10);
 
 const isSameDate = (d1: Date, d2: Date) =>
   d1.getFullYear() === d2.getFullYear() &&
   d1.getMonth() === d2.getMonth() &&
   d1.getDate() === d2.getDate();
 
-const formatDateKey = (date: Date) => date.toISOString().slice(0, 10);
+const getMonthDays = (year: number, month: number) => {
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  return { firstDay, lastDay, daysInMonth: lastDay.getDate() };
+};
 
 const getCalendarGridDates = (year: number, month: number): Date[] => {
   const { firstDay } = getMonthDays(year, month);
-  const firstDayWeekday = firstDay.getDay();
-
-  const calendarStart = new Date(year, month, 1);
-  calendarStart.setDate(1 - firstDayWeekday);
-
-  const totalCells = 42;
-
-  return Array.from({ length: totalCells }).map((_, idx) => {
+  const startDay = firstDay.getDay();
+  const calendarStart = new Date(year, month, 1 - startDay);
+  return Array.from({ length: 42 }, (_, i) => {
     const d = new Date(calendarStart);
-    d.setDate(calendarStart.getDate() + idx);
+    d.setDate(calendarStart.getDate() + i);
     return d;
   });
 };
 
-const CardCalendarView: React.FC<CardCalendarViewProps> = ({
-  posts,
-  handleEdit,
-}) => {
+const CardCalendarView: React.FC<CardCalendarViewProps> = ({ posts, handleEdit }) => {
   const today = new Date();
-
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
-
-  // New state: selected status to highlight
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
 
   const fieldOnlyStatus = [
@@ -112,19 +103,19 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({
   ];
 
   const filteredPosts = useMemo(
-    () => posts.filter((post) => !fieldOnlyStatus.includes(post.activitystatus)),
+    () => posts.filter((p) => !fieldOnlyStatus.includes(p.activitystatus)),
     [posts]
   );
 
   const postsByDate = useMemo(() => {
     const map: Record<string, Post[]> = {};
-    filteredPosts.forEach((post) => {
-      const dateCreatedOnly = post.date_created.slice(0, 10);
-      const dateObj = parseDateCreated(dateCreatedOnly);
-      const dateKey = formatDateKey(dateObj);
-      if (!map[dateKey]) map[dateKey] = [];
-      map[dateKey].push(post);
-    });
+    for (const post of filteredPosts) {
+      const date = parseDate(post.date_created);
+      if (!date) continue;
+      const key = formatDateKey(date);
+      if (!map[key]) map[key] = [];
+      map[key].push(post);
+    }
     return map;
   }, [filteredPosts]);
 
@@ -133,87 +124,64 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({
     [currentYear, currentMonth]
   );
 
-  // Count activities per status for current month
   const activityStatusCount = useMemo(() => {
-    const counts: Record<string, number> = {};
-    filteredPosts.forEach((post) => {
-      const date = new Date(post.date_created);
+    const count: Record<string, number> = {};
+    for (const post of filteredPosts) {
+      const date = parseDate(post.date_created);
+      if (!date) continue;
       if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {
-        counts[post.activitystatus] = (counts[post.activitystatus] || 0) + 1;
+        count[post.activitystatus] = (count[post.activitystatus] || 0) + 1;
       }
-    });
-    return counts;
+    }
+    return count;
   }, [filteredPosts, currentYear, currentMonth]);
 
   const prevMonth = () => {
-    if (currentMonth === 0) {
-      setCurrentYear(currentYear - 1);
-      setCurrentMonth(11);
-    } else {
-      setCurrentMonth(currentMonth - 1);
-    }
+    setCurrentMonth((prev) => (prev === 0 ? 11 : prev - 1));
+    setCurrentYear((prev) => (currentMonth === 0 ? prev - 1 : prev));
   };
 
   const nextMonth = () => {
-    if (currentMonth === 11) {
-      setCurrentYear(currentYear + 1);
-      setCurrentMonth(0);
-    } else {
-      setCurrentMonth(currentMonth + 1);
-    }
+    setCurrentMonth((prev) => (prev === 11 ? 0 : prev + 1));
+    setCurrentYear((prev) => (currentMonth === 11 ? prev + 1 : prev));
   };
 
-  // Handler for clicking legend status
   const handleLegendClick = (status: string) => {
     setSelectedStatus((prev) => (prev === status ? null : status));
   };
 
   return (
     <div>
-      {/* Month navigation */}
-      <div className="mb-4 flex items-center justify-between">
+      {/* Navigation */}
+      <div className="mb-4 flex justify-between items-center">
         <div />
         <div className="flex items-center gap-4">
-          <button
-            onClick={prevMonth}
-            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-xs"
-            aria-label="Previous month"
-          >
+          <button onClick={prevMonth} className="px-3 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300">
             &lt;
           </button>
           <div className="text-sm font-semibold">
-            {new Date(currentYear, currentMonth, 1).toLocaleDateString(
-              undefined,
-              { year: "numeric", month: "long" }
-            )}
+            {new Date(currentYear, currentMonth).toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "long",
+            })}
           </div>
-          <button
-            onClick={nextMonth}
-            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-xs"
-            aria-label="Next month"
-          >
+          <button onClick={nextMonth} className="px-3 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300">
             &gt;
           </button>
         </div>
       </div>
 
-      {/* Legend showing activity statuses + counts */}
-      <div className="mb-4 flex flex-wrap gap-2">
+      {/* Status Legend */}
+      <div className="flex flex-wrap gap-2 mb-4">
         {Object.entries(activityStatusCount).map(([status, count]) => {
           const badgeClass = statusColors[status] || "bg-gray-300 text-black";
-          const isSelected = selectedStatus === status;
+          const isActive = selectedStatus === status;
           return (
             <button
               key={status}
               onClick={() => handleLegendClick(status)}
-              className={`flex items-center gap-1 rounded-full px-3 py-1 text-[8px] font-semibold cursor-pointer select-none
-                ${
-                  isSelected
-                    ? "ring-2 ring-blue-600 bg-blue-600 text-white"
-                    : badgeClass
-                }
-              `}
-              title={`Show posts with status: ${status}`}
+              className={`flex items-center gap-1 px-3 py-1 text-[10px] rounded-full font-semibold
+                ${isActive ? "ring-2 ring-blue-600 bg-blue-600 text-white" : badgeClass}`}
             >
               <span>{status}</span>
               <span className="bg-white text-black rounded-full px-2">{count}</span>
@@ -222,45 +190,34 @@ const CardCalendarView: React.FC<CardCalendarViewProps> = ({
         })}
       </div>
 
-      {/* Month view calendar */}
-      <div className="grid grid-cols-7 gap-1 border rounded-md shadow-sm p-2 text-xs">
-        {/* Weekday headers */}
-        {DAYS_OF_WEEK.map((day) => (
-          <div key={day} className="font-semibold text-center border-b pb-1">
-            {day}
-          </div>
+      {/* Calendar Grid */}
+      <div className="grid grid-cols-7 gap-1 text-xs border p-2 rounded shadow-sm">
+        {DAYS_OF_WEEK.map((d) => (
+          <div key={d} className="font-semibold text-center border-b pb-1">{d}</div>
         ))}
-
-        {/* Days grid */}
-        {calendarGridDates.map((dateObj) => {
-          const dateKey = formatDateKey(dateObj);
-          const postsForDay = postsByDate[dateKey] || [];
-          const isCurrentMonth = dateObj.getMonth() === currentMonth;
+        {calendarGridDates.map((date) => {
+          const key = formatDateKey(date);
+          const items = postsByDate[key] || [];
+          const isCurrentMonth = date.getMonth() === currentMonth;
+          const isToday = isSameDate(date, today);
 
           return (
             <div
-              key={dateKey}
-              className={`border rounded min-h-[5rem] p-1 flex flex-col cursor-default
-                ${
-                  isSameDate(dateObj, today) ? "bg-orange-100" : ""
-                }
+              key={key}
+              className={`min-h-[5rem] border rounded p-1 flex flex-col
                 ${!isCurrentMonth ? "text-gray-400 bg-gray-50" : ""}
-              `}
-              aria-label={`Day ${dateObj.getDate()}, ${postsForDay.length} post${
-                postsForDay.length !== 1 ? "s" : ""
-              }`}
+                ${isToday ? "bg-orange-100" : ""}`}
             >
-              <div className="font-semibold text-right">{dateObj.getDate()}</div>
-              <div className="flex-grow overflow-auto mt-1 space-y-1">
-                {postsForDay.map((post) => {
+              <div className="text-right font-semibold">{date.getDate()}</div>
+              <div className="flex-grow mt-1 space-y-1 overflow-auto">
+                {items.map((post) => {
                   const highlight = selectedStatus === post.activitystatus;
                   return (
                     <div
                       key={post.id}
                       tabIndex={0}
-                      className={`bg-white border text-black px-2 p-2 cursor-pointer truncate uppercase text-[10px] shadow-md rounded-md
-                        ${highlight ? "ring-1 ring-yellow-400 bg-yellow-50" : ""}
-                      `}
+                      className={`truncate uppercase text-[10px] shadow-md rounded-md p-2 px-2 cursor-pointer
+                        bg-white border ${highlight ? "ring-1 ring-yellow-400 bg-yellow-50" : ""}`}
                       title={`${post.companyname} - ${post.activitystatus}`}
                       onClick={() => handleEdit(post)}
                       onKeyDown={(e) => {

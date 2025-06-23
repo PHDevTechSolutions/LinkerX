@@ -1,4 +1,3 @@
-// Features/Calendar.tsx
 import React, { useState, useCallback } from "react";
 
 interface CalendarProps {
@@ -8,37 +7,53 @@ interface CalendarProps {
   end: Date;
 }
 
-// More robust formatting for calendar URLs (Google/ICS)
-export const formatDateForCalendar = (d: Date) =>
-  d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+// Helper to check if a date is valid
+const isValidDate = (date: Date) => date instanceof Date && !isNaN(date.getTime());
+
+// Safer formatter for Google Calendar and ICS (UTC format)
+const formatDateForCalendar = (date: Date) => {
+  if (!isValidDate(date)) {
+    throw new Error("Invalid Date passed to formatDateForCalendar");
+  }
+  return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+};
 
 // Google Calendar URL builder
 export const buildGoogleCalendarUrl = ({ title, details, start, end }: CalendarProps) => {
-  const params = new URLSearchParams({
-    action: "TEMPLATE",
-    text: title,
-    details,
-    dates: `${formatDateForCalendar(start)}/${formatDateForCalendar(end)}`,
-  });
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+  try {
+    const params = new URLSearchParams({
+      action: "TEMPLATE",
+      text: title,
+      details,
+      dates: `${formatDateForCalendar(start)}/${formatDateForCalendar(end)}`,
+    });
+    return `https://calendar.google.com/calendar/render?${params.toString()}`;
+  } catch {
+    return "#";
+  }
 };
 
 // Outlook Calendar URL builder
 export const buildOutlookCalendarUrl = ({ title, details, start, end }: CalendarProps) => {
-  const params = new URLSearchParams({
-    path: "/calendar/action/compose",
-    rru: "addevent",
-    subject: title,
-    body: details,
-    startdt: encodeURIComponent(start.toISOString()),
-    enddt: encodeURIComponent(end.toISOString()),
-  });
-  return `https://outlook.office.com/calendar/0/deeplink/compose?${params.toString()}`;
+  try {
+    const params = new URLSearchParams({
+      path: "/calendar/action/compose",
+      rru: "addevent",
+      subject: title,
+      body: details,
+      startdt: start.toISOString(),
+      enddt: end.toISOString(),
+    });
+    return `https://outlook.office.com/calendar/0/deeplink/compose?${params.toString()}`;
+  } catch {
+    return "#";
+  }
 };
 
-// ICS (.ics) file content builder
+// ICS file generator
 export const buildICSFileContent = ({ title, details, start, end }: CalendarProps) => {
-  return `BEGIN:VCALENDAR
+  try {
+    return `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//YourApp//EN
 BEGIN:VEVENT
@@ -50,14 +65,19 @@ SUMMARY:${title}
 DESCRIPTION:${details}
 END:VEVENT
 END:VCALENDAR`;
+  } catch {
+    return "";
+  }
 };
 
 const Calendar: React.FC<CalendarProps> = ({ title, details, start, end }) => {
   const [showOptions, setShowOptions] = useState(false);
 
   const handleDownloadICS = useCallback(() => {
-    const icsContent = buildICSFileContent({ title, details, start, end });
-    const blob = new Blob([icsContent], { type: "text/calendar" });
+    const content = buildICSFileContent({ title, details, start, end });
+    if (!content) return;
+
+    const blob = new Blob([content], { type: "text/calendar" });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
@@ -69,8 +89,9 @@ const Calendar: React.FC<CalendarProps> = ({ title, details, start, end }) => {
     setShowOptions(false);
   }, [title, details, start, end]);
 
-  // Validate dates before rendering
-  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+  // Don't render if dates are invalid
+  if (!isValidDate(start) || !isValidDate(end)) {
+    console.warn("Invalid date passed to Calendar component");
     return null;
   }
 
