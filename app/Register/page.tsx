@@ -89,7 +89,7 @@ const Register: React.FC = () => {
                     Don’t have an account? <Link href="/Login" className="text-white-600 underline">Sign In</Link>
                 </p>
                 <footer className="mt-4 text-center text-xs text-white">
-                    <p>Enterprise Resource Planning - Developed By IT Department</p>
+                    <p>Taskflow - Phdevtech-Solutions</p>
                 </footer>
             </div>
         </div>
