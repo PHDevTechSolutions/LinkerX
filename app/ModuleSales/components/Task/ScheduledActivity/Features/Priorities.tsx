@@ -57,14 +57,14 @@ const Priorities: React.FC<PrioritiesProps> = ({
 
   // Count callbacks without quotation
   const hasMultipleCallbacksNoQuotation = (activities: Activity[]) => {
-    const callbacks = activities.filter((a) => a.typecall === "callback");
+    const callbacks = activities.filter((a) => a.typecall === "Ringing Only");
     const hasQuotation = activities.some((a) => a.quotationnumber);
     return callbacks.length >= 2 && !hasQuotation;
   };
 
   // Check pending status duration in days
   const pendingStatusDuration = (post: Post) => {
-    if (post.activitystatus.toLowerCase() !== "cold") return null;
+    if (post.activitystatus.toLowerCase() !== "assisted") return null;
     const created = new Date(post.date_created).getTime();
     const diffMs = Date.now() - created;
     return Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -109,12 +109,12 @@ const Priorities: React.FC<PrioritiesProps> = ({
 
   // Check for urgent activities
   const hasUrgentActivity = activities.some(
-    (a) => a.activitystatus?.toLowerCase() === "urgent"
+    (a) => a.activitystatus?.toLowerCase() === "delivered"
   );
 
   // Count failed or no answer calls
   const failedCalls = activities.filter(
-    (a) => a.callstatus === "failed" || a.callstatus === "no answer"
+    (a) => a.callstatus === "Unsuccessful"
   );
 
   // Calculate total quotation and actual sales
