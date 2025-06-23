@@ -4,6 +4,7 @@ import Pagination from "./Pagination";
 import GridView from "./GridView";
 import CardView from "./CardView";
 import Form from "./Form";
+import PersonalModalForm from "./Modal/PersonalModalForm";
 
 import { FaTable, FaTasks, FaCalendarAlt } from "react-icons/fa";
 import { CiSquarePlus } from "react-icons/ci";
@@ -109,6 +110,12 @@ const MainCardTable: React.FC<MainCardTableProps> = ({
                         onClick={() => setShowMainForm(true)}>
                         <CiSquarePlus size={15} /> Create Activity
                     </button>
+
+                    <button
+                        className="flex items-center gap-1 border bg-white text-black text-[10px] px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition"
+                        onClick={handleButtonClick}>
+                        <PiHandTapThin size={15} /> Tap
+                    </button>
                 </div>
 
                 <div className="flex items-center justify-center md:justify-end gap-2 text-[10px] text-gray-600">
@@ -158,6 +165,19 @@ const MainCardTable: React.FC<MainCardTableProps> = ({
                     )}
                 </>
             )}
+
+            {/* Personal Tap Form */}
+            {showPersonalForm && (
+                <PersonalModalForm
+                    onClose={closePersonalForm}
+                    userDetails={{
+                        referenceid: userDetails.ReferenceID,
+                        manager: userDetails.Manager,
+                        tsm: userDetails.TSM,
+                    }}
+                />
+            )}
+
         </div>
     );
 };
