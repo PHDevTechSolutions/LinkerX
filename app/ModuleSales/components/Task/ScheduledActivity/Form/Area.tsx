@@ -29,7 +29,7 @@ const Area: React.FC<AreaProps> = ({ area, setarea }) => {
       <option value="Soccsksargen">Region XII - SOCCSKSARGEN</option>
       <option value="NCR">NCR</option>
       <option value="CAR">CAR</option>
-      <option value="Bangsamoro Autonomous Region in Muslim Mindanao">BARMM</option>
+      <option value="BARMM">BARMM</option>
       <option value="Caraga">Region XIII</option>
       <option value="Mimaropa Region">MIMAROPA Region</option>
     </select>
