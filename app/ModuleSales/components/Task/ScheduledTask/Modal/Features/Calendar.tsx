@@ -1,5 +1,5 @@
 // Features/Calendar.tsx
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 
 interface CalendarProps {
   title: string;
@@ -8,9 +8,11 @@ interface CalendarProps {
   end: Date;
 }
 
+// More robust formatting for calendar URLs (Google/ICS)
 export const formatDateForCalendar = (d: Date) =>
-  d.toISOString().replace(/-|:|\.\d\d\d/g, "").slice(0, -1) + "Z";
+  d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
 
+// Google Calendar URL builder
 export const buildGoogleCalendarUrl = ({ title, details, start, end }: CalendarProps) => {
   const params = new URLSearchParams({
     action: "TEMPLATE",
@@ -21,18 +23,20 @@ export const buildGoogleCalendarUrl = ({ title, details, start, end }: CalendarP
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 };
 
+// Outlook Calendar URL builder
 export const buildOutlookCalendarUrl = ({ title, details, start, end }: CalendarProps) => {
   const params = new URLSearchParams({
     path: "/calendar/action/compose",
     rru: "addevent",
     subject: title,
     body: details,
-    startdt: start.toISOString(),
-    enddt: end.toISOString(),
+    startdt: encodeURIComponent(start.toISOString()),
+    enddt: encodeURIComponent(end.toISOString()),
   });
   return `https://outlook.office.com/calendar/0/deeplink/compose?${params.toString()}`;
 };
 
+// ICS (.ics) file content builder
 export const buildICSFileContent = ({ title, details, start, end }: CalendarProps) => {
   return `BEGIN:VCALENDAR
 VERSION:2.0
@@ -51,7 +55,7 @@ END:VCALENDAR`;
 const Calendar: React.FC<CalendarProps> = ({ title, details, start, end }) => {
   const [showOptions, setShowOptions] = useState(false);
 
-  const handleDownloadICS = () => {
+  const handleDownloadICS = useCallback(() => {
     const icsContent = buildICSFileContent({ title, details, start, end });
     const blob = new Blob([icsContent], { type: "text/calendar" });
     const url = URL.createObjectURL(blob);
@@ -63,13 +67,20 @@ const Calendar: React.FC<CalendarProps> = ({ title, details, start, end }) => {
 
     URL.revokeObjectURL(url);
     setShowOptions(false);
-  };
+  }, [title, details, start, end]);
+
+  // Validate dates before rendering
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return null;
+  }
 
   return (
     <div className="relative">
       <p className="font-semibold text-gray-600 text-xs">Optional:</p>
       <button
         type="button"
+        aria-haspopup="true"
+        aria-expanded={showOptions}
         onClick={() => setShowOptions(!showOptions)}
         className="mb-2 px-3 py-1 bg-orange-400 text-white rounded text-xs hover:bg-orange-500"
       >

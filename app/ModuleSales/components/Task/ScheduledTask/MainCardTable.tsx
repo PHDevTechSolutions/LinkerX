@@ -98,6 +98,13 @@ const MainCardTable: React.FC<MainCardTableProps> = ({
                         Logs
                     </button>
 
+                    <button onClick={() => setView("card")}
+                        className={`flex items-center gap-1 px-3 py-1 rounded ${view === "card" ? "bg-blue-400 text-white" : "bg-gray-100"
+                            }`}>
+                        <FaCalendarAlt size={12} />
+                        Calendar
+                    </button>
+
                     <button
                         className="flex items-center gap-1 border bg-white text-black text-[10px] px-4 py-2 shadow-sm rounded hover:bg-orange-400 hover:text-white transition"
                         onClick={() => setShowMainForm(true)}>
@@ -153,7 +160,9 @@ const MainCardTable: React.FC<MainCardTableProps> = ({
                     {view === "grid" && (
                         <GridView posts={currentDatePosts} handleEdit={handleEdit} />
                     )}
-                    
+                    {view === "card" && (
+                        <CardView posts={posts} handleEdit={handleEdit} />
+                    )}
                 </>
             )}
 
