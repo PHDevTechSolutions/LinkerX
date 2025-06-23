@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import FilterTop50 from "./Filters/FilterTop50";
-
 import { GoPlus, GoDash } from "react-icons/go";
 
 interface Post {
@@ -22,7 +21,7 @@ interface Post {
   status: string;
 }
 
-interface MainCardTableProps {
+interface AutomationProps {
   userDetails: {
     UserId: string;
     Firstname: string;
@@ -42,7 +41,17 @@ interface MainCardTableProps {
 
 const STORAGE_KEY = "expandedFiltersState";
 
-const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
+// 👇 Move this above before useState
+const defaultFilterState = () => ({
+  top50: false,
+  next30: false,
+  balance20: false,
+  newclient: false,
+  inactive: false,
+  nonbuying: false,
+});
+
+const Automation: React.FC<AutomationProps> = ({ userDetails }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
 
@@ -56,15 +65,6 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
       }
     }
     return defaultFilterState();
-  });
-
-  const defaultFilterState = () => ({
-    top50: false,
-    next30: false,
-    balance20: false,
-    newclient: false,
-    inactive: false,
-    nonbuying: false
   });
 
   useEffect(() => {
@@ -141,7 +141,6 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
       now.setMonth(now.getMonth() + 1); // monthly
     }
 
-    // Check status-based scheduling if provided
     if (status === "New Client") {
       now.setMonth(now.getMonth() + 1); // once a month
     } else if (status === "Inactive" || status === "Non-Buying") {
@@ -210,8 +209,21 @@ const MainCardTable: React.FC<MainCardTableProps> = ({ userDetails }) => {
         </button>
       </div>
 
-      <Section title="Top 50 Accounts" count={countFiltered("Top 50", "typeclient")} open={expandedFilters.top50} onToggle={() => toggleFilter("top50")}>
-        <FilterTop50 {...{ userDetails, posts: filteredSortedAccounts, handleSubmit, expandedIds, setExpandedIds }} />
+      <Section
+        title="Top 50 Accounts"
+        count={countFiltered("Top 50", "typeclient")}
+        open={expandedFilters.top50}
+        onToggle={() => toggleFilter("top50")}
+      >
+        <FilterTop50
+          {...{
+            userDetails,
+            posts: filteredSortedAccounts,
+            handleSubmit,
+            expandedIds,
+            setExpandedIds,
+          }}
+        />
       </Section>
     </div>
   );
@@ -225,7 +237,10 @@ const Section: React.FC<{
   children: React.ReactNode;
 }> = ({ title, count, open, onToggle, children }) => (
   <div>
-    <div className="cursor-pointer px-2 py-2 hover:bg-gray-200 hover:text-black hover:rounded-md flex justify-between items-center" onClick={onToggle}>
+    <div
+      className="cursor-pointer px-2 py-2 hover:bg-gray-200 hover:text-black hover:rounded-md flex justify-between items-center"
+      onClick={onToggle}
+    >
       <span className="font-medium text-[10px] uppercase flex items-center gap-2">
         {title}
         {count ? (
@@ -234,10 +249,12 @@ const Section: React.FC<{
           </span>
         ) : null}
       </span>
-      <span className="hover: text-[10px] hover:text-black text-white">{open ? "Collapse ▲" : "Expand ▼"}</span>
+      <span className="text-[10px] text-white hover:text-black">
+        {open ? "Collapse ▲" : "Expand ▼"}
+      </span>
     </div>
     {open && <div>{children}</div>}
   </div>
 );
 
-export default MainCardTable;
+export default Automation;
