@@ -4,6 +4,7 @@ import Automation from "./Automation";
 import Inquiries from "./Inquiries";
 import { formatDistanceToNow } from "date-fns";
 import { CiLocationArrow1 } from "react-icons/ci";
+import { FaPhone, FaCalendarAlt } from "react-icons/fa";
 
 interface Post {
   id: string;
@@ -48,7 +49,7 @@ const Main: React.FC<UsersTableProps> = ({ posts, userDetails, fetchAccount }) =
   return (
     <div className="container mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
-        
+
         {/* Main Table Section */}
         <section className="lg:col-span-3 bg-white rounded-xl">
           <MainCardTable posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
@@ -56,16 +57,23 @@ const Main: React.FC<UsersTableProps> = ({ posts, userDetails, fetchAccount }) =
 
         {/* Sidebar Section */}
         <aside className="lg:col-span-1 flex flex-col space-y-2">
-          
+
           {/* Scheduled Task */}
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Callbacks</h2>
+            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <FaCalendarAlt className="text-blue-400" size={16} />
+              Callbacks
+            </h2>
+
             <Automation posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
           </div>
 
           {/* CSR Inquiries */}
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">CSR Inquiries</h2>
+            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <FaPhone className="text-orange-400" size={16} />
+              CSR Inquiries
+            </h2>
             <Inquiries
               activeTab="endorsed"
               formatDistanceToNow={formatDistanceToNow}

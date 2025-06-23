@@ -111,11 +111,12 @@ const MainCardTable: React.FC<MainCardTableProps> = ({
                         <CiSquarePlus size={15} /> Create Activity
                     </button>
 
-                    <button
+                    {/*<button
                         className="flex items-center gap-1 border bg-white text-black text-[10px] px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition"
                         onClick={handleButtonClick}>
                         <PiHandTapThin size={15} /> Tap
-                    </button>
+                    </button>*/}
+                    
                 </div>
 
                 <div className="flex items-center justify-center md:justify-end gap-2 text-[10px] text-gray-600">
