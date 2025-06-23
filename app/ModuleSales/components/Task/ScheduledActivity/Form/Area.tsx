@@ -22,13 +22,13 @@ const Area: React.FC<AreaProps> = ({ area, setarea }) => {
       <option value="Bicol Region">Region V - Bicol Region</option>
       <option value="Western Visayas">Region VI - Western Visayas</option>
       <option value="Central Visayas">Region VII - Central Visayas</option>
-      <option value="Easter Visayas">Region VIII - Easter Visayas</option>
+      <option value="Eastern Visayas">Region VIII - Eastern Visayas</option>
       <option value="Zamboanga Peninsula">Region IX - Zamboanga Peninsula</option>
       <option value="Northern Mindanao">Region X - Northern Mindanao</option>
       <option value="Davao Region">Region XI - Davao Region</option>
       <option value="Soccsksargen">Region XII - SOCCSKSARGEN</option>
-      <option value="National Capital Region">NCR</option>
-      <option value="Cordillera Administrative Region">CAR</option>
+      <option value="NCR">NCR</option>
+      <option value="CAR">CAR</option>
       <option value="Bangsamoro Autonomous Region in Muslim Mindanao">BARMM</option>
       <option value="Caraga">Region XIII</option>
       <option value="Mimaropa Region">MIMAROPA Region</option>

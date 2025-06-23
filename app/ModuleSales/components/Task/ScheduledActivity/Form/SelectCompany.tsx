@@ -97,10 +97,18 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
             setdeliveryaddress(selected.deliveryaddress);
             setcompanygroup(selected.companygroup);
             setarea(selected.area);
+            setstatus(selected.status);
         } else {
-            setcompanyname(""); setcontactperson(""); setcontactnumber("");
-            setemailaddress(""); settypeclient(""); setaddress("");
-            setdeliveryaddress(""); setcompanygroup(""); setarea("");
+            setcompanyname(""); 
+            setcontactperson(""); 
+            setcontactnumber("");
+            setemailaddress(""); 
+            settypeclient(""); 
+            setaddress("");
+            setdeliveryaddress(""); 
+            setcompanygroup(""); 
+            setarea("");
+            setstatus("");
         }
     };
 
