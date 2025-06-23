@@ -155,16 +155,12 @@ export default function Notification({
                 setLoadingId(null);
                 return;
             }
-
-            // Update local notifications state para agad mag-reflect ang pagbabago
+            
             setNotifications((prev) =>
                 prev.map((n) =>
                     unreadIds.includes(n.id) ? { ...n, status: "Read" } : n
                 )
             );
-
-            // Optionally, pwede rin mag auto-remove ng notifications after delay (gaya ng single mark)
-            // Pero depende yan sa UX mo
 
         } catch (error) {
             console.error("Error marking all as read:", error);
