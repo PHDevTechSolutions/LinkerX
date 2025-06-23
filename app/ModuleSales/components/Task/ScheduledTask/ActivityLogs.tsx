@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { MdModeEdit } from "react-icons/md";
-import ActivityModal from "./Modal/ActivityModal";
+import ActivityModal from "./ActivityModal";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Activity {
