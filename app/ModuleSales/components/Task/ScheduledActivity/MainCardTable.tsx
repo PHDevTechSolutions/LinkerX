@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from "react";
 import TableView from "./TableXchire";
 import Pagination from "./Pagination";
+import GridView from "./GridView";
+import CardView from "./CardView";
 import Form from "./Form";
 
 import { FaTable, FaTasks, FaCalendarAlt } from "react-icons/fa";
@@ -147,6 +149,12 @@ const MainCardTable: React.FC<MainCardTableProps> = ({
                             handleEdit={handleEdit}
                             refreshPosts={fetchAccount}
                         />
+                    )}
+                    {view === "grid" && (
+                        <GridView posts={currentDatePosts} handleEdit={handleEdit} />
+                    )}
+                    {view === "card" && (
+                        <CardView posts={posts} handleEdit={handleEdit} />
                     )}
                 </>
             )}
