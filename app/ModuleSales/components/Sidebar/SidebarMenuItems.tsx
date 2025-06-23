@@ -69,11 +69,6 @@ const getMenuItems = (userId: string | null = "") => [
                 href: `/ModuleSales/Sales/Task/ScheduledActivity${userId ? `?id=${encodeURIComponent(userId)}` : ""}` 
             },
             { 
-                title: "Callbacks", 
-                description: "Follow-Up Calls to Clients", 
-                href: `/ModuleSales/Sales/Task/Callback${userId ? `?id=${encodeURIComponent(userId)}` : ""}` 
-            },
-            { 
                 title: "Client Coverage Guide", 
                 description: "Client Management Overview", 
                 href: `/ModuleSales/Sales/Task/ClientCoverageGuide${userId ? `?id=${encodeURIComponent(userId)}` : ""}` 
