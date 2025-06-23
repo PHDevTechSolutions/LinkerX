@@ -6,7 +6,6 @@ import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
-import { FcGoogle } from "react-icons/fc";
 
 const Register: React.FC = () => {
     const [userName, setUserName] = useState("");

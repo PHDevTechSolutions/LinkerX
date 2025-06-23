@@ -1,12 +1,15 @@
+// layout.tsx (server component)
+
 import type { Metadata } from "next";
-import { Inter } from "next/font/google"; // Importing Inter font for thin sans-serif
-import { ToastContainer } from "react-toastify"; // Import ToastContainer
-import "react-toastify/dist/ReactToastify.css"; // Import the CSS for react-toastify
+import { Inter } from "next/font/google";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-// Import Inter with weight set to thin (100)
+import SessionProviderWrapper from "./sessionProviderWrapper";
+
 const inter = Inter({
   weight: "100",
   subsets: ["latin"],
@@ -17,22 +20,22 @@ export const metadata: Metadata = {
   title: "Ecoshift Corporation",
   description: "Created in NextJs Developed By Leroux Y Xchire",
   icons: {
-    icon: "/ecoico.png", // Corrected: This should be an object, not an array
+    icon: "/ecoico.png",
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} antialiased`} // Apply the thin font here
-      >
-        <ToastContainer /> {/* This makes sure toasts show up */}
-        {children}
+      <body className={`${inter.variable} antialiased`}>
+        <ToastContainer />
+        <SessionProviderWrapper>
+          {children}
+        </SessionProviderWrapper>
         <Analytics />
         <SpeedInsights />
       </body>
