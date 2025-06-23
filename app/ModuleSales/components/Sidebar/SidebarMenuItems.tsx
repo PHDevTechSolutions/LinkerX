@@ -66,11 +66,6 @@ const getMenuItems = (userId: string | null = "") => [
             { 
                 title: "Scheduled Task", 
                 description: "Upcoming Tasks and Reminders", 
-                href: `/ModuleSales/Sales/Task/ScheduledTask${userId ? `?id=${encodeURIComponent(userId)}` : ""}` 
-            },
-            { 
-                title: "Scheduled Task V2", 
-                description: "Upcoming Tasks and Reminders", 
                 href: `/ModuleSales/Sales/Task/ScheduledActivity${userId ? `?id=${encodeURIComponent(userId)}` : ""}` 
             },
             { 
