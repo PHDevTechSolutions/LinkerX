@@ -239,12 +239,6 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                 shadow-md transition-shadow duration-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 relative border
                 ${isPinned ? "border-yellow-400" : "border-gray-200"}`}
             >
-              {isPinned && (
-                <span className="absolute top-2 left-3 bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded font-semibold select-none text-[10px]">
-                  Pinned
-                </span>
-              )}
-
               {/* Show Priority */}
 
               <div className="flex justify-between items-start p-1">
@@ -320,7 +314,7 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                 </div>
               </div>
 
-              <div className="border-t mt-3 overflow-x-auto" style={{ maxHeight: 180 }}>
+              <div className="border-t mt-3 overflow-x-auto mb-4" style={{ maxHeight: 180 }}>
                 {loadingActivities ? (
                   <p className="text-xs italic text-gray-400">Loading activities...</p>
                 ) : activities.length === 0 ? (
@@ -329,6 +323,13 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                   <ActivityLogs activities={activities} loading={loadingActivities} postId={post.id} />
                 )}
               </div>
+
+              {isPinned && (
+                <span className="absolute bottom-2 left-3 bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded font-semibold select-none text-[10px]">
+                  Pinned
+                </span>
+              )}
+
             </div>
           );
         })}
