@@ -118,7 +118,7 @@ const Pin: React.FC<PinProps> = ({
               />
             </svg>
           ) : (
-            <GiPin size={15} aria-hidden="true" className="text-yellow-400" />
+            <GiPin size={15} aria-hidden="true" className="text-gray-400" />
           )}
         </motion.div>
       </button>
