@@ -54,7 +54,7 @@ const Main: React.FC<UsersTableProps> = ({ posts, userDetails, fetchAccount }) =
         <section className="lg:col-span-3 bg-white rounded-xl">
           <MainCardTable posts={posts} userDetails={userDetails} fetchAccount={fetchAccount} />
         </section>
-
+        
         {/* Sidebar Section */}
         <aside className="lg:col-span-1 flex flex-col space-y-2">
 

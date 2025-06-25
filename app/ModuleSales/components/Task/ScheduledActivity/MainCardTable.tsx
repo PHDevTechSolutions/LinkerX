@@ -8,7 +8,6 @@ import PersonalModalForm from "./Modal/PersonalModalForm";
 
 import { FaTable, FaTasks, FaCalendarAlt } from "react-icons/fa";
 import { CiSquarePlus } from "react-icons/ci";
-import { PiHandTapThin } from "react-icons/pi";
 
 interface Post {
     id: string;

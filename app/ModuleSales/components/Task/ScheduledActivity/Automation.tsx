@@ -55,9 +55,10 @@ const defaultFilterState = () => ({
     nonbuying: false,
 });
 
-const Automation: React.FC<AutomationProps> = ({ userDetails }) => {
+const Automation: React.FC<AutomationProps> = ({ userDetails, fetchAccount }) => {
     const [posts, setPosts] = useState<Post[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const [expandedFilters, setExpandedFilters] = useState<Record<string, boolean>>(() => {
         if (typeof window !== "undefined") {
@@ -157,6 +158,8 @@ const Automation: React.FC<AutomationProps> = ({ userDetails }) => {
     const handleSubmit = async (post: Post) => {
         if (!post.id) return toast.error("Missing ID for status update.");
 
+        setLoading(true);
+
         const activitynumber = generateActivityNumber(post.companyname, userDetails.ReferenceID);
 
         const payload = {
@@ -178,6 +181,7 @@ const Automation: React.FC<AutomationProps> = ({ userDetails }) => {
 
             if (!res.ok) {
                 const err = await res.json();
+                setLoading(false);
                 return toast.error(err.message || "Failed to add activity.");
             }
 
@@ -192,6 +196,7 @@ const Automation: React.FC<AutomationProps> = ({ userDetails }) => {
             if (statusUpdate.ok) {
                 toast.success("Activity added and status updated!");
                 fetchData();
+                fetchAccount();
             } else {
                 const updateErr = await statusUpdate.json();
                 toast.warn(`Activity added, but failed to update status: ${updateErr.message}`);
@@ -199,6 +204,8 @@ const Automation: React.FC<AutomationProps> = ({ userDetails }) => {
         } catch (err) {
             toast.error("Submission failed.");
             console.error(err);
+        } finally {
+            setLoading(false);
         }
     };
 
