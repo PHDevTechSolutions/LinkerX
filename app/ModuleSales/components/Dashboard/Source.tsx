@@ -208,7 +208,7 @@ const Source: React.FC<SourceProps> = ({ filteredAccounts }) => {
           className="flex flex-col gap-3"
           style={{ minWidth: 160, userSelect: "none" }}
         >
-          <h3 className="text-xs font-semibold mb-2">Legend</h3>
+          <h3 className="text-xs text-black font-semibold mb-2">Legend</h3>
           {data.map(({ source, color }) => (
             <div
               key={source}
