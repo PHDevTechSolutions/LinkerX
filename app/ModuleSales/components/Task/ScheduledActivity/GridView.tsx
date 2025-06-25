@@ -235,8 +235,8 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
             <div
               key={post.id}
               tabIndex={0}
-              className={`bg-white rounded-lg p-2 flex flex-col justify-between cursor-pointer
-                shadow-sm transition-shadow duration-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 relative border
+              className={`bg-gray-50 rounded-lg p-2 flex flex-col justify-between cursor-pointer
+                shadow-md transition-shadow duration-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 relative border
                 ${isPinned ? "border-yellow-400" : "border-gray-200"}`}
             >
               {isPinned && (
@@ -247,10 +247,10 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
 
               {/* Show Priority */}
 
-              <div className="bg-white flex justify-between items-start border p-2 rounded-lg">
+              <div className="flex justify-between items-start p-1">
                 <div>
-                  <p className="text-xs font-semibold text-gray-800 mb-1">
-                    Company: <span className="uppercase">{post.companyname}</span>
+                  <p className="text-xs font-bold text-gray-800 mb-1">
+                    <span className="uppercase">{post.companyname}</span>
                   </p>
                   <p className="text-xs text-gray-600 mb-1">
                     Contact Person: <span className="capitalize">{post.contactperson}</span>
@@ -311,7 +311,7 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                       e.stopPropagation();
                       handleEdit(post);
                     }}
-                    className="flex items-center gap-1 bg-blue-500 hover:rounded-full text-white text-[10px] px-2 py-1 rounded hover:bg-blue-700 transition-colors"
+                    className="flex items-center gap-1 shadow-md bg-blue-500 hover:rounded-full text-white text-[10px] px-2 py-1 rounded hover:bg-blue-700 transition-colors"
                     aria-label={`Edit ${post.companyname}`}
                     type="button"
                   >
@@ -320,7 +320,7 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                 </div>
               </div>
 
-              <div className="mt-3 overflow-x-auto" style={{ maxHeight: 180 }}>
+              <div className="border-t mt-3 overflow-x-auto" style={{ maxHeight: 180 }}>
                 {loadingActivities ? (
                   <p className="text-xs italic text-gray-400">Loading activities...</p>
                 ) : activities.length === 0 ? (

@@ -85,7 +85,7 @@ const NotifyMe: React.FC<NotifyMeProps> = ({
         } hover:bg-yellow-100`}
         type="button"
       >
-        {hasNotify ? "Notification Set" : <FaBell className="text-gray-400" size={15} />}
+        {hasNotify ? "Notification Set" : <FaBell className="text-orange-500" size={15} />}
       </button>
 
       {showNotifyPicker && (

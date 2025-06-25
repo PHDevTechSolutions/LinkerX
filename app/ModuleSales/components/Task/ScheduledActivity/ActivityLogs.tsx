@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MdModeEdit } from "react-icons/md";
 import ActivityModal from "./Modal/ActivityModal";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaClock } from "react-icons/fa6";
 
 interface Activity {
     id: number;
@@ -160,7 +161,7 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ activities, loading, postId
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25 }}
-              className={`border p-2 rounded bg-gray-50 text-xs text-gray-700 flex justify-between items-center
+              className={`p-2 rounded bg-gray-50 hover:bg-white hover:shadow-md text-xs text-gray-700 flex justify-between items-center
                 ${highlightedId === act.id ? "bg-green-100 transition-colors" : ""}
               `}
             >
@@ -168,13 +169,13 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ activities, loading, postId
                 <div>
                   <strong>Activity Type:</strong> {act.typeactivity}
                 </div>
-                <div>
-                  <strong>Time Spent:</strong> {formatTimeSpent(act.startdate, act.enddate)}
+                <div className="flex gap-1 text-green-600">
+                  <strong><FaClock /></strong> {formatTimeSpent(act.startdate, act.enddate)}
                 </div>
               </div>
               <button
                 onClick={() => handleEditClick(act.id)}
-                className="bg-blue-400 text-white p-2 rounded-full"
+                className="hover:shadow-md bg-blue-400 text-white p-2 rounded-full"
                 title="Edit Activity"
               >
                 <MdModeEdit size={10} />
