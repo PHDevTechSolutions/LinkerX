@@ -46,7 +46,6 @@ const activityOptions = [
   "Admin- Supplier Accreditation",
   "Admin- Credit Terms Application",
   "Outbound calls",
-  "Inbound Call",
   "Site Visit",
   "Check/Read emails",
   "Bidding Preperation",

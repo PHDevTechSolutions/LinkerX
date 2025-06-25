@@ -80,8 +80,6 @@ const TableXchire: React.FC<TableXchireProps> = ({
 
           <td className="px-6 py-4 text-xs uppercase">{post.companyname}</td>
           <td className="px-6 py-4 text-xs capitalize">{post.contactperson}</td>
-          <td className="px-6 py-4 text-xs capitalize">{post.contactnumber}</td>
-          <td className="px-6 py-4 text-xs">{post.emailaddress}</td>
           <td className="px-6 py-4 text-xs">{post.typeclient}</td>
           <td className="px-6 py-4 text-xs capitalize">{post.address}</td>
           <td className="px-6 py-4 text-xs capitalize">{post.deliveryaddress}</td>
@@ -89,10 +87,10 @@ const TableXchire: React.FC<TableXchireProps> = ({
           <td className="px-4 py-2 text-xs align-top">
             <div className="flex flex-col gap-1">
               <span className="text-white bg-blue-400 p-2 rounded">
-                Uploaded: {formatDate(new Date(post.date_created).getTime())}
+                Creation Date: {formatDate(new Date(post.date_created).getTime())}
               </span>
               <span className="text-white bg-green-500 p-2 rounded">
-                Updated: {formatDate(new Date(post.date_updated).getTime())}
+                Date of Last Engagement: {formatDate(new Date(post.date_updated).getTime())}
               </span>
             </div>
           </td>
@@ -122,8 +120,6 @@ const TableXchire: React.FC<TableXchireProps> = ({
           )}
           <th className="px-6 py-4 font-semibold text-gray-700">Company Name</th>
           <th className="px-6 py-4 font-semibold text-gray-700">Contact Person</th>
-          <th className="px-6 py-4 font-semibold text-gray-700">Contact Number</th>
-          <th className="px-6 py-4 font-semibold text-gray-700">Email Address</th>
           <th className="px-6 py-4 font-semibold text-gray-700">Type of Client</th>
           <th className="px-6 py-4 font-semibold text-gray-700">Complete Address</th>
           <th className="px-6 py-4 font-semibold text-gray-700">Delivery Address</th>
@@ -136,7 +132,7 @@ const TableXchire: React.FC<TableXchireProps> = ({
           tableRows
         ) : (
           <tr>
-            <td colSpan={11} className="text-center text-xs py-4 text-gray-500">
+            <td colSpan={9} className="text-center text-xs py-4 text-gray-500">
               No record available
             </td>
           </tr>

@@ -119,7 +119,7 @@ const Accordion: React.FC<AccordionProps> = ({
 
                         {/* Project Type */}
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                            <label className="block text-xs font-bold mb-1 text-black">Project Type</label>
+                            <label className="block text-xs font-bold mb-1 text-black">Customer Type</label>
                             <select
                                 value={projecttype ?? ""}
                                 onChange={(e) => setprojecttype(e.target.value)}
