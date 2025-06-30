@@ -142,11 +142,7 @@ const ListofUser: React.FC = () => {
                   setEndDate={setEndDate}
                 />
 
-                <Main
-                  posts={filteredAccounts}
-                  userDetails={userDetails}
-                  fetchAccount={fetchAccount}
-                />
+                <Main posts={filteredAccounts} userDetails={userDetails} fetchAccount={fetchAccount}/>
               </div>
 
               <ToastContainer className="text-xs" autoClose={1000} />
