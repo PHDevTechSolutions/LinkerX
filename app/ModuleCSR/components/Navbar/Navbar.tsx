@@ -595,53 +595,6 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
     }
   }, [userReferenceId]);
 
-  useEffect(() => {
-    const fetchEmailData = async () => {
-      try {
-        if (!userEmail) {
-          console.error("userReferenceId is missing.");
-          return;
-        }
-
-        const res = await fetch(`/api/ModuleCSR/Email/FetchEmail?recepient=${userEmail}`);
-        if (!res.ok) {
-          throw new Error(`Request failed with status ${res.status}`);
-        }
-
-        const jsonResponse = await res.json();
-        console.log("API Response:", jsonResponse); // Log to inspect the response
-
-        // Ensure that data is an array
-        const data: Email[] = Array.isArray(jsonResponse.data) ? jsonResponse.data : [];
-
-        // Filter emails with status 'Pending' and NotificationStatus not 'Read', 
-        // and check if the recipient email matches the user's email
-        const filteredEmails = data.filter(
-          (item: Email) => // Specify the type for 'item'
-            item.status === "Pending" &&
-            item.recepient === userEmail // Match recipient's email to your email
-        );
-
-        if (filteredEmails.length > 0) {
-          setEmailNotifications(filteredEmails); // Update state with filtered emails
-        }
-      } catch (error) {
-        console.error("Error fetching email data:", error);
-      }
-    };
-
-    if (userReferenceId && userEmail) {
-      fetchEmailData(); // Initial fetch
-
-      const interval = setInterval(() => {
-        fetchEmailData(); // Fetch every 30 seconds
-      }, 30000); // 30 seconds
-
-      // Clean up interval on component unmount
-      return () => clearInterval(interval);
-    }
-  }, [userReferenceId, userEmail]);
-
   // ✅ Handle click outside to close notifications
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

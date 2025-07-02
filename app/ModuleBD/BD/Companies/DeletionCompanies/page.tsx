@@ -2,34 +2,19 @@
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
-<<<<<<< HEAD
 import UserFetcher from "../../../components/User/UserFetcher";
 // Components
 import Form from "../../../components/Companies/Active/Form";
 import Filters from "../../../components/Companies/DeletionCompanies/Filters";
 import Table from "../../../components/Companies/DeletionCompanies/MainTable";
-=======
-import UserFetcher from "../../../components/UserFetcher/UserFetcher";
-
-// Components
-import AddPostForm from "../../../components/Companies/DeletionCompanies/Form";
-import SearchFilters from "../../../components/Companies/DeletionCompanies/Filters";
-import UsersTable from "../../../components/Companies/DeletionCompanies/Table";
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
 import Pagination from "../../../components/Companies/DeletionCompanies/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-<<<<<<< HEAD
 const DeletionAccounts: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
-=======
-const ListofUser: React.FC = () => {
-    const [showForm, setShowForm] = useState(false);
-    const [showImportForm, setShowImportForm] = useState(false);
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
     const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -92,10 +77,7 @@ const ListofUser: React.FC = () => {
 
     // Fetch all users from the API
     const fetchAccount = async () => {
-<<<<<<< HEAD
         setLoading(true);
-=======
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
         try {
             const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount");
             const data = await response.json();
@@ -104,11 +86,8 @@ const ListofUser: React.FC = () => {
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
-<<<<<<< HEAD
         } finally {
             setLoading(false);
-=======
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
         }
     };
 
@@ -192,11 +171,7 @@ const ListofUser: React.FC = () => {
                                         }`}
                                 >
                                     {showForm && (
-<<<<<<< HEAD
                                         <Form
-=======
-                                        <AddPostForm
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
                                             onCancel={() => {
                                                 setShowForm(false);
                                                 setEditUser(null);
@@ -214,19 +189,11 @@ const ListofUser: React.FC = () => {
                                 </div>
 
                                 <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-<<<<<<< HEAD
                                     <h2 className="text-lg font-bold mb-2">List of Accounts - Deletion</h2>
                                     <p className="text-xs text-gray-600 mb-4">
                                         This section displays a list of <strong>Deletion Companies</strong> within the system. You can filter the companies based on various criteria such as client type, start date, end date, and search term. Use the filters to narrow down your search and quickly find the relevant inactive companies you need to manage or review.
                                     </p>
                                     <Filters
-=======
-                                    <h2 className="text-lg font-bold mb-2">Deletion Companies</h2>
-                                    <p className="text-xs text-gray-600 mb-4">
-                                        This section displays a list of <strong>Deletion Companies</strong> within the system. You can filter the companies based on various criteria such as client type, start date, end date, and search term. Use the filters to narrow down your search and quickly find the relevant inactive companies you need to manage or review.
-                                    </p>
-                                    <SearchFilters
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
                                         searchTerm={searchTerm}
                                         setSearchTerm={setSearchTerm}
                                         postsPerPage={postsPerPage}
@@ -238,19 +205,12 @@ const ListofUser: React.FC = () => {
                                         endDate={endDate}
                                         setEndDate={setEndDate}
                                     />
-<<<<<<< HEAD
                                     <Table
-=======
-                                    <UsersTable
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
                                         posts={currentPosts}
                                         handleEdit={handleEdit}
                                         referenceid={referenceid}
                                         Role={userDetails.Role}
-<<<<<<< HEAD
                                         fetchAccount={fetchAccount}
-=======
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
                                     />
                                     <Pagination
                                         currentPage={currentPage}
@@ -275,8 +235,4 @@ const ListofUser: React.FC = () => {
     );
 };
 
-<<<<<<< HEAD
 export default DeletionAccounts;
-=======
-export default ListofUser;
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a

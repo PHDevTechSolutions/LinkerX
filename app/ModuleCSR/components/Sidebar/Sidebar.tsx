@@ -68,8 +68,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       title: 'Inquiries',
       icon: CiInboxIn,
       subItems: [
-        { title: 'Automated Tickets', href: `/ModuleCSR/CSR/AutomatedTickets/Tickets${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Website Portal ( Inquiries )', href: `/ModuleCSR/CSR/WebsiteInquiry${userId ? `?id=${encodeURIComponent(userId)}` : ''}` }
+        { title: 'Tickets', href: `/ModuleCSR/CSR/AutomatedTickets/Tickets${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
@@ -90,7 +89,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       title: 'Reports',
       icon: CiWavePulse1,
       subItems: [
-        { title: 'Daily CSR Transaction (Automated)', href: `/ModuleCSR/CSR/Reports/DailyTaskflowTransaction${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Daily CSR Transaction', href: `/ModuleCSR/CSR/Reports/DailyTaskflowTransaction${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'SKU Listing', href: `/ModuleCSR/CSR/Reports/SKUListing${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'Received P.O', href: `/ModuleCSR/CSR/Reports/ReceivedPO${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'D-Tracking', href: `/ModuleCSR/CSR/Reports/DTracking${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },

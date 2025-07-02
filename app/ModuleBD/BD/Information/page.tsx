@@ -6,11 +6,7 @@ import SessionChecker from "../../components/Session/SessionChecker";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-<<<<<<< HEAD
 import Developers from "../../components/Information/ViewInfo"; // Import the form component
-=======
-import Developers from "../../components/Information/page"; // Import the form component
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
 
 const ProfilePage: React.FC = () => {
     const [userDetails, setUserDetails] = useState({
@@ -55,36 +51,6 @@ const ProfilePage: React.FC = () => {
         fetchUserData();
     }, []);
 
-<<<<<<< HEAD
-=======
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-
-        try {
-            const response = await fetch("/api/Setting/UpdateProfile", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(userDetails), // Send the whole userDetails object with id
-            });
-
-            if (response.ok) {
-                toast.success("Profile updated successfully");
-            } else {
-                throw new Error("Failed to update profile");
-            }
-        } catch (err: unknown) {
-            toast.error("Failed to update profile");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) return <div>Loading...</div>;
-
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
     return (
         <SessionChecker>
             <ParentLayout>

@@ -2,20 +2,12 @@
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
-<<<<<<< HEAD
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
 import UsersTable from "../../../components/Task/ClientCoverageGuide/TableXchire";
 import SearchFilters from "../../../components/Task/ClientCoverageGuide/Filters";
 import FuturisticSpinner from "../../../components/Spinner/FuturisticsSpinner";
-=======
-import UserFetcher from "../../../components/UserFetcher/UserFetcher";
-
-// Components
-import UsersTable from "../../../components/Task/ClientCoverageGuide/Table";
-import SearchFilters from "../../../components/Task/ClientCoverageGuide/Filters";
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -35,12 +27,9 @@ const ListofUser: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-<<<<<<< HEAD
     const [postsLoading, setPostsLoading] = useState<boolean>(true);
     const [showSpinner, setShowSpinner] = useState(true);
 
-=======
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
         const fetchUserData = async () => {
@@ -68,19 +57,11 @@ const ListofUser: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
-<<<<<<< HEAD
                     setShowSpinner(false);
                 }
             } else {
                 setError("User ID is missing.");
                 setShowSpinner(false);
-=======
-                    setLoading(false);
-                }
-            } else {
-                setError("User ID is missing.");
-                setLoading(false);
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
             }
         };
 
@@ -89,10 +70,7 @@ const ListofUser: React.FC = () => {
 
     // Fetch all users from the API
     const fetchAccount = async () => {
-<<<<<<< HEAD
         setPostsLoading(true);
-=======
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
         try {
             const response = await fetch("/api/ModuleSales/Task/Callback/FetchProgress");
             const data = await response.json();
@@ -101,11 +79,8 @@ const ListofUser: React.FC = () => {
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
-<<<<<<< HEAD
         } finally {
             setPostsLoading(false);
-=======
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
         }
     };
 
@@ -113,7 +88,6 @@ const ListofUser: React.FC = () => {
         fetchAccount();
     }, []);
 
-<<<<<<< HEAD
     if (postsLoading || showSpinner) {
         return (
             <SessionChecker>
@@ -124,8 +98,6 @@ const ListofUser: React.FC = () => {
         );
     }
 
-=======
->>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = Array.isArray(posts)
         ? posts
