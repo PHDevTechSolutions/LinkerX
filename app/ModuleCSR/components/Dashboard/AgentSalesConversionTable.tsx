@@ -13,6 +13,7 @@ interface Metric {
   TicketEndorsed: string;
   TicketReceived: string;
   Remarks: string;
+  TicketReferenceNumber: string;
 }
 
 interface AgentSalesConversionProps {
@@ -86,55 +87,64 @@ const AgentSalesConversion: React.FC<AgentSalesConversionProps> = ({ ReferenceID
 
   // ✅ Calculate totals per agent
   const calculateAgentTotals = useCallback((agentMetrics: Metric[]) => {
-    return agentMetrics.reduce(
-      (acc, metric) => {
-        // ✅ Skip computation if Remarks is "PO Received"
-        if (metric.Remarks?.toLowerCase() === "po received") return acc;
+  // Step 1: Find all TicketReferenceNumbers with Remarks "PO Received"
+  const excludedTickets = new Set(
+    agentMetrics
+      .filter(m => m.Remarks?.toLowerCase() === "po received" && m.TicketReferenceNumber)
+      .map(m => m.TicketReferenceNumber)
+  );
 
-        const amount = parseFloat(metric.Amount) || 0;
-        const qtySold = parseFloat(metric.QtySold) || 0;
-        const isSale = metric.Traffic === "Sales";
-        const isConverted = metric.Status === "Converted Into Sales";
+  // Step 2: Reduce only those metrics whose TicketReferenceNumber is NOT in excludedTickets
+  return agentMetrics.reduce(
+    (acc, metric) => {
+      if (!metric.TicketReferenceNumber) return acc;
 
-        acc.sales += isSale ? 1 : 0;
-        acc.nonSales += !isSale ? 1 : 0;
-        acc.totalAmount += amount;
-        acc.totalQtySold += qtySold;
-        acc.totalConversionToSale += isConverted ? 1 : 0;
+      // Skip if this TicketReferenceNumber is excluded
+      if (excludedTickets.has(metric.TicketReferenceNumber)) return acc;
 
-        // Add customer status totals
-        switch (metric.CustomerStatus) {
-          case "New Client":
-            acc.newClientAmount += amount;
-            break;
-          case "New Non-Buying":
-            acc.newNonBuyingAmount += amount;
-            break;
-          case "Existing Active":
-            acc.existingActiveAmount += amount;
-            break;
-          case "Existing Inactive":
-            acc.existingInactiveAmount += amount;
-            break;
-          default:
-            break;
-        }
+      const amount = Number(metric.Amount) || 0;
+      const qtySold = Number(metric.QtySold) || 0;
+      const isSale = metric.Traffic === "Sales";
+      const isConverted = metric.Status === "Converted Into Sales";
 
-        return acc;
-      },
-      {
-        sales: 0,
-        nonSales: 0,
-        totalAmount: 0,
-        totalQtySold: 0,
-        totalConversionToSale: 0,
-        newClientAmount: 0,
-        newNonBuyingAmount: 0,
-        existingActiveAmount: 0,
-        existingInactiveAmount: 0,
+      acc.sales += isSale ? 1 : 0;
+      acc.nonSales += !isSale ? 1 : 0;
+      acc.totalAmount += amount;
+      acc.totalQtySold += qtySold;
+      acc.totalConversionToSale += isConverted ? 1 : 0;
+
+      switch (metric.CustomerStatus) {
+        case "New Client":
+          acc.newClientAmount += amount;
+          break;
+        case "New Non-Buying":
+          acc.newNonBuyingAmount += amount;
+          break;
+        case "Existing Active":
+          acc.existingActiveAmount += amount;
+          break;
+        case "Existing Inactive":
+          acc.existingInactiveAmount += amount;
+          break;
       }
-    );
-  }, []);
+
+      return acc;
+    },
+    {
+      sales: 0,
+      nonSales: 0,
+      totalAmount: 0,
+      totalQtySold: 0,
+      totalConversionToSale: 0,
+      newClientAmount: 0,
+      newNonBuyingAmount: 0,
+      existingActiveAmount: 0,
+      existingInactiveAmount: 0,
+    }
+  );
+}, []);
+
+
 
 
   // ✅ Format amount with Peso sign

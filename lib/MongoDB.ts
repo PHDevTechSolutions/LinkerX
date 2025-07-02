@@ -85,4 +85,3 @@ export async function validateUser({ Email, Password, Department,}: { Email: str
   return { success: true, user }; // Return the user object along with success status
 }
 
-

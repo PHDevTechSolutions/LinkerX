@@ -60,7 +60,11 @@
     "react-leaflet": "^5.0.0",
     "react-markdown": "^10.1.0",
     "react-moveable": "^0.56.0",
+<<<<<<< HEAD
     "react-parallax-tilt": "^1.7.297",
+=======
+    "react-parallax-tilt": "^1.7.296",
+>>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
     "react-select": "^5.10.0",
     "react-toastify": "^11.0.3",
     "react-tooltip": "^5.28.1",

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
+<<<<<<< HEAD
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
@@ -9,17 +10,33 @@ import AddPostForm from "../../../components/HelpCenter/Tutorials/Form";
 import UsersCard from "../../../components/HelpCenter/Tutorials/Tutorial";
 import SearchFilters from "../../../components/HelpCenter/Tutorials/Filters";
 import FuturisticSpinner from "../../../components/Spinner/FuturisticsSpinner";
+=======
+import UserFetcher from "../../../components/UserFetcher/UserFetcher";
+
+// Components
+import AddPostForm from "../../../components/HelpCenter/Tutorials/Form";
+import UsersCard from "../../../components/HelpCenter/Tutorials/Table";
+import SearchFilters from "../../../components/HelpCenter/Tutorials/Filters";
+>>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+<<<<<<< HEAD
 import { CiTrash, CiCircleRemove } from "react-icons/ci";
+=======
+import { CiTrash, CiCircleRemove, CiVideoOn } from "react-icons/ci";
+>>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
 
 const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
     const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
+<<<<<<< HEAD
+=======
+    const [selectedClientType, setSelectedClientType] = useState("");
+>>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
     const [startDate, setStartDate] = useState(""); // Default to null
     const [endDate, setEndDate] = useState(""); // Default to null
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -28,11 +45,17 @@ const ListofUser: React.FC = () => {
     const [userDetails, setUserDetails] = useState({
         UserId: "", ReferenceID: "", Manager: "", TSM: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
     });
+<<<<<<< HEAD
     const [error, setError] = useState<string | null>(null);
 
     const [postsLoading, setPostsLoading] = useState<boolean>(true);
     const [showSpinner, setShowSpinner] = useState(true);
 
+=======
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+>>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
         const fetchUserData = async () => {
@@ -60,11 +83,19 @@ const ListofUser: React.FC = () => {
                     console.error("Error fetching user data:", err);
                     setError("Failed to load user data. Please try again later.");
                 } finally {
+<<<<<<< HEAD
                     setShowSpinner(false);
                 }
             } else {
                 setError("User ID is missing.");
                 setShowSpinner(false);
+=======
+                    setLoading(false);
+                }
+            } else {
+                setError("User ID is missing.");
+                setLoading(false);
+>>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
             }
         };
 
@@ -73,7 +104,10 @@ const ListofUser: React.FC = () => {
 
     // Fetch all posts from the API
     const fetchAccount = async () => {
+<<<<<<< HEAD
         setPostsLoading(true);
+=======
+>>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
         try {
             const response = await fetch("/api/ModuleSales/HelpCenter/Tutorials/FetchData");
             const data = await response.json();
@@ -81,8 +115,11 @@ const ListofUser: React.FC = () => {
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
+<<<<<<< HEAD
         } finally {
             setPostsLoading(false);
+=======
+>>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
         }
     };
 
@@ -90,6 +127,7 @@ const ListofUser: React.FC = () => {
         fetchAccount();
     }, []);
 
+<<<<<<< HEAD
     if (postsLoading || showSpinner) {
         return (
             <SessionChecker>
@@ -100,6 +138,8 @@ const ListofUser: React.FC = () => {
         );
     }
 
+=======
+>>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
     // Filter users by search term (title)
     const filteredAccounts = Array.isArray(posts)
         ? posts
@@ -123,6 +163,15 @@ const ListofUser: React.FC = () => {
         : [];
 
     const currentPosts = filteredAccounts.slice();
+<<<<<<< HEAD
+=======
+    const totalPages = Math.ceil(filteredAccounts.length);
+
+    const confirmDelete = (postId: string) => {
+        setPostToDelete(postId);
+        setShowDeleteModal(true);
+    };
+>>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
 
     const handleDelete = async () => {
         if (!postToDelete) return;

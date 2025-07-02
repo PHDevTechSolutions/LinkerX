@@ -68,6 +68,10 @@ const Login: React.FC = () => {
             <option value="CSR">CSR</option>
             <option value="Sales">Sales</option>
             <option value="BD">Business Development</option>
+<<<<<<< HEAD
+=======
+            <option value="Warehouse">Warehouse</option>
+>>>>>>> 2b204b1d32bfd8c4242ab86a70eb5c3ae5e2ac1a
           </select>
           <button type="submit" className="w-full py-3 bg-green-800 text-white text-xs font-medium rounded-md hover:bg-green-600 shadow-md" disabled={loading}>
             {loading ? 'Signing In...' : 'Sign In'}

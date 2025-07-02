@@ -128,7 +128,7 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
     useEffect(() => {
         const fetchTSM = async () => {
             try {
-                const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager, HR Manager, Manager");
+                const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager, HR Manager, Manager, E-Commerce Staff");
                 if (!response.ok) throw new Error("Failed to fetch managers");
 
                 const data = await response.json();
@@ -268,6 +268,7 @@ const AddTrackingFields: React.FC<ReceivedFieldsProps> = ({
                     <select id="Department" value={Department} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border rounded text-xs bg-gray-50">
                         <option value="">Select Department</option>
                         <option value="Accounting">Accounting</option>
+                        <option value="E-Commerce">E-Commerce</option>
                         <option value="Engineering">Engineering</option>
                         <option value="Human Resources">Human Resources</option>
                         <option value="Marketing">Marketing</option>
