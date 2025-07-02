@@ -105,7 +105,7 @@ const MainCardTable: React.FC<MainCardTableProps> = ({
                     </button>
 
                     <button
-                        className="flex items-center gap-1 border bg-white text-black text-[10px] px-4 py-2 shadow-sm rounded hover:bg-orange-400 hover:text-white transition"
+                        className="flex items-center gap-1 border bg-green-700 text-white text-[10px] px-4 py-2 shadow-md rounded hover:bg-green-800 hover:text-white transition"
                         onClick={() => setShowMainForm(true)}>
                         <CiSquarePlus size={15} /> Create Activity
                     </button>

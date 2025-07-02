@@ -132,7 +132,7 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
     <>
       {activitystatus === "Delivered" && (
         <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4 relative">
-          <label className="block text-xs font-bold mb-2">Payment Terms</label>
+          <label className="block text-xs font-bold mb-2">Payment Terms <span className="text-red-500">*</span></label>
           <select
             value={paymentterm}
             onChange={handlePaymentTermChange}
@@ -151,7 +151,7 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
       )}
 
       <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-        <label htmlFor="actualsales" className="block text-xs font-bold mb-2">SI (Actual Sales)</label>
+        <label htmlFor="actualsales" className="block text-xs font-bold mb-2">SI (Actual Sales) <span className="text-red-500">*</span></label>
         <input
           id="actualsales"
           type="text"
@@ -173,7 +173,7 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
       </div>
 
       <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-        <label htmlFor="actualsales" className="block text-xs font-bold mb-2">Delivery Date</label>
+        <label htmlFor="actualsales" className="block text-xs font-bold mb-2">Delivery Date <span className="text-red-500">*</span></label>
         <input
           id="deliverydate"
           type="date"
@@ -190,7 +190,7 @@ const DeliveryFields: React.FC<DeliveryFieldsProps> = ({
 
       <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4 flex flex-col space-y-4">
         <div>
-          <label htmlFor="emailaddress" className="block text-xs font-bold mb-2">Send Email Survey</label>
+          <label htmlFor="emailaddress" className="block text-xs font-bold mb-2">Send Email Survey <span className="text-red-500">*</span></label>
           <select
             id="emailaddress"
             value={emailaddress ?? ""}

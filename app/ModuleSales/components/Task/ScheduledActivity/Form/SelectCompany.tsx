@@ -135,7 +135,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
             <div className="flex flex-wrap -mx-4 transition-all duration-300 ease-in-out">
                 {/* Company Name */}
                 <div className="w-full px-4 mb-4">
-                    <label className="block text-xs font-bold mb-2">Company Name</label>
+                    <label className="block text-xs font-bold mb-2">Company Name <span className="text-red-500">*</span></label>
                     <div className="flex gap-4">
                         {/* Select or disabled input */}
                         <div className="w-1/2">
@@ -237,7 +237,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
 
                     {/* Contact Person */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Contact Person</label>
+                        <label className="block text-xs font-bold mb-2">Contact Person <span className="text-red-500">*</span></label>
                         <input
                             type="text"
                             value={contactperson ?? ""}
@@ -254,7 +254,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
 
                     {/* Contact Number */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Contact Number</label>
+                        <label className="block text-xs font-bold mb-2">Contact Number <span className="text-red-500">*</span></label>
                         <input
                             type="text"
                             value={contactnumber ?? ""}
@@ -265,13 +265,13 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
 
                     {/* Email Address */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Email Address</label>
+                        <label className="block text-xs font-bold mb-2">Email Address <span className="text-red-500">*</span></label>
                         <Email emailaddress={emailaddress} setemailaddress={setemailaddress} />
                     </div>
 
                     {/* Registered Address */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Registered Address</label>
+                        <label className="block text-xs font-bold mb-2">Registered Address <span className="text-red-500">*</span></label>
                         <input
                             type="text"
                             value={address ?? ""}
@@ -293,13 +293,13 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
 
                     {/* Area */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Region</label>
+                        <label className="block text-xs font-bold mb-2">Region <span className="text-red-500">*</span></label>
                         <Area area={area} setarea={setarea} />
                     </div>
 
                     {/* Type Client */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Type of Customer</label>
+                        <label className="block text-xs font-bold mb-2">Type of Customer <span className="text-red-500">*</span></label>
                         <select
                             value={typeclient ?? ""}
                             onChange={(e) => settypeclient(e.target.value)}
@@ -316,7 +316,7 @@ const SelectCompany: React.FC<SelectCompanyProps> = ({
 
                     {/* Status */}
                     <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                        <label className="block text-xs font-bold mb-2">Customer Status</label>
+                        <label className="block text-xs font-bold mb-2">Customer Status <span className="text-red-500">*</span></label>
                         <select
                             value={status ?? ""}
                             onChange={(e) => setstatus(e.target.value)}

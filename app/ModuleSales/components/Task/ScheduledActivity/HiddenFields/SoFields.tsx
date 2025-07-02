@@ -65,13 +65,15 @@ const SoFields: React.FC<QuotationFieldsProps> = ({
                     required
                 >
                     <option value="">Select Status</option>
-                    <option value="Follow Up Pending">Follow Up Pending</option>
-                    <option value="Requirements">No Requirements</option>
-                    <option value="Request for Quotation">Request for Quotation</option>
-                    <option value="Sent Quotation - Standard">Sent Quotation - Standard</option>
-                    <option value="Sent Quotation - With Special Price">Sent Quotation - With Special Price</option>
-                    <option value="Sent Quotation - With SPF">Sent Quotation - With SPF</option>
-                    <option value="With SPFS">With SPFS</option>
+                    <option value="Regular SO">Regular SO</option>
+                    <option value="Willing to Wait">Willing to Wait</option>
+                    <option value="SPF - Special Project">SPF - Special Project</option>
+                    <option value="Local SPF">Local SPF</option>
+                    <option value="SPF - Local">SPF - Local</option>
+                    <option value="SPF - Foreign">SPF - Foreign</option>
+                    <option value="Promo">Promo</option>
+                    <option value="FB Marketplace">FB Marketplace</option>
+                    <option value="Internal Order">Internal Order</option>
                 </select>
             </div>
         </>

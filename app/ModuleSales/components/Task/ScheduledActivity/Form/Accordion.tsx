@@ -67,7 +67,7 @@ const Accordion: React.FC<AccordionProps> = ({
                 {typeactivity === "Quotation Preparation" && (
                     <div className="flex flex-wrap -mx-4 rounded">
                         <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-                            <label className="block text-xs font-bold mb-1 text-black">Project Name</label>
+                            <label className="block text-xs font-bold mb-1 text-black">Project Name <span className="text-red-500">*</span></label>
                             <input
                                 type="text"
                                 className="w-full px-3 py-2 border-b text-xs capitalize"
@@ -84,7 +84,7 @@ const Accordion: React.FC<AccordionProps> = ({
 
                         {/* Product Category - replaced with react-select */}
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                            <label className="block text-xs font-bold mb-1 text-black">Item Category</label>
+                            <label className="block text-xs font-bold mb-1 text-black">Item Category <span className="text-red-500">*</span></label>
                             <Select
                                 options={productCategoryOptions}
                                 value={selectedCategory}
@@ -119,7 +119,7 @@ const Accordion: React.FC<AccordionProps> = ({
 
                         {/* Project Type */}
                         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                            <label className="block text-xs font-bold mb-1 text-black">Customer Type</label>
+                            <label className="block text-xs font-bold mb-1 text-black">Customer Type <span className="text-red-500">*</span></label>
                             <select
                                 value={projecttype ?? ""}
                                 onChange={(e) => setprojecttype(e.target.value)}
@@ -139,7 +139,7 @@ const Accordion: React.FC<AccordionProps> = ({
             <div className="flex flex-wrap -mx-4 rounded">
                 {/* Source */}
                 <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                    <label className="block text-xs font-bold mb-1 text-black">Source</label>
+                    <label className="block text-xs font-bold mb-1 text-black">Source <span className="text-red-500">*</span></label>
                     <select
                         value={source ?? ""}
                         onChange={(e) => setsource(e.target.value)}

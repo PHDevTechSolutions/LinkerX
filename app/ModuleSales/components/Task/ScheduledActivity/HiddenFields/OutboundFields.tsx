@@ -91,7 +91,7 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
             </div>
 
             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                <label className="block text-xs font-bold mb-2">Call Status</label>
+                <label className="block text-xs font-bold mb-2">Call Status <span className="text-red-500">*</span></label>
                 <select
                     value={callstatus}
                     onChange={(e) => setcallstatus(e.target.value)}
@@ -104,7 +104,7 @@ const OutboundFields: React.FC<OutboundFieldsProps> = ({
             </div>
 
             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-                <label className="block text-xs font-bold mb-2">Type of Call</label>
+                <label className="block text-xs font-bold mb-2">Type of Call <span className="text-red-500">*</span></label>
                 <select
                     value={typecall}
                     onChange={(e) => settypecall(e.target.value)}

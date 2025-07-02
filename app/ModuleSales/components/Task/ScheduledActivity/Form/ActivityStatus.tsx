@@ -72,7 +72,7 @@ const ActivityStatus: React.FC<ActivityStatusProps> = ({
 
   return (
     <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
-      <label className="block text-xs font-bold mb-2">Status</label>
+      <label className="block text-xs font-bold mb-2">Status <span className="text-red-500">*</span></label>
       <Select
         options={statusOptions}
         value={statusOptions.find(opt => opt.value === activitystatus) || statusOptions[0]}

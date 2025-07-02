@@ -36,7 +36,7 @@ const QuotationFields: React.FC<QuotationFieldsProps> = ({
   return (
     <>
       <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-        <label className="block text-xs font-bold mb-2">Quotation Number</label>
+        <label className="block text-xs font-bold mb-2">Quotation Number <span className="text-red-500">*</span></label>
         <input
           type="text"
           value={quotationnumber || ""}
@@ -47,7 +47,7 @@ const QuotationFields: React.FC<QuotationFieldsProps> = ({
       </div>
 
       <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-        <label className="block text-xs font-bold mb-2">Quotation Amount</label>
+        <label className="block text-xs font-bold mb-2">Quotation Amount <span className="text-red-500">*</span></label>
         <input
           type="text"
           value={quotationamount || ""}
@@ -58,7 +58,7 @@ const QuotationFields: React.FC<QuotationFieldsProps> = ({
       </div>
 
       <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
-        <label className="block text-xs font-bold mb-2">Type</label>
+        <label className="block text-xs font-bold mb-2">Type <span className="text-red-500">*</span></label>
         <select
           value={typecall || ""}
           onChange={(e) => settypecall(e.target.value)}

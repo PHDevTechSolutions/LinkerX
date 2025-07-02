@@ -118,7 +118,7 @@ const Submenu: React.FC<SubmenuProps> = ({
     <div className="mb-4">
       <div className="flex flex-wrap -mx-4 rounded">
         <div className="w-full sm:w-1/2 md:w-1/4 px-4">
-          <label className="block text-xs font-bold mb-2">Type of Activity</label>
+          <label className="block text-xs font-bold mb-2">Type of Activity <span className="text-red-500">*</span></label>
           <Select
             options={activityOptions}
             onChange={handleActivitySelection}
