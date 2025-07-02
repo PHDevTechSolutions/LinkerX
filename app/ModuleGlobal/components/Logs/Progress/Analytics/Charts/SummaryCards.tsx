@@ -25,7 +25,7 @@ const CustomTooltip = ({
   if (active && payload && payload.length) {
     return (
       <div className="bg-white border border-gray-300 shadow-lg text-[12px] p-3 rounded">
-        <p className="font-semibold mb-1">Summary</p>
+        <p className="font-semibold mb-1">Summarys</p>
         {payload.map((entry: any, index: number) => (
           <p key={index} className="text-gray-700">
             {entry.name}: ₱{entry.value.toLocaleString()}
