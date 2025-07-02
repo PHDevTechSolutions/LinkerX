@@ -2,47 +2,42 @@ import React, { useEffect, useState } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa";
 
 interface FormFieldsProps {
-  // Users Credentials
   referenceid: string; setreferenceid: (value: string) => void;
   manager: string; setmanager: (value: string) => void;
   tsm: string; settsm: (value: string) => void;
-  //
   companyname: string; setcompanyname: (value: string) => void;
   contactperson: string; setcontactperson: (value: string) => void;
   contactnumber: string; setcontactnumber: (value: string) => void;
   emailaddress: string; setemailaddress: (value: string) => void;
   typeclient: string; settypeclient: (value: string) => void;
-  companygroup: string; setcompanygroup: (value: string) => void;
   address: string; setaddress: (value: string) => void;
-  deliveryaddress: string; setdeliveryaddress: (value: string) => void;
   area: string; setarea: (value: string) => void;
   status: string; setstatus: (value: string) => void;
-  isMaximized?: boolean;
   editPost?: any;
 }
 
 const UserFormFields: React.FC<FormFieldsProps> = ({
-  // Users Credentials
   referenceid, setreferenceid,
   manager, setmanager,
   tsm, settsm,
-  //
   companyname, setcompanyname,
   contactperson, setcontactperson,
   contactnumber, setcontactnumber,
   emailaddress, setemailaddress,
   typeclient, settypeclient,
-  companygroup, setcompanygroup,
   address, setaddress,
-  deliveryaddress, setdeliveryaddress,
   area, setarea,
   status, setstatus,
-  isMaximized = false, // default false
   editPost,
 }) => {
-  // Select Fields
+  const [managerOptions, setManagerOptions] = useState<{ value: string; label: string }[]>([]);
+  const [selectedManager, setSelectedManager] = useState<{ value: string; label: string } | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [TSMOptions, setTSMOptions] = useState<{ value: string; label: string }[]>([]);
+  const [selectedTSM, setSelectedTSM] = useState<{ value: string; label: string } | null>(null);
+  const [TSAOptions, setTSAOptions] = useState<{ value: string; label: string }[]>([]);
+  const [selectedReferenceID, setSelectedReferenceID] = useState<{ value: string; label: string } | null>(null);
 
-  // Dynamic Fields
   const [contactPersons, setContactPersons] = useState<string[]>([]);
   const [contactNumbers, setContactNumbers] = useState<string[]>([]);
   const [emailAddresses, setEmailAddresses] = useState<string[]>([]);
@@ -63,7 +58,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     if (contactPersons.length > 1) {
       const updated = contactPersons.filter((_, i) => i !== index);
       setContactPersons(updated);
-      setcontactperson(updated.join(", ")); // Update the contactperson field
+      setcontactperson(updated.join(", "));
     }
   };
 
@@ -71,7 +66,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     if (contactNumbers.length > 1) {
       const updated = contactNumbers.filter((_, i) => i !== index);
       setContactNumbers(updated);
-      setcontactnumber(updated.join(", ")); // Update the contactnumber field
+      setcontactnumber(updated.join(", "));
     }
   };
 
@@ -79,11 +74,10 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     if (emailAddresses.length > 1) {
       const updated = emailAddresses.filter((_, i) => i !== index);
       setEmailAddresses(updated);
-      setemailaddress(updated.join(", ")); // Update the emailaddress field
+      setemailaddress(updated.join(", "));
     }
   };
 
-  // Handle changes
   const handleContactPersonChange = (index: number, value: string) => {
     const updated = [...contactPersons];
     updated[index] = value;
@@ -106,7 +100,74 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   };
 
   useEffect(() => {
+    const fetchManagers = async () => {
+      try {
+        const response = await fetch("/api/manager?Role=Manager");
+        if (!response.ok) {
+          throw new Error("Failed to fetch managers");
+        }
+        const data = await response.json();
+        const options = data.map((user: any) => ({
+          value: user.ReferenceID,
+          label: `${user.Firstname} ${user.Lastname}`,
+        }));
+
+        setManagerOptions(options);
+      } catch (error) {
+        console.error("Error fetching managers:", error);
+      }
+    };
+
+    fetchManagers();
+  }, []);
+
+  useEffect(() => {
+    const fetchTSM = async () => {
+      try {
+        const response = await fetch("/api/fetchtsm?Role=Territory Sales Manager");
+        if (!response.ok) {
+          throw new Error("Failed to fetch managers");
+        }
+        const data = await response.json();
+        const options = data.map((user: any) => ({
+          value: user.ReferenceID,
+          label: `${user.Firstname} ${user.Lastname}`,
+        }));
+
+        setTSMOptions(options);
+      } catch (error) {
+        console.error("Error fetching managers:", error);
+      }
+    };
+
+    fetchTSM();
+  }, []);
+
+  useEffect(() => {
+    const fetchTSA = async () => {
+      try {
+        const response = await fetch("/api/fetchtsa?Role=Territory Sales Associate");
+        if (!response.ok) {
+          throw new Error("Failed to fetch agents");
+        }
+        const data = await response.json();
+        const options = data.map((user: any) => ({
+          value: user.ReferenceID,
+          label: `${user.Firstname} ${user.Lastname}`,
+        }));
+
+        setTSAOptions(options);
+      } catch (error) {
+        console.error("Error fetching agents:", error);
+      }
+    };
+
+    fetchTSA();
+  }, []);
+
+  useEffect(() => {
     if (editPost) {
+      setIsEditing(true);
       setcompanyname(editPost.companyname || "");
       settypeclient(editPost.typeclient || "");
       setaddress(editPost.address || "");
@@ -115,65 +176,44 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
       setmanager(editPost.manager || "");
       settsm(editPost.tsm || "");
       setreferenceid(editPost.referenceid || "");
-
-      // Ensure contact persons, numbers, and emails are properly set
       setContactPersons(editPost.contactperson ? editPost.contactperson.split(", ") : [""]);
       setContactNumbers(editPost.contactnumber ? editPost.contactnumber.split(", ") : [""]);
       setEmailAddresses(editPost.emailaddress ? editPost.emailaddress.split(", ") : [""]);
     }
   }, [editPost]);
 
-  // Ensure selected values are updated when options are available
-  const fieldWidthClass = isMaximized ? "w-full sm:w-1/2 px-4 mb-4" : "w-full px-4 mb-4";
-  const isEditMode = !!editPost && Object.keys(editPost).length > 0;
-
+  useEffect(() => {
+    if (isEditing && editPost) {
+      setSelectedManager(managerOptions.find((opt) => opt.value === editPost.manager) || null);
+      setSelectedTSM(TSMOptions.find((opt) => opt.value === editPost.tsm) || null);
+      setSelectedReferenceID(TSAOptions.find((opt) => opt.value === editPost.referenceid) || null);
+    }
+  }, [isEditing, editPost, managerOptions, TSMOptions, TSAOptions]);
 
   return (
     <>
-      <div className={`flex flex-wrap -mx-4`}>
-        <div className={fieldWidthClass}>
-          <input type="hidden" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} />
-          <input type="hidden" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} />
-          <input type="hidden" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} />
+      <div className="flex flex-wrap -mx-4">
+        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+          <label className="block text-xs font-bold mb-2" htmlFor="Manager">Manager</label>
+          <input type="text" id="manager" value={manager} onChange={(e) => setmanager(e.target.value)} className="w-full px-3 py-2 border-b rounded text-xs capitalize" readOnly />
+        </div>
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+          <label className="block text-xs font-bold mb-2" htmlFor="TSM">Territory Sales Manager</label>
+          <input type="text" id="tsm" value={tsm} onChange={(e) => settsm(e.target.value)} className="w-full px-3 py-2 border-b rounded text-xs capitalize" readOnly />
+        </div>
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+          <label className="block text-xs font-bold mb-2" htmlFor="referenceid">Territory Sales Associate</label>
+          <input type="text" id="referenceid" value={referenceid} onChange={(e) => setreferenceid(e.target.value)} className="w-full px-3 py-2 border-b rounded text-xs capitalize" readOnly />
         </div>
       </div>
-
-      <div className={`flex flex-wrap -mx-4`}>
-
-        <div className={fieldWidthClass}>
+      <div className="flex flex-wrap -mx-4">
+        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="companyname">Company Name</label>
-          <input type="text" id="companyname" value={companyname} onChange={(e) => setcompanyname(e.target.value)} className="w-full px-3 py-2 border-b text-xs capitalize" required
+          <input type="text" id="companyname" value={companyname} onChange={(e) => setcompanyname(e.target.value)} className="w-full px-3 py-2 border-b rounded text-xs capitalize"
           />
         </div>
-
-        {/* Affiliate or Group */}
-        <div className={fieldWidthClass}>
-          <label className="block text-xs font-bold mb-2" htmlFor="companygroup">Affiliate or Group</label>
-          <input type="text" id="companygroup" value={companygroup} onChange={(e) => {
-            const input = e.target.value;
-            const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
-            setcompanygroup(sanitized);
-          }}
-
-            className="w-full px-3 py-2 border-b text-xs uppercase"
-          />
-        </div>
-
-        {/* Type of Client */}
-        <div className={fieldWidthClass}>
-          <label className="block text-xs font-bold mb-2" htmlFor="typeclient">Type of Client</label>
-          <select id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs capitalize" required>
-            <option value="">Select Client</option>
-            <option value="Top 50">Top 50</option>
-            <option value="Next 30">Next 30</option>
-            <option value="Balance 20">Balance 20</option>
-            <option value="CSR Client">CSR Client</option>
-            <option value="TSA Client">TSA Client</option>
-          </select>
-        </div>
-
         {/* Contact Person */}
-        <div className={fieldWidthClass}>
+        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2">Contact Person</label>
           {contactPersons.map((person, index) => (
             <div key={index} className="flex items-center gap-2 mb-2">
@@ -213,9 +253,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           ))}
         </div>
 
-
         {/* Contact Number */}
-        <div className={fieldWidthClass}>
+        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2">Contact Number</label>
           {contactNumbers.map((number, index) => (
             <div key={index} className="flex items-center gap-2 mb-2">
@@ -224,7 +263,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                 value={number}
                 onChange={(e) => {
                   const input = e.target.value;
-                  const numbersOnly = input.replace(/[^0-9]/g, ""); // allow digits only
+                  const numbersOnly = input.replace(/[^0-9]/g, "");
                   handleContactNumberChange(index, numbersOnly);
                 }}
                 className="w-full px-3 py-2 border-b text-xs"
@@ -254,7 +293,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
         </div>
 
         {/* Email Address */}
-        <div className={fieldWidthClass}>
+        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2">Email Address</label>
           {emailAddresses.map((email, index) => {
             const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -292,8 +331,19 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           })}
         </div>
 
-        {/* Complete Address */}
-        <div className={fieldWidthClass}>
+        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+          <label className="block text-xs font-bold mb-2" htmlFor="typeclient">Type of Client</label>
+          <select id="typeclient" value={typeclient ?? ""} onChange={(e) => settypeclient(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs capitalize" required>
+            <option value="">Select Client</option>
+            <option value="Top 50">Top 50</option>
+            <option value="Next 30">Next 30</option>
+            <option value="Balance 20">Balance 20</option>
+            <option value="CSR Client">CSR Client</option>
+            <option value="TSA Client">TSA Client</option>
+          </select>
+        </div>
+
+        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="address">Registered Address</label>
           <input
             type="text"
@@ -303,23 +353,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           />
         </div>
 
-        {/* Delivery Address */}
-        <div className={fieldWidthClass}>
-          <label className="block text-xs font-bold mb-2" htmlFor="deliveryaddress">Delivery Address</label>
-          <input
-            type="text"
-            id="deliveryaddress"
-            value={deliveryaddress}
-            onChange={(e) => {
-              const input = e.target.value;
-              const sanitized = input.replace(/[^a-zA-Z,\s]/g, "");
-              setdeliveryaddress(sanitized);
-            }}
-            className="w-full px-3 py-2 border-b text-xs capitalize" />
-        </div>
-
-        {/* Region / Area */}
-        <div className={fieldWidthClass}>
+        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="area">Area</label>
           <select id="typeclient" value={area ?? ""} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs capitalize" required>
             <option value="">Select Region</option>
@@ -343,8 +377,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           </select>
         </div>
 
-        <div className={fieldWidthClass}>
-          <label className="block text-xs font-bold mb-2" htmlFor="status">Status</label>
+        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+          <label className="block text-xs font-bold mb-2" htmlFor="area">Status</label>
           <select id="status" value={status ?? ""} onChange={(e) => setstatus(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs capitalize" required>
             <option value="">Select Status</option>
             <option value="Active">Active</option>

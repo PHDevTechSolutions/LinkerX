@@ -5,8 +5,8 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../../ModuleSales/components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../../ModuleSales/components/Email/ComposeEmail/AddUserForm";
-import UsersCard from "../../../../ModuleSales/components/Email/ComposeEmail/EmailTable"; // Assuming this is the component handling the Kanban-style cards
+import AddPostForm from "../../../../ModuleGlobal/components/Email/Form";
+import UsersCard from "../../../../ModuleGlobal/components/Email/Table"; 
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
