@@ -24,12 +24,17 @@ const SoFields: React.FC<QuotationFieldsProps> = ({
         setsonumber(sanitized.toUpperCase());
     };
 
-    // Handler to format quotation amount input (allow numbers and decimals)
+    // Handler to allow only numbers and one decimal point
     const handleSOAmountChange = (e: React.FormEvent<HTMLInputElement>) => {
         const inputValue = e.currentTarget.value;
-        // Remove commas, allow only one decimal point
-        const formattedValue = inputValue.replace(/,/g, "").replace(/(\..*)\./g, "$1");
-        setsoamount(formattedValue);
+
+        // Allow only digits and one dot
+        const validInput = inputValue
+            .replace(/[^\d.]/g, "")       // Remove non-numeric and non-dot characters
+            .replace(/^(\d*\.\d*).*$/, "$1") // Allow only one dot (remove additional)
+            .replace(/^0+(?=\d)/, "");    // Remove leading zeros except before decimal
+
+        setsoamount(validInput);
     };
 
     return (
