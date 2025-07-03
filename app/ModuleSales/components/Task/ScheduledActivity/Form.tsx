@@ -120,6 +120,25 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     date_created: string;
     startdate: string;
     enddate: string;
+
+    referenceid: string;
+    manager: string;
+    tsm: string;
+    activitynumber: string;
+    companyname: string;
+    contactperson: string;
+    contactnumber: string;
+    emailaddress: string;
+    typeclient: string;
+    address: string;
+    deliveryaddress: string;
+    area: string;
+    projectname: string;
+    projectcategory: string;
+    projecttype: string;
+    source: string;
+    targetquota: string;
+
   }[]>([]);
 
   type Activity = {
@@ -138,6 +157,25 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
     date_created: string;
     startdate: string;
     enddate: string;
+
+    referenceid: string;
+    manager: string;
+    tsm: string;
+    activitynumber: string;
+    companyname: string;
+    contactperson: string;
+    contactnumber: string;
+    emailaddress: string;
+    typeclient: string;
+    address: string;
+    deliveryaddress: string;
+    area: string;
+    projectname: string;
+    projectcategory: string;
+    projecttype: string;
+    source: string;
+    targetquota: string;
+
   };
 
   // Fetch progress data when activitynumber change
@@ -263,33 +301,82 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
   const handleSaveEdit = async () => {
     if (!selectedActivity) return;
 
-    try {
-      const response = await fetch('/api/ModuleSales/Task/DailyActivity/EditProgress', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(selectedActivity),
-      });
+    const originalActivity = activityList.find(a => a.id === selectedActivity.id);
+    if (!originalActivity) return;
 
-      if (response.ok) {
-        // Update local list after saving
+    const soChanged =
+      originalActivity.sonumber !== selectedActivity.sonumber &&
+      originalActivity.soamount !== selectedActivity.soamount;
+
+    try {
+      if (soChanged) {
+        // 1. Update the original activity to RE-SO
+        const updatedOriginal = {
+          ...selectedActivity,
+          soamount: "0",
+          activitystatus: "RE-SO",
+          sonumber: originalActivity.sonumber, // keep original SO#
+        };
+
+        const updateRes = await fetch("/api/ModuleSales/Task/DailyActivity/EditProgress", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedOriginal),
+        });
+
+        if (!updateRes.ok) throw new Error("Failed to update RE-SO activity");
+
+        // 2. Add a new duplicate with updated SO values
+        const newActivity = {
+          ...selectedActivity,
+          id: undefined,
+          date_created: new Date().toISOString(),
+        };
+
+        const postRes = await fetch("/api/ModuleSales/Task/DailyActivity/AddProgress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newActivity),
+        });
+
+        if (!postRes.ok) throw new Error("Failed to create new activity");
+
+        const created = await postRes.json();
+
+        // Update UI
+        const updatedList = activityList
+          .map((activity) => (activity.id === selectedActivity.id ? updatedOriginal : activity))
+          .concat(created.data); // assuming the API returns { data: newActivity }
+
+        setActivityList(updatedList);
+        toast.success("RE-SO recorded and new activity created.");
+      } else {
+        // Standard update
+        const response = await fetch("/api/ModuleSales/Task/DailyActivity/EditProgress", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(selectedActivity),
+        });
+
+        if (!response.ok) throw new Error("Standard update failed");
+
         const updatedList = activityList.map((activity) =>
           activity.id === selectedActivity.id ? selectedActivity : activity
         );
         setActivityList(updatedList);
-
-        toast.success('Activity updated successfully!'); // Optional kung gumagamit ka ng toast
-        setIsEditModalOpen(false);
-        setSelectedActivity(null);
-      } else {
-        toast.error('Failed to update activity.');
+        toast.success("Activity updated successfully!");
       }
+
+      setIsEditModalOpen(false);
+      setSelectedActivity(null);
     } catch (error) {
-      console.error('Error updating activity:', error);
-      toast.error('An error occurred while updating.');
+      console.error("Error updating activity:", error);
+      toast.error("An error occurred while updating.");
     }
   };
+
 
   // Close modal
   const handleModalClose = () => {
@@ -367,10 +454,10 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onCancel, refreshPosts, userD
             }
             className={`px-3 py-2 rounded text-[10px] flex items-center gap-1 text-white 
               ${companyname.trim() &&
-              contactperson.trim() &&
-              typeclient.trim()
-              ? "bg-green-600 hover:bg-green-700 cursor-pointer"
-              : "bg-gray-400 cursor-not-allowed"
+                contactperson.trim() &&
+                typeclient.trim()
+                ? "bg-green-600 hover:bg-green-700 cursor-pointer"
+                : "bg-gray-400 cursor-not-allowed"
               }`}
           >
             {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}

@@ -21,10 +21,14 @@ const CustomTooltip = ({
   active,
   payload,
   label,
-}: any) => {
+}: {
+  active?: boolean;
+  payload?: any;
+  label?: string;
+}) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white border border-gray-300 shadow-lg text-[12px] p-3 rounded">
+      <div className="shadow-md text-[12px] bg-white rounded p-2">
         <p className="font-semibold mb-1">Summarys</p>
         {payload.map((entry: any, index: number) => (
           <p key={index} className="text-gray-700">
@@ -34,8 +38,30 @@ const CustomTooltip = ({
       </div>
     );
   }
-
   return null;
+};
+
+// Custom Legend Renderer
+const renderCustomLegend = (props: any) => {
+  const { payload } = props;
+  return (
+    <div className="flex justify-center mt-2">
+      <ul className="flex flex-wrap justify-center gap-3">
+        {payload.map((entry: any, index: number) => (
+          <li
+            key={`legend-${index}`}
+            className="flex items-center space-x-1 bg-white rounded px-2 py-1 text-[12px] shadow-sm"
+          >
+            <span
+              className="inline-block w-3 h-3 rounded-full"
+              style={{ backgroundColor: entry.color }}
+            />
+            <span>{entry.value}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 };
 
 const SummaryCards: React.FC<SummaryCardsProps> = ({
@@ -65,7 +91,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
           <XAxis dataKey="name" fontSize={12} />
           <YAxis fontSize={12} />
           <Tooltip content={<CustomTooltip />} />
-          <Legend wrapperStyle={{ fontSize: 12 }} />
+          <Legend content={renderCustomLegend} />
           <Line
             type="monotone"
             dataKey="Quotation"

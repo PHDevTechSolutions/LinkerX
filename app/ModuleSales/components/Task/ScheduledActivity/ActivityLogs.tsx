@@ -5,27 +5,45 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaClock } from "react-icons/fa6";
 
 interface Activity {
-    id: number;
-    date_created: string;
-    typeactivity: string;
-    startdate: string;
-    enddate: string;
-    callback?: string;
-    callstatus?: string;
-    typecall?: string;
-    quotationnumber?: string;
-    quotationamount?: string;
-    soamount?: string;
-    sonumber?: string;
-    actualsales?: string;
-    remarks?: string;
-    activitystatus?: string;
+  id: number;
+  date_created: string;
+  typeactivity: string;
+  startdate: string;
+  enddate: string;
+  callback?: string;
+  callstatus?: string;
+  typecall?: string;
+  quotationnumber?: string;
+  quotationamount?: string;
+  soamount?: string;
+  sonumber?: string;
+  actualsales?: string;
+  remarks?: string;
+  activitystatus?: string;
+
+  referenceid: string;
+  manager: string;
+  tsm: string;
+  activitynumber: string;
+  companyname: string;
+  contactperson: string;
+  contactnumber: string;
+  emailaddress: string;
+  typeclient: string;
+  address: string;
+  deliveryaddress: string;
+  area: string;
+  projectname: string;
+  projectcategory: string;
+  projecttype: string;
+  source: string;
+  targetquota: string;
 }
 
 interface ActivityLogsProps {
-    activities: Activity[];
-    loading: boolean;
-    postId: string;
+  activities: Activity[];
+  loading: boolean;
+  postId: string;
 }
 
 const ActivityLogs: React.FC<ActivityLogsProps> = ({ activities, loading, postId }) => {
@@ -65,31 +83,86 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ activities, loading, postId
   const handleSaveEdit = async () => {
     if (!selectedActivity) return;
 
-    // Optimistically update UI and highlight
-    setActivityList(list =>
-      list.map(activity =>
-        activity.id === selectedActivity.id ? selectedActivity : activity
-      )
-    );
-    setIsEditModalOpen(false);
-    setHighlightedId(selectedActivity.id);
+    const originalActivity = activities.find(a => a.id === selectedActivity.id);
+    if (!originalActivity) return;
+
+    const soChanged =
+      originalActivity.sonumber !== selectedActivity.sonumber &&
+      originalActivity.soamount !== selectedActivity.soamount;
 
     try {
-      const response = await fetch("/api/ModuleSales/Task/DailyActivity/EditProgress", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(selectedActivity),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to update activity");
+      if (soChanged) {
+        // 1. Update original activity to reflect RE-SO
+        const updatedOriginal = {
+          ...selectedActivity,
+          soamount: "0",
+          activitystatus: "RE-SO",
+          sonumber: originalActivity.sonumber, // keep old SO number
+        };
+
+        // PUT update for RE-SO activity
+        const updateRes = await fetch(
+          "/api/ModuleSales/Task/DailyActivity/EditProgress",
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedOriginal),
+          }
+        );
+
+        if (!updateRes.ok) throw new Error("Failed to update RE-SO activity");
+
+        // 2. POST new duplicated activity with new SO details
+        const newActivity = {
+          ...selectedActivity,
+          id: undefined, // let backend assign new ID
+          date_created: new Date().toISOString(),
+        };
+
+        const postRes = await fetch(
+          "/api/ModuleSales/Task/DailyActivity/AddProgress",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newActivity),
+          }
+        );
+
+        if (!postRes.ok) throw new Error("Failed to create new activity");
+
+        const created = await postRes.json();
+
+        // Update UI
+        setActivityList((prev) =>
+          prev.map((a) =>
+            a.id === updatedOriginal.id ? updatedOriginal : a
+          ).concat(created)
+        );
+        setHighlightedId(created.id);
+      } else {
+        // Normal edit
+        const response = await fetch(
+          "/api/ModuleSales/Task/DailyActivity/EditProgress",
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(selectedActivity),
+          }
+        );
+        if (!response.ok) throw new Error("Failed to update activity");
+
+        setActivityList((prev) =>
+          prev.map((a) => (a.id === selectedActivity.id ? selectedActivity : a))
+        );
+        setHighlightedId(selectedActivity.id);
       }
-      // Remove highlight after 2 seconds
+
+      setIsEditModalOpen(false);
       setTimeout(() => setHighlightedId(null), 2000);
     } catch (error) {
-      console.error("Error updating activity:", error);
-      // revert changes on failure (optional)
-      setActivityList(activities);
+      console.error("Error during save:", error);
       alert("Update failed. Please try again.");
+      setActivityList(activities); // revert
     }
   };
 
@@ -153,9 +226,9 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ activities, loading, postId
         style={{ overflowY: "auto" }}
       >
         <AnimatePresence>
-          {activityList.map((act) => (
+          {activityList.map((act, index) => (
             <motion.div
-              key={act.id}
+              key={act.id ?? `activity-${index}`}
               layout
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

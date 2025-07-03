@@ -36,6 +36,24 @@ interface Activity {
   actualsales?: string;
   remarks?: string;
   activitystatus?: string;
+
+  referenceid: string;
+  manager: string;
+  tsm: string;
+  activitynumber: string;
+  companyname: string;
+  contactperson: string;
+  contactnumber: string;
+  emailaddress: string;
+  typeclient: string;
+  address: string;
+  deliveryaddress: string;
+  area: string;
+  projectname: string;
+  projectcategory: string;
+  projecttype: string;
+  source: string;
+  targetquota: string;
 }
 
 interface ActivityFetchState {

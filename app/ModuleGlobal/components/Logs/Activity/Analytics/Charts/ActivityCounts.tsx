@@ -13,6 +13,27 @@ interface ActivityCountsProps {
   data: { date: string; count: number }[];
 }
 
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: any;
+  label?: string;
+}) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="shadow-md text-[12px] bg-white rounded p-2">
+        <p className="font-semibold">{label}</p>
+        <p className="text-gray-700">Count: {payload[0].value}</p>
+      </div>
+    );
+  }
+
+  return null;
+};
+
 const ActivityCounts: React.FC<ActivityCountsProps> = ({ data }) => {
   return (
     <div className="w-full h-64">
@@ -27,7 +48,7 @@ const ActivityCounts: React.FC<ActivityCountsProps> = ({ data }) => {
           <XAxis dataKey="date" fontSize={10} />
           <YAxis allowDecimals={false} fontSize={10} />
           <CartesianGrid strokeDasharray="3 3" />
-          <Tooltip />
+          <Tooltip content={<CustomTooltip />} />
           <Area
             type="monotone"
             dataKey="count"

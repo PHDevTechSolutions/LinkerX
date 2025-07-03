@@ -14,6 +14,25 @@ interface Props {
   updatedUser: any[];
 }
 
+// Custom Tooltip with styling
+const CustomTooltip = ({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: any;
+}) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="shadow-md text-[12px] bg-white rounded p-2">
+        <p className="font-semibold mb-1">{payload[0].name}</p>
+        <p className="text-gray-700">Sales: ₱{payload[0].value.toLocaleString()}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 const ActualSales: React.FC<Props> = ({ updatedUser }) => {
   const salesPerAgent = useMemo(() => {
     const agentMap: Record<string, number> = {};
@@ -27,7 +46,7 @@ const ActualSales: React.FC<Props> = ({ updatedUser }) => {
 
   return (
     <div className="bg-white rounded-xl shadow p-4">
-      <h2 className="text-sm font-semibold mb-2">
+      <h2 className="text-[12px] font-semibold mb-2">
         Actual Sales by CSR Agent
       </h2>
       <ResponsiveContainer width="100%" height={300}>
@@ -39,9 +58,9 @@ const ActualSales: React.FC<Props> = ({ updatedUser }) => {
             angle={-30}
             textAnchor="end"
           />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="value" fill="#8884d8" />
+          <YAxis fontSize={12} />
+          <Tooltip content={<CustomTooltip />} />
+          <Bar dataKey="value" fill="#8884d8" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

@@ -235,7 +235,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                   onClick={addContactPerson}
                   className="p-2 hover:bg-green-700 hover:rounded-full hover:text-white"
                 >
-                  <FaPlus size={12} />
+                  <FaPlus size={10} />
                 </button>
               )}
 
@@ -246,7 +246,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                   onClick={() => removeContactPerson(index)}
                   className="p-2 hover:bg-red-700 hover:rounded-full hover:text-white"
                 >
-                  <FaMinus size={12} />
+                  <FaMinus size={10} />
                 </button>
               )}
             </div>
@@ -275,7 +275,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                   onClick={addContactNumber}
                   className="p-2 hover:bg-green-700 hover:rounded-full hover:text-white"
                 >
-                  <FaPlus size={12} />
+                  <FaPlus size={10} />
                 </button>
               )}
 
@@ -285,7 +285,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                   onClick={() => removeContactNumber(index)}
                   className="p-2 hover:bg-red-700 hover:rounded-full hover:text-white"
                 >
-                  <FaMinus size={12} />
+                  <FaMinus size={10} />
                 </button>
               )}
             </div>
@@ -313,7 +313,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     onClick={addEmailAddress}
                     className="p-2 hover:bg-green-700 hover:rounded-full hover:text-white"
                   >
-                    <FaPlus size={12} />
+                    <FaPlus size={10} />
                   </button>
                 )}
 
@@ -323,7 +323,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     onClick={() => removeEmailAddress(index)}
                     className="p-2 hover:bg-red-700 hover:rounded-full hover:text-white"
                   >
-                    <FaMinus size={12} />
+                    <FaMinus size={10} />
                   </button>
                 )}
               </div>
@@ -355,7 +355,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
 
         <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="area">Area</label>
-          <select id="typeclient" value={area ?? ""} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs capitalize" required>
+          <select id="area" value={area ?? ""} onChange={(e) => setarea(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs capitalize" required>
             <option value="">Select Region</option>
             <option value="Ilocos Region">Region I - Ilocos Region</option>
             <option value="Cagayan Valley">Region II - Cagayan Valley</option>

@@ -18,6 +18,25 @@ interface Activity {
   actualsales?: string;
   remarks?: string;
   activitystatus?: string;
+
+  referenceid: string;
+  manager: string;
+  tsm: string;
+  activitynumber: string;
+  companyname: string;
+  contactperson: string;
+  contactnumber: string;
+  emailaddress: string;
+  typeclient: string;
+  address: string;
+  deliveryaddress: string;
+  area: string;
+  projectname: string;
+  projectcategory: string;
+  projecttype: string;
+  source: string;
+  targetquota: string;
+
 }
 
 interface ActivityModalProps {
@@ -55,16 +74,36 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
         variants={modalVariants}
         transition={{ duration: 0.15 }}
       >
-        <h2 className="text-sm font-bold mb-4">Edit Activity Logs</h2>
+        <h2 className="text-sm font-bold mb-4">Edit History Logs</h2>
 
         <div className="grid grid-cols-2 gap-4 text-xs">
+          {/* Hidden Fields */}
+          <input type="hidden" name="referenceid" value={activity.referenceid} onChange={onChange} />
+          <input type="hidden" name="manager" value={activity.manager} onChange={onChange} />
+          <input type="hidden" name="tsm" value={activity.tsm} onChange={onChange} />
+          <input type="hidden" name="activitynumber" value={activity.activitynumber} onChange={onChange} />
+          <input type="hidden" name="companyname" value={activity.companyname} onChange={onChange} />
+          <input type="hidden" name="contactperson" value={activity.contactperson} onChange={onChange} />
+          <input type="hidden" name="contactnumber" value={activity.contactnumber} onChange={onChange} />
+          <input type="hidden" name="emailaddress" value={activity.emailaddress} onChange={onChange} />
+          <input type="hidden" name="typeclient" value={activity.typeclient} onChange={onChange} />
+          <input type="hidden" name="address" value={activity.address} onChange={onChange} />
+          <input type="hidden" name="deliveryaddress" value={activity.deliveryaddress} onChange={onChange} />
+          <input type="hidden" name="area" value={activity.area} onChange={onChange} />
+          <input type="hidden" name="projectname" value={activity.projectname} onChange={onChange} />
+          <input type="hidden" name="projectcategory" value={activity.projectcategory} onChange={onChange} />
+          <input type="hidden" name="projecttype" value={activity.projecttype} onChange={onChange} />
+          <input type="hidden" name="source" value={activity.source} onChange={onChange} />
+          <input type="hidden" name="targetquota" value={activity.targetquota} onChange={onChange} />
+          {/* Hidden Fields */}
+
           <input
             name="typeactivity"
-            value={activity.typeactivity}
+            value={activity.typeactivity || ""}
             onChange={onChange}
             className="border-b p-2 rounded"
             placeholder="Type of Activity"
-            
+
           />
 
           <input
@@ -74,7 +113,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
             onChange={onChange}
             className="border-b p-2 rounded"
             placeholder="Callback"
-            
+
           />
 
           <select
@@ -99,25 +138,24 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
             <option value="Follow Up Pending">Follow Up Pending</option>
             <option value="Inactive">Inactive</option>
             <option value="Requirements">No Requirements</option>
-            <option value="Not Connected with the Company">
-              Not Connected with the Company
-            </option>
+            <option value="Not Connected with the Company">Not Connected with the Company</option>
             <option value="Request for Quotation">Request for Quotation</option>
             <option value="Ringing Only">Ringing Only</option>
-            <option value="Sent Quotation - Standard">
-              Sent Quotation - Standard
-            </option>
-            <option value="Sent Quotation - With Special Price">
-              Sent Quotation - With Special Price
-            </option>
-            <option value="Sent Quotation - With SPF">
-              Sent Quotation - With SPF
-            </option>
+            <option value="Sent Quotation - Standard">Sent Quotation - Standard</option>
+            <option value="Sent Quotation - With Special Price">Sent Quotation - With Special Price</option>
+            <option value="Sent Quotation - With SPF">Sent Quotation - With SPF</option>
             <option value="Touch Base">Touch Base</option>
-            <option value="Waiting for Future Projects">
-              Waiting for Future Projects
-            </option>
+            <option value="Waiting for Future Projects">Waiting for Future Projects</option>
             <option value="With SPFS">With SPFS</option>
+            <option value="Regular SO">Regular SO</option>
+            <option value="Willing to Wait">Willing to Wait</option>
+            <option value="SPF - Special Project">SPF - Special Project</option>
+            <option value="Local SPF">Local SPF</option>
+            <option value="SPF - Local">SPF - Local</option>
+            <option value="SPF - Foreign">SPF - Foreign</option>
+            <option value="Promo">Promo</option>
+            <option value="FB Marketplace">FB Marketplace</option>
+            <option value="Internal Order">Internal Order</option>
           </select>
 
           <input
@@ -146,7 +184,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
               }
             }}
             className="border-b p-2"
-            placeholder="Q-Amount"
+            placeholder="₱0.00"
           />
 
           <input
@@ -160,7 +198,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
               }
             }}
             className="border-b p-2"
-            placeholder="SO-Amount"
+            placeholder="₱0.00"
           />
 
           <input
@@ -176,6 +214,11 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
             className="border-b p-2 uppercase"
             placeholder="SO-Number"
           />
+          {activity.activitystatus !== "RE-SO" && (
+          <span className="text-[10px] text-red-600 italic col-span-2">
+            Updating SO Number resets SO Amount to 0 and marks the activity as <strong>RE-SO</strong>.
+          </span>
+          )}
 
           <input
             name="actualsales"
@@ -188,7 +231,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
               }
             }}
             className="border-b p-2"
-            placeholder="Actual Sales"
+            placeholder="₱0.00"
           />
         </div>
 
@@ -204,6 +247,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({
             className="border-b p-2 text-xs w-full capitalize" rows={1}
             placeholder="Remarks"
           />
+          
           <small className="absolute right-2 bottom-1 text-[8px] text-green-800 font-bold">
             {(activity.remarks?.length || 0)}/200
           </small>
