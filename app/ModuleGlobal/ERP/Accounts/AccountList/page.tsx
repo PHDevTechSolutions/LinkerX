@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
-import UserFetcher from "../../../../ModuleCSR/components/User/UserFetcher";
-import AddAccountForm from "../../../../ModuleCSR/components/Accounts/AddAccountForm";
-import SearchFilters from "../../../../ModuleCSR/components/Accounts/SearchFilters";
-import AccountsTable from "../../../../ModuleCSR/components/Accounts/AccountsTable";
-import Pagination from "../../../../ModuleCSR/components/Accounts/Pagination";
+import UserFetcher from "../../../components/User/UserFetcher";
+
+import Form from "../../../components/Companies/CSRCustomerDatabase/Form";
+import SearchFilters from "../../../components/Companies/CSRCustomerDatabase/Filters";
+import AccountsTable from "../../../components/Companies/CSRCustomerDatabase/Table";
+import Pagination from "../../../components/Companies/CSRCustomerDatabase/Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { CiCirclePlus } from "react-icons/ci";
 
 const AccountListPage: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -105,7 +105,7 @@ const AccountListPage: React.FC = () => {
                         <div className="container mx-auto p-4">
                             <div className="grid grid-cols-1 md:grid-cols-1">
                                 {showForm ? (
-                                    <AddAccountForm
+                                    <Form
                                         onCancel={() => {
                                             setShowForm(false);
                                             setEditPost(null);
@@ -120,7 +120,7 @@ const AccountListPage: React.FC = () => {
                                         <p className="text-xs mb-4">
                                             This section provides an overview of client accounts, allowing users to search, filter, and manage records efficiently. Users can refine the results by entering a search term, selecting a city address, or adjusting the number of records displayed per page.
                                         </p>
-                                        <div className="mb-4 p-4 border-4 border-gray-900 bg-white text-gray-900 shadow-md rounded-lg">
+                                        <div className="mb-4 p-4 border bg-white text-gray-900 shadow-md rounded-lg">
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}

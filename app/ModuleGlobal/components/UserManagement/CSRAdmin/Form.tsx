@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { CiSaveUp1, CiEdit, CiTurnL1 } from "react-icons/ci";
 import FormFields from "./FormFields";
 
 interface AddPostFormProps {
@@ -20,12 +21,12 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
   const [Password, setPassword] = useState(editUser ? editUser.Password : "");
   const [Role, setRole] = useState(editUser ? editUser.Role : "");
   const [Department, setDepartment] = useState(editUser ? editUser.Department : "");
-  const [Location, setLocation] = useState(editUser ? editUser.Location: "");
+  const [Location, setLocation] = useState(editUser ? editUser.Location : "");
   const [Company, setCompany] = useState(editUser ? editUser.Company : "");
 
-  const [Status, setStatus] = useState(editUser ? editUser.Status: "");
-  const [LoginAttempts, setLoginAttempts] = useState(editUser ? editUser.LoginAttempts: "");
-  const [LockUntil, setLockUntil] = useState(editUser ? editUser.LockUntil: "");
+  const [Status, setStatus] = useState(editUser ? editUser.Status : "");
+  const [LoginAttempts, setLoginAttempts] = useState(editUser ? editUser.LoginAttempts : "");
+  const [LockUntil, setLockUntil] = useState(editUser ? editUser.LockUntil : "");
 
   // Ensure the correct ID is set depending on edit or create mode
   const [UserId, setUserId] = useState(editUser ? editUser._id : userDetails.id);
@@ -84,9 +85,18 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
           LockUntil={LockUntil} setLockUntil={setLockUntil}
           editPost={editUser}
         />
-        <div className="flex justify-between">
-          <button type="submit" className="bg-blue-900 text-white px-4 py-2 rounded text-xs">{editUser ? "Update" : "Submit"}</button>
-          <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded text-xs" onClick={onCancel}>Cancel</button>
+        <div className="flex justify-end mb-4 gap-1 text-[10px]">
+          <button type="submit" className="bg-blue-400 hover:bg-blue-800 text-white px-4 py-2 rounded flex items-center">
+            {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}
+            {editUser ? "Update" : "Submit"}
+          </button>
+          <button
+            type="button"
+            className="hover:bg-gray-100 px-4 py-2 border rounded flex items-center gap-1"
+            onClick={onCancel}
+          >
+            <CiTurnL1 size={15} /> Back
+          </button>
         </div>
       </form>
       <ToastContainer className="text-xs" autoClose={1000} />

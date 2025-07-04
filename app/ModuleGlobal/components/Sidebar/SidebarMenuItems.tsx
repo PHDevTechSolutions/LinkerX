@@ -63,7 +63,8 @@ const getMenuItems = (userId: string | null = "") => [
       title: 'Admin Management',
       icon: CiUser,
       subItems: [
-        { title: 'Admin', href: `/ModuleGlobal/ERP/UserManagement/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Admin', href: `/ModuleGlobal/ERP/UserManagement/Admin${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Sessions', href: `/ModuleGlobal/ERP/UserManagement/Sessions${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {

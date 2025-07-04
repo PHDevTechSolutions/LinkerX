@@ -94,7 +94,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
       {/* --- Dashboard Button --- */}
       <div className="w-full mt-1">
         <Link
-          href={`/ModuleSales/Sales/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ""}`}
+          href={`/ModuleGlobal/ERP/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ""}`}
           className="flex items-center w-full p-4 bg-orange-400 mb-1 text-white rounded-md transition-all duration-300 ease-in-out hover:shadow-md active:scale-95"
         >
           <span className="mr-1">
