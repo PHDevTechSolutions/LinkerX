@@ -27,12 +27,26 @@ const Login: React.FC = () => {
       });
 
       const result = await response.json();
+
       if (response.ok) {
         if (result.Department !== Department) {
           toast.error('Department mismatch!');
           setLoading(false);
           return;
         }
+
+        // ✅ Log login activity (insert into another table)
+        await fetch('/api/log-activity', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: Email,
+            department: Department,
+            status: 'login', // You can change to 'logout' later
+            timestamp: new Date().toISOString(),
+          }),
+        });
+
         toast.success('Login successful!');
         setTimeout(() => {
           router.push(`/Module${result.Department}/${result.Department}/Dashboard?id=${encodeURIComponent(result.userId)}`);
@@ -58,7 +72,7 @@ const Login: React.FC = () => {
       <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/building.jpg')" }}></div>
       <ToastContainer className="text-xs" />
       <div className="relative z-10 w-full max-w-md p-8 bg-white backdrop-blur-lg rounded-lg shadow-lg">
-        <Image src="/ecoshift.png" alt="Ecoshift Corporation" width={200} height={100} priority={false} loading="lazy" className="mx-auto mb-4" />
+        <Image src="/ecoshift.png" alt="Ecoshift Corporation" width={200} height={100} className="mx-auto mb-4" />
         {lockUntil && <p className="text-red-600 text-xs font-bold text-center mb-4">Account locked! Try again after: {lockUntil}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <input type="email" placeholder="Email" value={Email} onChange={(e) => setEmail(e.target.value)} className="w-full px-3 py-2 border rounded-md shadow-sm text-xs focus:ring-green-700" />

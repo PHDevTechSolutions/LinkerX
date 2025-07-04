@@ -2,13 +2,13 @@
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
-import UserFetcher from "../../../components/User/UserFetcher";
-// Global Tools
-import SearchFilters from "../../../components/Tools/SearchFilters";
-import Pagination from "../../../components/Tools/Pagination";
+import UserFetcher from "../../../../ModuleSales/components/User/UserFetcher";
+
 // Components
-import Table from "../../../components/UserManagement/TSM/Table";
-import Form from "../../../components/UserManagement/TSM/Form";
+import AddPostForm from "../../../../ModuleSales/components/UserManagement/TerritorySalesAssociates/AddUserForm";
+import SearchFilters from "../../../../ModuleSales/components/UserManagement/TerritorySalesAssociates/SearchFilters";
+import UsersTable from "../../../../ModuleSales/components/UserManagement/TerritorySalesAssociates/UsersTable";
+import Pagination from "../../../../ModuleSales/components/UserManagement/TerritorySalesAssociates/Pagination";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -28,7 +28,7 @@ const ListofUser: React.FC = () => {
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
     const [userDetails, setUserDetails] = useState({
-        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "", Manager: "", TSM: "",
+        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "", TSM: "",
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -46,14 +46,13 @@ const ListofUser: React.FC = () => {
                     const data = await response.json();
                     setUserDetails({
                         UserId: data._id, // Set the user's id here
-                        ReferenceID: data.ReferenceID,
+                        ReferenceID: data.ReferenceID || "",
                         Firstname: data.Firstname || "",
                         Lastname: data.Lastname || "",
                         Email: data.Email || "",
                         Role: data.Role || "",
                         Department: data.Department || "",
                         Company: data.Company || "",
-                        Manager: data.Manager || "",
                         TSM: data.TSM || "",
                     });
                 } catch (err: unknown) {
@@ -74,7 +73,7 @@ const ListofUser: React.FC = () => {
     // Fetch all users from the API
     const fetchUsers = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/UserManagement/TerritorySalesManager/FetchUser");
+            const response = await fetch("/api/ModuleSales/UserManagement/TerritorySalesAssociates/FetchUser");
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -86,23 +85,13 @@ const ListofUser: React.FC = () => {
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = posts.filter((post) => {
         // Check if the user's name matches the search term
-        const matchesSearchTerm = [post?.Firstname, post?.Lastname]
+        const matchesSearchTerm = [post?.Firstname, post?.Lastname, post?.TSM, post?.ReferenceID]
             .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
-
-        // Get the reference ID from userDetails
-        const referenceID = userDetails.ReferenceID; // TSM's ReferenceID from MongoDB
-
-        // Check role-based filtering
-        const matchesRole = userDetails.Role === "Super Admin"
-            ? post?.Role === "Territory Sales Manager" && post?.Department === "Sales" // Super Admin sees TSM in Sales department
-            : userDetails.Role === "Admin"
-                ? post?.Role === "Territory Sales Manager" && post?.Department === "Sales" && post?.Role !== "Super Admin" // Admin sees TSM in Sales department but not Super Admin
-                : false; // Default false if no match
-
-
-        // Return the filtered result
-        return matchesSearchTerm && matchesRole;
+    
+        // Show all roles and departments without restriction
+        return matchesSearchTerm;
     });
+    
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -129,7 +118,7 @@ const ListofUser: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/ModuleSales/UserManagement/TerritorySalesManager/DeleteUser`, {
+            const response = await fetch(`/api/ModuleSales/UserManagement/TerritorySalesAssociates/DeleteUser`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -160,7 +149,7 @@ const ListofUser: React.FC = () => {
                         <div className="container mx-auto p-4 text-gray-900">
                             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                                 {showForm ? (
-                                    <Form
+                                    <AddPostForm
                                         onCancel={() => {
                                             setShowForm(false);
                                             setEditUser(null);
@@ -174,27 +163,26 @@ const ListofUser: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
-                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
+                                            <button className="flex items-center gap-1 border border-2 border-gray-900 bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
                                                 <CiSquarePlus size={20} />Add Account
                                             </button>
                                         </div>
 
-                                        <div className="mb-4 p-4 bg-white border shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">Territory Sales Manager</h2>
+                                        <div className="mb-4 p-4 bg-white border-4 border-gray-900 shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">Territory Sales Associates</h2>
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
                                                 postsPerPage={postsPerPage}
                                                 setPostsPerPage={setPostsPerPage}
                                             />
-                                            <Table
+                                            <UsersTable
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}
                                                 handleDelete={confirmDelete}
                                                 Role={user ? user.Role : ""}
                                                 Department={user ? user.Department : ""}
                                                 TSM={user ? user.TSM : ""}
-                                                Manager={user ? user.Manager : ""}
                                                 fetchUsers={fetchUsers}
                                             />
                                             <Pagination

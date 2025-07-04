@@ -2,13 +2,13 @@
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
-import UserFetcher from "../../../../ModuleSales/components/User/UserFetcher";
-
+import UserFetcher from "../../../components/User/UserFetcher";
+// Global Tools
+import SearchFilters from "../../../components/Tools/SearchFilters";
+import Pagination from "../../../components/Tools/Pagination";
 // Components
-import AddPostForm from "../../../../ModuleSales/components/UserManagement/ManagerDirectors/AddUserForm";
-import SearchFilters from "../../../../ModuleSales/components/UserManagement/ManagerDirectors/SearchFilters";
-import UsersTable from "../../../../ModuleSales/components/UserManagement/ManagerDirectors/UsersTable";
-import Pagination from "../../../../ModuleSales/components/UserManagement/ManagerDirectors/Pagination";
+import Form from "../../../components/UserManagement/Manager/Form";
+import Table from "../../../components/UserManagement/Manager/Table";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -87,20 +87,18 @@ const ListofUser: React.FC = () => {
         const matchesSearchTerm = [post?.Firstname, post?.Lastname]
             .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
 
-        // Get the reference ID from userDetails
-        const referenceID = userDetails.ReferenceID; // TSM's ReferenceID from MongoDB
+        // Limit results to specific roles
+        const allowedRoles = [
+            "HR Manager",
+            "Manager",
+            "CSR Manager",
+            "Business Development Manager"
+        ];
+        const matchesRole = allowedRoles.includes(post?.Role);
 
-        // Check role-based filtering
-        const matchesRole = (
-            (userDetails.Role === "Super Admin" || userDetails.Role === "Admin") &&
-            (post?.Role === "Manager" || post?.Role === "Admin" || post?.Role === "HR Manager") &&
-            (userDetails.Role !== "Admin" || post?.Role !== "Super Admin")
-        );
-        
-
-        // Return the filtered result
         return matchesSearchTerm && matchesRole;
     });
+
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -158,7 +156,7 @@ const ListofUser: React.FC = () => {
                         <div className="container mx-auto p-4 text-gray-900">
                             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                                 {showForm ? (
-                                    <AddPostForm
+                                    <Form
                                         onCancel={() => {
                                             setShowForm(false);
                                             setEditUser(null);
@@ -172,20 +170,20 @@ const ListofUser: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
-                                            <button className="flex items-center gap-1 border border-2 border-gray-900 bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
                                                 <CiSquarePlus size={20} />Add Account
                                             </button>
                                         </div>
 
-                                        <div className="mb-4 p-4 bg-white border-4 border-gray-900 shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">Admin and Managers</h2>
+                                        <div className="mb-4 p-4 bg-white border shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">Managers and Directors</h2>
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
                                                 postsPerPage={postsPerPage}
                                                 setPostsPerPage={setPostsPerPage}
                                             />
-                                            <UsersTable
+                                            <Table
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}
                                                 handleDelete={confirmDelete}

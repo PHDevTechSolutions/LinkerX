@@ -2,18 +2,16 @@
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
-import UserFetcher from "../../../../ModuleSales/components/User/UserFetcher";
-
+import UserFetcher from "../../../components/User/UserFetcher";
+// Global Tools
+import SearchFilters from "../../../components/Tools/SearchFilters";
+import Pagination from "../../../components/Tools/Pagination";
 // Components
-import AddPostForm from "../../../../ModuleSales/components/UserManagement/TerritorySalesAssociates/AddUserForm";
-import SearchFilters from "../../../../ModuleSales/components/UserManagement/TerritorySalesAssociates/SearchFilters";
-import UsersTable from "../../../../ModuleSales/components/UserManagement/TerritorySalesAssociates/UsersTable";
-import Pagination from "../../../../ModuleSales/components/UserManagement/TerritorySalesAssociates/Pagination";
-
+import Table from "../../../components/UserManagement/CSRAdmin/Table";
+import Form from "../../../components/UserManagement/CSRAdmin/Form";
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-
 // Icons
 import { CiSquarePlus } from "react-icons/ci";
 
@@ -28,7 +26,7 @@ const ListofUser: React.FC = () => {
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
     const [userDetails, setUserDetails] = useState({
-        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "", TSM: "",
+        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -46,14 +44,13 @@ const ListofUser: React.FC = () => {
                     const data = await response.json();
                     setUserDetails({
                         UserId: data._id, // Set the user's id here
-                        ReferenceID: data.ReferenceID || "",
+                        ReferenceID: data.ReferenceID,
                         Firstname: data.Firstname || "",
                         Lastname: data.Lastname || "",
                         Email: data.Email || "",
                         Role: data.Role || "",
                         Department: data.Department || "",
                         Company: data.Company || "",
-                        TSM: data.TSM || "",
                     });
                 } catch (err: unknown) {
                     console.error("Error fetching user data:", err);
@@ -73,7 +70,7 @@ const ListofUser: React.FC = () => {
     // Fetch all users from the API
     const fetchUsers = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/UserManagement/TerritorySalesAssociates/FetchUser");
+            const response = await fetch("/api/ModuleSales/UserManagement/ManagerDirector/FetchUser");
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -85,13 +82,14 @@ const ListofUser: React.FC = () => {
     // Filter users by search term (firstname, lastname)
     const filteredAccounts = posts.filter((post) => {
         // Check if the user's name matches the search term
-        const matchesSearchTerm = [post?.Firstname, post?.Lastname, post?.TSM, post?.ReferenceID]
+        const matchesSearchTerm = [post?.Firstname, post?.Lastname]
             .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-        // Show all roles and departments without restriction
-        return matchesSearchTerm;
+
+        // Filter for Admin role and CSR department
+        const isAdminCSR = post?.Role === "Admin" && post?.Department === "CSR";
+
+        return matchesSearchTerm && isAdminCSR;
     });
-    
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -118,7 +116,7 @@ const ListofUser: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/ModuleSales/UserManagement/TerritorySalesAssociates/DeleteUser`, {
+            const response = await fetch(`/api/ModuleSales/UserManagement/ManagerDirector/DeleteUser`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -149,7 +147,7 @@ const ListofUser: React.FC = () => {
                         <div className="container mx-auto p-4 text-gray-900">
                             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                                 {showForm ? (
-                                    <AddPostForm
+                                    <Form
                                         onCancel={() => {
                                             setShowForm(false);
                                             setEditUser(null);
@@ -163,27 +161,25 @@ const ListofUser: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
-                                            <button className="flex items-center gap-1 border border-2 border-gray-900 bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
                                                 <CiSquarePlus size={20} />Add Account
                                             </button>
                                         </div>
 
-                                        <div className="mb-4 p-4 bg-white border-4 border-gray-900 shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">Ecoshift Employees</h2>
+                                        <div className="mb-4 p-4 bg-white border shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">CSR Admins</h2>
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
                                                 postsPerPage={postsPerPage}
                                                 setPostsPerPage={setPostsPerPage}
                                             />
-                                            <UsersTable
+                                            <Table
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}
                                                 handleDelete={confirmDelete}
                                                 Role={user ? user.Role : ""}
                                                 Department={user ? user.Department : ""}
-                                                TSM={user ? user.TSM : ""}
-                                                fetchUsers={fetchUsers}
                                             />
                                             <Pagination
                                                 currentPage={currentPage}

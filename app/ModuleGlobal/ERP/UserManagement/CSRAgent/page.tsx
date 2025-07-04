@@ -7,13 +7,11 @@ import UserFetcher from "../../../components/User/UserFetcher";
 import SearchFilters from "../../../components/Tools/SearchFilters";
 import Pagination from "../../../components/Tools/Pagination";
 // Components
-import Table from "../../../components/UserManagement/TSM/Table";
-import Form from "../../../components/UserManagement/TSM/Form";
-
+import Table from "../../../components/UserManagement/CSRAgent/Table";
+import Form from "../../../components/UserManagement/CSRAgent/Form";
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-
 // Icons
 import { CiSquarePlus } from "react-icons/ci";
 
@@ -28,7 +26,7 @@ const ListofUser: React.FC = () => {
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
     const [userDetails, setUserDetails] = useState({
-        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "", Manager: "", TSM: "",
+        UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -53,8 +51,6 @@ const ListofUser: React.FC = () => {
                         Role: data.Role || "",
                         Department: data.Department || "",
                         Company: data.Company || "",
-                        Manager: data.Manager || "",
-                        TSM: data.TSM || "",
                     });
                 } catch (err: unknown) {
                     console.error("Error fetching user data:", err);
@@ -74,7 +70,7 @@ const ListofUser: React.FC = () => {
     // Fetch all users from the API
     const fetchUsers = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/UserManagement/TerritorySalesManager/FetchUser");
+            const response = await fetch("/api/ModuleSales/UserManagement/ManagerDirector/FetchUser");
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -89,19 +85,10 @@ const ListofUser: React.FC = () => {
         const matchesSearchTerm = [post?.Firstname, post?.Lastname]
             .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
 
-        // Get the reference ID from userDetails
-        const referenceID = userDetails.ReferenceID; // TSM's ReferenceID from MongoDB
+        // Filter for Admin role and CSR department
+        const isAdminCSR = post?.Role === "Staff" && post?.Department === "CSR";
 
-        // Check role-based filtering
-        const matchesRole = userDetails.Role === "Super Admin"
-            ? post?.Role === "Territory Sales Manager" && post?.Department === "Sales" // Super Admin sees TSM in Sales department
-            : userDetails.Role === "Admin"
-                ? post?.Role === "Territory Sales Manager" && post?.Department === "Sales" && post?.Role !== "Super Admin" // Admin sees TSM in Sales department but not Super Admin
-                : false; // Default false if no match
-
-
-        // Return the filtered result
-        return matchesSearchTerm && matchesRole;
+        return matchesSearchTerm && isAdminCSR;
     });
 
     const indexOfLastPost = currentPage * postsPerPage;
@@ -129,7 +116,7 @@ const ListofUser: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/ModuleSales/UserManagement/TerritorySalesManager/DeleteUser`, {
+            const response = await fetch(`/api/ModuleSales/UserManagement/ManagerDirector/DeleteUser`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -174,13 +161,13 @@ const ListofUser: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
-                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-sm rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
                                                 <CiSquarePlus size={20} />Add Account
                                             </button>
                                         </div>
 
                                         <div className="mb-4 p-4 bg-white border shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">Territory Sales Manager</h2>
+                                            <h2 className="text-lg font-bold mb-2">CSR Agent</h2>
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
@@ -193,9 +180,6 @@ const ListofUser: React.FC = () => {
                                                 handleDelete={confirmDelete}
                                                 Role={user ? user.Role : ""}
                                                 Department={user ? user.Department : ""}
-                                                TSM={user ? user.TSM : ""}
-                                                Manager={user ? user.Manager : ""}
-                                                fetchUsers={fetchUsers}
                                             />
                                             <Pagination
                                                 currentPage={currentPage}

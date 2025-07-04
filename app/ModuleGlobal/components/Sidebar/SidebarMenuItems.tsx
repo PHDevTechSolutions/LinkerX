@@ -49,21 +49,29 @@ const getMenuItems = (userId: string | null = "") => [
       ],
     },
     {
+      title: 'User Management',
+      icon: CiUser,
+      subItems: [
+        { title: 'Territory Sales Associates', href: `/ModuleGlobal/ERP/UserManagement/TSA${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Territory Sales Manager', href: `/ModuleGlobal/ERP/UserManagement/TSM${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Manager', href: `/ModuleGlobal/ERP/UserManagement/ManagerDirectors${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'CSR Agents', href: `/ModuleGlobal/ERP/UserManagement/CSRAgent${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'CSR Admins', href: `/ModuleGlobal/ERP/UserManagement/CSRAdmin${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
+    {
+      title: 'Admin Management',
+      icon: CiUser,
+      subItems: [
+        { title: 'Admin', href: `/ModuleGlobal/ERP/UserManagement/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
+    {
       title: 'Settings',
       icon: CiSettings,
       subItems: [
         { title: 'Maintenance', href: `/ModuleGlobal/ERP/Settings/Maintenance${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
         { title: 'API Keys', href: `/ModuleGlobal/ERP/Settings/APIKeys${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Users', href: `/ModuleGlobal/ERP/UserManagement/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'Territory Sales Manager', href: `/ModuleGlobal/ERP/UserManagement/TSM${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-        { title: 'National Sales Manager', href: `/ModuleGlobal/ERP/UserManagement/ManagerDirectors${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      ],
-    },
-    {
-      title: 'Global Employees',
-      icon: CiUser,
-      subItems: [
-        { title: 'Ecoshift Employees Profile', href: `/ModuleGlobal/ERP/Ecoshift/Employees${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
