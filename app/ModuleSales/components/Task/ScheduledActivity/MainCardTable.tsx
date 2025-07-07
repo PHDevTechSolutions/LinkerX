@@ -7,7 +7,8 @@ import Form from "./Form";
 import PersonalModalForm from "./Modal/PersonalModalForm";
 
 import { FaTable, FaTasks, FaCalendarAlt } from "react-icons/fa";
-import { CiSquarePlus } from "react-icons/ci";
+import { CiSquarePlus, } from "react-icons/ci";
+import { PiHandTapThin } from "react-icons/pi";
 
 interface Post {
     id: string;
@@ -110,11 +111,11 @@ const MainCardTable: React.FC<MainCardTableProps> = ({
                         <CiSquarePlus size={15} /> Create Activity
                     </button>
 
-                    {/*<button
+                    <button
                         className="flex items-center gap-1 border bg-white text-black text-[10px] px-4 py-2 shadow-sm rounded hover:bg-blue-400 hover:text-white transition"
                         onClick={handleButtonClick}>
                         <PiHandTapThin size={15} /> Tap
-                    </button>*/}
+                    </button>
                     
                 </div>
 

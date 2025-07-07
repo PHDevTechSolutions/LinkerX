@@ -43,11 +43,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
     subItems: [
       {
         title: "Update Profile",
-        href: `/ModuleSales/Sales/Profile${userId ? `?id=${encodeURIComponent(userId)}` : ""}`,
-      },
-      {
-        title: "Developers",
-        href: `/ModuleSales/Sales/Profile/Developers${userId ? `?id=${encodeURIComponent(userId)}` : ""}`,
+        href: `/ModuleGlobal/ERP/Profile${userId ? `?id=${encodeURIComponent(userId)}` : ""}`,
       },
     ],
   };
