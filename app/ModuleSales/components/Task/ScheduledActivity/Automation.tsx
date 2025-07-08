@@ -44,37 +44,20 @@ interface AutomationProps {
     fetchAccount: () => void;
 }
 
-const STORAGE_KEY = "expandedFiltersState";
-
-const defaultFilterState = () => ({
-    top50: false,
-    next30: false,
-    balance20: false,
-    newclient: false,
-    inactive: false,
-    nonbuying: false,
-});
-
 const Automation: React.FC<AutomationProps> = ({ userDetails, fetchAccount }) => {
     const [posts, setPosts] = useState<Post[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
-    const [expandedFilters, setExpandedFilters] = useState<Record<string, boolean>>(() => {
-        if (typeof window !== "undefined") {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            try {
-                return stored ? JSON.parse(stored) : defaultFilterState();
-            } catch {
-                return defaultFilterState();
-            }
-        }
-        return defaultFilterState();
+    // Initialize expanded filters state with all collapsed
+    const [expandedFilters, setExpandedFilters] = useState<Record<string, boolean>>({
+        top50: false,
+        next30: false,
+        balance20: false,
+        newclient: false,
+        inactive: false,
+        nonbuying: false,
     });
-
-    useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(expandedFilters));
-    }, [expandedFilters]);
 
     const toggleFilter = (key: string) => {
         setExpandedFilters((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -120,8 +103,7 @@ const Automation: React.FC<AutomationProps> = ({ userDetails, fetchAccount }) =>
         })
         .sort((a, b) => new Date(a.date_updated!).getTime() - new Date(b.date_updated!).getTime());
 
-    const isToday = (dateStr: string | null) =>
-        dateStr?.slice(0, 10) === todayStr;
+    const isToday = (dateStr: string | null) => dateStr?.slice(0, 10) === todayStr;
 
     const countFiltered = (type: string, key: "typeclient" | "status") =>
         filteredSortedAccounts.filter((p) => p[key] === type && isToday(p.date_updated)).length;

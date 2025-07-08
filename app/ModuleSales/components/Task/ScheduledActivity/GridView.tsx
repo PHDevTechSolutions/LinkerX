@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Pin from "./Features/Pin";
 import ActivityLogs from "./ActivityLogs";
-import NotifyMe from "./Features/NotifyMe";
 import Priorities from "./Features/Priorities";
 import { RiEditCircleLine } from "react-icons/ri";
 
@@ -17,7 +16,7 @@ interface Post {
   date_created: string;
   date_updated: string | null;
   activitynumber: string;
-  remarks?: string; // Add remarks here if missing
+  remarks?: string;
 }
 
 interface Activity {
@@ -66,20 +65,13 @@ interface GridViewProps {
   handleEdit: (post: Post) => void;
 }
 
-interface NotifySetting {
-  postId: string;
-  notifyAt: number; // timestamp in milliseconds
-}
-
 const PINNED_POSTS_STORAGE_KEY = "pinnedPosts";
-const NOTIFY_STORAGE_KEY = "notifySettings";
 
 const DAYS_THRESHOLD = 7; // days threshold for follow-up and pending checks
 
 const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
   const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
   const [activityDataMap, setActivityDataMap] = useState<Record<string, ActivityFetchState>>({});
-  const [notifySettings, setNotifySettings] = useState<NotifySetting[]>([]);
 
   // Load pinned posts from localStorage
   useEffect(() => {
@@ -98,55 +90,6 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
   useEffect(() => {
     localStorage.setItem(PINNED_POSTS_STORAGE_KEY, JSON.stringify(Array.from(pinnedIds)));
   }, [pinnedIds]);
-
-  // Load notifySettings from localStorage on mount
-  useEffect(() => {
-    const storedNotify = localStorage.getItem(NOTIFY_STORAGE_KEY);
-    if (storedNotify) {
-      try {
-        const parsed = JSON.parse(storedNotify);
-        if (Array.isArray(parsed)) {
-          setNotifySettings(parsed);
-        }
-      } catch { }
-    }
-  }, []);
-
-  // Save notifySettings to localStorage on change
-  useEffect(() => {
-    localStorage.setItem(NOTIFY_STORAGE_KEY, JSON.stringify(notifySettings));
-  }, [notifySettings]);
-
-  // Request browser notification permission on mount
-  useEffect(() => {
-    if ("Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-  }, []);
-
-  // Poll every minute to check if notify time reached
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = Date.now();
-      notifySettings.forEach((setting) => {
-        if (setting.notifyAt <= now) {
-          if (Notification.permission === "granted") {
-            const post = posts.find((p) => p.id === setting.postId);
-            if (post) {
-              new Notification("Reminder", {
-                body: `Notification for ${post.companyname}`,
-                tag: setting.postId,
-              });
-            }
-          }
-          // Remove the notify setting after notification
-          setNotifySettings((prev) => prev.filter((s) => s.postId !== setting.postId));
-        }
-      });
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, [notifySettings, posts]);
 
   // Fetch activity data for posts when posts change
   useEffect(() => {
@@ -198,11 +141,6 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
     });
   };
 
-  const updateNotifySettings = (newSettings: NotifySetting[]) => {
-    setNotifySettings(newSettings);
-  };
-
-
   if (posts.length === 0) {
     return <p className="text-center text-gray-500 text-sm mt-10">No records available</p>;
   }
@@ -234,7 +172,6 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
   const unpinnedPosts = visiblePosts.filter((p) => !pinnedIds.has(p.id));
   const sortedPosts = [...pinnedPosts, ...unpinnedPosts];
 
-
   return (
     <>
       <div className="mb-4 text-xs font-medium text-gray-700">
@@ -248,7 +185,6 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
           const loadingActivities = activityState?.loading ?? false;
           const activities = activityState?.data ?? [];
 
-
           return (
             <div
               key={post.id}
@@ -257,8 +193,6 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                 shadow-md transition-shadow duration-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 relative border
                 ${isPinned ? "border-yellow-400" : "border-gray-200"}`}
             >
-              {/* Show Priority */}
-
               <div className="flex justify-between items-start p-1">
                 <div>
                   <p className="text-xs font-bold text-gray-800 mb-1">
@@ -291,7 +225,6 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                                       ? "bg-red-800 text-white"
                                       : "bg-green-500 text-white"
                       }`}
-
                     aria-label={`Status: ${post.activitystatus}`}>
                     {post.activitystatus}
                   </span>
@@ -311,12 +244,6 @@ const GridView: React.FC<GridViewProps> = ({ posts, handleEdit }) => {
                       loading={loadingActivities}
                     />
                   </div>
-
-                  <NotifyMe
-                    postId={post.id}
-                    notifySettings={notifySettings}
-                    updateNotifySettings={updateNotifySettings}
-                  />
 
                   <button
                     onClick={(e) => {

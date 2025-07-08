@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { CiEdit } from "react-icons/ci";
 import TableXchire from "./TableXchire";
 
 interface UsersCardProps {
@@ -20,11 +19,6 @@ const Container: React.FC<UsersCardProps> = ({ posts, handleEdit, Role }) => {
 
   // Checkbox
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
-
-  // Accounts
-  const [newTypeClient, setNewTypeClient] = useState("");
-  const [newStatus, setNewStatus] = useState("");
-  const [newRemarks, setNewRemarks] = useState("");
 
   useEffect(() => {
     setUpdatedUser(posts);

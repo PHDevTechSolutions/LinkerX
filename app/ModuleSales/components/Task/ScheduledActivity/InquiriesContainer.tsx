@@ -41,34 +41,6 @@ const InquiriesContainer: React.FC<InquiriesContainerProps> = ({
 }) => {
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
 
-  // Gamification state with localStorage
-  const [points, setPoints] = useState<number>(() => {
-    return parseInt(localStorage.getItem("gamification_points") || "0", 10);
-  });
-
-  const [completedIds, setCompletedIds] = useState<string[]>(() => {
-    const saved = localStorage.getItem("completed_ids");
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const awardPoints = (postId: string) => {
-    if (!completedIds.includes(postId)) {
-      const newPoints = points + 10;
-      const updatedIds = [...completedIds, postId];
-      setPoints(newPoints);
-      setCompletedIds(updatedIds);
-      localStorage.setItem("gamification_points", newPoints.toString());
-      localStorage.setItem("completed_ids", JSON.stringify(updatedIds));
-    }
-  };
-
-  const getBadge = () => {
-    if (points >= 200) return "🏆 Gold";
-    if (points >= 100) return "🥈 Silver";
-    if (points >= 50) return "🥉 Bronze";
-    return "🔰 Beginner";
-  };
-
   const sortedPosts = useMemo(() => {
     return [...filteredPosts].sort(
       (a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
@@ -79,11 +51,6 @@ const InquiriesContainer: React.FC<InquiriesContainerProps> = ({
 
   return (
     <div className="space-y-2">
-      {/* Gamification display */}
-      <p className="text-[10px] font-semibold text-green-700">
-        Points: {points} | Badge: {getBadge()}
-      </p>
-
       <p className="text-[10px] font-semibold uppercase flex justify-between items-center">
         <span className="text-[8px] font-bold text-white p-1 bg-red-500 rounded-full">
           Total: {filteredPosts.length}
@@ -143,24 +110,12 @@ const InquiriesContainer: React.FC<InquiriesContainerProps> = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     handlePost(post);
-                    awardPoints(post.id);
                   }}
-                  disabled={completedIds.includes(post.id)}
-                  className={`flex items-center gap-1 text-white text-[10px] px-3 py-1 rounded-full shadow
-                    ${
-                      completedIds.includes(post.id)
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-blue-400 hover:bg-blue-700"
-                    }
-                  `}
-                  title={
-                    completedIds.includes(post.id)
-                      ? "Already added"
-                      : "Add"
-                  }
+                  className="flex items-center gap-1 text-white text-[10px] px-3 py-1 rounded-full shadow bg-blue-400 hover:bg-blue-700"
+                  title="Add"
                 >
                   <FaPlusCircle size={10} />
-                  {completedIds.includes(post.id) ? "Added" : "Add"}
+                  Add
                 </button>
               </div>
 

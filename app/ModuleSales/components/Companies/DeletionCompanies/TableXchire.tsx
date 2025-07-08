@@ -1,4 +1,4 @@
-import React, { useMemo, memo, useCallback } from "react";
+import React, { useMemo, memo } from "react";
 import { CiEdit } from "react-icons/ci";
 
 interface TableXchireProps {
