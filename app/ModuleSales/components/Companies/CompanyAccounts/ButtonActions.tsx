@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { CiEdit, CiTrash } from "react-icons/ci";
 
 interface ButtonActionsProps {
@@ -16,7 +16,7 @@ interface ButtonActionsProps {
     toggleBulkRemoveMode: () => void;
     toggleBulkChangeMode: () => void;
     handleSelectAll: () => void;
-    handleDeselectAll: () => void; // <-- added prop for deselect all
+    handleDeselectAll: () => void;
     handleBulkEdit: () => Promise<void> | void;
     handleBulkRemove: () => Promise<void> | void;
     handleBulkChange: () => Promise<void> | void;
@@ -24,14 +24,6 @@ interface ButtonActionsProps {
     setNewStatus: (value: string) => void;
     setNewRemarks: (value: string) => void;
 }
-
-type ScheduledAction = {
-    actionType: "edit" | "remove" | "change";
-    date: string; // ISO date string
-    details: any; // any other data you want to store for the action
-};
-
-const LOCAL_STORAGE_KEY = "scheduledBulkAction";
 
 const ButtonActions: React.FC<ButtonActionsProps> = ({
     bulkEditMode,
@@ -46,7 +38,7 @@ const ButtonActions: React.FC<ButtonActionsProps> = ({
     toggleBulkRemoveMode,
     toggleBulkChangeMode,
     handleSelectAll,
-    handleDeselectAll, // <-- new handler
+    handleDeselectAll,
     handleBulkEdit,
     handleBulkRemove,
     handleBulkChange,
@@ -57,54 +49,6 @@ const ButtonActions: React.FC<ButtonActionsProps> = ({
     const [isApplyingEdit, setIsApplyingEdit] = useState(false);
     const [isApplyingRemove, setIsApplyingRemove] = useState(false);
     const [isApplyingChange, setIsApplyingChange] = useState(false);
-
-    // New states for scheduling
-    const [scheduleDate, setScheduleDate] = useState("");
-    const [scheduledAction, setScheduledAction] = useState<ScheduledAction | null>(null);
-
-    // Load scheduled action from localStorage on mount
-    useEffect(() => {
-        const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (saved) {
-            setScheduledAction(JSON.parse(saved));
-        }
-    }, []);
-
-    // Save scheduled action to localStorage
-    const saveScheduledAction = () => {
-        if (!scheduleDate) return alert("Please select a valid date to schedule.");
-
-        let actionType: ScheduledAction["actionType"] | null = null;
-        let details = null;
-
-        if (bulkEditMode) {
-            actionType = "edit";
-            details = { newTypeClient };
-        } else if (bulkRemoveMode) {
-            actionType = "remove";
-            details = { newStatus, newRemarks };
-        } else if (bulkChangeMode) {
-            actionType = "change";
-            details = { newStatus };
-        } else {
-            return alert("Please enable one bulk mode to schedule.");
-        }
-
-        const actionToSave: ScheduledAction = {
-            actionType,
-            date: scheduleDate,
-            details,
-        };
-
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(actionToSave));
-        setScheduledAction(actionToSave);
-        alert(`Bulk action scheduled for ${new Date(scheduleDate).toLocaleDateString()}`);
-    };
-
-    const clearScheduledAction = () => {
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-        setScheduledAction(null);
-    };
 
     const handleApplyEdit = async () => {
         setIsApplyingEdit(true);
@@ -172,8 +116,6 @@ const ButtonActions: React.FC<ButtonActionsProps> = ({
                                 className="w-4 h-4"
                             />
                             <span className="ml-2">Select All</span>
-
-                            {/* Deselect All button */}
                             <button
                                 onClick={handleDeselectAll}
                                 className="ml-4 px-2 py-1 border border-gray-300 rounded text-xs hover:bg-gray-200"
@@ -181,7 +123,6 @@ const ButtonActions: React.FC<ButtonActionsProps> = ({
                             >
                                 Deselect All
                             </button>
-
                             <span className="ml-4 font-semibold text-gray-700">
                                 Selected: {selectedUsers.size} / {updatedUserLength}
                             </span>
@@ -260,41 +201,6 @@ const ButtonActions: React.FC<ButtonActionsProps> = ({
                                     {isApplyingChange ? "Applying..." : "Apply Changes"}
                                 </button>
                             </div>
-                        )}
-                    </div>
-
-                    {/* Schedule Bulk Action Section */}
-                    <div className="mt-4 border-t pt-4">
-                        <h4 className="font-semibold mb-2 mt-2">Schedule Bulk Action</h4>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="date"
-                                value={scheduleDate}
-                                onChange={(e) => setScheduleDate(e.target.value)}
-                                className="px-2 py-1 border rounded-md text-xs"
-                                min={new Date().toISOString().split("T")[0]} // disable past dates
-                            />
-                            <button
-                                onClick={saveScheduledAction}
-                                className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-xs"
-                                disabled={!scheduleDate}
-                            >
-                                Schedule Action
-                            </button>
-                            {scheduledAction && (
-                                <button
-                                    onClick={clearScheduledAction}
-                                    className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 text-xs"
-                                >
-                                    Clear Scheduled
-                                </button>
-                            )}
-                        </div>
-                        {scheduledAction && (
-                            <p className="mt-2 text-xs text-gray-700">
-                                Scheduled: <strong>{scheduledAction.actionType.toUpperCase()}</strong> on{" "}
-                                <strong>{new Date(scheduledAction.date).toLocaleDateString()}</strong>
-                            </p>
                         )}
                     </div>
 

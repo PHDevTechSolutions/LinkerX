@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { CiEdit } from "react-icons/ci";
 import ButtonActions from "./ButtonActions";
 import TableXchire from "./TableXchire";
 
