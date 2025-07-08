@@ -7,7 +7,6 @@ import UserFetcher from "../../../components/User/UserFetcher";
 // Components
 import Filters from "../../../components/Task/ScheduledActivity/Filters/Filters";
 import Main from "../../../components/Task/ScheduledActivity/Main";
-import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -27,9 +26,6 @@ const ListofUser: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [postsLoading, setPostsLoading] = useState<boolean>(true);
-  const [showSpinner, setShowSpinner] = useState(true);
-
   useEffect(() => {
     const fetchUserData = async () => {
       const params = new URLSearchParams(window.location.search);
@@ -37,7 +33,7 @@ const ListofUser: React.FC = () => {
 
       if (!userId) {
         setError("User ID is missing.");
-        setShowSpinner(false);
+        setLoading(false);
         return;
       }
 
@@ -62,7 +58,7 @@ const ListofUser: React.FC = () => {
         console.error("Error fetching user data:", err);
         setError("Failed to load user data.");
       } finally {
-        setShowSpinner(false);
+        setLoading(false);
       }
     };
 
@@ -70,7 +66,7 @@ const ListofUser: React.FC = () => {
   }, []);
 
   const fetchAccount = async () => {
-    setPostsLoading(true);
+    setLoading(true);
     try {
       const res = await fetch("/api/ModuleSales/Reports/AccountManagement/FetchActivity");
       const data = await res.json();
@@ -82,7 +78,7 @@ const ListofUser: React.FC = () => {
       toast.error("Error fetching users.");
       console.error("Fetch error:", error);
     } finally {
-      setPostsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -90,16 +86,6 @@ const ListofUser: React.FC = () => {
     fetchAccount();
 
   }, []);
-
-  if (postsLoading || showSpinner) {
-    return (
-      <SessionChecker>
-        <ParentLayout>
-          <FuturisticSpinner setShowSpinner={setShowSpinner} />
-        </ParentLayout>
-      </SessionChecker>
-    );
-  }
 
   const filteredAccounts = posts
   .filter((post) => {

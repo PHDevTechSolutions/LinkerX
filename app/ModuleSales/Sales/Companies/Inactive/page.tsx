@@ -9,14 +9,10 @@ import Form from "../../../components/Companies/CompanyAccounts/Form";
 import SearchFilters from "../../../components/Companies/CompanyAccounts/Filters";
 import Container from "../../../components/Companies/CompanyAccounts/Container";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
-import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-
-// Icons
-import { CiImport } from "react-icons/ci";
 
 const InactiveAccounts: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -40,9 +36,6 @@ const InactiveAccounts: React.FC = () => {
     const [referenceid, setReferenceID] = useState("");
     const [manager, setManager] = useState("");
     const [tsm, setTsm] = useState("");
-
-    const [postsLoading, setPostsLoading] = useState<boolean>(true);
-    const [showSpinner, setShowSpinner] = useState(true);
 
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {

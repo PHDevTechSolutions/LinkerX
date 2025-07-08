@@ -10,7 +10,6 @@ import ImportForm from "../../../components/Companies/CompanyAccounts/ImportForm
 import SearchFilters from "../../../components/Companies/CompanyAccounts/Filters";
 import Container from "../../../components/Companies/CompanyAccounts/Container";
 import Pagination from "../../../components/UserManagement/CompanyAccounts/Pagination";
-import FuturisticSpinner from "../../../components/Spinner/FuturisticSpinner";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -41,11 +40,8 @@ const NewClientAccounts: React.FC = () => {
     const [manager, setManager] = useState("");
     const [tsm, setTsm] = useState("");
     const [status, setstatus] = useState("");
-    const [file, setFile] = useState<File | null>(null);
     const [isMaximized, setIsMaximized] = useState(false);
-
-    const [postsLoading, setPostsLoading] = useState<boolean>(true);
-    const [showSpinner, setShowSpinner] = useState(true);
+    
     const [loading, setLoading] = useState<boolean>(true);
 
     // Fetch user data based on query parameters (user ID)

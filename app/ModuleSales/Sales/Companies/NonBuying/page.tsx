@@ -42,9 +42,6 @@ const NewClientAccounts: React.FC = () => {
     const [status, setstatus] = useState("");
     const [isMaximized, setIsMaximized] = useState(false);
 
-    const [postsLoading, setPostsLoading] = useState<boolean>(true);
-    const [showSpinner, setShowSpinner] = useState(true);
-
     // Fetch user data based on query parameters (user ID)
     useEffect(() => {
         const fetchUserData = async () => {
