@@ -1,14 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
-
-// Components
 import Filters from "../../../components/Task/ScheduledActivity/Filters/Filters";
 import Main from "../../../components/Task/ScheduledActivity/Main";
-
-// Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -17,29 +13,23 @@ const ListofUser: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [userDetails, setUserDetails] = useState({
     UserId: "", Firstname: "", Lastname: "", Manager: "", TSM: "",
     Email: "", Role: "", Department: "", Company: "", TargetQuota: "", ReferenceID: "",
   });
 
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
+  // Fetch user details once
   useEffect(() => {
     const fetchUserData = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const userId = params.get("id");
-
-      if (!userId) {
-        setError("User ID is missing.");
-        setLoading(false);
-        return;
-      }
+      const userId = new URLSearchParams(window.location.search).get("id");
+      if (!userId) return setError("Missing User ID."), setLoading(false);
 
       try {
         const res = await fetch(`/api/user?id=${encodeURIComponent(userId)}`);
-        if (!res.ok) throw new Error("Failed to fetch user data");
+        if (!res.ok) throw new Error("Failed to fetch user data.");
         const data = await res.json();
         setUserDetails({
           UserId: data._id,
@@ -55,8 +45,8 @@ const ListofUser: React.FC = () => {
           ReferenceID: data.ReferenceID || "",
         });
       } catch (err) {
-        console.error("Error fetching user data:", err);
-        setError("Failed to load user data.");
+        console.error(err);
+        setError("Error loading user data.");
       } finally {
         setLoading(false);
       }
@@ -65,47 +55,46 @@ const ListofUser: React.FC = () => {
     fetchUserData();
   }, []);
 
-  const fetchAccount = async () => {
+  // Fetch activity posts
+  const fetchAccount = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/ModuleSales/Reports/AccountManagement/FetchActivity");
       const data = await res.json();
-      if (process.env.NODE_ENV === "development") {
-        console.log("Fetched data:", data);
-      }
-      setPosts(data.data);
-    } catch (error) {
-      toast.error("Error fetching users.");
-      console.error("Fetch error:", error);
+      setPosts(data.data || []);
+    } catch (err) {
+      console.error(err);
+      toast.error("Error fetching activities.");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAccount();
+  }, [fetchAccount]);
 
-  }, []);
+  // Efficient memoized filtering
+  const filteredAccounts = useMemo(() => {
+    return posts
+      .filter((post) => {
+        const company = post?.companyname?.toLowerCase() || "";
+        const matchCompany = company.includes(searchTerm.toLowerCase());
 
-  const filteredAccounts = posts
-  .filter((post) => {
-    const company = post?.companyname || ""; // fallback to empty string
-    const companyMatch = company.toLowerCase().includes(searchTerm.toLowerCase());
+        const postDate = post.date_created ? new Date(post.date_created) : null;
+        const matchDate =
+          (!startDate || (postDate && postDate >= new Date(startDate))) &&
+          (!endDate || (postDate && postDate <= new Date(endDate)));
 
-    const postDate = post.date_created ? new Date(post.date_created) : null;
+        const matchRefId =
+          post?.referenceid === userDetails.ReferenceID || post?.ReferenceID === userDetails.ReferenceID;
 
-    const withinDateRange =
-      (!startDate || (postDate && postDate >= new Date(startDate))) &&
-      (!endDate || (postDate && postDate <= new Date(endDate)));
-
-    const matchReferenceID =
-      post?.referenceid === userDetails.ReferenceID || post?.ReferenceID === userDetails.ReferenceID;
-
-    return companyMatch && withinDateRange && matchReferenceID;
-  })
-  .sort((a, b) =>
-    new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
-  );
+        return matchCompany && matchDate && matchRefId;
+      })
+      .sort((a, b) =>
+        new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
+      );
+  }, [posts, searchTerm, startDate, endDate, userDetails.ReferenceID]);
 
   return (
     <SessionChecker>
