@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
@@ -88,7 +87,7 @@ const Register: React.FC = () => {
                     Don’t have an account? <Link href="/Login" className="text-white-600 underline">Sign In</Link>
                 </p>
                 <footer className="mt-4 text-center text-xs text-white">
-                    <p>Taskflow - Phdevtech-Solutions</p>
+                    <p className="mt-4 text-xs text-center font-bold">Enterprise Resource Planning - Developed By IT Department</p>
                 </footer>
             </div>
         </div>

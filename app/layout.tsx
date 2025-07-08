@@ -8,8 +8,6 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-import SessionProviderWrapper from "./sessionProviderWrapper";
-
 const inter = Inter({
   weight: "100",
   subsets: ["latin"],
@@ -33,9 +31,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
         <ToastContainer />
-        <SessionProviderWrapper>
-          {children}
-        </SessionProviderWrapper>
+        {children}
         <Analytics />
         <SpeedInsights />
       </body>
