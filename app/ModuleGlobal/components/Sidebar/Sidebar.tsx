@@ -82,18 +82,17 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
       {/* Sidebar Container */}
       <div
         className={`fixed inset-y-0 left-0 z-50 h-screen transition-all duration-300 flex flex-col
-      ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"} 
+      ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-900 text-white"} 
       ${collapsed ? "w-16" : "w-64"} 
       ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-between p-5">
           <div className="flex items-center">
-            <img src="/taskflow.png" alt="Logo" className="h-8 mr-2" />
+            <img src="/xchire-logo.png" alt="Logo" className="h-8 mr-2" />
             <Link href={`/ModuleSales/Sales/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`}>
               <h1 className={`text-md font-bold transition-opacity ${collapsed ? "opacity-0" : "opacity-100"}`}>
-                <span>TASK - </span>
-                <span className="inline-block transform scale-x-[-1]">FLOW</span>
+                <span>IT Portal </span>
               </h1>
             </Link>
           </div>

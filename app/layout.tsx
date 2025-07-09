@@ -15,10 +15,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Ecoshift Corporation",
+  title: "IT Portal",
   description: "Created in NextJs Developed By Leroux Y Xchire",
   icons: {
-    icon: "/ecoico.png",
+    icon: "/xchire-logo.png",
   },
 };
 

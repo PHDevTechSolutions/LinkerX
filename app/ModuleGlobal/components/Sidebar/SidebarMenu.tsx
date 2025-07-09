@@ -54,7 +54,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
       <div className="w-full">
         <button
           onClick={() => handleToggle(myProfileItem.title)}
-          className={`flex items-center w-full p-4 hover:bg-orange-400 rounded hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""
+          className={`flex items-center w-full p-4 hover:bg-green-700 rounded hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""
             }`}
         >
           <myProfileItem.icon size={18} />
@@ -76,7 +76,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 <Link
                   key={subIndex}
                   href={subItem.href}
-                  className="flex items-center w-full p-4 bg-gray-200 hover:bg-orange-400 hover:text-white transition-all duration-300 ease-in-out"
+                  className="flex items-center w-full p-4 bg-gray-200 hover:bg-green-700 hover:text-white transition-all duration-300 ease-in-out"
                 >
                   <FaRegCircle size={10} className="mr-2 ml-2" />
                   {subItem.title}
@@ -91,7 +91,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
       <div className="w-full mt-1">
         <Link
           href={`/ModuleGlobal/ERP/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ""}`}
-          className="flex items-center w-full p-4 bg-orange-400 mb-1 text-white rounded-md transition-all duration-300 ease-in-out hover:shadow-md active:scale-95"
+          className="flex items-center w-full p-4 bg-green-700 mb-1 text-white rounded-md transition-all duration-300 ease-in-out hover:shadow-md active:scale-95"
         >
           <span className="mr-1">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -109,11 +109,11 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
           <div key={index} className="w-full">
             <button
               onClick={() => handleToggle(item.title)}
-              className={`flex items-center w-full p-4 hover:bg-orange-400 rounded hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""
+              className={`flex items-center w-full p-4 hover:bg-green-700 rounded hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""
                 }`}
             >
               <item.icon size={18} />
-              {!collapsed && <span className="ml-2">{item.title}</span>}
+              {!collapsed && <span className="mr-2 ml-2">{item.title}</span>}
               {!collapsed && (
                 <span className="ml-auto">
                   {openSections[item.title] ? <RxCaretDown size={15} /> : <RxCaretLeft size={15} />}
@@ -129,10 +129,10 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 <div key={subIndex} className="w-full">
                   <Link
                     href={subItem.href}
-                    className="flex flex-col mb-1 p-4 bg-gray-200 hover:bg-orange-400 hover:text-white transition-all duration-300 ease-in-out rounded"
+                    className="flex flex-col mb-1 p-4 bg-gray-200 hover:bg-green-700 hover:text-white transition-all duration-300 ease-in-out rounded"
                   >
                     <div className="flex items-center">
-                      <FaRegCircle size={10} className="mr-2" />
+                      <FaRegCircle size={10} className="ml-2 mr-2" />
                       <span className="text-[11px]">{subItem.title}</span>
 
                       {/* Badges */}

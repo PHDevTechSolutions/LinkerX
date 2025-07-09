@@ -119,7 +119,7 @@ const SidebarUserInfo: React.FC<SidebarUserInfoProps> = ({
         title="Logout"
         className="ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-red-900 transition z-10"
       >
-        <GrPowerShutdown size={20} className="text-orange-500" />
+        <GrPowerShutdown size={20} className="text-green-700" />
       </button>
     </div>
   );
