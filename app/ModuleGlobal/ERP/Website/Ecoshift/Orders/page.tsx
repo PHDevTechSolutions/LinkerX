@@ -6,7 +6,6 @@ import UserFetcher from "../../../../components/User/UserFetcher";
 import OrderTable from "../../../../components/Website/Ecoshift/Table";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { CiSquarePlus } from "react-icons/ci";
 
 const ListofUser: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
@@ -41,7 +40,7 @@ const ListofUser: React.FC = () => {
             <div className="container mx-auto p-4 text-gray-900">
               <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                 <div className="mb-4 p-4 bg-white border shadow-md rounded-lg">
-                  <h2 className="text-lg font-bold mb-2">Session Logs</h2>
+                  <h2 className="text-lg font-bold mb-2">WooCommerce Orders</h2>
                   <OrderTable orders={orders} loading={loadingOrders} error={error} />
                 </div>
 
