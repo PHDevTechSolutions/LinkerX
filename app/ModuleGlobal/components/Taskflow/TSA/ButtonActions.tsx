@@ -1,5 +1,5 @@
 import React from "react";
-import { CiEdit, CiSliderHorizontal } from "react-icons/ci";
+import { CiTrash, CiEdit, CiSliderHorizontal } from "react-icons/ci";
 
 interface ButtonActionsProps {
   bulkEditMode: boolean;
@@ -37,8 +37,8 @@ const ButtonActions: React.FC<ButtonActionsProps> = ({
           onClick={toggleBulkEditMode}
           className="flex items-center gap-1 px-4 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white"
         >
-          <CiEdit size={16} />
-          {bulkEditMode ? "Cancel Bulk Edit" : "Bulk Edit"}
+          <CiTrash size={16} />
+          {bulkEditMode ? "Cancel Bulk Delete" : "Bulk Delete"}
         </button>
         <button
           onClick={toggleBulkTransferMode}
