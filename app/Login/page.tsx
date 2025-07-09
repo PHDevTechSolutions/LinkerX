@@ -90,7 +90,7 @@ const Login: React.FC = () => {
                 </form>
 
                 <footer className="mt-4 text-xs text-dark font-bold">
-                    <p>Developer Mode - IT Department | Leroux Y Xchire</p>
+                    <p>IT Admin Portal</p>
                 </footer>
             </div>
         </div>
