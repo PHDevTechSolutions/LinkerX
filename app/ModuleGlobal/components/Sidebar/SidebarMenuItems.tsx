@@ -52,19 +52,31 @@ const getMenuItems = (userId: string | null = "") => [
         },
         { 
           title: 'Ticket Logs', 
+          href: `/ModuleGlobal/ERP/Ecodesk/Ticket${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
+        },
+        { 
+          title: 'Received Po', 
+          href: `/ModuleGlobal/ERP/Ecodesk/PO${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
+        },
+        { 
+          title: 'SKU Listing', 
+          href: `/ModuleGlobal/ERP/Ecodesk/SKU${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
+        },
+        { 
+          title: 'D-Tracking Logs', 
+          href: `/ModuleGlobal/ERP/Ecodesk/Tracking${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
+        },
+        { 
+          title: 'Outbound Calls', 
           href: `/ModuleGlobal/ERP/Ecodesk/OutboundCall${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
         },
         { 
-          title: 'Tracking Logs', 
-          href: `/ModuleGlobal/ERP/Ecodesk/Database${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
-        },
-        { 
           title: 'CSR Agents', 
-          href: `/ModuleGlobal/ERP/UserManagement/CSRAgent${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
+          href: `/ModuleGlobal/ERP/Ecodesk/CSRAgent${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
         },
         { 
           title: 'CSR Admins', 
-          href: `/ModuleGlobal/ERP/UserManagement/CSRAdmin${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
+          href: `/ModuleGlobal/ERP/Ecodesk/CSRAdmin${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
         },
       ],
     },
@@ -74,11 +86,11 @@ const getMenuItems = (userId: string | null = "") => [
       subItems: [
         { 
           title: 'Admin', 
-          href: `/ModuleGlobal/ERP/UserManagement/Admin${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
+          href: `/ModuleGlobal/ERP/Admin/User${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
         },
         { 
           title: 'Sessions', 
-          href: `/ModuleGlobal/ERP/UserManagement/Sessions${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
+          href: `/ModuleGlobal/ERP/Admin/Session${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
         },
       ],
     },

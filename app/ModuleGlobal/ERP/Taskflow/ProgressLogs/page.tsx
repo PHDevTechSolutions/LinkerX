@@ -2,13 +2,13 @@
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
-import UserFetcher from "../../../../ModuleSales/components/User/UserFetcher";
+import UserFetcher from "../../../components/User/UserFetcher";
 // Components
-import AddPostForm from "../../../../ModuleGlobal/components/Logs/Progress/Form";
-import ImportForm from "../../../../ModuleGlobal/components/Logs/Progress/ImportForm";
-import SearchFilters from "../../../../ModuleGlobal/components/Logs/Progress/Filters";
-import UsersTable from "../../../../ModuleGlobal/components/Logs/Progress/Main";
-import Pagination from "../../../../ModuleGlobal/components/Logs/Progress/Pagination";
+import AddPostForm from "../../../../ModuleGlobal/components/Taskflow/Progress/Form";
+import ImportForm from "../../../../ModuleGlobal/components/Taskflow/Progress/ImportForm";
+import SearchFilters from "../../../../ModuleGlobal/components/Taskflow/Progress/Filters";
+import UsersTable from "../../../../ModuleGlobal/components/Taskflow/Progress/Main";
+import Pagination from "../../../../ModuleGlobal/components/Taskflow/Progress/Pagination";
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';

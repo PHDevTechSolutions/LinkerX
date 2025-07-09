@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
-import UserFetcher from "../../../../ModuleSales/components/User/UserFetcher";
+import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
 import AddPostForm from "../../../components/HelpCenter/Tutorials/AddUserForm";

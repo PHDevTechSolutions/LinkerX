@@ -2,14 +2,13 @@
 import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
-import UserFetcher from "../../../../ModuleSales/components/User/UserFetcher";
-
+import UserFetcher from "../../../components/User/UserFetcher";
 // Route
-import ImportForm from "../../../../ModuleGlobal/components/CompanyAccounts/ImportAccount";
-import Form from "../../../../ModuleGlobal/components/CompanyAccounts/Form";
-import Filters from "../../../../ModuleGlobal/components/CompanyAccounts/Filters";
-import Table from "../../../../ModuleGlobal/components/CompanyAccounts/Table";
-import Pagination from "../../../../ModuleGlobal/components/CompanyAccounts/Pagination";
+import ImportForm from "../../../components/Taskflow/CustomerDatabase/ImportAccount";
+import Form from "../../../components/Taskflow/CustomerDatabase/Form";
+import Filters from "../../../components/Taskflow/CustomerDatabase/Filters";
+import Table from "../../../components/Taskflow/CustomerDatabase/Main";
+import Pagination from "../../../components/Taskflow/CustomerDatabase/Pagination";
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';

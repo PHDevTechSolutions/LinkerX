@@ -3,17 +3,19 @@ import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
-// Tools Global
+// Global Tools
 import SearchFilters from "../../../components/Tools/SearchFilters";
 import Pagination from "../../../components/Tools/Pagination";
-// Route
-import Form from "../../../components/Taskflow/CSRInquiries/Form";
-import Table from "../../../components/Taskflow/CSRInquiries/Table";
-// Toast
+// Components
+import Table from "../../../components/Ecodesk/CSRAgent/Table";
+import Form from "../../../components/Ecodesk/CSRAgent/Form";
+// Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+// Icons
+import { CiSquarePlus } from "react-icons/ci";
 
-const Inquiries: React.FC = () => {
+const ListofUser: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
     const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
@@ -29,6 +31,7 @@ const Inquiries: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Fetch user data based on query parameters (user ID)
     useEffect(() => {
         const fetchUserData = async () => {
             const params = new URLSearchParams(window.location.search);
@@ -40,7 +43,7 @@ const Inquiries: React.FC = () => {
                     if (!response.ok) throw new Error("Failed to fetch user data");
                     const data = await response.json();
                     setUserDetails({
-                        UserId: data._id,
+                        UserId: data._id, // Set the user's id here
                         ReferenceID: data.ReferenceID,
                         Firstname: data.Firstname || "",
                         Lastname: data.Lastname || "",
@@ -64,32 +67,29 @@ const Inquiries: React.FC = () => {
         fetchUserData();
     }, []);
 
+    // Fetch all users from the API
     const fetchUsers = async () => {
         try {
-            const response = await fetch("/api/ModuleGlobal/Inquiries/FetchData");
+            const response = await fetch("/api/ModuleSales/UserManagement/ManagerDirector/FetchUser");
             const data = await response.json();
-
-            if (Array.isArray(data)) {
-                setPosts(data);
-            } else if (Array.isArray(data.data)) {
-                setPosts(data.data);
-            } else {
-                console.error("Fetched data is not an array:", data);
-                toast.error("Fetched data is invalid.");
-                setPosts([]);
-            }
+            setPosts(data);
         } catch (error) {
             toast.error("Error fetching users.");
             console.error("Error Fetching", error);
         }
     };
 
+    // Filter users by search term (firstname, lastname)
+    const filteredAccounts = posts.filter((post) => {
+        // Check if the user's name matches the search term
+        const matchesSearchTerm = [post?.Firstname, post?.Lastname]
+            .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const filteredAccounts = Array.isArray(posts)
-        ? posts.filter((post) =>
-            [post?.referenceid].some(field => field?.toLowerCase().includes(searchTerm.toLowerCase()))
-        )
-        : [];
+        // Filter for Admin role and CSR department
+        const isAdminCSR = post?.Role === "Staff" && post?.Department === "CSR";
+
+        return matchesSearchTerm && isAdminCSR;
+    });
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -100,16 +100,19 @@ const Inquiries: React.FC = () => {
         fetchUsers();
     }, []);
 
+    // Handle editing a post
     const handleEdit = (post: any) => {
         setEditUser(post);
         setShowForm(true);
     };
 
+    // Show delete modal
     const confirmDelete = (postId: string) => {
         setPostToDelete(postId);
         setShowDeleteModal(true);
     };
 
+    // Handle deleting a post
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
@@ -142,22 +145,29 @@ const Inquiries: React.FC = () => {
                 <UserFetcher>
                     {(user) => (
                         <div className="container mx-auto p-4 text-gray-900">
-                            <div className="grid grid-cols-1">
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                                 {showForm ? (
                                     <Form
                                         onCancel={() => {
                                             setShowForm(false);
                                             setEditUser(null);
                                         }}
-                                        refreshPosts={fetchUsers}
-                                        userName={user ? user.userName : ""}
-                                        userDetails={{ id: editUser ? editUser._id : userDetails.UserId }}
+                                        refreshPosts={fetchUsers}  // Pass the refreshPosts callback
+                                        userName={user ? user.userName : ""}  // Ensure userName is passed properly
+                                        userDetails={{ id: editUser ? editUser._id : userDetails.UserId }}  // Ensure id is passed correctly
                                         editUser={editUser}
                                     />
+
                                 ) : (
                                     <>
-                                        <div className="p-4 bg-white border shadow rounded-md">
-                                            <h2 className="text-lg font-bold mb-4">CSR Inquiries</h2>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <button className="flex items-center gap-1 border bg-white text-black text-xs px-4 py-2 shadow-md rounded hover:bg-blue-900 hover:text-white transition" onClick={() => setShowForm(true)}>
+                                                <CiSquarePlus size={20} />Add Account
+                                            </button>
+                                        </div>
+
+                                        <div className="mb-4 p-4 bg-white border shadow-md rounded-lg">
+                                            <h2 className="text-lg font-bold mb-2">CSR Agent</h2>
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
@@ -165,24 +175,29 @@ const Inquiries: React.FC = () => {
                                                 setPostsPerPage={setPostsPerPage}
                                             />
                                             <Table
-                                                currentPosts={currentPosts}
+                                                posts={currentPosts}
                                                 handleEdit={handleEdit}
-                                                confirmDelete={confirmDelete}
+                                                handleDelete={confirmDelete}
+                                                Role={user ? user.Role : ""}
+                                                Department={user ? user.Department : ""}
                                             />
                                             <Pagination
                                                 currentPage={currentPage}
                                                 totalPages={totalPages}
                                                 setCurrentPage={setCurrentPage}
                                             />
+
                                             <div className="text-xs mt-2">
-                                                Showing {indexOfFirstPost + 1} to {Math.min(indexOfLastPost, filteredAccounts.length)} of {filteredAccounts.length} entries
+                                                Showing {indexOfFirstPost + 1} to{" "}
+                                                {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
+                                                {filteredAccounts.length} entries
                                             </div>
                                         </div>
                                     </>
                                 )}
 
                                 {showDeleteModal && (
-                                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[999]">
+                                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                                         <div className="bg-white p-4 rounded shadow-lg">
                                             <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
                                             <p className="text-xs">Are you sure you want to delete this post?</p>
@@ -203,6 +218,7 @@ const Inquiries: React.FC = () => {
                                         </div>
                                     </div>
                                 )}
+
                                 <ToastContainer className="text-xs" autoClose={1000} />
                             </div>
                         </div>
@@ -213,4 +229,4 @@ const Inquiries: React.FC = () => {
     );
 };
 
-export default Inquiries;
+export default ListofUser;
