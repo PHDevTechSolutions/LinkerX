@@ -1,8 +1,7 @@
 import React from "react";
+// Excel
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import { FaFileExcel } from "react-icons/fa6";
-
 
 interface TableXchireProps {
   data: any[];
@@ -52,9 +51,9 @@ const TableXchire: React.FC<TableXchireProps> = ({ data }) => {
       <div className="flex justify-end mb-2">
         <button
           onClick={exportToExcel}
-          className="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded text-xs flex"
+          className="border text-black px-4 py-2 rounded text-xs flex shadow-md"
         >
-          <FaFileExcel size={15} />Export to Excel
+         Export to Excel
         </button>
       </div>
 

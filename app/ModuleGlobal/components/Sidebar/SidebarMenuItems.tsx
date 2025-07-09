@@ -1,11 +1,11 @@
-import { CiUser } from "react-icons/ci";
+import { CiUser, CiGlobe } from "react-icons/ci";
 import { IoHelp } from "react-icons/io5";
 import TaskflowIcon from './TaskflowIcon';
 import Ecodesk from './EcodeskIcon';
 
 const getMenuItems = (
   userId: string | null = "",
-  role: string | null = ""
+  Role: string | null = ""
 ) => [
   {
     title: 'Taskflow',
@@ -20,7 +20,7 @@ const getMenuItems = (
       { title: 'Territory Sales Manager', href: `/ModuleGlobal/ERP/Taskflow/TSM${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
 
       // Only Super Admin can see "Manager"
-      ...(role === "Super Admin"
+      ...(Role === "Super Admin"
         ? [{ title: 'Manager', href: `/ModuleGlobal/ERP/Taskflow/Manager${userId ? `?id=${encodeURIComponent(userId)}` : ''}` }]
         : []),
     ],
@@ -38,9 +38,16 @@ const getMenuItems = (
       { title: 'CSR Agents', href: `/ModuleGlobal/ERP/Ecodesk/CSRAgent${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
 
       // Only Super Admin can see "CSR Admins"
-      ...(role === "Super Admin"
+      ...(Role === "Super Admin"
         ? [{ title: 'CSR Admins', href: `/ModuleGlobal/ERP/Ecodesk/CSRAdmin${userId ? `?id=${encodeURIComponent(userId)}` : ''}` }]
         : []),
+    ],
+  },
+  {
+    title: 'Website | REST API (Beta)',
+    icon: CiGlobe,
+    subItems: [
+      { title: 'WooCommerce Orders', href: `/ModuleGlobal/ERP/Website/Ecoshift/Orders${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
     ],
   },
   {
@@ -48,7 +55,7 @@ const getMenuItems = (
     icon: CiUser,
     subItems: [
       // Only Super Admin can see "Admin"
-      ...(role === "Super Admin"
+      ...(Role === "Super Admin"
         ? [{ title: 'Admin', href: `/ModuleGlobal/ERP/Admin/User${userId ? `?id=${encodeURIComponent(userId)}` : ''}` }]
         : []),
       { title: 'Other Roles', href: `/ModuleGlobal/ERP/Admin/Other${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
