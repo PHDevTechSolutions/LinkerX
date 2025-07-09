@@ -84,7 +84,6 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <label className="block text-xs font-bold mb-2" htmlFor="Role">Role</label>
           <select id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs" required>
             <option>Select Role</option>
-            <option value="Admin">Admin</option>
             <option value="Manager">Manager</option>
             <option value="Territory Sales Manager">Territory Sales Manager</option>
             <option value="Territory Sales Associate">Territory Sales Associate</option>
