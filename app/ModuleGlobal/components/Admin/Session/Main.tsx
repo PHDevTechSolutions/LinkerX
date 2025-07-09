@@ -29,12 +29,14 @@ const UsersCard: React.FC<UsersCardProps> = ({
   const [deptLoginData, setDeptLoginData] = useState<any[]>([]);
   const [topUsersData, setTopUsersData] = useState<any[]>([]);
 
-  // Date range states (format: YYYY-MM-DD)
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   useEffect(() => {
-    // Filter posts by date range if set
     let filteredPosts = posts;
 
     if (startDate) {
@@ -44,7 +46,6 @@ const UsersCard: React.FC<UsersCardProps> = ({
       );
     }
     if (endDate) {
-      // To include the entire endDate day, set time to 23:59:59
       const end = new Date(endDate);
       end.setHours(23, 59, 59, 999);
       filteredPosts = filteredPosts.filter(
@@ -53,6 +54,7 @@ const UsersCard: React.FC<UsersCardProps> = ({
     }
 
     setUpdatedUser(filteredPosts);
+    setCurrentPage(1); // Reset to page 1
 
     generateLoginLogoutCount(filteredPosts);
     generateLoginDuration(filteredPosts);
@@ -61,19 +63,12 @@ const UsersCard: React.FC<UsersCardProps> = ({
     generateTopActiveUsers(filteredPosts);
   }, [posts, startDate, endDate]);
 
-  // Existing generate functions, no changes needed
-
   const generateLoginLogoutCount = (data: any[]) => {
     const grouped: Record<string, { login: number; logout: number }> = {};
-
     data.forEach((post) => {
       const date = new Date(post.timestamp).toLocaleDateString();
       const status = post.status?.toLowerCase();
-
-      if (!grouped[date]) {
-        grouped[date] = { login: 0, logout: 0 };
-      }
-
+      if (!grouped[date]) grouped[date] = { login: 0, logout: 0 };
       if (status === "login") grouped[date].login++;
       if (status === "logout") grouped[date].logout++;
     });
@@ -83,7 +78,6 @@ const UsersCard: React.FC<UsersCardProps> = ({
       Login: counts.login,
       Logout: counts.logout,
     }));
-
     setReportData(formatted);
   };
 
@@ -104,7 +98,7 @@ const UsersCard: React.FC<UsersCardProps> = ({
       ) {
         const start = new Date(current.timestamp).getTime();
         const end = new Date(next.timestamp).getTime();
-        const durationMinutes = (end - start) / (1000 * 60); // minutes
+        const durationMinutes = (end - start) / (1000 * 60);
 
         if (!sessions[current.email]) sessions[current.email] = 0;
         sessions[current.email] += durationMinutes;
@@ -115,7 +109,6 @@ const UsersCard: React.FC<UsersCardProps> = ({
       email,
       hours: parseFloat((minutes / 60).toFixed(2)),
     }));
-
     setDurationData(formatted);
   };
 
@@ -134,13 +127,11 @@ const UsersCard: React.FC<UsersCardProps> = ({
       hour: hour.padStart ? hour.padStart(2, "0") : String(hour),
       logins,
     }));
-
     setPeakLoginData(formatted);
   };
 
   const generateDeptLoginFrequency = (data: any[]) => {
     const deptCounts: Record<string, number> = {};
-
     data.forEach((post) => {
       if (post.status?.toLowerCase() === "login") {
         const dept = post.department || "Unknown";
@@ -152,7 +143,6 @@ const UsersCard: React.FC<UsersCardProps> = ({
       department,
       logins: count,
     }));
-
     setDeptLoginData(formatted);
   };
 
@@ -180,7 +170,6 @@ const UsersCard: React.FC<UsersCardProps> = ({
       }
     }
 
-    // Sort by duration descending and take top 5
     const sortedTop = Object.entries(sessions)
       .map(([email, minutes]) => ({
         email,
@@ -192,9 +181,12 @@ const UsersCard: React.FC<UsersCardProps> = ({
     setTopUsersData(sortedTop);
   };
 
+  const totalPages = Math.ceil(updatedUser.length / pageSize);
+  const paginatedData = updatedUser.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   return (
     <div className="mt-4">
-      {/* Date Range Filters */}
+      {/* Date Filter */}
       <div className="flex gap-4 mb-4 text-xs items-center">
         <label>
           Start Date:{" "}
@@ -223,42 +215,82 @@ const UsersCard: React.FC<UsersCardProps> = ({
         >
           Clear
         </button>
+        <div>
+          <label className="mr-2">Rows per page:</label>
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+            className="border rounded px-2 py-1 text-xs"
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </div>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-4 mb-4 border-b text-xs">
         <button
           onClick={() => setActiveTab("table")}
-          className={`px-4 py-2 border-b-2 ${
-            activeTab === "table"
+          className={`px-4 py-2 border-b-2 ${activeTab === "table"
               ? "border-blue-500 text-blue-600 font-semibold"
               : "border-transparent text-gray-500"
-          }`}
+            }`}
         >
           Table
         </button>
         <button
           onClick={() => setActiveTab("report")}
-          className={`px-4 py-2 border-b-2 ${
-            activeTab === "report"
+          className={`px-4 py-2 border-b-2 ${activeTab === "report"
               ? "border-blue-500 text-blue-600 font-semibold"
               : "border-transparent text-gray-500"
-          }`}
+            }`}
         >
           Analytics
         </button>
       </div>
 
+      {/* Table Tab */}
       {activeTab === "table" && (
-        <TableXchire
-          data={updatedUser}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-          Role={Role}
-          Department={Department}
-        />
+        <>
+          <TableXchire
+            data={paginatedData}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            Role={Role}
+            Department={Department}
+          />
+
+          {/* Pagination Controls */}
+          <div className="flex justify-between items-center mt-4">
+            
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                className="bg-gray-200 text-xs px-4 py-2 rounded"
+              >
+                Prev
+              </button>
+              <span className="text-xs">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                className="bg-gray-200 text-xs px-4 py-2 rounded"
+              >
+                Next
+              </button>
+            </div>
+        </>
       )}
 
+      {/* Report Tab */}
       {activeTab === "report" && (
         <>
           <Analytics data={reportData} />

@@ -4,10 +4,10 @@ import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 // Global Tools
-import SearchFilters from "../../../components/Tools/SearchFilters";
 import Pagination from "../../../components/Tools/Pagination";
 // Components
 import Main from "../../../components/Admin/Session/Main";
+import SearchFilters from "../../../components/Admin/Session/Filters";
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -118,27 +118,14 @@ const ListofUser: React.FC = () => {
                                     <SearchFilters
                                         searchTerm={searchTerm}
                                         setSearchTerm={setSearchTerm}
-                                        postsPerPage={postsPerPage}
-                                        setPostsPerPage={setPostsPerPage}
                                     />
                                     <Main
-                                        posts={currentPosts}
+                                        posts={filteredAccounts}
                                         handleEdit={handleEdit}
                                         handleDelete={confirmDelete}
                                         Role={user ? user.Role : ""}
                                         Department={user ? user.Department : ""}
                                     />
-                                    <Pagination
-                                        currentPage={currentPage}
-                                        totalPages={totalPages}
-                                        setCurrentPage={setCurrentPage}
-                                    />
-
-                                    <div className="text-xs mt-2">
-                                        Showing {indexOfFirstPost + 1} to{" "}
-                                        {Math.min(indexOfLastPost, filteredAccounts.length)} of{" "}
-                                        {filteredAccounts.length} entries
-                                    </div>
                                 </div>
                                 <ToastContainer className="text-xs" autoClose={1000} />
                             </div>
