@@ -89,6 +89,10 @@ const getMenuItems = (userId: string | null = "") => [
           href: `/ModuleGlobal/ERP/Admin/User${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
         },
         { 
+          title: 'Other Roles', 
+          href: `/ModuleGlobal/ERP/Admin/Other${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
+        },
+        { 
           title: 'Sessions', 
           href: `/ModuleGlobal/ERP/Admin/Session${userId ? `?id=${encodeURIComponent(userId)}` : ''}` 
         },

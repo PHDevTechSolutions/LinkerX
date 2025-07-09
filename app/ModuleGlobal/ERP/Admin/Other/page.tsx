@@ -7,13 +7,11 @@ import UserFetcher from "../../../components/User/UserFetcher";
 import SearchFilters from "../../../components/Tools/SearchFilters";
 import Pagination from "../../../components/Tools/Pagination";
 // Components
-import Form from "../../../components/Taskflow/Manager/Form";
-import Table from "../../../components/Taskflow/Manager/Table";
-
+import Form from "../../../components/Admin/Other/Form";
+import Table from "../../../components/Admin/Other/Table";
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-
 // Icons
 import { CiSquarePlus } from "react-icons/ci";
 
@@ -87,15 +85,20 @@ const ListofUser: React.FC = () => {
         const matchesSearchTerm = [post?.Firstname, post?.Lastname]
             .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
 
-        // Limit results to specific roles
-        const allowedRoles = [
-            "Manager",
-        ];
-        const matchesRole = allowedRoles.includes(post?.Role);
+        // Filter for Business Development roles
+        const isBusinessDev = [
+            "Business Development Officer", 
+            "Business Development Manager",
+            "E-Commerce Staff",
+            "Warehouse Manager",
+            "Warehouse Staff",
+            "HR Manager"
+            
+        ]
+            .includes(post?.Role);
 
-        return matchesSearchTerm && matchesRole;
+        return matchesSearchTerm && isBusinessDev;
     });
-
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -173,7 +176,7 @@ const ListofUser: React.FC = () => {
                                         </div>
 
                                         <div className="mb-4 p-4 bg-white border shadow-md rounded-lg">
-                                            <h2 className="text-lg font-bold mb-2">Managers and Directors</h2>
+                                            <h2 className="text-lg font-bold mb-2">Other Roles</h2>
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}

@@ -115,7 +115,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete }
                   />
                 )}
                 <img
-                  src={post.profilePicture || "/taskflow.png"}
+                  src={post.profilePicture || "/ecodesk.png"}
                   alt={`${post.Firstname} ${post.Lastname}`}
                   className="w-8 h-8 rounded-full object-cover"
                 />
