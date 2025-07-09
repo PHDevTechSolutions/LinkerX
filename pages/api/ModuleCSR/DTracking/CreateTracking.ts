@@ -78,11 +78,6 @@ async function create({
     await accountsCollection.insertOne(newAccountEntry);
   }
 
-  // Emit socket event if defined
-  if (typeof io !== "undefined" && io) {
-    io.emit("newAccount", newTrackingEntry);
-  }
-
   return { success: true };
 }
 

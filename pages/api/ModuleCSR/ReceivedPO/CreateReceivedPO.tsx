@@ -29,11 +29,6 @@ async function create({
   const newAccount = { ReferenceID, userName, DateTime, CompanyName, ContactNumber, PONumber, POAmount, SONumber, SODate, SalesAgent, PaymentTerms, PaymentDate, DeliveryPickupDate, POStatus, POSource, Remarks, createdAt: new Date(), };
   await Xchire_Collection.insertOne(newAccount);
 
-  // Broadcast logic if needed
-  if (typeof io !== "undefined" && io) {
-    io.emit("newAccount", newAccount);
-  }
-
   return { success: true };
 }
 

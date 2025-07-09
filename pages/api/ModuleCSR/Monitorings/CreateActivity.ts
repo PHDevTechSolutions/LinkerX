@@ -86,11 +86,6 @@ async function create({ UserId, TicketReferenceNumber, userName, Role, Reference
   };
   await Xchire_db.collection("accounts").insertOne(accounts_insert);
 
-  // Broadcast logic if needed
-  if (typeof io !== "undefined" && io) {
-    io.emit("newMonitoring", Xchire_insert);
-  }
-
   return { success: true };
 }
 

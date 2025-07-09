@@ -56,11 +56,6 @@ async function AddUser({ ReferenceID, UserId, Firstname, Lastname, Email, userNa
   // Insert new user into the database
   await userCollection.insertOne(newUser);
 
-  // Emit event if WebSocket is active
-  if (typeof io !== "undefined" && io) {
-    io.emit("newUser", newUser);
-  }
-
   return { success: true, message: "User created successfully" };
 }
 

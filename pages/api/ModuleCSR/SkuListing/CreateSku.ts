@@ -18,11 +18,6 @@ async function create({ UserID, userName, DateTime, CompanyName, ItemCategory, I
   const newAccount = { UserID, userName, DateTime, CompanyName, ItemCategory, ItemCode, ItemDescription, Qty, SalesAgent, createdAt: new Date(), };
   await Xchire_Collection.insertOne(newAccount);
 
-  // Broadcast logic if needed
-  if (typeof io !== "undefined" && io) {
-    io.emit("newAccount", newAccount);
-  }
-
   return { success: true };
 }
 
