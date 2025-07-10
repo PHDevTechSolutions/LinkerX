@@ -1,4 +1,5 @@
-import { CiUser, CiGlobe } from "react-icons/ci";
+import { CiUser } from "react-icons/ci";
+import { FcGlobe } from "react-icons/fc";
 import { IoHelp } from "react-icons/io5";
 import TaskflowIcon from './TaskflowIcon';
 import Ecodesk from './EcodeskIcon';
@@ -41,7 +42,7 @@ const getMenuItems = (
   },
   {
     title: 'Website',
-    icon: CiGlobe,
+    icon: FcGlobe,
     subItems: [
       { title: 'Ecoshift Orders', href: `/ModuleGlobal/ERP/Website/Ecoshift/Orders${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
     ],
