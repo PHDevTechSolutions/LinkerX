@@ -5,7 +5,7 @@ import Ecodesk from './EcodeskIcon';
 
 const getMenuItems = (
   userId: string | null = "",
-  Role: string | null = ""
+  role: string | null = ""
 ) => [
   {
     title: 'Taskflow',
@@ -18,12 +18,10 @@ const getMenuItems = (
       { title: 'Notifications', href: `/ModuleGlobal/ERP/Taskflow/Notifications${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       { title: 'Territory Sales Associates', href: `/ModuleGlobal/ERP/Taskflow/TSA${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       { title: 'Territory Sales Manager', href: `/ModuleGlobal/ERP/Taskflow/TSM${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-
-      // Only Super Admin can see "Manager"
-      ...(Role === "Super Admin"
+      ...(role === "Super Admin"
         ? [{ title: 'Manager', href: `/ModuleGlobal/ERP/Taskflow/Manager${userId ? `?id=${encodeURIComponent(userId)}` : ''}` }]
         : []),
-    ],
+    ]
   },
   {
     title: 'Ecodesk',
@@ -36,26 +34,23 @@ const getMenuItems = (
       { title: 'D-Tracking Logs', href: `/ModuleGlobal/ERP/Ecodesk/Tracking${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       { title: 'Outbound Calls', href: `/ModuleGlobal/ERP/Ecodesk/OutboundCall${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       { title: 'CSR Agents', href: `/ModuleGlobal/ERP/Ecodesk/CSRAgent${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-
-      // Only Super Admin can see "CSR Admins"
-      ...(Role === "Super Admin"
+      ...(role === "Super Admin"
         ? [{ title: 'CSR Admins', href: `/ModuleGlobal/ERP/Ecodesk/CSRAdmin${userId ? `?id=${encodeURIComponent(userId)}` : ''}` }]
         : []),
     ],
   },
   {
-    title: 'Website | REST API (Beta)',
+    title: 'Website',
     icon: CiGlobe,
     subItems: [
-      { title: 'WooCommerce Orders', href: `/ModuleGlobal/ERP/Website/Ecoshift/Orders${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      { title: 'Ecoshift Orders', href: `/ModuleGlobal/ERP/Website/Ecoshift/Orders${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
     ],
   },
   {
     title: 'Admin Management',
     icon: CiUser,
     subItems: [
-      // Only Super Admin can see "Admin"
-      ...(Role === "Super Admin"
+      ...(role === "Super Admin"
         ? [{ title: 'Admin', href: `/ModuleGlobal/ERP/Admin/User${userId ? `?id=${encodeURIComponent(userId)}` : ''}` }]
         : []),
       { title: 'Other Roles', href: `/ModuleGlobal/ERP/Admin/Other${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },

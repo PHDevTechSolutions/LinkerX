@@ -59,14 +59,12 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
     }));
   };
 
-  const menuItems = getMenuItems(userId);
-
+  const role = userDetails?.Role || "";
+  const menuItems = getMenuItems(userId, role);
+  
   const filteredMenuItems = (() => {
-    const role = userDetails.Role;
-
     if (role === "Admin" || role === "Super Admin") return menuItems;
-
-    return [];
+    return []; // restrict for other roles if needed
   })();
 
   return (

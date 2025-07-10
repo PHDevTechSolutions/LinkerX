@@ -97,7 +97,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ orders, loading, error }) => {
         <div>
             {/* Date Range Filters */}
             <div className="flex gap-4 mb-4 items-center">
-                <label className="text-sm">
+                <label className="text-xs">
                     Start Date:{" "}
                     <input
                         type="date"
@@ -109,7 +109,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ orders, loading, error }) => {
                         className="px-3 py-2 border-b bg-white text-xs"
                     />
                 </label>
-                <label className="text-sm">
+                <label className="text-xs">
                     End Date:{" "}
                     <input
                         type="date"
@@ -123,7 +123,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ orders, loading, error }) => {
                 </label>
                 <button
                     onClick={exportToExcel}
-                    className="border text-black px-4 py-2 rounded text-xs flex shadow-md"
+                    className="border text-black px-4 py-2 rounded text-xs flex"
                 >
                     Export to Excel
                 </button>
@@ -145,7 +145,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ orders, loading, error }) => {
                     </thead>
                     <tbody>
                         {currentOrders.map((order: any) => (
-                            <tr key={order.id} className="whitespace-nowrap hover:bg-gray-100 cursor-pointer">
+                            <tr key={order.id} className="border-b whitespace-nowrap hover:bg-gray-100 cursor-pointer">
                                 <td className="px-6 py-4 text-xs capitalize">{order.id}</td>
                                 <td className="px-6 py-4 text-xs capitalize">{new Date(order.date_created).toLocaleDateString()}</td>
                                 <td className="px-6 py-4 text-xs capitalize">{order.billing.first_name} {order.billing.last_name}</td>
