@@ -182,7 +182,7 @@ const Login: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="text-xs block mb-1">Email Address</label>
+            <label className="text-xs block mb-1 text-black">Email Address</label>
             <input
               type="email"
               placeholder="e.g. user@example.com"
@@ -193,7 +193,7 @@ const Login: React.FC = () => {
           </div>
 
           <div className="relative">
-            <label className="text-xs block mb-1">Password</label>
+            <label className="text-xs block mb-1 text-black">Password</label>
             <input
               type={showPassword ? 'text' : 'password'}
               placeholder="Your secure password"
