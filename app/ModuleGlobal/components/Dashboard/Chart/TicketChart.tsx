@@ -12,8 +12,8 @@ import {
 } from "recharts";
 import { toast } from "react-toastify";
 
-interface Activity {
-  date_created: string;
+interface Ticket {
+  createdAt: string;
 }
 
 interface AggregatedData {
@@ -34,12 +34,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const STORAGE_KEY = "ticket-chart-filter-state";
 
-const STORAGE_KEY = "card5-filter-state";
-
-const Card5: React.FC = () => {
+const TicketChart: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [activities, setActivities] = useState<Activity[]>([]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
   const [filteredData, setFilteredData] = useState<AggregatedData[]>([]);
   const [filterType, setFilterType] = useState<"7days" | "month" | "range">("7days");
   const [rangeStart, setRangeStart] = useState<string>("");
@@ -72,35 +71,34 @@ const Card5: React.FC = () => {
     }
   }, [filterType, rangeStart, rangeEnd]);
 
-  const fetchActivities = async () => {
+  const fetchActivity = async () => {
     try {
-      const response = await fetch("/api/ModuleSales/UserManagement/ProgressLogs/FetchAccount", {
+      const response = await fetch("/api/ModuleCSR/Monitorings/FetchActivity", {
         cache: "no-store",
       });
+      if (!response.ok) throw new Error("Failed to fetch tickets");
 
-      if (!response.ok) throw new Error("Failed to fetch activities");
+      const data = await response.json();
+      const ticketsData: Ticket[] = Array.isArray(data) ? data : data.data || [];
 
-      const json = await response.json();
-      const data: Activity[] = Array.isArray(json) ? json : json.data || [];
-
-      setActivities(data);
+      setTickets(ticketsData);
     } catch (error) {
-      console.error("Error fetching activities:", error);
-      toast.error("Error fetching activities data");
+      toast.error("Error fetching accounts.");
+      console.error("Error fetching accounts:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchActivities();
+    fetchActivity();
   }, []);
 
-  // Aggregate activities by day helper
-  const aggregateByDay = (data: Activity[]) => {
+  // Aggregate tickets by day helper
+  const aggregateByDay = (data: Ticket[]) => {
     const counts: Record<string, number> = {};
-    data.forEach(({ date_created }) => {
-      const date = new Date(date_created).toISOString().slice(0, 10);
+    data.forEach(({ createdAt }) => {
+      const date = new Date(createdAt).toISOString().slice(0, 10);
       counts[date] = (counts[date] || 0) + 1;
     });
     return Object.entries(counts)
@@ -108,46 +106,46 @@ const Card5: React.FC = () => {
       .sort((a, b) => a.date.localeCompare(b.date));
   };
 
-  // Filter & aggregate activities whenever dependencies change
+  // Filter & aggregate tickets whenever dependencies change
   useEffect(() => {
-    if (!activities.length) {
+    if (!tickets.length) {
       setFilteredData([]);
       return;
     }
 
     const now = Date.now();
-    let filtered: Activity[] = [];
+    let filtered: Ticket[] = [];
 
     if (filterType === "7days") {
       const cutoff = now - 7 * DAY_MS;
-      filtered = activities.filter(({ date_created }) => {
-        const time = new Date(date_created).getTime();
+      filtered = tickets.filter(({ createdAt }) => {
+        const time = new Date(createdAt).getTime();
         return time >= cutoff && time <= now;
       });
     } else if (filterType === "month") {
       const today = new Date();
       const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).getTime();
-      filtered = activities.filter(({ date_created }) => {
-        const time = new Date(date_created).getTime();
+      filtered = tickets.filter(({ createdAt }) => {
+        const time = new Date(createdAt).getTime();
         return time >= startOfMonth && time <= now;
       });
     } else if (filterType === "range") {
       if (rangeStart && rangeEnd) {
         const startTime = new Date(rangeStart).getTime();
-        const endTime = new Date(rangeEnd).getTime() + DAY_MS - 1; // include end day fully
-        filtered = activities.filter(({ date_created }) => {
-          const time = new Date(date_created).getTime();
+        const endTime = new Date(rangeEnd).getTime() + DAY_MS - 1;
+        filtered = tickets.filter(({ createdAt }) => {
+          const time = new Date(createdAt).getTime();
           return time >= startTime && time <= endTime;
         });
       }
     }
 
     setFilteredData(aggregateByDay(filtered));
-  }, [activities, filterType, rangeStart, rangeEnd]);
+  }, [tickets, filterType, rangeStart, rangeEnd]);
 
   return (
     <div className="bg-white border rounded-lg shadow p-4">
-      <h4 className="text-xs font-semibold mb-3 text-gray-700">Activities Per Day | PosgreSQL</h4>
+      <h4 className="text-xs font-semibold mb-3 text-gray-700">Tickets Per Day | MongoDB</h4>
 
       <div className="mb-3 flex flex-wrap gap-2 items-center text-xs">
         <label className="flex items-center gap-1">
@@ -209,15 +207,15 @@ const Card5: React.FC = () => {
       {loading ? (
         <div className="text-center text-xs text-gray-400">Loading...</div>
       ) : filteredData.length === 0 ? (
-        <div className="text-center text-xs text-gray-400">No activity data</div>
+        <div className="text-center text-xs text-gray-400">No ticket data</div>
       ) : (
-        <ResponsiveContainer width="100%" height={200}>
+        <ResponsiveContainer width="100%" height={250}>
           <LineChart data={filteredData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" tick={{ fontSize: 10 }} />
             <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
             <Tooltip content={<CustomTooltip />} />
-            <Line type="monotone" dataKey="count" stroke="#2563eb" strokeWidth={2} dot={{ r: 2 }} />
+            <Line type="monotone" dataKey="count" stroke="#10b981" strokeWidth={2} dot={{ r: 2 }} />
           </LineChart>
         </ResponsiveContainer>
       )}
@@ -225,4 +223,4 @@ const Card5: React.FC = () => {
   );
 };
 
-export default Card5;
+export default TicketChart;

@@ -7,7 +7,10 @@ import CountCompanies from '../../components/Dashboard/CountCompanies';
 import CountNewUsers from '../../components/Dashboard/CountNewUsers';
 import CountUser from '../../components/Dashboard/CountUser';
 import CountActivities from '../../components/Dashboard/CountActivities';
-import Card5 from '../../components/Dashboard/Chart/ActivityChart';
+import ActivityChart from '../../components/Dashboard/Chart/ActivityChart';
+import TicketChart from '../../components/Dashboard/Chart/TicketChart';
+import CountOrders from '../../components/Dashboard/Chart/CountOrders';
+
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -39,9 +42,10 @@ const DashboardPage: React.FC = () => {
             {/* Card 4 */}
             <CountActivities />
           </div>
-          <div className="mb-6">
-            <Card5 />
-          </div>
+
+          <div className="mb-6"><ActivityChart /></div>
+          <div className="mb-6"><TicketChart /></div>
+          <div className="mb-6"><CountOrders /></div>
 
           <ToastContainer className="text-xs" />
         </div>

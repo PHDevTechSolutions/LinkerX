@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 import {
   ResponsiveContainer,
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -12,7 +12,7 @@ import {
 } from "recharts";
 import { toast } from "react-toastify";
 
-interface Activity {
+interface Order {
   date_created: string;
 }
 
@@ -26,7 +26,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     return (
       <div className="bg-white shadow-md rounded p-2 text-xs text-gray-700">
         <p><strong>Date:</strong> {label}</p>
-        <p><strong>Count:</strong> {payload[0].value}</p>
+        <p><strong>Orders:</strong> {payload[0].value}</p>
       </div>
     );
   }
@@ -34,16 +34,16 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const STORAGE_KEY = "count-orders-filter-state";
 
-const STORAGE_KEY = "card5-filter-state";
-
-const Card5: React.FC = () => {
-  const [loading, setLoading] = useState(true);
-  const [activities, setActivities] = useState<Activity[]>([]);
+const CountOrders: React.FC = () => {
+  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [filteredData, setFilteredData] = useState<AggregatedData[]>([]);
   const [filterType, setFilterType] = useState<"7days" | "month" | "range">("7days");
   const [rangeStart, setRangeStart] = useState<string>("");
   const [rangeEnd, setRangeEnd] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   // Load filter state from localStorage on mount
   useEffect(() => {
@@ -72,70 +72,65 @@ const Card5: React.FC = () => {
     }
   }, [filterType, rangeStart, rangeEnd]);
 
-  const fetchActivities = async () => {
-    try {
-      const response = await fetch("/api/ModuleSales/UserManagement/ProgressLogs/FetchAccount", {
-        cache: "no-store",
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch activities");
-
-      const json = await response.json();
-      const data: Activity[] = Array.isArray(json) ? json : json.data || [];
-
-      setActivities(data);
-    } catch (error) {
-      console.error("Error fetching activities:", error);
-      toast.error("Error fetching activities data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchActivities();
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch("/api/woocommerce/orders");
+        if (!res.ok) throw new Error("Failed to fetch orders");
+        const data = await res.json();
+        setOrders(data);
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+        toast.error("Failed to load orders.");
+        setError("Failed to fetch orders.");
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
+
+    fetchOrders();
   }, []);
 
-  // Aggregate activities by day helper
-  const aggregateByDay = (data: Activity[]) => {
+  // Aggregate orders by locale date string
+  const aggregateByDay = (data: Order[]) => {
     const counts: Record<string, number> = {};
     data.forEach(({ date_created }) => {
-      const date = new Date(date_created).toISOString().slice(0, 10);
+      const date = new Date(date_created).toLocaleDateString();
       counts[date] = (counts[date] || 0) + 1;
     });
     return Object.entries(counts)
       .map(([date, count]) => ({ date, count }))
-      .sort((a, b) => a.date.localeCompare(b.date));
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
 
-  // Filter & aggregate activities whenever dependencies change
+  // Filter and aggregate orders based on filterType and date range
   useEffect(() => {
-    if (!activities.length) {
+    if (!orders.length) {
       setFilteredData([]);
       return;
     }
 
     const now = Date.now();
-    let filtered: Activity[] = [];
+    let filtered: Order[] = [];
 
     if (filterType === "7days") {
       const cutoff = now - 7 * DAY_MS;
-      filtered = activities.filter(({ date_created }) => {
+      filtered = orders.filter(({ date_created }) => {
         const time = new Date(date_created).getTime();
         return time >= cutoff && time <= now;
       });
     } else if (filterType === "month") {
       const today = new Date();
       const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).getTime();
-      filtered = activities.filter(({ date_created }) => {
+      filtered = orders.filter(({ date_created }) => {
         const time = new Date(date_created).getTime();
         return time >= startOfMonth && time <= now;
       });
     } else if (filterType === "range") {
       if (rangeStart && rangeEnd) {
         const startTime = new Date(rangeStart).getTime();
-        const endTime = new Date(rangeEnd).getTime() + DAY_MS - 1; // include end day fully
-        filtered = activities.filter(({ date_created }) => {
+        const endTime = new Date(rangeEnd).getTime() + DAY_MS - 1;
+        filtered = orders.filter(({ date_created }) => {
           const time = new Date(date_created).getTime();
           return time >= startTime && time <= endTime;
         });
@@ -143,11 +138,11 @@ const Card5: React.FC = () => {
     }
 
     setFilteredData(aggregateByDay(filtered));
-  }, [activities, filterType, rangeStart, rangeEnd]);
+  }, [orders, filterType, rangeStart, rangeEnd]);
 
   return (
     <div className="bg-white border rounded-lg shadow p-4">
-      <h4 className="text-xs font-semibold mb-3 text-gray-700">Activities Per Day | PosgreSQL</h4>
+      <h4 className="text-xs font-semibold mb-3 text-gray-700">Orders Per Day | Wordpress Website (REST API)</h4>
 
       <div className="mb-3 flex flex-wrap gap-2 items-center text-xs">
         <label className="flex items-center gap-1">
@@ -206,23 +201,28 @@ const Card5: React.FC = () => {
         )}
       </div>
 
-      {loading ? (
+      {loadingOrders ? (
         <div className="text-center text-xs text-gray-400">Loading...</div>
+      ) : error ? (
+        <div className="text-center text-xs text-red-500">{error}</div>
       ) : filteredData.length === 0 ? (
-        <div className="text-center text-xs text-gray-400">No activity data</div>
+        <div className="text-center text-xs text-gray-400">No order data</div>
       ) : (
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={filteredData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart
+            data={filteredData}
+            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" tick={{ fontSize: 10 }} />
             <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
             <Tooltip content={<CustomTooltip />} />
-            <Line type="monotone" dataKey="count" stroke="#2563eb" strokeWidth={2} dot={{ r: 2 }} />
-          </LineChart>
+            <Bar dataKey="count" fill="#ef4444" />
+          </BarChart>
         </ResponsiveContainer>
       )}
     </div>
   );
 };
 
-export default Card5;
+export default CountOrders;
