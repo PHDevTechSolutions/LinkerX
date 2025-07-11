@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { CiBellOn, CiDark, CiSun } from "react-icons/ci";
+import { IoMenu } from "react-icons/io5";
+
 
 // Route for Notifications
 import Notification from "./Notification";
@@ -283,8 +285,8 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onToggleTheme, isDarkM
   return (
     <div className={`sticky top-0 z-[999] flex justify-between items-center p-4 transition-all duration-300 ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"}`}>
       <div className="flex items-center space-x-4">
-        <button onClick={onToggleSidebar} title="Show Sidebar" className="rounded-full shadow-lg block sm:hidden">
-          <img src="/taskflow.png" alt="Logo" className="h-8" />
+        <button onClick={onToggleSidebar} title="Show Sidebar" className="rounded-full p-2 shadow-lg block sm:hidden">
+          <IoMenu size={20} />
         </button>
       </div>
 

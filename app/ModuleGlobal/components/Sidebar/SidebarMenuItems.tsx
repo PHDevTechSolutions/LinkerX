@@ -16,7 +16,7 @@ const getMenuItems = (
       { title: 'Activity Logs', href: `/ModuleGlobal/ERP/Taskflow/ActivityLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       { title: 'Progress Logs', href: `/ModuleGlobal/ERP/Taskflow/ProgressLogs${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       { title: 'CSR Inquiries', href: `/ModuleGlobal/ERP/Taskflow/CSRInquiries${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      { title: 'Notifications', href: `/ModuleGlobal/ERP/Taskflow/Notifications${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      //{ title: 'Notifications', href: `/ModuleGlobal/ERP/Taskflow/Notifications${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       { title: 'Territory Sales Associates', href: `/ModuleGlobal/ERP/Taskflow/TSA${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       { title: 'Territory Sales Manager', href: `/ModuleGlobal/ERP/Taskflow/TSM${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ...(role === "Super Admin"

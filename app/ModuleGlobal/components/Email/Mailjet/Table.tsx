@@ -54,22 +54,22 @@ const Table: React.FC<TableProps> = ({ emails, loading, error }) => {
   };
 
   return (
-    <div className="overflow-x-auto">
+    <div>
       {/* Filters */}
-      <div className="flex gap-4 mb-4 items-center">
-          <label className="text-xs">From:</label>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mb-4 text-xs">
+          <label className="flex flex-col sm:flex-row sm:items-center sm:gap-1 mb-2 sm:mb-0">From:</label>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="px-3 py-2 border-b bg-white text-xs"
+            className="px-3 py-2 border-b bg-white text-xs mt-1 sm:mt-0"
           />
-          <label className="text-xs">To:</label>
+          <label className="flex flex-col sm:flex-row sm:items-center sm:gap-1 mb-2 sm:mb-0">To:</label>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="px-3 py-2 border-b bg-white text-xs"
+            className="px-3 py-2 border-b bg-white text-xs mt-1 mb-2 sm:mt-0"
           />
         <label className="text-xs">
           Show{" "}

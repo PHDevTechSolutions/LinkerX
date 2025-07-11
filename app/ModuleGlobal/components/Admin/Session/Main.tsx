@@ -187,50 +187,51 @@ const UsersCard: React.FC<UsersCardProps> = ({
   return (
     <div className="mt-4">
       {/* Date Filter */}
-      <div className="flex gap-4 mb-4 text-xs items-center">
-        <label>
-          Start Date:{" "}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mb-4 text-xs">
+        <label className="flex flex-col sm:flex-row sm:items-center sm:gap-1 mb-2 sm:mb-0">
+          <span>Start Date:</span>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="px-3 py-2 border-b bg-white text-xs"
+            className="px-3 py-2 border-b bg-white text-xs mt-1 sm:mt-0"
           />
         </label>
-        <label>
-          End Date:{" "}
+
+        <label className="flex flex-col sm:flex-row sm:items-center sm:gap-1 mb-2 sm:mb-0">
+          <span>End Date:</span>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="px-3 py-2 border-b bg-white text-xs"
+            className="px-3 py-2 border-b bg-white text-xs mt-1 sm:mt-0"
           />
         </label>
+
         <button
           onClick={() => {
             setStartDate("");
             setEndDate("");
           }}
-          className="ml-2 px-3 py-1 text-xs border rounded bg-gray-100 hover:bg-gray-200"
+          className="px-3 py-1 text-xs border rounded bg-gray-100 hover:bg-gray-200 mb-2 sm:mb-0"
         >
           Clear
         </button>
-        <div>
-          <label className="mr-2">Rows per page:</label>
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setCurrentPage(1);
-            }}
-            className="border rounded px-2 py-1 text-xs"
-          >
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-        </div>
+
+        <label className="whitespace-nowrap">Rows per page:</label>
+        <select
+          value={pageSize}
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
+            setCurrentPage(1);
+          }}
+          className="px-3 py-2 border rounded bg-white text-xs"
+        >
+          <option value={10}>10</option>
+          <option value={25}>25</option>
+          <option value={50}>50</option>
+          <option value={100}>100</option>
+        </select>
       </div>
 
       {/* Tabs */}
@@ -238,8 +239,8 @@ const UsersCard: React.FC<UsersCardProps> = ({
         <button
           onClick={() => setActiveTab("table")}
           className={`px-4 py-2 border-b-2 ${activeTab === "table"
-              ? "border-blue-500 text-blue-600 font-semibold"
-              : "border-transparent text-gray-500"
+            ? "border-blue-500 text-blue-600 font-semibold"
+            : "border-transparent text-gray-500"
             }`}
         >
           Table
@@ -247,8 +248,8 @@ const UsersCard: React.FC<UsersCardProps> = ({
         <button
           onClick={() => setActiveTab("report")}
           className={`px-4 py-2 border-b-2 ${activeTab === "report"
-              ? "border-blue-500 text-blue-600 font-semibold"
-              : "border-transparent text-gray-500"
+            ? "border-blue-500 text-blue-600 font-semibold"
+            : "border-transparent text-gray-500"
             }`}
         >
           Analytics
@@ -268,25 +269,24 @@ const UsersCard: React.FC<UsersCardProps> = ({
 
           {/* Pagination Controls */}
           <div className="flex justify-between items-center mt-4">
-            
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className="bg-gray-200 text-xs px-4 py-2 rounded"
-              >
-                Prev
-              </button>
-              <span className="text-xs">
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                className="bg-gray-200 text-xs px-4 py-2 rounded"
-              >
-                Next
-              </button>
-            </div>
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              className="bg-gray-200 text-xs px-4 py-2 rounded"
+            >
+              Prev
+            </button>
+            <span className="text-xs">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              className="bg-gray-200 text-xs px-4 py-2 rounded"
+            >
+              Next
+            </button>
+          </div>
         </>
       )}
 

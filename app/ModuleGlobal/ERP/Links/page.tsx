@@ -171,9 +171,8 @@ const Page: React.FC = () => {
             <ParentLayout>
                 <UserFetcher>
                     {() => (
-                        <div className="container mx-auto p-4">
-                            <div className="bg-white shadow-md border rounded-lg p-6 relative">
-                                <h2 className="text-lg font-bold mb-2">Links</h2>
+                        <div className="container mx-auto p-4 text-gray-900">
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
 
                                 {/* Add/Edit Modal */}
                                 {isOpen && (
@@ -193,28 +192,31 @@ const Page: React.FC = () => {
                                     </div>
                                 )}
 
-                                <Filters
-                                    searchTerm={searchTerm}
-                                    onSearchChange={(val) => {
-                                        setSearchTerm(val);
-                                        setCurrentPage(1);
-                                    }}
-                                    onAddClick={openAdd}
-                                />
+                                <div className="mb-4 p-4 border bg-white shadow-md rounded-lg">
+                                    <h2 className="text-lg font-bold mb-2">Links</h2>
+                                    <Filters
+                                        searchTerm={searchTerm}
+                                        onSearchChange={(val) => {
+                                            setSearchTerm(val);
+                                            setCurrentPage(1);
+                                        }}
+                                        onAddClick={openAdd}
+                                    />
 
-                                <Table
-                                    rows={currentPosts}
-                                    currentPage={currentPage}
-                                    totalPages={totalPages}
-                                    pageLength={pageLength}
-                                    onPageLengthChange={(len) => {
-                                        setPageLength(len);
-                                        setCurrentPage(1);
-                                    }}
-                                    onPageChange={setCurrentPage}
-                                    onEdit={openEdit}
-                                    onDelete={openDeleteConfirm}
-                                />
+                                    <Table
+                                        rows={currentPosts}
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        pageLength={pageLength}
+                                        onPageLengthChange={(len) => {
+                                            setPageLength(len);
+                                            setCurrentPage(1);
+                                        }}
+                                        onPageChange={setCurrentPage}
+                                        onEdit={openEdit}
+                                        onDelete={openDeleteConfirm}
+                                    />
+                                </div>
                             </div>
 
                             <ToastContainer className="text-xs" autoClose={1500} />
