@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
-// Global Tools
-import Pagination from "../../../components/Tools/Pagination";
 // Components
 import Main from "../../../components/Admin/Session/Main";
 import SearchFilters from "../../../components/Admin/Session/Filters";

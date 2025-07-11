@@ -1,5 +1,5 @@
 import { CiUser } from "react-icons/ci";
-import { FcGlobe, FcFeedback  } from "react-icons/fc";
+import { FcGlobe, FcFeedback, FcLink } from "react-icons/fc";
 import { IoHelp } from "react-icons/io5";
 import TaskflowIcon from './TaskflowIcon';
 import Ecodesk from './EcodeskIcon';
@@ -45,7 +45,13 @@ const getMenuItems = (
     icon: FcGlobe,
     subItems: [
       { title: 'Ecoshift Orders', href: `/ModuleGlobal/ERP/Website/Ecoshift/Orders${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
-      { title: 'Ecoshift Inquiries', href: `/ModuleGlobal/ERP/Website/Ecoshift/Forminator${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+    ],
+  },
+  {
+    title: 'Linker X',
+    icon: FcLink,
+    subItems: [
+      { title: 'Links', href: `/ModuleGlobal/ERP/Links/${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
     ],
   },
   {

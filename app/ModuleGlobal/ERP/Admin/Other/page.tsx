@@ -92,7 +92,8 @@ const ListofUser: React.FC = () => {
             "E-Commerce Staff",
             "Warehouse Manager",
             "Warehouse Staff",
-            "HR Manager"
+            "HR Manager",
+            "Engineering Manager"
             
         ]
             .includes(post?.Role);

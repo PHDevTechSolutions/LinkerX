@@ -84,6 +84,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <label className="block text-xs font-bold mb-2" htmlFor="Role">Role</label>
           <select id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs" required>
             <option>Select Role</option>
+            <option value="Engineering Manager">Engineering Manager</option>
             <option value="HR Manager">HR Manager</option>
             <option value="E-Commerce Staff">E-Commerce Staff</option>
             <option value="Business Development Manager">Business Development Manager</option>
@@ -97,6 +98,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <select id="Department" value={Department || ""} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs" required>
             <option>Select Department</option>
             <option value="IT Department">IT Department</option>
+            <option value="Engineering Department">Engineering Department</option>
           </select>
         </div>
         </div>
@@ -117,6 +119,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <select id="Company" value={Company || ""} onChange={(e) => setCompany(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs" required>
             <option>Select Company</option>
             <option value="Ecoshift Corporation">Ecoshift Corporation</option>
+            <option value="Disruptive Solutions Inc">Disruptive Solutions Inc</option>
           </select>
         </div>
         <div className="w-full sm:w-1/2 md:w-1/6 px-4 mb-4">
