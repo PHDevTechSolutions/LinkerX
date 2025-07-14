@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import ParentLayout from "../../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../../components/Session/SessionChecker";
 import UserFetcher from "../../../../components/User/UserFetcher";
+import EditModal from "../../../../components/Website/Shopify/Products/Form";
 import Table from "../../../../components/Website/Shopify/Products/Table";
 import Filter from "../../../../components/Website/Shopify/Products/Filters";
 import Pagination from "../../../../components/Website/Shopify/Products/Pagination";
@@ -40,6 +41,8 @@ const ProductsPage: React.FC = () => {
 
     // Pagination state
     const [page, setPage] = useState(1);
+
+    const [editing, setEditing] = useState<ShopifyProduct | null>(null);
 
     useEffect(() => {
         (async () => {
@@ -194,8 +197,24 @@ const ProductsPage: React.FC = () => {
                                     ) : (
                                         <>
                                             <div className="overflow-x-auto">
-                                                <Table products={pagedProducts} loading={loading} />
+                                                <Table
+                                                    products={pagedProducts}
+                                                    loading={loading}
+                                                    handleEdit={(p) => setEditing(p)} />
                                             </div>
+
+                                            {editing && (
+                                                <EditModal
+                                                    product={editing}
+                                                    onClose={() => setEditing(null)}
+                                                    onSaved={async () => {
+                                                        // re‑fetch list
+                                                        const res = await fetch("/api/shopify/products");
+                                                        const json = await res.json();
+                                                        if (json.success) setProducts(json.data);
+                                                    }}
+                                                />
+                                            )}
 
                                             {/* Use Pagination component */}
                                             <Pagination
