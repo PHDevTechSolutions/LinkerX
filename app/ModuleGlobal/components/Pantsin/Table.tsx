@@ -22,6 +22,33 @@ interface TableProps {
   loading: boolean;
 }
 
+const formatDuration = (ms: number) => {
+  const secs = Math.floor(ms / 1000);
+  const mins = Math.floor(secs / 60);
+  const hrs = Math.floor(mins / 60);
+  if (hrs) return `${hrs}h ${mins % 60}m`;
+  if (mins) return `${mins}m`;
+  return `${secs}s`;
+};
+
+const getLateOrOT = (dateISO: string) => {
+  const d = new Date(dateISO);
+  const y = d.getFullYear();
+  const m = d.getMonth();
+  const day = d.getDate();
+
+  const startRef = new Date(y, m, day, 8, 0, 0);     // 08:00
+  const endRef   = new Date(y, m, day, 17, 20, 0);    // 17:20
+
+  if (d > endRef) {
+    return `OT ${formatDuration(d.getTime() - endRef.getTime())}`;
+  }
+  if (d > startRef) {
+    return `Late ${formatDuration(d.getTime() - startRef.getTime())}`;
+  }
+  return "—";
+};
+
 const Table: React.FC<TableProps> = ({
   paginated,
   selectedIds,
@@ -70,6 +97,7 @@ const Table: React.FC<TableProps> = ({
             <th className="px-4 py-3 font-semibold text-gray-700">Type</th>
             <th className="px-4 py-3 font-semibold text-gray-700">Status</th>
             <th className="px-4 py-3 font-semibold text-gray-700">Date</th>
+            <th className="px-4 py-3 font-semibold text-gray-700">Late / OT</th>
             <th className="px-4 py-3 font-semibold text-gray-700">Actions</th>
           </tr>
         </thead>
@@ -88,6 +116,7 @@ const Table: React.FC<TableProps> = ({
               <td className="px-4 py-2 text-xs">{o.Type}</td>
               <td className="px-4 py-2 text-xs">{o.Status}</td>
               <td className="px-4 py-2 text-xs">{new Date(o.date_created).toLocaleString()}</td>
+              <td className="px-4 py-2 text-xs">{getLateOrOT(o.date_created)}</td>
               <td className="px-4 py-2 text-xs">
                 <button
                   onClick={() => startEdit(o)}

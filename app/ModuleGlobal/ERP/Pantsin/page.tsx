@@ -247,57 +247,58 @@ const ActivityPage: React.FC = () => {
             <div className="container mx-auto p-4 text-gray-900">
               <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                 <div className="mb-4 p-4 bg-white border shadow-md rounded-lg">
-                  <h2 className="text-lg font-bold mb-4 flex items-center justify-between">Activity Logs</h2>
-                </div>
-
-                {/* Filters */}
-                <Filter
-                  searchTerm={searchTerm}
-                  setSearchTerm={(v) => {
-                    setSearchTerm(v);
-                    setCurrentPage(1);
-                  }}
-                  startDate={startDate}
-                  setStartDate={(v) => {
-                    setStartDate(v);
-                    setCurrentPage(1);
-                  }}
-                  endDate={endDate}
-                  setEndDate={(v) => {
-                    setEndDate(v);
-                    setCurrentPage(1);
-                  }}
-                />
-
-                {/* Inline edit form */}
-                {editing && (
-                  <Form
-                    open={Boolean(editing)}
-                    value={editing as Activity}
-                    onChange={(v) => setEditing(v)}
-                    onSave={saveEdit}
-                    onCancel={cancelEdit}
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-lg font-bold mb-4 flex items-center justify-between">Activity Logs</h2>
+                  </div>
+                  {/* Filters */}
+                  <Filter
+                    searchTerm={searchTerm}
+                    setSearchTerm={(v) => {
+                      setSearchTerm(v);
+                      setCurrentPage(1);
+                    }}
+                    startDate={startDate}
+                    setStartDate={(v) => {
+                      setStartDate(v);
+                      setCurrentPage(1);
+                    }}
+                    endDate={endDate}
+                    setEndDate={(v) => {
+                      setEndDate(v);
+                      setCurrentPage(1);
+                    }}
                   />
-                )}
 
-                {/* Table */}
-                <Table
-                  paginated={paginated}
-                  selectedIds={selectedIds}
-                  toggleSelectAll={toggleSelectAll}
-                  toggleSelect={toggleSelect}
-                  startEdit={startEdit}
-                  confirmDelete={confirmDelete}
-                  handleBulkDelete={openBulkDeleteModal}
-                  loading={loading}
-                />
+                  {/* Inline edit form */}
+                  {editing && (
+                    <Form
+                      open={Boolean(editing)}
+                      value={editing as Activity}
+                      onChange={(v) => setEditing(v)}
+                      onSave={saveEdit}
+                      onCancel={cancelEdit}
+                    />
+                  )}
 
-                {/* Pagination */}
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  goToPage={(p) => setCurrentPage(p)}
-                />
+                  {/* Table */}
+                  <Table
+                    paginated={paginated}
+                    selectedIds={selectedIds}
+                    toggleSelectAll={toggleSelectAll}
+                    toggleSelect={toggleSelect}
+                    startEdit={startEdit}
+                    confirmDelete={confirmDelete}
+                    handleBulkDelete={openBulkDeleteModal}
+                    loading={loading}
+                  />
+
+                  {/* Pagination */}
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    goToPage={(p) => setCurrentPage(p)}
+                  />
+                </div>
               </div>
 
               {/* Single Delete Confirm Modal */}
