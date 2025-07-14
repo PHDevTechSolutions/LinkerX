@@ -21,9 +21,9 @@ interface TableProps {
 }
 
 const Table: React.FC<TableProps> = ({ orders, loading }) => {
-  if (loading) return <p className="text-sm text-gray-500">Loading orders…</p>;
+  if (loading) return <p className="text-xs text-gray-500">Loading orders…</p>;
   if (orders.length === 0)
-    return <p className="text-sm text-gray-500">No orders found.</p>;
+    return <p className="text-xs text-gray-500">No orders found.</p>;
 
   // Compute total price
   const totalPrice = orders.reduce(

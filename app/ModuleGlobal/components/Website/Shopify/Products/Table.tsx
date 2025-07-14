@@ -27,8 +27,8 @@ const statusColors: Record<string, string> = {
 };
 
 const Table: React.FC<TableProps> = ({ products, loading, handleEdit }) => {
-  if (loading) return <p className="text-sm text-gray-500">Loading products…</p>;
-  if (products.length === 0) return <p className="text-sm text-gray-500">No products found.</p>;
+  if (loading) return <p className="text-xs text-gray-500">Loading products…</p>;
+  if (products.length === 0) return <p className="text-xs text-gray-500">No products found.</p>;
 
   // Totals for footer
   const totalPrice = products.reduce(

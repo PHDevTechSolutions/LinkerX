@@ -85,9 +85,9 @@ const OrderTable: React.FC<OrderTableProps> = ({ orders, loading, error }) => {
         saveAs(blob, "WooCommerceOrders.xlsx");
     };
 
-    if (loading) return <p className="text-sm text-gray-500">Loading orders...</p>;
-    if (error) return <p className="text-sm text-red-500">{error}</p>;
-    if (orders.length === 0) return <p className="text-sm text-gray-500">No orders found.</p>;
+    if (loading) return <p className="text-xs text-gray-500">Loading orders...</p>;
+    if (error) return <p className="text-xs text-red-500">{error}</p>;
+    if (orders.length === 0) return <p className="text-xs text-gray-500">No orders found.</p>;
 
     const statusColors: { [key: string]: string } = {
         processing: 'bg-green-800',
