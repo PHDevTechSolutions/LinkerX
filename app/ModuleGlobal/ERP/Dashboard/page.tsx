@@ -10,6 +10,7 @@ import CountActivities from '../../components/Dashboard/CountActivities';
 import ActivityChart from '../../components/Dashboard/Chart/ActivityChart';
 import TicketChart from '../../components/Dashboard/Chart/TicketChart';
 import CountOrders from '../../components/Dashboard/Chart/CountOrders';
+import ShopifySalesBar from "../../components/Dashboard/Chart/ShopifySalesBar";
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -46,6 +47,7 @@ const DashboardPage: React.FC = () => {
           <div className="mb-6"><ActivityChart /></div>
           <div className="mb-6"><TicketChart /></div>
           <div className="mb-6"><CountOrders /></div>
+          <div className="mb-6"><ShopifySalesBar granularity="day" /></div>
 
           <ToastContainer className="text-xs" />
         </div>

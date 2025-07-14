@@ -44,7 +44,9 @@ const getMenuItems = (
     title: 'Website',
     icon: FcGlobe,
     subItems: [
-      { title: 'Ecoshift Orders', href: `/ModuleGlobal/ERP/Website/Ecoshift/Orders${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      { title: 'WooCommerce Orders', href: `/ModuleGlobal/ERP/Website/Ecoshift/Orders${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      { title: 'Shopify Orders', href: `/ModuleGlobal/ERP/Website/Shopify/Orders${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      { title: 'Shopify Products', href: `/ModuleGlobal/ERP/Website/Shopify/Products${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
     ],
   },
   {
