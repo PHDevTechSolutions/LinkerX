@@ -73,6 +73,7 @@ const getMenuItems = (
       icon: FcLink,
       subItems: [
         { title: 'Links', href: `/ModuleGlobal/ERP/Links/${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Cloudinary', href: `/ModuleGlobal/ERP/Cloudinary/${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {

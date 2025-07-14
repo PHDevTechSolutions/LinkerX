@@ -245,10 +245,10 @@ const ActivityPage: React.FC = () => {
         <UserFetcher>
           {() => (
             <div className="container mx-auto p-4 text-gray-900">
-              <div className="bg-white border shadow-md rounded-lg p-6">
-                <h2 className="text-lg font-bold mb-4 flex items-center justify-between">
-                  Activity Logs
-                </h2>
+              <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
+                <div className="mb-4 p-4 bg-white border shadow-md rounded-lg">
+                  <h2 className="text-lg font-bold mb-4 flex items-center justify-between">Activity Logs</h2>
+                </div>
 
                 {/* Filters */}
                 <Filter
