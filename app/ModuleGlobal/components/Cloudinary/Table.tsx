@@ -84,7 +84,7 @@ const Table: React.FC<TableProps> = ({ mediaItems, confirmDelete }) => {
 
         <tfoot className="bg-gray-50 text-xs font-semibold">
           <tr>
-            <td colSpan={4} className="px-4 py-2">
+            <td colSpan={3} className="px-4 py-2">
               Total items: {mediaItems.length}
             </td>
             <td className="px-4 py-2">{formatSize(totalBytes)}</td>
