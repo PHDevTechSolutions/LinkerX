@@ -1,4 +1,4 @@
-import { FcLink, FcPuzzle, FcManager, FcLock, FcInfo } from "react-icons/fc";
+import { FcLink, FcPuzzle, FcManager, FcLock, FcInfo, FcCommandLine } from "react-icons/fc";
 
 const getMenuItems = (
   userId: string | null = "",
@@ -8,7 +8,7 @@ const getMenuItems = (
       title: 'Applications',
       icon: FcPuzzle,
       subItems: [
-        { title: 'Integration', href: `/ModuleGlobal/ERP/Application/Integration${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Modules', href: `/ModuleGlobal/ERP/Application/Integration${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
@@ -16,6 +16,18 @@ const getMenuItems = (
       icon: FcLink,
       subItems: [
         { title: 'Links', href: `/ModuleGlobal/ERP/Links/${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+      ],
+    },
+    {
+      title: 'IT Systems & Operations',
+      icon: FcCommandLine,
+      subItems: [
+        { title: 'Asset Inventory', href: `/ModuleGlobal/ERP/IT/Assets/${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Employee Monitoring', href: `/ModuleGlobal/ERP/Links/${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Network Performance', href: `/ModuleGlobal/ERP/Links/${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'Network Credentials', href: `/ModuleGlobal/ERP/Links/${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'PRS & Transmittals', href: `/ModuleGlobal/ERP/Links/${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
+        { title: 'System Credentials', href: `/ModuleGlobal/ERP/Links/${userId ? `?id=${encodeURIComponent(userId)}` : ''}` },
       ],
     },
     {
