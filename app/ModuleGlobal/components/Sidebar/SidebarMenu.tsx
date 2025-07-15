@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { RxCaretDown, RxCaretLeft } from "react-icons/rx";
 import { FaRegCircle } from "react-icons/fa";
-import { CiSettings } from "react-icons/ci"; // For My Profile icon
+import { FcSettings, FcBullish } from "react-icons/fc";
 
 interface SubItem {
   title: string;
@@ -39,7 +39,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
 }) => {
   const myProfileItem = {
     title: "My Profile",
-    icon: CiSettings,
+    icon: FcSettings,
     subItems: [
       {
         title: "Update Profile",
@@ -54,7 +54,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
       <div className="w-full">
         <button
           onClick={() => handleToggle(myProfileItem.title)}
-          className={`flex items-center w-full p-4 hover:bg-green-700 rounded hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""
+          className={`flex items-center w-full p-4 hover:bg-white rounded hover:text-black transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""
             }`}
         >
           <myProfileItem.icon size={18} />
@@ -76,7 +76,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 <Link
                   key={subIndex}
                   href={subItem.href}
-                  className="flex items-center w-full p-4 bg-gray-200 hover:bg-green-700 hover:text-white transition-all duration-300 ease-in-out"
+                  className="flex items-center w-full p-4 bg-gray-200 hover:bg-white hover:text-black transition-all duration-300 ease-in-out"
                 >
                   <FaRegCircle size={10} className="mr-2 ml-2" />
                   {subItem.title}
@@ -91,14 +91,9 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
       <div className="w-full mt-1">
         <Link
           href={`/ModuleGlobal/ERP/Dashboard/${userId ? `?id=${encodeURIComponent(userId)}` : ""}`}
-          className="flex items-center w-full p-4 bg-green-700 mb-1 text-white rounded-md transition-all duration-300 ease-in-out hover:shadow-md active:scale-95"
+          className="flex items-center w-full p-4 bg-white mb-1 text-black rounded-md transition-all duration-300 ease-in-out hover:shadow-md active:scale-95"
         >
-          <span className="mr-1">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M3 3h4v4H3V3zm5 0h4v4H8V3zm5 0h4v4h-4V3zM3 8h4v4H3V8zm5 0h4v4H8V8zm5 0h4v4h-4V8zM3 13h4v4H3v-4zm5 0h4v4H8v-4zm5 0h4v4h-4v-4z" />
-            </svg>
-          </span>
-          Dashboard
+         <FcBullish size={18} className="mr-2"/> Dashboard
         </Link>
       </div>
 
@@ -109,7 +104,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
           <div key={index} className="w-full">
             <button
               onClick={() => handleToggle(item.title)}
-              className={`flex items-center w-full p-4 hover:bg-green-700 rounded hover:text-white transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""
+              className={`flex items-center w-full p-4 hover:bg-white rounded hover:text-black transition-all duration-300 ease-in-out hover:shadow-md active:scale-95 ${collapsed ? "justify-center" : ""
                 }`}
             >
               <item.icon size={18} />
@@ -129,7 +124,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 <div key={subIndex} className="w-full">
                   <Link
                     href={subItem.href}
-                    className="flex flex-col mb-1 p-4 bg-gray-200 hover:bg-green-700 hover:text-white transition-all duration-300 ease-in-out rounded"
+                    className="flex flex-col mb-1 p-4 bg-gray-200 hover:bg-white hover:text-black transition-all duration-300 ease-in-out rounded"
                   >
                     <div className="flex items-center">
                       <FaRegCircle size={10} className="ml-2 mr-2" />
