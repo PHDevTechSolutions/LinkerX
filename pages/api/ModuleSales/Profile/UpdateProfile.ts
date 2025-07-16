@@ -19,7 +19,9 @@ export default async function updateProfile(req: NextApiRequest, res: NextApiRes
     Status,
     ContactNumber,
     Password,
-    profilePicture, // bagong field dito
+    profilePicture,
+    ImapHost,
+    ImapPass,
   } = req.body;
 
   if (!id) {
@@ -42,12 +44,21 @@ export default async function updateProfile(req: NextApiRequest, res: NextApiRes
     };
 
     if (profilePicture) {
-      updatedUser.profilePicture = profilePicture; // i-save ang url dito
+      updatedUser.profilePicture = profilePicture;
     }
 
     if (Password && Password.trim() !== "") {
       const hashedPassword = await bcrypt.hash(Password, 10);
       updatedUser.Password = hashedPassword;
+    }
+
+    if (ImapHost) {
+      updatedUser.ImapHost = ImapHost;
+    }
+
+    if (ImapPass && ImapPass.trim() !== "") {
+      const hashedImapPass = await bcrypt.hash(ImapPass, 10);
+      updatedUser.ImapPass = hashedImapPass;
     }
 
     const result = await userCollection.updateOne(

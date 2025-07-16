@@ -18,6 +18,8 @@ interface UserDetails {
   ContactPassword?: string;
   ContactNumber: string;
   profilePicture: string;
+  ImapHost: string;
+  ImapPass: string;
 }
 
 const STATUS_OPTIONS = [
@@ -42,6 +44,8 @@ const ProfileForm: React.FC = () => {
     Department: "",
     Status: "",
     profilePicture: "",
+    ImapHost: "",
+    ImapPass: "",
   });
 
   const [originalDetails, setOriginalDetails] = useState<UserDetails | null>(null);
@@ -76,6 +80,8 @@ const ProfileForm: React.FC = () => {
             Department: data.Department || "",
             Status: data.Status || "",
             profilePicture: data.profilePicture || "",
+            ImapHost: data.ImapHost || "",
+            ImapPass: data.ImapPass || "",
           };
 
           // Load draft from localStorage if exists and user id matches
@@ -282,6 +288,20 @@ const ProfileForm: React.FC = () => {
             <div>
               <label htmlFor="ContactNumber" className="block text-xs font-medium text-gray-700">Contact Number</label>
               <input type="text" id="ContactNumber" name="ContactNumber" value={userDetails.ContactNumber} onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border-b text-xs text-black"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="ImapPass" className="block text-xs font-medium text-gray-700">Web-Password</label>
+              <input type="text" id="ImapPass" name="ImapPass" value={userDetails.ImapPass} onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border-b text-xs text-black"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="ImapHost" className="block text-xs font-medium text-gray-700">Web-Host</label>
+              <input type="text" id="ImapHost" name="ImapHost" value={userDetails.ImapHost} onChange={handleChange}
                 className="mt-1 block w-full px-4 py-2 border-b text-xs text-black"
               />
             </div>

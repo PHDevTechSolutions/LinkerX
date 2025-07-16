@@ -41,11 +41,18 @@ const getMenuItems = (
     {
       title: 'Admin Management',
       icon: FcLock,
-      subItems: [
-        ...(role === "Super Admin"
-          ? [{ title: 'Admin', href: `/ModuleGlobal/ERP/Admin/User${userId ? `?id=${encodeURIComponent(userId)}` : ''}` }]
-          : []),
-      ],
+      subItems: role === "Super Admin"
+        ? [
+          {
+            title: 'Admin',
+            href: `/ModuleGlobal/ERP/Admin/User${userId ? `?id=${encodeURIComponent(userId)}` : ''}`,
+          },
+          {
+            title: 'Xend-Mail',
+            href: `/ModuleGlobal/ERP/Admin/Webmail${userId ? `?id=${encodeURIComponent(userId)}` : ''}`,
+          },
+        ]
+        : [],
     },
     {
       title: 'Help Center',
