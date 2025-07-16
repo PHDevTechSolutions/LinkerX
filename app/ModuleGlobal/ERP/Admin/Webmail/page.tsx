@@ -17,16 +17,16 @@ const ITEMS_PER_PAGE = 10;
 const ListofUser: React.FC = () => {
   const [posts, setPosts] = useState<any[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastSync, setLastSync] = useState<string>("");
   const [imapInputPass, setImapInputPass] = useState<string>("");
-  const [showPasswordModal, setShowPasswordModal] = useState<boolean>(true);
+  const [showPasswordModal, setShowPasswordModal] = useState(true);
 
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedEmail, setSelectedEmail] = useState<any | null>(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
 
@@ -42,14 +42,12 @@ const ListofUser: React.FC = () => {
     ImapHost: "",
   });
 
-  // ✅ Load emails from session storage on mount
   useEffect(() => {
-    const cachedData = sessionStorage.getItem("cachedEmails");
+    const cached = sessionStorage.getItem("cachedSummaryEmails");
     const cachedDate = sessionStorage.getItem("cachedLastSync");
 
-    if (cachedData) {
-      const parsed = JSON.parse(cachedData);
-      setPosts(parsed);
+    if (cached) {
+      setPosts(JSON.parse(cached));
       setLastSync(cachedDate || "");
       setLoading(false);
     }
@@ -71,8 +69,6 @@ const ListofUser: React.FC = () => {
 
     try {
       const response = await fetch(`/api/user?id=${encodeURIComponent(userId)}`);
-      if (!response.ok) throw new Error("Failed to fetch user data");
-
       const data = await response.json();
 
       setUserDetails({
@@ -88,7 +84,7 @@ const ListofUser: React.FC = () => {
       });
     } catch (err) {
       console.error("Error fetching user data:", err);
-      setError("Failed to load user data. Please try again later.");
+      setError("Failed to load user data.");
     } finally {
       setLoading(false);
     }
@@ -149,15 +145,21 @@ const ListofUser: React.FC = () => {
       });
 
       const data = await response.json();
-
       if (!response.ok) throw new Error(data.error || "Failed to fetch emails");
+
+      // 🧠 Save only summaries for cache (no full body or attachments)
+      const summaryData = data.map((email: any) => ({
+        from: email.from,
+        subject: email.subject,
+        date: email.date,
+        body: "", // Skip body to reduce size
+      }));
 
       setPosts(data);
       const now = new Date().toLocaleString();
       setLastSync(now);
 
-      // ✅ Save to sessionStorage
-      sessionStorage.setItem("cachedEmails", JSON.stringify(data));
+      sessionStorage.setItem("cachedSummaryEmails", JSON.stringify(summaryData));
       sessionStorage.setItem("cachedLastSync", now);
     } catch (error: any) {
       console.error("❌ Fetch error:", error.message);
@@ -203,7 +205,7 @@ const ListofUser: React.FC = () => {
                 email={selectedEmail}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
+              <div className="grid grid-cols-1">
                 <div className="mb-4 p-4 bg-white border shadow-md rounded-lg">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-bold mb-4">📥 Webmail Inbox</h2>
@@ -218,7 +220,7 @@ const ListofUser: React.FC = () => {
                       <button
                         className="border text-black px-4 py-2 rounded text-xs"
                         onClick={() => {
-                          sessionStorage.removeItem("cachedEmails");
+                          sessionStorage.removeItem("cachedSummaryEmails");
                           sessionStorage.removeItem("cachedLastSync");
                           setPosts([]);
                           setFilteredPosts([]);
