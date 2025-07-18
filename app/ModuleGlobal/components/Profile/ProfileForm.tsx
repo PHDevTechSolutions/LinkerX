@@ -184,7 +184,7 @@ const ProfileForm: React.FC = () => {
     delete payload.ContactPassword;
 
     try {
-      const response = await fetch("/api/ModuleSales/Profile/UpdateProfile", {
+      const response = await fetch("/api/Profile/Edit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

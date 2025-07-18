@@ -16,7 +16,7 @@ const ListofUser: React.FC = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await fetch("/api/woocommerce/orders");
+        const res = await fetch("/api/Data/Applications/WooCommerce/Fetch");
         if (!res.ok) throw new Error("Failed to fetch orders");
         const data = await res.json();
         setOrders(data);

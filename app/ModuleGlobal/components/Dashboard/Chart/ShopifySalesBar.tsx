@@ -56,7 +56,7 @@ const ShopifySalesBar: React.FC<{ granularity?: Granularity }> = ({
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/shopify/orders");
+        const res = await fetch("/api/Data/Applications/Shopify/FetchOrder");
         const json = await res.json();
         if (json.success) setOrders(json.data);
       } catch (e) {

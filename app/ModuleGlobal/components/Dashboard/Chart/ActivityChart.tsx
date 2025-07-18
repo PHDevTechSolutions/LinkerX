@@ -74,7 +74,7 @@ const Card5: React.FC = () => {
 
   const fetchActivities = async () => {
     try {
-      const response = await fetch("/api/ModuleSales/UserManagement/ProgressLogs/FetchAccount", {
+      const response = await fetch("/api/Data/Applications/Taskflow/Activity/Fetch", {
         cache: "no-store",
       });
 

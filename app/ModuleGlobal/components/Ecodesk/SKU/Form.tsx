@@ -34,9 +34,11 @@ const AddSkuListing: React.FC<AddSkuListingProps> = ({ onCancel, refreshPosts, e
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const url = editPost ? `/api/ModuleCSR/SkuListing/EditSku` : `/api/ModuleCSR/SkuListing/CreateSku`; // API endpoint changes based on edit or add
-        const method = editPost ? "PUT" : "POST"; // HTTP method changes based on edit or add
+        const url = editPost 
+        ? `/api/Data/Applications/Ecodesk/SKU/Edit` 
+        : `/api/Data/Applications/Ecodesk/SKU/Create`; 
 
+        const method = editPost ? "PUT" : "POST"; 
         const response = await fetch(url, {
             method,
             headers: {

@@ -17,7 +17,7 @@ interface FormFieldsProps {
   setCustomerSegment: (value: string) => void;
   CustomerType: string;
   setCustomerType: (value: string) => void;
-  editPost?: any; // Can be typed better if you want
+  editPost?: any;
 }
 
 const AccountFormFields: React.FC<FormFieldsProps> = ({

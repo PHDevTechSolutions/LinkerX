@@ -27,7 +27,7 @@ const AccountListPage: React.FC = () => {
     // Fetch accounts from the API
     const fetchAccounts = async () => {
         try {
-            const response = await fetch("/api/ModuleCSR/Accounts/FetchAccounts"); // Correct API route
+            const response = await fetch("/api/Data/Applications/Ecodesk/Accounts/Fetch");
             if (!response.ok) throw new Error("Failed to fetch accounts");
 
             const data = await response.json();
@@ -75,7 +75,7 @@ const AccountListPage: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/ModuleCSR/Accounts/DeleteAccounts`, {
+            const response = await fetch(`/api/Data/Applications/Ecodesk/Accounts/Delete`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

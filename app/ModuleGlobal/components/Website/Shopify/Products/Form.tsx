@@ -40,7 +40,7 @@ const EditModal: React.FC<Props> = ({ product, onClose, onSaved }) => {
 
   const handleSave = async () => {
     try {
-      await fetch(`/api/shopify/${product.id}`, {
+      await fetch(`/api/Data/Applications/Shopify/${product.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

@@ -58,7 +58,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   useEffect(() => {
     const fetchManagers = async () => {
       try {
-        const response = await fetch("/api/manager?Role=Manager");
+        const response = await fetch("/api/UserManagement/FetchManager?Role=Manager");
         if (!response.ok) {
           throw new Error("Failed to fetch managers");
         }
@@ -83,7 +83,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   useEffect(() => {
     const fetchManagers = async () => {
       try {
-        const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager,Warehouse Manager"); 
+        const response = await fetch("/api/Data/Applications/Taskflow/UserManagement/FetchTSM?Roles=Territory Sales Manager,Ecommerce Manager,Warehouse Manager"); 
         if (!response.ok) {
           throw new Error("Failed to fetch managers");
         }

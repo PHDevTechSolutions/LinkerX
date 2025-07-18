@@ -56,7 +56,7 @@ const Page: React.FC = () => {
     // Fetch links list
     const fetchLinks = async () => {
         try {
-            const res = await fetch('/api/ModuleSales/Links/FetchData');
+            const res = await fetch('/api/Data/Links/Fetch');
             const data = await res.json();
             setPosts(data);
         } catch {
@@ -116,8 +116,8 @@ const Page: React.FC = () => {
 
         const endpoint =
             mode === 'add'
-                ? '/api/ModuleSales/Links/CreateData'
-                : `/api/ModuleSales/Links/UpdateData?id=${selected?._id}`;
+                ? '/api/Data/Links/Create'
+                : `/api/Data/Links/Edit?id=${selected?._id}`;
 
         const method = mode === 'add' ? 'POST' : 'PUT';
 
@@ -150,7 +150,7 @@ const Page: React.FC = () => {
     const confirmDelete = async () => {
         if (!selected) return;
         try {
-            const res = await fetch(`/api/ModuleSales/Links/DeleteData?id=${selected._id}`, {
+            const res = await fetch(`/api/Data/Links/Delete?id=${selected._id}`, {
                 method: 'DELETE',
             });
             if (!res.ok) {

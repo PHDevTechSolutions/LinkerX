@@ -37,7 +37,7 @@ const OrdersPage: React.FC = () => {
     useEffect(() => {
         (async () => {
             try {
-                const res = await fetch("/api/shopify/orders");
+                const res = await fetch("/api/Data/Applications/Shopify/FetchOrder");
                 const json = await res.json();
                 if (!json.success) throw new Error(json.error);
                 setOrders(json.data);

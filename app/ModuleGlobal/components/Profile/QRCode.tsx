@@ -89,12 +89,12 @@ const GenerateCode: React.FC = () => {
 
     try {
       const qrData = `Taskflow System | ERP Module - Ecoshift Corporation
-AgentName: ${userDetails.Firstname} ${userDetails.Lastname}
-Position: ${userDetails.Role || "N/A"}
-ContactNumber: ${userDetails.ContactNumber || "N/A"}
-Email: ${userDetails.Email || "N/A"}
-GeneratedCode: ${generatedCode}
-Link: https://ecoshiftcorp.com`;
+      AgentName: ${userDetails.Firstname} ${userDetails.Lastname}
+      Position: ${userDetails.Role || "N/A"}
+      ContactNumber: ${userDetails.ContactNumber || "N/A"}
+      Email: ${userDetails.Email || "N/A"}
+      GeneratedCode: ${generatedCode}
+      Link: https://ecoshiftcorp.com`;
       const qr = await QRCode.toDataURL(qrData);
       setQrCode(qr);
     } catch (err) {

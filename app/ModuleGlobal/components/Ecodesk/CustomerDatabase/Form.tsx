@@ -26,7 +26,9 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ onCancel, refreshPosts,
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const url = editPost ? `/api/ModuleCSR/Accounts/EditAccounts` : `/api/ModuleCSR/Accounts/CreateAccounts`; // API endpoint changes based on edit or add
+        const url = editPost 
+        ? `/api/Data/Applications/Ecodesk/Accounts/Edit` 
+        : `/api/Data/Applications/Ecodesk/Accounts/Create`; 
         const method = editPost ? "PUT" : "POST"; // HTTP method changes based on edit or add
 
         const response = await fetch(url, {

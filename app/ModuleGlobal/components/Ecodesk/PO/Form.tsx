@@ -50,9 +50,11 @@ const AddReceivedPO: React.FC<AddSkuListingProps> = ({ userDetails, onCancel, re
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const url = editPost ? `/api/ModuleCSR/ReceivedPO/EditReceivedPO` : `/api/ModuleCSR/ReceivedPO/CreateReceivedPO`; // API endpoint changes based on edit or add
-        const method = editPost ? "PUT" : "POST"; // HTTP method changes based on edit or add
+        const url = editPost 
+        ? `/api/Data/Applications/Ecodesk/PO/Edit` 
+        : `/api/Data/Applications/Ecodesk/PO/Create`;
 
+        const method = editPost ? "PUT" : "POST"; 
         const response = await fetch(url, {
             method,
             headers: {

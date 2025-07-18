@@ -15,7 +15,7 @@ const ListofUser: React.FC = () => {
   useEffect(() => {
     const fetchSentEmails = async () => {
       try {
-        const res = await fetch("/api/mailjet/sent-emails");
+        const res = await fetch("/api/Data/Applications/Mailjet/Fetch");
         if (!res.ok) throw new Error("Failed to fetch sent emails");
         const data = await res.json();
         setEmails(data);

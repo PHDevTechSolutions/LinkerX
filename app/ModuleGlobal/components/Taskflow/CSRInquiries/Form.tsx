@@ -5,47 +5,58 @@ import { CiSaveUp1, CiEdit, CiTurnL1 } from "react-icons/ci";
 import FormFields from "./FormFields";
 
 interface AddPostFormProps {
-  userDetails: { id: string; };
+  userDetails: { id: string };
   onCancel: () => void;
-  refreshPosts: () => void;  // Add a refreshPosts callback
+  refreshPosts: () => void;
   userName: any;
-  editUser?: any; // Optional prop for the post being edited
+  editUser?: any;
 }
 
 const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refreshPosts, editUser }) => {
-  const [ReferenceID, setReferenceID] = useState("");
-  const [Firstname, setFirstname] = useState(editUser ? editUser.Firstname : "");
-  const [Lastname, setLastname] = useState(editUser ? editUser.Lastname : "");
-  const [Email, setEmail] = useState(editUser ? editUser.Email : "");
-  const [userName, setuserName] = useState(editUser ? editUser.userName : "");
-  const [Password, setPassword] = useState(editUser ? editUser.Password : "");
-  const [Role, setRole] = useState(editUser ? editUser.Role : "");
-  const [Department, setDepartment] = useState(editUser ? editUser.Department : "");
-  const [Location, setLocation] = useState(editUser ? editUser.Location : "");
-  const [Company, setCompany] = useState(editUser ? editUser.Company : "");
-  const [Manager, setManager] = useState(editUser ? editUser.Manager : "");
+  const [csragent, setCsragent] = useState(editUser?.csragent || "");
+  const [referenceid, setReferenceid] = useState(editUser?.referenceid || "");
+  const [tsm, setTsm] = useState(editUser?.tsm || "");
+  const [ticketreferencenumber, setTicketreferencenumber] = useState(editUser?.ticketreferencenumber || "");
+  const [companyname, setCompanyname] = useState(editUser?.companyname || "");
+  const [contactperson, setContactperson] = useState(editUser?.contactperson || "");
+  const [contactnumber, setContactnumber] = useState(editUser?.contactnumber || "");
+  const [emailaddress, setEmailaddress] = useState(editUser?.emailaddress || "");
+  const [typeclient, setTypeclient] = useState(editUser?.typeclient || "");
+  const [address, setAddress] = useState(editUser?.address || "");
+  const [status, setStatus] = useState(editUser?.status || "");
+  const [wrapup, setWrapup] = useState(editUser?.wrapup || "");
+  const [inquiries, setInquiries] = useState(editUser?.inquiries || "");
 
-  const [Status, setStatus] = useState(editUser ? editUser.Status : "");
-  const [LoginAttempts, setLoginAttempts] = useState(editUser ? editUser.LoginAttempts : "");
-  const [LockUntil, setLockUntil] = useState(editUser ? editUser.LockUntil : "");
-
-  // Ensure the correct ID is set depending on edit or create mode
-  const [UserId, setUserId] = useState(editUser ? editUser._id : userDetails.id);
+  const [UserId, setUserId] = useState(editUser ? editUser.id : userDetails.id);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const url = editUser ? `/api/ModuleSales/UserManagement/TerritorySalesManager/EditUser` : `/api/ModuleSales/UserManagement/TerritorySalesManager/CreateUser`; // API endpoint changes based on edit or add
-    const method = editUser ? "PUT" : "POST"; // HTTP method changes based on edit or add
+    const url = editUser 
+      ? `/api/Data/Applications/Taskflow/Inquiries/Edit`
+      : `/api/Data/Applications/Taskflow/Inquiries/Create`;
+
+    const method = editUser ? "PUT" : "POST";
 
     const response = await fetch(url, {
       method,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, Manager, UserId, Status, LoginAttempts, LockUntil,
-        id: editUser ? editUser._id : undefined, // Send post ID if editing
+        csragent,
+        referenceid,
+        tsm,
+        ticketreferencenumber,
+        companyname,
+        contactperson,
+        contactnumber,
+        emailaddress,
+        typeclient,
+        address,
+        status,
+        wrapup,
+        inquiries,
+        UserId,
+        id: editUser ? editUser.id : undefined,
       }),
     });
 
@@ -53,8 +64,8 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
       toast.success(editUser ? "Post updated successfully" : "Post added successfully", {
         autoClose: 1000,
         onClose: () => {
-          onCancel(); // Hide the form after submission
-          refreshPosts(); // Refresh posts after successful submission
+          onCancel();
+          refreshPosts();
         }
       });
     } else {
@@ -67,27 +78,24 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
   return (
     <>
       <form onSubmit={handleSubmit} className="bg-white border shadow-md rounded-lg p-4 text-xs">
-        <h2 className="text-xs font-bold mb-4">{editUser ? "Edit User Information" : "Add New User"}</h2>
+        <h2 className="text-xs font-bold mb-4">{editUser ? "Edit Inquiry" : "Add New Inquiry"}</h2>
         <FormFields
-          ReferenceID={ReferenceID} setReferenceID={setReferenceID}
-          UserId={UserId} setUserId={setUserId}
-          Firstname={Firstname} setFirstname={setFirstname}
-          Lastname={Lastname} setLastname={setLastname}
-          Email={Email} setEmail={setEmail}
-          userName={userName} setuserName={setuserName}
-          Password={Password} setPassword={setPassword}
-          Role={Role} setRole={setRole}
-          Department={Department} setDepartment={setDepartment}
-          Location={Location} setLocation={setLocation}
-          Company={Company} setCompany={setCompany}
-          Manager={Manager} setManager={setManager}
-
-          Status={Status} setStatus={setStatus}
-          LoginAttempts={LoginAttempts} setLoginAttempts={setLoginAttempts}
-          LockUntil={LockUntil} setLockUntil={setLockUntil}
-
+          csragent={csragent} setCsragent={setCsragent}
+          referenceid={referenceid} setReferenceid={setReferenceid}
+          tsm={tsm} setTsm={setTsm}
+          ticketreferencenumber={ticketreferencenumber} setTicketreferencenumber={setTicketreferencenumber}
+          companyname={companyname} setCompanyname={setCompanyname}
+          contactperson={contactperson} setContactperson={setContactperson}
+          contactnumber={contactnumber} setContactnumber={setContactnumber}
+          emailaddress={emailaddress} setEmailaddress={setEmailaddress}
+          typeclient={typeclient} setTypeclient={setTypeclient}
+          address={address} setAddress={setAddress}
+          status={status} setStatus={setStatus}
+          wrapup={wrapup} setWrapup={setWrapup}
+          inquiries={inquiries} setInquiries={setInquiries}
           editPost={editUser}
         />
+
         <div className="flex justify-end mb-4 gap-1 text-[10px]">
           <button type="submit" className="bg-blue-400 hover:bg-blue-800 text-white px-4 py-2 rounded flex items-center">
             {editUser ? <CiEdit size={15} /> : <CiSaveUp1 size={15} />}

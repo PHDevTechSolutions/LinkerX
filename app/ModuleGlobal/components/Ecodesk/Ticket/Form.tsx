@@ -76,8 +76,8 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
         e.preventDefault();
 
         const url = editPost
-            ? "/api/ModuleCSR/Monitorings/EditActivity"
-            : "/api/ModuleCSR/Monitorings/CreateActivity";
+            ? "/api/Data/Applications/Ecodesk/Tickets/Edit"
+            : "/api/Data/Applications/Ecodesk/Tickets/Create";
         const method = editPost ? "PUT" : "POST";
 
         try {
@@ -161,7 +161,7 @@ const AddAccountForm: React.FC<AddAccountFormProps> = ({ userDetails, onCancel, 
             }
 
             // ✅ Proceed with PostgreSQL request only if status is "Endorsed"
-            const postgresResponse = await fetch("/api/ModuleCSR/AutomatedTickets/CreateUser", {
+            const postgresResponse = await fetch("/api/Data/Applications/Ecodesk/Tickets/Create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

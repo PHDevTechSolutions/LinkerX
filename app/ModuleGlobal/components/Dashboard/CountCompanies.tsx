@@ -16,7 +16,7 @@ const Card1: React.FC = () => {
     const fetchAccounts = async () => {
       try {
         setLoading(true);
-        const res = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/FetchAccount", { signal });
+        const res = await fetch("/api/Data/Applications/Taskflow/CustomerDatabase/Fetch", { signal });
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
         const json = await res.json();

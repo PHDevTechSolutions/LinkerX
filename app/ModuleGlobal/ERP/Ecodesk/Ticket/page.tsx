@@ -78,7 +78,7 @@ const ActivityPage: React.FC = () => {
     // Fetch accounts from the API
     const fetchActivity = async () => {
         try {
-            const response = await fetch("/api/ModuleCSR/Monitorings/FetchActivity");
+            const response = await fetch("/api/Data/Applications/Ecodesk/Tickets/FetchActivity");
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -93,7 +93,7 @@ const ActivityPage: React.FC = () => {
 
     const handleStatusUpdate = async (id: string, newStatus: string) => {
         try {
-            const response = await fetch("/api/ModuleCSR/Monitorings/UpdateStatus", {
+            const response = await fetch("/api/Data/Applications/Ecodesk/Tickets/UpdateStatus", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id, Status: newStatus }),
@@ -118,7 +118,7 @@ const ActivityPage: React.FC = () => {
 
     const handleRemarksUpdate = async (id: string, NewRemarks: string) => {
         try {
-            const response = await fetch("/api/ModuleCSR/Monitorings/UpdateRemarks", {
+            const response = await fetch("/api/Data/Applications/Ecodesk/Tickets/UpdateRemarks", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id, Remarks: NewRemarks }),
@@ -286,7 +286,7 @@ const ActivityPage: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/ModuleCSR/Monitorings/DeleteActivity`, {
+            const response = await fetch(`/api/Data/Applications/Ecodesk/Tickets/Delete`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -308,18 +308,6 @@ const ActivityPage: React.FC = () => {
             setPostToDelete(null);
         }
     };
-
-    //const isRestrictedUser =
-    //userDetails?.Role !== "Super Admin" && userDetails?.Role !== "Admin" && userDetails?.ReferenceID !== "LR-CSR-849432";
-
-    // Automatically show modal if the user is restricted
-    //useEffect(() => {
-    //if (isRestrictedUser) {
-    //setShowAccessModal(true);
-    //} else {
-    //setShowAccessModal(false);
-    //}
-    //}, [isRestrictedUser]);
 
     return (
         <SessionChecker>

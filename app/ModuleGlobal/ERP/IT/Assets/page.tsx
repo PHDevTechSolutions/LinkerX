@@ -76,7 +76,7 @@ const AssetInventoryPage: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const res = await fetch("/api/ModuleSales/IT/Assets/FetchData");
+            const res = await fetch("/api/Data/IT/Assets/Fetch");
             const data = await res.json();
             setPosts(data);
         } catch {
@@ -97,7 +97,7 @@ const AssetInventoryPage: React.FC = () => {
 
     const handleSubmit = async () => {
         try {
-            const res = await fetch("/api/ModuleSales/IT/Assets/CreateData", {
+            const res = await fetch("/api/Data/IT/Assets/Create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
@@ -113,7 +113,7 @@ const AssetInventoryPage: React.FC = () => {
 
     const handleUpdate = async () => {
         try {
-            const res = await fetch(`/api/ModuleSales/IT/Assets/UpdateData`, {
+            const res = await fetch(`/api/Data/IT/Assets/Edit`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
@@ -132,7 +132,7 @@ const AssetInventoryPage: React.FC = () => {
         if (!confirmDelete) return;
 
         try {
-            const res = await fetch("/api/ModuleSales/IT/Assets/DeleteData", {
+            const res = await fetch("/api/Data/IT/Assets/Delete", {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: _id }),

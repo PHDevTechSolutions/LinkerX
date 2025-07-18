@@ -11,7 +11,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
   const [userDetails, setUserDetails] = useState({ 
-    Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Status: "", profilePicture: "", ReferenceID: "", ImapHost: "", ImapPass: ""});
+    Firstname: "", Lastname: "", Location: "", Role: "", Company: "", Position: "", Status: "", profilePicture: "", ReferenceID: "", ImapHost: "", ImapPass: ""});
   const [pendingInquiryCount, setPendingInquiryCount] = useState(0);
   const [pendingInactiveCount, setPendingInactiveCount] = useState(0);
   const [pendingDeleteCount, setPendingDeleteCount] = useState(0);
@@ -36,6 +36,7 @@ const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void; isDarkMode: bool
           Lastname: data.Lastname || "Xchire",
           Location: data.Location || "Philippines",
           Role: data.Role || "Admin",
+          Position: data.Position || "Default",
           Company: data.Company || "Ecoshift Corporation",
           Status: data.Status || "None",
           ReferenceID: data.ReferenceID,

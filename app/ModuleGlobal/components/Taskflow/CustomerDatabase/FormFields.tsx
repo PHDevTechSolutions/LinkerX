@@ -110,7 +110,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     useEffect(() => {
         const fetchManagers = async () => {
             try {
-                const response = await fetch("/api/manager?Role=Manager");
+                const response = await fetch("/api/UserManagement/FetchManager?Role=Manager");
                 if (!response.ok) {
                     throw new Error("Failed to fetch managers");
                 }
@@ -134,7 +134,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     useEffect(() => {
         const fetchTSM = async () => {
             try {
-                const response = await fetch("/api/fetchtsm?Role=Territory Sales Manager");
+                const response = await fetch("/api/UserManagement/FetchTSM?Role=Territory Sales Manager");
                 if (!response.ok) {
                     throw new Error("Failed to fetch managers");
                 }
@@ -158,7 +158,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
     useEffect(() => {
         const fetchTSA = async () => {
             try {
-                const response = await fetch("/api/fetchtsa?Role=Territory Sales Associate");
+                const response = await fetch("/api/UserManagement/FetchTSA?Role=Territory Sales Associate");
                 if (!response.ok) {
                     throw new Error("Failed to fetch agents");
                 }
@@ -318,6 +318,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
                     )}
                 </div>
             </div>
+            
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
                     <label className="block text-xs font-bold mb-2" htmlFor="companyname">Company Name</label>

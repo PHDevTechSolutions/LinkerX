@@ -27,15 +27,13 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
     const [Status, setStatus] = useState(editUser ? editUser.Status : "");
     const [LoginAttempts, setLoginAttempts] = useState(editUser ? editUser.LoginAttempts : "");
     const [LockUntil, setLockUntil] = useState(editUser ? editUser.LockUntil : "");
-
-    // Ensure the correct ID is set depending on edit or create mode
     const [UserId, setUserId] = useState(editUser ? editUser._id : userDetails.id);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const url = editUser ? `/api/ModuleSales/UserManagement/ManagerDirector/EditUser` : `/api/ModuleSales/UserManagement/ManagerDirector/CreateUser`; // API endpoint changes based on edit or add
-        const method = editUser ? "PUT" : "POST"; // HTTP method changes based on edit or add
+        const url = editUser ? `/api/UserManagement/Edit` : `/api/UserManagement/Create`; 
+        const method = editUser ? "PUT" : "POST"; 
 
         const response = await fetch(url, {
             method,
@@ -44,7 +42,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
             },
             body: JSON.stringify({
                 ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, UserId, Status, LoginAttempts, LockUntil,
-                id: editUser ? editUser._id : undefined, // Send post ID if editing
+                id: editUser ? editUser._id : undefined,
             }),
         });
 
@@ -52,8 +50,8 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
             toast.success(editUser ? "Post updated successfully" : "Post added successfully", {
                 autoClose: 1000,
                 onClose: () => {
-                    onCancel(); // Hide the form after submission
-                    refreshPosts(); // Refresh posts after successful submission
+                    onCancel();
+                    refreshPosts();
                 }
             });
         } else {

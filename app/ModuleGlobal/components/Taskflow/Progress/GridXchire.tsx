@@ -8,8 +8,6 @@ interface GridXchireProps {
   selectedUsers: Set<string>;
   bulkDeleteMode: boolean;
   bulkEditMode: boolean;
-  bulkTransferMode: boolean;
-  bulkTransferTSAMode: boolean;
   handleSelectUser: (id: string) => void;
   handleEdit: (post: any) => void;
   statusColors: Record<string, string>;
@@ -22,13 +20,11 @@ const GridXchire: React.FC<GridXchireProps> = ({
   selectedUsers,
   bulkDeleteMode,
   bulkEditMode,
-  bulkTransferMode,
-  bulkTransferTSAMode,
   handleSelectUser,
   handleEdit,
   statusColors,
 }) => {
-  const showCheckbox = bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode;
+  const showCheckbox = bulkDeleteMode || bulkEditMode;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -39,7 +39,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const url = editUser ? `/api/ModuleSales/UserManagement/TerritorySalesAssociates/EditUser` : `/api/ModuleSales/UserManagement/TerritorySalesAssociates/CreateUser`; // API endpoint changes based on edit or add
+    const url = editUser ? `/api/UserManagement/Edit` : `/api/UserManagement/Create`;
     const method = editUser ? "PUT" : "POST"; // HTTP method changes based on edit or add
 
     const response = await fetch(url, {

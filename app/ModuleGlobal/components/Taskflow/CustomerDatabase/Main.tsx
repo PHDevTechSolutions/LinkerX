@@ -29,7 +29,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
 
   useEffect(() => {
     if (bulkTransferMode) {
-      fetch("/api/fetchtsm?Role=Territory Sales Manager")
+      fetch("/api/UserManagement/FetchTSM?Role=Territory Sales Manager")
         .then((res) => res.json())
         .then((data) => {
           if (Array.isArray(data)) {
@@ -45,7 +45,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
 
   useEffect(() => {
     if (bulkTransferTSAMode) {
-      fetch("/api/fetchtsa?Role=Territory Sales Associate")
+      fetch("/api/UserManagement/FetchTSA?Role=Territory Sales Associate")
         .then((res) => res.json())
         .then((data) => {
           if (Array.isArray(data)) {
@@ -101,7 +101,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
     const confirmDelete = window.confirm("Are you sure you want to delete the selected users?");
     if (!confirmDelete) return;
     try {
-      const response = await fetch(`/api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Delete`, {
+      const response = await fetch(`/api/Data/Applications/Taskflow/CustomerDatabase/BulkDelete`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userIds: Array.from(selectedUsers) }),
@@ -121,7 +121,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
   const handleBulkEdit = useCallback(async () => {
     if (selectedUsers.size === 0 || !newTypeClient) return;
     try {
-      const response = await fetch(`/api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Edit`, {
+      const response = await fetch(`/api/Data/Applications/Taskflow/CustomerDatabase/BulkEdit`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userIds: Array.from(selectedUsers), typeclient: newTypeClient }),
@@ -143,7 +143,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
   const handleBulkChange = useCallback(async () => {
     if (selectedUsers.size === 0 || !newStatus) return;
     try {
-      const response = await fetch(`/api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Change`, {
+      const response = await fetch(`/api/Data/Applications/Taskflow/CustomerDatabase/BulkChange`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userIds: Array.from(selectedUsers), status: newStatus }),
@@ -173,7 +173,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
   const handleBulkTransfer = useCallback(async () => {
     if (selectedUsers.size === 0 || !selectedTsm) return;
     try {
-      const response = await fetch(`/api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Transfer`, {
+      const response = await fetch(`/api/Data/Applications/Taskflow/CustomerDatabase/BulkTransfer`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userIds: Array.from(selectedUsers), tsmReferenceID: selectedTsm }),
@@ -192,7 +192,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit }) => {
   const handleBulkTSATransfer = useCallback(async () => {
     if (selectedUsers.size === 0 || !selectedTsa) return;
     try {
-      const response = await fetch(`/api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Transfer-TSA`, {
+      const response = await fetch(`/api/Data/Applications/Taskflow/CustomerDatabase/BulkTransferTSA`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userIds: Array.from(selectedUsers), tsaReferenceID: selectedTsa }),

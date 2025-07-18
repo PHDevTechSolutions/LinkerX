@@ -11,7 +11,7 @@ const CountActivities: React.FC = () => {
 
   const fetchActivities = async () => {
     try {
-      const response = await fetch("/api/ModuleSales/UserManagement/ProgressLogs/FetchAccount", {
+      const response = await fetch("/api/Data/Applications/Taskflow/Progress/Fetch", {
         cache: "no-store",
       });
 

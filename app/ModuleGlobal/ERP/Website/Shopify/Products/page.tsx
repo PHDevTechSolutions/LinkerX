@@ -47,7 +47,7 @@ const ProductsPage: React.FC = () => {
     useEffect(() => {
         (async () => {
             try {
-                const res = await fetch("/api/shopify/products");
+                const res = await fetch("/api/Data/Applications/Shopify/FetchProduct");
                 const json = await res.json();
                 if (!json.success) throw new Error(json.error);
                 setProducts(json.data);
@@ -188,11 +188,11 @@ const ProductsPage: React.FC = () => {
 
                                     {loading || error || filteredProducts.length === 0 ? (
                                         loading ? (
-                                            <p className="text-sm text-gray-500">Loading…</p>
+                                            <p className="text-xs text-gray-500">Loading…</p>
                                         ) : error ? (
-                                            <p className="text-sm text-red-500">{error}</p>
+                                            <p className="text-xs text-red-500">{error}</p>
                                         ) : (
-                                            <p className="text-sm text-gray-500">No products found.</p>
+                                            <p className="text-xs text-gray-500">No products found.</p>
                                         )
                                     ) : (
                                         <>
@@ -209,7 +209,7 @@ const ProductsPage: React.FC = () => {
                                                     onClose={() => setEditing(null)}
                                                     onSaved={async () => {
                                                         // re‑fetch list
-                                                        const res = await fetch("/api/shopify/products");
+                                                        const res = await fetch("/api/Data/Applications/Shopify/FetchProduct");
                                                         const json = await res.json();
                                                         if (json.success) setProducts(json.data);
                                                     }}

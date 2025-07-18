@@ -10,51 +10,13 @@ const Main: React.FC<MainProps> = ({ posts, handleEdit }) => {
     const [updatedUser, setUpdatedUser] = useState<any[]>([]);
     const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
     const [bulkEditMode, setBulkEditMode] = useState(false);
-    const [bulkTransferMode, setBulkTransferMode] = useState(false);
-    const [bulkTransferTSAMode, setBulkTransferTSAMode] = useState(false);
     const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
-    const [tsmList, setTsmList] = useState<any[]>([]);
-    const [selectedTsm, setSelectedTsm] = useState("");
-    const [tsaList, setTsaList] = useState<any[]>([]);
-    const [selectedTsa, setSelectedTsa] = useState("");
     const [newTypeClient, setNewTypeClient] = useState("");
     const [activeTab, setActiveTab] = useState("table");
 
     useEffect(() => {
         setUpdatedUser(posts);
     }, [posts]);
-
-    useEffect(() => {
-        if (bulkTransferMode) {
-            fetch("/api/fetchtsm?Role=Territory Sales Manager")
-                .then((res) => res.json())
-                .then((data) => {
-                    if (Array.isArray(data)) {
-                        setTsmList(data);
-                    } else {
-                        console.error("Invalid TSM list format:", data);
-                        setTsmList([]);
-                    }
-                })
-                .catch((err) => console.error("Error fetching TSM list:", err));
-        }
-    }, [bulkTransferMode]);
-
-    useEffect(() => {
-        if (bulkTransferTSAMode) {
-            fetch("/api/fetchtsa?Role=Territory Sales Associate")
-                .then((res) => res.json())
-                .then((data) => {
-                    if (Array.isArray(data)) {
-                        setTsaList(data);
-                    } else {
-                        console.error("Invalid TSM list format:", data);
-                        setTsaList([]);
-                    }
-                })
-                .catch((err) => console.error("Error fetching TSM list:", err));
-        }
-    }, [bulkTransferTSAMode]);
 
     const toggleBulkDeleteMode = useCallback(() => {
         setBulkDeleteMode((prev) => !prev);
@@ -65,18 +27,6 @@ const Main: React.FC<MainProps> = ({ posts, handleEdit }) => {
         setBulkEditMode((prev) => !prev);
         setSelectedUsers(new Set());
         setNewTypeClient("");
-    }, []);
-
-    const toggleBulkTransferMode = useCallback(() => {
-        setBulkTransferMode((prev) => !prev);
-        setSelectedUsers(new Set());
-        setSelectedTsm("");
-    }, []);
-
-    const toggleBulkTransferTSAMode = useCallback(() => {
-        setBulkTransferTSAMode((prev) => !prev);
-        setSelectedUsers(new Set());
-        setSelectedTsa("");
     }, []);
 
     const handleSelectUser = useCallback((userId: string) => {
@@ -92,7 +42,7 @@ const Main: React.FC<MainProps> = ({ posts, handleEdit }) => {
         const confirmDelete = window.confirm("Are you sure you want to delete the selected users?");
         if (!confirmDelete) return;
         try {
-            const response = await fetch(`/api/ModuleSales/UserManagement/ActivityLogs/Bulk-Delete`, {
+            const response = await fetch(`/api/Data/Applications/Taskflow/Activity/BulkDelete`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userIds: Array.from(selectedUsers) }),
@@ -138,44 +88,6 @@ const Main: React.FC<MainProps> = ({ posts, handleEdit }) => {
             setSelectedUsers(new Set(updatedUser.map((user) => user.id)));
         }
     }, [selectedUsers, updatedUser]);
-
-    const handleBulkTransfer = useCallback(async () => {
-        if (selectedUsers.size === 0 || !selectedTsm) return;
-        try {
-            const response = await fetch(`/api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Transfer`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userIds: Array.from(selectedUsers), tsmReferenceID: selectedTsm }),
-            });
-            if (response.ok) {
-                setSelectedUsers(new Set());
-                setBulkTransferMode(false);
-            } else {
-                console.error("Failed to transfer users");
-            }
-        } catch (error) {
-            console.error("Error transferring users:", error);
-        }
-    }, [selectedUsers, selectedTsm]);
-
-    const handleBulkTSATransfer = useCallback(async () => {
-        if (selectedUsers.size === 0 || !selectedTsa) return;
-        try {
-            const response = await fetch(`/api/ModuleSales/UserManagement/CompanyAccounts/Bulk-Transfer-TSA`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userIds: Array.from(selectedUsers), tsaReferenceID: selectedTsa }),
-            });
-            if (response.ok) {
-                setSelectedUsers(new Set());
-                setBulkTransferTSAMode(false);
-            } else {
-                console.error("Failed to transfer users");
-            }
-        } catch (error) {
-            console.error("Error transferring users:", error);
-        }
-    }, [selectedUsers, selectedTsa]);
 
     const formatDate = (timestamp: number) => {
         const date = new Date(timestamp);
@@ -241,23 +153,11 @@ const Main: React.FC<MainProps> = ({ posts, handleEdit }) => {
             statusColors={statusColors}
             bulkDeleteMode={bulkDeleteMode}
             bulkEditMode={bulkEditMode}
-            bulkTransferMode={bulkTransferMode}
-            bulkTransferTSAMode={bulkTransferTSAMode}
             toggleBulkDeleteMode={toggleBulkDeleteMode}
             toggleBulkEditMode={toggleBulkEditMode}
-            toggleBulkTransferMode={toggleBulkTransferMode}
-            toggleBulkTransferTSAMode={toggleBulkTransferTSAMode}
             handleBulkDelete={handleBulkDelete}
             handleBulkEdit={handleBulkEdit}
             handleSelectAll={handleSelectAll}
-            tsmList={tsmList}
-            tsaList={tsaList}
-            selectedTsm={selectedTsm}
-            selectedTsa={selectedTsa}
-            setSelectedTsm={setSelectedTsm}
-            setSelectedTsa={setSelectedTsa}
-            handleBulkTransfer={handleBulkTransfer}
-            handleBulkTSATransfer={handleBulkTSATransfer}
             newTypeClient={newTypeClient}
             setNewTypeClient={setNewTypeClient}
         />

@@ -38,7 +38,7 @@ const Page: React.FC = () => {
     useEffect(() => {
         (async () => {
             try {
-                const res = await fetch("/api/cloudinary/fetchdata");
+                const res = await fetch("/api/Data/Applications/Cloudinary/Fetch");
                 const json = await res.json();
                 if (!json.success) throw new Error(json.error);
                 setMediaList(json.data);
@@ -97,7 +97,7 @@ const Page: React.FC = () => {
         if (!deleteTarget) return;
         setDeleting(true);
         try {
-            const res = await fetch("/api/cloudinary/deletedata", {
+            const res = await fetch("/api/Data/Applications/Delete", {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ public_id: deleteTarget.public_id }),

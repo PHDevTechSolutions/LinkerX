@@ -7,8 +7,6 @@ interface TableXchireProps {
   updatedUser: any[];
   bulkDeleteMode: boolean;
   bulkEditMode: boolean;
-  bulkTransferMode: boolean;
-  bulkTransferTSAMode: boolean;
   selectedUsers: Set<string>;
   handleSelectUser: (userId: string) => void;
   handleEdit: (post: any) => void;
@@ -27,8 +25,6 @@ const TableXchire: React.FC<TableXchireProps> = React.memo(
     updatedUser,
     bulkDeleteMode,
     bulkEditMode,
-    bulkTransferMode,
-    bulkTransferTSAMode,
     selectedUsers,
     handleSelectUser,
     handleEdit,
@@ -37,7 +33,7 @@ const TableXchire: React.FC<TableXchireProps> = React.memo(
     totalActualSales,
     statusColors,
   }) => {
-    const showCheckbox = bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode;
+    const showCheckbox = bulkDeleteMode || bulkEditMode;
 
     const memoizedSelectUser = useCallback(
       (id: string) => {
@@ -135,8 +131,6 @@ const TableXchire: React.FC<TableXchireProps> = React.memo(
       showCheckbox,
       bulkDeleteMode,
       bulkEditMode,
-      bulkTransferMode,
-      bulkTransferTSAMode,
       memoizedSelectUser,
       memoizedEdit,
       statusColors

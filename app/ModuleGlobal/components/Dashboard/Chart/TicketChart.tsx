@@ -73,7 +73,7 @@ const TicketChart: React.FC = () => {
 
   const fetchActivity = async () => {
     try {
-      const response = await fetch("/api/ModuleCSR/Monitorings/FetchActivity", {
+      const response = await fetch("/api/Data/Applications/Ecodesk/Tickets/FetchActivity", {
         cache: "no-store",
       });
       if (!response.ok) throw new Error("Failed to fetch tickets");

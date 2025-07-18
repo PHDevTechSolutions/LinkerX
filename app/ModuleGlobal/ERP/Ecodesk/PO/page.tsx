@@ -43,7 +43,7 @@ const ReceivedPO: React.FC = () => {
     // Fetch accounts from the API
     const fetchAccounts = async () => {
         try {
-            const response = await fetch("/api/ModuleCSR/ReceivedPO/FetchReceivedPO");
+            const response = await fetch("/api/Data/Applications/Ecodesk/PO/Fetch");
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -92,7 +92,7 @@ const ReceivedPO: React.FC = () => {
     useEffect(() => {
             const fetchUsers = async () => {
                 try {
-                    const response = await fetch("/api/getUsers"); // API endpoint mo
+                    const response = await fetch("/api/Data/Applications/Ecodesk/PO/FetchUser"); // API endpoint mo
                     const data = await response.json();
                     setUsersList(data);
                 } catch (error) {
@@ -160,7 +160,7 @@ const ReceivedPO: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/ModuleCSR/ReceivedPO/DeleteReceivedPO`, {
+            const response = await fetch(`/api/Data/Applications/Ecodesk/PO/Delete`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

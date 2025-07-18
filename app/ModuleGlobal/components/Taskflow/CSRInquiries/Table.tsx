@@ -31,8 +31,8 @@ const Table: React.FC<TableProps> = ({ currentPosts, handleEdit, confirmDelete }
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                    {currentPosts.map((post) => (
-                        <tr key={post._id} className="border-b whitespace-nowrap">
+                    {currentPosts.map((post, index) => (
+                        <tr key={`${post.referenceid}-${index}`} className="border-b whitespace-nowrap">
                             <td className="px-6 py-4 text-xs">
                                 <button
                                     onClick={() => handleEdit(post)}
@@ -41,7 +41,7 @@ const Table: React.FC<TableProps> = ({ currentPosts, handleEdit, confirmDelete }
                                     Update
                                 </button>
                                 <button
-                                    onClick={() => confirmDelete(post._id)}
+                                    onClick={() => confirmDelete(post.id)}
                                     className="px-3 py-1 ml-2 text-[10px] text-white bg-red-500 hover:bg-red-800 hover:rounded-full rounded-md"
                                 >
                                     Delete
@@ -65,8 +65,8 @@ const Table: React.FC<TableProps> = ({ currentPosts, handleEdit, confirmDelete }
                         </tr>
                     ))}
                     {currentPosts.length === 0 && (
-                        <tr>
-                            <td colSpan={3} className="text-center px-4 py-4">
+                        <tr key="no-data">
+                            <td colSpan={16} className="text-center px-4 py-4 text-sm text-gray-500">
                                 No data available
                             </td>
                         </tr>

@@ -36,7 +36,7 @@ const SKUListing: React.FC = () => {
     // Fetch accounts from the API
     const fetchAccounts = async () => {
         try {
-            const response = await fetch("/api/ModuleCSR/SkuListing/FetchSku");
+            const response = await fetch("/api/Data/Applications/Ecodesk/SKU/Fetch");
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -126,7 +126,7 @@ const SKUListing: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/ModuleCSR/SkuListing/DeleteSku`, {
+            const response = await fetch(`/api/Data/Applications/Ecodesk/SKU/Delete`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

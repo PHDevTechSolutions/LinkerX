@@ -50,7 +50,7 @@ const ActivityPage: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/pantsin/FetchData");
+        const res = await fetch("/api/Data/Applications/PantsIn/Fetch");
         const json = await res.json();
         if (!json.success) throw new Error(json.error);
         setActivity(json.data as Activity[]);
@@ -96,7 +96,7 @@ const ActivityPage: React.FC = () => {
   const handleDelete = async () => {
     if (!deleteTarget) return;
     try {
-      const res = await fetch("/api/pantsin/DeleteData", {
+      const res = await fetch("/api/Data/Applications/PantsIn/Delete", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: deleteTarget._id }),
@@ -133,7 +133,7 @@ const ActivityPage: React.FC = () => {
     }
 
     try {
-      const res = await fetch("/api/pantsin/DeleteBulk", {
+      const res = await fetch("/api/Data/Applications/PantsIn/DeleteBulk", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids: Array.from(selectedIds) }),
@@ -158,7 +158,7 @@ const ActivityPage: React.FC = () => {
   const saveEdit = async () => {
     if (!editing) return;
     try {
-      const res = await fetch("/api/pantsin/UpdateData", {
+      const res = await fetch("/api/Data/Applications/PantsIn/Edit", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editing),

@@ -65,7 +65,7 @@ const ListofUser: React.FC = () => {
     // Fetch all users from the API
     const fetchData = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/UserManagement/Sessions/FetchData");
+            const response = await fetch("/api/Data/Sessions/Fetch");
             const data = await response.json();
             setPosts(data);
         } catch (error) {

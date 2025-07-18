@@ -4,8 +4,6 @@ interface GridXchireProps {
     updatedUser: any[];
     bulkDeleteMode: boolean;
     bulkEditMode: boolean;
-    bulkTransferMode: boolean;
-    bulkTransferTSAMode: boolean;
     selectedUsers: Set<string>;
     handleSelectUser: (id: string) => void;
     handleEdit: (post: any) => void;
@@ -17,15 +15,13 @@ const GridXchire: React.FC<GridXchireProps> = ({
     updatedUser,
     bulkDeleteMode,
     bulkEditMode,
-    bulkTransferMode,
-    bulkTransferTSAMode,
     selectedUsers,
     handleSelectUser,
     handleEdit,
     formatDate,
     statusColors,
 }) => {
-    const showCheckbox = bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode;
+    const showCheckbox = bulkDeleteMode || bulkEditMode;
 
     const cards = useMemo(() => {
         return updatedUser.map((post) => {
@@ -35,8 +31,6 @@ const GridXchire: React.FC<GridXchireProps> = ({
                     ? "text-red-600"
                     : bulkEditMode
                     ? "text-blue-600"
-                    : (bulkTransferMode || bulkTransferTSAMode)
-                    ? "text-purple-600"
                     : "";
 
             return (
@@ -93,8 +87,6 @@ const GridXchire: React.FC<GridXchireProps> = ({
         selectedUsers,
         bulkDeleteMode,
         bulkEditMode,
-        bulkTransferMode,
-        bulkTransferTSAMode,
         handleSelectUser,
         handleEdit,
         formatDate,

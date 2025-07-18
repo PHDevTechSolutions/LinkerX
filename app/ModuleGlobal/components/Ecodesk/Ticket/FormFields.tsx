@@ -118,7 +118,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
-                const response = await fetch('/api/ModuleCSR/companies');
+                const response = await fetch('/api/Data/Applications/Ecodesk/Tickets/FetchCompanies');
                 const data = await response.json();
                 setCompanies(data);
             } catch (error) {
@@ -139,7 +139,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
 
         if (selectedCompany) {
             try {
-                const response = await fetch(`/api/ModuleCSR/companies?CompanyName=${encodeURIComponent(selectedCompany)}`);
+                const response = await fetch(`/api/Data/Applications/Ecodesk/Tickets/FetchCompanies?CompanyName=${encodeURIComponent(selectedCompany)}`);
                 if (response.ok) {
                     const companyDetails = await response.json();
                     setCustomerName(companyDetails.CustomerName || '');
@@ -198,7 +198,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
     useEffect(() => {
         const fetchTSM = async () => {
             try {
-                const response = await fetch("/api/tsm?Roles=Territory Sales Manager,Ecommerce Manager, HR Manager, Manager, E-Commerce Staff");
+                const response = await fetch("/api/Data/Applications/Ecodesk/Tickets/FetchTSM?Roles=Territory Sales Manager,Ecommerce Manager, HR Manager, Manager, E-Commerce Staff");
                 if (!response.ok) throw new Error("Failed to fetch managers");
 
                 const data = await response.json();
@@ -215,7 +215,7 @@ const ActivityFormFields: React.FC<FormFieldsProps> = ({
 
         const fetchTSA = async () => {
             try {
-                const response = await fetch("/api/tsa?Roles=Territory Sales Associate,E-Commerce Staff");
+                const response = await fetch("/api/Data/Applications/Ecodesk/Tickets/FetchTSA?Roles=Territory Sales Associate,E-Commerce Staff");
                 if (!response.ok) throw new Error("Failed to fetch agents");
 
                 const data = await response.json();

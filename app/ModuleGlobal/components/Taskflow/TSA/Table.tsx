@@ -43,7 +43,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete, 
   // Fetch TSM list when bulk transfer mode is enabled
   useEffect(() => {
     if (bulkTransferMode) {
-      fetch("/api/fetchtsm?Role=Territory Sales Manager")
+      fetch("/api/UserManagement/FetchTSM?Role=Territory Sales Manager")
         .then((res) => res.json())
         .then((data) => {
           if (Array.isArray(data)) {
@@ -70,7 +70,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete, 
     const confirmDelete = window.confirm("Are you sure you want to delete the selected users?");
     if (!confirmDelete) return;
     try {
-      const response = await fetch(`/api/ModuleSales/UserManagement/TerritorySalesAssociates/Bulk-Delete`, {
+      const response = await fetch(`/api/UserManagement/BulkDelete`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userIds: Array.from(selectedUsers) }),
@@ -91,7 +91,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete, 
   const handleBulkTransfer = useCallback(async () => {
     if (selectedUsers.size === 0 || !selectedTsm) return;
     try {
-      const response = await fetch(`/api/ModuleSales/UserManagement/TerritorySalesAssociates/Bulk-Transfer`, {
+      const response = await fetch(`/api/UserManagement/BulkTransfer`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

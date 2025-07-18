@@ -1,28 +1,15 @@
 "use client";
 import React from "react";
 import { CiTrash, CiEdit } from "react-icons/ci";
-import { BiTransfer } from "react-icons/bi";
 
 interface Props {
     bulkDeleteMode: boolean;
     bulkEditMode: boolean;
-    bulkTransferMode: boolean;
-    bulkTransferTSAMode: boolean;
     toggleBulkDeleteMode: () => void;
     toggleBulkEditMode: () => void;
-    toggleBulkTransferMode: () => void;
-    toggleBulkTransferTSAMode: () => void;
     selectedUsers: Set<string>;
     updatedUser: any[];
     handleSelectAll: () => void;
-    tsmList: any[];
-    tsaList: any[];
-    selectedTsm: string;
-    setSelectedTsm: (val: string) => void;
-    selectedTsa: string;
-    setSelectedTsa: (val: string) => void;
-    handleBulkTransfer: () => void;
-    handleBulkTSATransfer: () => void;
     handleBulkDelete: () => void;
     handleBulkEdit: () => void;
     newTypeClient: string;
@@ -32,23 +19,11 @@ interface Props {
 const ButtonActions: React.FC<Props> = ({
     bulkDeleteMode,
     bulkEditMode,
-    bulkTransferMode,
-    bulkTransferTSAMode,
     toggleBulkDeleteMode,
     toggleBulkEditMode,
-    toggleBulkTransferMode,
-    toggleBulkTransferTSAMode,
     selectedUsers,
     updatedUser,
     handleSelectAll,
-    tsmList,
-    tsaList,
-    selectedTsm,
-    setSelectedTsm,
-    selectedTsa,
-    setSelectedTsa,
-    handleBulkTransfer,
-    handleBulkTSATransfer,
     handleBulkDelete,
     handleBulkEdit,
     newTypeClient,
@@ -65,17 +40,9 @@ const ButtonActions: React.FC<Props> = ({
                     <CiEdit size={16} />
                     {bulkEditMode ? "Cancel Bulk Edit" : "Bulk Edit"}
                 </button>
-                <button onClick={toggleBulkTransferMode} className="flex items-center gap-1 px-2 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
-                    <BiTransfer size={16} />
-                    {bulkTransferMode ? "Cancel Bulk Transfer" : "Bulk Transfer to TSM"}
-                </button>
-                <button onClick={toggleBulkTransferTSAMode} className="flex items-center gap-1 px-2 py-2 border border-gray-200 text-dark text-xs shadow-sm rounded-md hover:bg-purple-900 hover:text-white">
-                    <BiTransfer size={16} />
-                    {bulkTransferTSAMode ? "Cancel Bulk Transfer" : "Bulk Transfer to TSA"}
-                </button>
             </div>
 
-            {(bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode) && (
+            {(bulkDeleteMode || bulkEditMode) && (
                 <div className="mb-4 p-3 bg-gray-100 rounded-md text-xs">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
@@ -90,36 +57,6 @@ const ButtonActions: React.FC<Props> = ({
                                 Selected: {selectedUsers.size} / {updatedUser.length}
                             </span>
                         </div>
-
-                        {bulkTransferMode && (
-                            <div className="flex items-center gap-2">
-                                <label className="text-xs font-medium">Territory Sales Manager:</label>
-                                <select value={selectedTsm} onChange={(e) => setSelectedTsm(e.target.value)} className="px-2 py-1 border rounded-md capitalize">
-                                    <option value="">Select Territory Sales Manager</option>
-                                    {tsmList.map((tsm) => (
-                                        <option key={tsm._id || tsm.ReferenceID} value={tsm.ReferenceID}>
-                                            {tsm.Firstname} {tsm.Lastname}
-                                        </option>
-                                    ))}
-                                </select>
-                                <button onClick={handleBulkTransfer} className="px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-xs" disabled={!selectedTsm}>Transfer</button>
-                            </div>
-                        )}
-
-                        {bulkTransferTSAMode && (
-                            <div className="flex items-center gap-2">
-                                <label className="text-xs font-medium">Territory Sales Associates:</label>
-                                <select value={selectedTsa} onChange={(e) => setSelectedTsa(e.target.value)} className="px-2 py-1 border rounded-md capitalize">
-                                    <option value="">Select Territory Sales Associates</option>
-                                    {tsaList.map((tsa) => (
-                                        <option key={tsa._id || tsa.ReferenceID} value={tsa.ReferenceID}>
-                                            {tsa.Firstname} {tsa.Lastname}
-                                        </option>
-                                    ))}
-                                </select>
-                                <button onClick={handleBulkTSATransfer} className="px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-xs" disabled={!selectedTsa}>Transfer</button>
-                            </div>
-                        )}
 
                         {bulkDeleteMode && (
                             <button onClick={handleBulkDelete} className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-xs" disabled={selectedUsers.size === 0}>

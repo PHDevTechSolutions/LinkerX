@@ -132,7 +132,7 @@ const ListofUser: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch("/api/webmail/FetchData", {
+      const response = await fetch("/api/Data/Applications/Webmail/Fetch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

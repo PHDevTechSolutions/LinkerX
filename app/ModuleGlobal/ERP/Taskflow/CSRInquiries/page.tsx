@@ -3,13 +3,10 @@ import React, { useState, useEffect } from "react";
 import ParentLayout from "../../../components/Layouts/ParentLayout";
 import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
-// Tools Global
 import SearchFilters from "../../../components/Tools/SearchFilters";
 import Pagination from "../../../components/Tools/Pagination";
-// Route
 import Form from "../../../components/Taskflow/CSRInquiries/Form";
 import Table from "../../../components/Taskflow/CSRInquiries/Table";
-// Toast
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -22,6 +19,9 @@ const Inquiries: React.FC = () => {
     const [postsPerPage, setPostsPerPage] = useState(12);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [postToDelete, setPostToDelete] = useState<string | null>(null);
+
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
 
     const [userDetails, setUserDetails] = useState({
         UserId: "", ReferenceID: "", Firstname: "", Lastname: "", Email: "", Role: "", Department: "", Company: "",
@@ -66,7 +66,7 @@ const Inquiries: React.FC = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch("/api/ModuleGlobal/Inquiries/FetchData");
+            const response = await fetch("/api/Data/Applications/Taskflow/Inquiries/Fetch");
             const data = await response.json();
 
             if (Array.isArray(data)) {
@@ -84,11 +84,16 @@ const Inquiries: React.FC = () => {
         }
     };
 
-
     const filteredAccounts = Array.isArray(posts)
-        ? posts.filter((post) =>
-            [post?.referenceid].some(field => field?.toLowerCase().includes(searchTerm.toLowerCase()))
-        )
+        ? posts.filter((post) => {
+            const matchesSearch = post?.referenceid?.toLowerCase().includes(searchTerm.toLowerCase());
+            const postDate = new Date(post?.date_created);
+            const isWithinDateRange =
+                (!startDate || new Date(startDate) <= postDate) &&
+                (!endDate || new Date(endDate) >= postDate);
+
+            return matchesSearch && isWithinDateRange;
+        })
         : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
@@ -113,16 +118,14 @@ const Inquiries: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/ModuleSales/UserManagement/ManagerDirector/DeleteUser`, {
+            const response = await fetch(`/api/Data/Applications/Taskflow/Inquiries/Delete`, {
                 method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: postToDelete }),
             });
 
             if (response.ok) {
-                setPosts(posts.filter((post) => post._id !== postToDelete));
+                setPosts(posts.filter((post) => post.id !== postToDelete));
                 toast.success("Post deleted successfully.");
             } else {
                 toast.error("Failed to delete post.");
@@ -158,12 +161,36 @@ const Inquiries: React.FC = () => {
                                     <>
                                         <div className="p-4 bg-white border shadow rounded-md">
                                             <h2 className="text-lg font-bold mb-4">CSR Inquiries</h2>
+
                                             <SearchFilters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
                                                 postsPerPage={postsPerPage}
                                                 setPostsPerPage={setPostsPerPage}
                                             />
+
+                                            {/* Date Range Filter */}
+                                            <div className="flex gap-4 mb-4">
+                                                <div>
+                                                    <label className="block text-xs mb-1">Start Date</label>
+                                                    <input
+                                                        type="date"
+                                                        value={startDate}
+                                                        onChange={(e) => setStartDate(e.target.value)}
+                                                        className="border px-2 py-1 rounded text-xs"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs mb-1">End Date</label>
+                                                    <input
+                                                        type="date"
+                                                        value={endDate}
+                                                        onChange={(e) => setEndDate(e.target.value)}
+                                                        className="border px-2 py-1 rounded text-xs"
+                                                    />
+                                                </div>
+                                            </div>
+
                                             <Table
                                                 currentPosts={currentPosts}
                                                 handleEdit={handleEdit}

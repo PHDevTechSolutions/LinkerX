@@ -72,7 +72,7 @@ const OutboundCallPage: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/Task/DailyActivity/FetchProgress");
+            const response = await fetch("/api/Data/Applications/Ecodesk/Outbound/Fetch");
             const data = await response.json();
             setPosts(data.data);
         } catch (error) {
@@ -89,7 +89,7 @@ const OutboundCallPage: React.FC = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch("/api/getUsers"); // API endpoint mo
+                const response = await fetch("/api/Data/Applications/Ecodesk/Outbound/FetchUser"); // API endpoint mo
                 const data = await response.json();
                 setUsersList(data);
             } catch (error) {

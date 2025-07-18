@@ -50,7 +50,9 @@ const AddTracking: React.FC<AddTrackingProps> = ({ userDetails, onCancel, refres
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const url = editPost ? `/api/ModuleCSR/DTracking/EditTracking` : `/api/ModuleCSR/DTracking/CreateTracking`; // API endpoint changes based on edit or add
+        const url = editPost 
+        ? `/api/Data/Applications/Ecodesk/Tracking/Edit` 
+        : `/api/Data/Applications/Ecodesk/Tracking/Create`; // API endpoint changes based on edit or add
         const method = editPost ? "PUT" : "POST"; // HTTP method changes based on edit or add
 
         const response = await fetch(url, {

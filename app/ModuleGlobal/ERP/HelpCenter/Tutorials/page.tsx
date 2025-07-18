@@ -5,9 +5,9 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/User/UserFetcher";
 
 // Components
-import AddPostForm from "../../../components/HelpCenter/Tutorials/AddUserForm";
-import UsersCard from "../../../components/HelpCenter/Tutorials/Tutorial";
-import SearchFilters from "../../../components/HelpCenter/Tutorials/SearchFilters";
+import Form from "../../../components/HelpCenter/Tutorials/Form";
+import Table from "../../../components/HelpCenter/Tutorials/Table";
+import Filters from "../../../components/HelpCenter/Tutorials/Filters";
 
 // Toast Notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -19,7 +19,6 @@ const ListofUser: React.FC = () => {
     const [editUser, setEditUser] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedClientType, setSelectedClientType] = useState("");
     const [startDate, setStartDate] = useState(""); // Default to null
     const [endDate, setEndDate] = useState(""); // Default to null
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -31,7 +30,6 @@ const ListofUser: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Fetch user data based on query parameters (user ID)
     useEffect(() => {
         const fetchUserData = async () => {
             const params = new URLSearchParams(window.location.search);
@@ -72,7 +70,7 @@ const ListofUser: React.FC = () => {
     // Fetch all posts from the API
     const fetchAccount = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/HelpCenter/Tutorials/FetchData");
+            const response = await fetch("/api/Data/Help/Fetch");
             const data = await response.json();
             setPosts(data.data);
         } catch (error) {
@@ -123,7 +121,7 @@ const ListofUser: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/ModuleSales/HelpCenter/Tutorials/DeleteUser`, {
+            const response = await fetch(`/api/Data/Help/Delete`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -154,7 +152,7 @@ const ListofUser: React.FC = () => {
                         <div className="container mx-auto p-4 text-gray-900">
                             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                                 {showForm ? (
-                                    <AddPostForm
+                                    <Form
                                         onCancel={() => {
                                             setShowForm(false);
                                             setEditUser(null);
@@ -182,11 +180,11 @@ const ListofUser: React.FC = () => {
                                             <p className="text-xs text-gray-600 mb-4">
                                                 The <strong>Tutorials</strong> here is used to manage and track the progress of various tasks or activities. It helps in organizing the workflow and provides a clear visual representation of task status. The board is divided into different columns such as "Backlogs," "Priority," "Important", and "Finished," allowing users to move tasks across these stages. This system enhances collaboration by allowing team members to easily update and track the status of each task, making it an effective tool for managing tasks, improving productivity, and ensuring smoother coordination within the team.
                                             </p>
-                                            <SearchFilters
+                                            <Filters
                                                 searchTerm={searchTerm}
                                                 setSearchTerm={setSearchTerm}
                                             />
-                                            <UsersCard
+                                            <Table
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}
                                                 handleDelete={confirmDelete}

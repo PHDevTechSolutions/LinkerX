@@ -73,7 +73,7 @@ const ListofUser: React.FC = () => {
     // Fetch all users from the API
     const fetchUsers = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/UserManagement/TerritorySalesAssociates/FetchUser");
+            const response = await fetch("/api/UserManagement/Fetch");
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -118,7 +118,7 @@ const ListofUser: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/ModuleSales/UserManagement/TerritorySalesAssociates/DeleteUser`, {
+            const response = await fetch(`/api/UserManagement/Delete`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

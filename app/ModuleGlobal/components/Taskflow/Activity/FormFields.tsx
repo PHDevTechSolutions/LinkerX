@@ -102,7 +102,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   useEffect(() => {
     const fetchManagers = async () => {
       try {
-        const response = await fetch("/api/manager?Role=Manager");
+        const response = await fetch("/api/UserManagement/FetchManager?Role=Manager");
         if (!response.ok) {
           throw new Error("Failed to fetch managers");
         }
@@ -124,7 +124,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   useEffect(() => {
     const fetchTSM = async () => {
       try {
-        const response = await fetch("/api/fetchtsm?Role=Territory Sales Manager");
+        const response = await fetch("/api/UserManagement/FetchTSM?Role=Territory Sales Manager");
         if (!response.ok) {
           throw new Error("Failed to fetch managers");
         }
@@ -146,7 +146,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   useEffect(() => {
     const fetchTSA = async () => {
       try {
-        const response = await fetch("/api/fetchtsa?Role=Territory Sales Associate");
+        const response = await fetch("/api/UserManagement/FetchTSA?Role=Territory Sales Associate");
         if (!response.ok) {
           throw new Error("Failed to fetch agents");
         }

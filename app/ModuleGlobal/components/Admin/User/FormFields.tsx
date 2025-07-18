@@ -9,6 +9,7 @@ interface FormFieldsProps {
   userName: string; setuserName: (value: string) => void;
   Password: string; setPassword: (value: string) => void;
   Role: string; setRole: (value: string) => void;
+  Position: string; setPosition: (value: string) => void;
   Department: string; setDepartment: (value: string) => void;
   Location: string; setLocation: (value: string) => void;
   Company: string; setCompany: (value: string) => void;
@@ -28,6 +29,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   userName, setuserName,
   Password, setPassword,
   Role, setRole,
+  Position, setPosition,
   Department, setDepartment,
   Location, setLocation,
   Company, setCompany,
@@ -76,7 +78,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <label className="block text-xs font-bold mb-2" htmlFor="userName">Username</label>
           <input type="text" id="userName" value={userName} onChange={(e) => setuserName(e.target.value)} className="w-full px-3 py-2 border-b text-xs capitalize" required />
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Password">Password</label>
           <input type="password" id="Password" value={Password} onChange={(e) => setPassword(e.target.value)} className="w-full px-3 py-2 border-b text-xs" required />
         </div>
@@ -86,6 +88,16 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option>Select Role</option>
             <option value="Admin">Admin</option>
             <option value="Super Admin">Super Admin</option>
+          </select>
+        </div>
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+          <label className="block text-xs font-bold mb-2" htmlFor="Role">Position</label>
+          <select id="Position" value={Position || ""} onChange={(e) => setPosition(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs" required>
+            <option>Select Position</option>
+            <option value="IT Associate">IT Associate</option>
+            <option value="IT Manager">IT Manager</option>
+            <option value="IT Senior Manager">IT Senior Manager</option>
+            <option value="Web Developer / Software Engineer">Web Developer / Software Engineer</option>
           </select>
         </div>
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">

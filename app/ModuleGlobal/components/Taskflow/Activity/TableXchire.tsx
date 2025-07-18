@@ -4,8 +4,6 @@ interface TableXchireProps {
   updatedUser: any[];
   bulkDeleteMode: boolean;
   bulkEditMode: boolean;
-  bulkTransferMode: boolean;
-  bulkTransferTSAMode: boolean;
   selectedUsers: Set<string>;
   handleSelectUser: (userId: string) => void;
   handleEdit: (post: any) => void;
@@ -17,15 +15,13 @@ const TableXchire: React.FC<TableXchireProps> = ({
   updatedUser,
   bulkDeleteMode,
   bulkEditMode,
-  bulkTransferMode,
-  bulkTransferTSAMode,
   selectedUsers,
   handleSelectUser,
   handleEdit,
   formatDate,
   statusColors,
 }) => {
-  const showCheckbox = bulkDeleteMode || bulkEditMode || bulkTransferMode || bulkTransferTSAMode;
+  const showCheckbox = bulkDeleteMode || bulkEditMode;
 
   const borderLeftClassMap: Record<string, string> = {
     Cold: "border-l-4 border-blue-400",
@@ -71,8 +67,6 @@ const TableXchire: React.FC<TableXchireProps> = ({
                     ? "text-red-600"
                     : bulkEditMode
                     ? "text-blue-600"
-                    : (bulkTransferMode || bulkTransferTSAMode)
-                    ? "text-purple-600"
                     : ""
                 }`}
               />
@@ -118,8 +112,6 @@ const TableXchire: React.FC<TableXchireProps> = ({
     selectedUsers,
     bulkDeleteMode,
     bulkEditMode,
-    bulkTransferMode,
-    bulkTransferTSAMode,
     handleSelectUser,
     handleEdit,
     formatDate,

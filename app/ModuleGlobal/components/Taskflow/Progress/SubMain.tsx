@@ -10,8 +10,6 @@ interface SubMainProps {
   updatedUser: any[];
   bulkDeleteMode: boolean;
   bulkEditMode: boolean;
-  bulkTransferMode: boolean;
-  bulkTransferTSAMode: boolean;
   selectedUsers: Set<string>;
   handleSelectUser: (id: string) => void;
   handleEdit: (post: any) => void;
@@ -21,19 +19,9 @@ interface SubMainProps {
   setActiveTab: (tab: string) => void;
   toggleBulkDeleteMode: () => void;
   toggleBulkEditMode: () => void;
-  toggleBulkTransferMode: () => void;
-  toggleBulkTransferTSAMode: () => void;
   handleBulkDelete: () => void;
   handleBulkEdit: () => void;
-  handleBulkTransfer: () => void;
-  handleBulkTSATransfer: () => void;
   handleSelectAll: () => void;
-  tsmList: any[];
-  tsaList: any[];
-  selectedTsm: string;
-  setSelectedTsm: (val: string) => void;
-  selectedTsa: string;
-  setSelectedTsa: (val: string) => void;
   newTypeClient: string;
   setNewTypeClient: (val: string) => void;
   totalQuotation: number;
@@ -45,8 +33,6 @@ const SubMain: React.FC<SubMainProps> = ({
   updatedUser,
   bulkDeleteMode,
   bulkEditMode,
-  bulkTransferMode,
-  bulkTransferTSAMode,
   selectedUsers,
   handleSelectUser,
   handleEdit,
@@ -56,19 +42,9 @@ const SubMain: React.FC<SubMainProps> = ({
   setActiveTab,
   toggleBulkDeleteMode,
   toggleBulkEditMode,
-  toggleBulkTransferMode,
-  toggleBulkTransferTSAMode,
   handleBulkDelete,
   handleBulkEdit,
-  handleBulkTransfer,
-  handleBulkTSATransfer,
   handleSelectAll,
-  tsmList,
-  tsaList,
-  selectedTsm,
-  setSelectedTsm,
-  selectedTsa,
-  setSelectedTsa,
   newTypeClient,
   setNewTypeClient,
   totalQuotation,
@@ -80,23 +56,11 @@ const SubMain: React.FC<SubMainProps> = ({
       <ButtonPanels
         bulkDeleteMode={bulkDeleteMode}
         bulkEditMode={bulkEditMode}
-        bulkTransferMode={bulkTransferMode}
-        bulkTransferTSAMode={bulkTransferTSAMode}
         toggleBulkDeleteMode={toggleBulkDeleteMode}
         toggleBulkEditMode={toggleBulkEditMode}
-        toggleBulkTransferMode={toggleBulkTransferMode}
-        toggleBulkTransferTSAMode={toggleBulkTransferTSAMode}
         selectedUsers={selectedUsers}
         updatedUser={updatedUser}
         handleSelectAll={handleSelectAll}
-        tsmList={tsmList}
-        tsaList={tsaList}
-        selectedTsm={selectedTsm}
-        setSelectedTsm={setSelectedTsm}
-        selectedTsa={selectedTsa}
-        setSelectedTsa={setSelectedTsa}
-        handleBulkTransfer={handleBulkTransfer}
-        handleBulkTSATransfer={handleBulkTSATransfer}
         handleBulkDelete={handleBulkDelete}
         handleBulkEdit={handleBulkEdit}
         newTypeClient={newTypeClient}
@@ -130,8 +94,6 @@ const SubMain: React.FC<SubMainProps> = ({
             updatedUser={updatedUser}
             bulkDeleteMode={bulkDeleteMode}
             bulkEditMode={bulkEditMode}
-            bulkTransferMode={bulkTransferMode}
-            bulkTransferTSAMode={bulkTransferTSAMode}
             selectedUsers={selectedUsers}
             handleSelectUser={handleSelectUser}
             handleEdit={handleEdit}
@@ -147,8 +109,6 @@ const SubMain: React.FC<SubMainProps> = ({
           selectedUsers={selectedUsers}
           bulkDeleteMode={bulkDeleteMode}
           bulkEditMode={bulkEditMode}
-          bulkTransferMode={bulkTransferMode}
-          bulkTransferTSAMode={bulkTransferTSAMode}
           handleSelectUser={handleSelectUser}
           handleEdit={handleEdit}
           statusColors={statusColors}

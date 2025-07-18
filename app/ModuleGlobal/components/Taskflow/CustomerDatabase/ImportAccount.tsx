@@ -121,7 +121,7 @@ const ImportForm: React.FC<ImportFormProps> = ({
           });
         });
 
-        const response = await fetch("/api/ModuleSales/UserManagement/CompanyAccounts/ImportAccounts", {
+        const response = await fetch("/api/Data/Applications/Taskflow/CustomerDatabase/Import", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -154,7 +154,7 @@ const ImportForm: React.FC<ImportFormProps> = ({
   useEffect(() => {
     const fetchManagers = async () => {
       try {
-        const res = await fetch("/api/manager?Role=Manager");
+        const res = await fetch("/api/UserManagement/FetchManager?Role=Manager");
         const data = await res.json();
         const options = data.map((user: any) => ({
           value: user.ReferenceID,
@@ -172,7 +172,7 @@ const ImportForm: React.FC<ImportFormProps> = ({
   useEffect(() => {
     const fetchTSM = async () => {
       try {
-        const res = await fetch("/api/fetchtsm?Role=Territory Sales Manager");
+        const res = await fetch("/api/UserManagement/FetchTSM?Role=Territory Sales Manager");
         const data = await res.json();
         const options = data.map((user: any) => ({
           value: user.ReferenceID,
@@ -190,7 +190,7 @@ const ImportForm: React.FC<ImportFormProps> = ({
   useEffect(() => {
     const fetchTSA = async () => {
       try {
-        const res = await fetch("/api/fetchtsa?Role=Territory Sales Associate");
+        const res = await fetch("/api/UserManagement/FetchTSA?Role=Territory Sales Associate");
         const data = await res.json();
         const options = data.map((user: any) => ({
           value: user.ReferenceID,

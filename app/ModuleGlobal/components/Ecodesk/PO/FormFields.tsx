@@ -84,7 +84,7 @@ const ReceivedPOFields: React.FC<ReceivedFieldsProps> = ({
     useEffect(() => {
         const fetchTSA = async () => {
             try {
-                const response = await fetch("/api/tsa?Roles=Territory Sales Associate,E-Commerce Staff, Business Development Officer");
+                const response = await fetch("/api/Data/Applications/Ecodesk/PO/FetchTSA?Roles=Territory Sales Associate,E-Commerce Staff, Business Development Officer");
                 if (!response.ok) throw new Error("Failed to fetch agents");
 
                 const data = await response.json();
@@ -105,7 +105,7 @@ const ReceivedPOFields: React.FC<ReceivedFieldsProps> = ({
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
-                const response = await fetch('/api/ModuleCSR/companies');
+                const response = await fetch('/api/Data/Applications/Ecodesk/PO/FetchCompanies');
                 const data = await response.json();
                 setCompanies(data);
             } catch (error) {
@@ -126,7 +126,7 @@ const ReceivedPOFields: React.FC<ReceivedFieldsProps> = ({
 
         if (selectedCompany) {
             try {
-                const response = await fetch(`/api/ModuleCSR/companies?CompanyName=${encodeURIComponent(selectedCompany)}`);
+                const response = await fetch(`/api/Data/Applications/Ecodesk/PO/FetchCompanies?CompanyName=${encodeURIComponent(selectedCompany)}`);
                 if (response.ok) {
                     const companyDetails = await response.json();
                     setContactNumber(companyDetails.ContactNumber || '');

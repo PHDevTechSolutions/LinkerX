@@ -40,7 +40,7 @@ const ReceivedPO: React.FC = () => {
     // Fetch accounts from the API
     const fetchAccounts = async () => {
         try {
-            const response = await fetch("/api/ModuleCSR/DTracking/FetchTracking");
+            const response = await fetch("/api/Data/Applications/Ecodesk/Tracking/Fetch");
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -89,7 +89,7 @@ const ReceivedPO: React.FC = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch("/api/getUsers"); // API endpoint mo
+                const response = await fetch("/api/Data/Applications/Ecodesk/Tracking/FetchUser"); // API endpoint mo
                 const data = await response.json();
                 setUsersList(data);
             } catch (error) {
@@ -147,7 +147,7 @@ const ReceivedPO: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/ModuleCSR/DTracking/Delete`, {
+            const response = await fetch(`/api/Data/Applications/Ecodesk/Tracking/Delete`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

@@ -128,7 +128,7 @@ const ImportForm: React.FC<ImportFormProps> = ({
 
         console.log("Parsed Excel Data:", jsonData);
 
-        const response = await fetch("/api/ModuleSales/UserManagement/ActivityLogs/ImportActivities", {
+        const response = await fetch("/api/Data/Applications/Taskflow/Activity/Import", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

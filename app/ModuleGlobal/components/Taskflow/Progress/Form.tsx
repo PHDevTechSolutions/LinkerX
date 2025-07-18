@@ -58,7 +58,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ userDetails, onCancel, refres
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const url = editUser ? `/api/ModuleGlobal/Logs/ProgressLogs/EditData` : `/api/ModuleSales/UserManagement/CompanyAccounts/CreateUser`;
+        const url = editUser 
+        ? `/api/Data/Applications/Taskflow/Progress/Edit` 
+        : `/api/Data/Applications/Taskflow/Progress/Create`;
         const method = editUser ? "PUT" : "POST";
 
         const response = await fetch(url, {

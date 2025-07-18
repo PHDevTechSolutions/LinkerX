@@ -70,7 +70,7 @@ const ListofUser: React.FC = () => {
     // Fetch all users from the API
     const fetchUsers = async () => {
         try {
-            const response = await fetch("/api/ModuleSales/UserManagement/ManagerDirector/FetchUser");
+            const response = await fetch("/api/UserManagement/Fetch");
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -85,10 +85,12 @@ const ListofUser: React.FC = () => {
         const matchesSearchTerm = [post?.Firstname, post?.Lastname]
             .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
 
-        // Filter for Admin role and CSR department
-        const isAdminCSR = post?.Role === "Admin" && post?.Department === "IT Department";
+        // Allow both 'Admin' and 'Super Admin' roles in 'IT Department'
+        const isAllowedRole =
+            (post?.Role === "Admin") &&
+            post?.Department === "IT Department";
 
-        return matchesSearchTerm && isAdminCSR;
+        return matchesSearchTerm && isAllowedRole;
     });
 
     const indexOfLastPost = currentPage * postsPerPage;
