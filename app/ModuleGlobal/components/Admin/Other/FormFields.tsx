@@ -84,28 +84,96 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <label className="block text-xs font-bold mb-2" htmlFor="Role">Role</label>
           <select id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs" required>
             <option>Select Role</option>
-            <option value="Engineering Manager">Engineering Manager</option>
-            <option value="Engineering Supervisor">Engineering Supervisor</option>
-            <option value="Technical Support Engineer">Technical Support Engineer</option>
-            <option value="Technical Service Engineer">Technical Service Engineer</option>
-            <option value="HR Manager">HR Manager</option>
+            <option value="Accounting Associate">Accounting Associate</option>
+            <option value="Accounting Officer - CPA">Accounting Officer - CPA</option>
+            <option value="Accounts Payable Supervisor">Accounts Payable Supervisor</option>
+            <option value="Accounts Receivable Associate">Accounts Receivable Associate</option>
+            <option value="Accounts Receivable Supervisor">Accounts Receivable Supervisor</option>
+            <option value="Admin Associate">Admin Associate</option>
             <option value="Admin Manager">Admin Manager</option>
-            <option value="E-Commerce Staff">E-Commerce Staff</option>
+            <option value="Billing Associate">Billing Associate</option>
+            <option value="Billing Supervisor">Billing Supervisor</option>
             <option value="Business Development Manager">Business Development Manager</option>
             <option value="Business Development Officer">Business Development Officer</option>
-            <option value="Warehouse Manager">Warehouse Manager</option>
-            <option value="Warehouse Staff">Warehouse Staff</option>
+            <option value="Cashier">Cashier</option>
+            <option value="Customer Service Manager">Customer Service Manager</option>
+            <option value="Customer Service Representative">Customer Service Representative</option>
+            <option value="Dispatcher">Dispatcher</option>
             <option value="Driver">Driver</option>
+            <option value="E-Commerce Associate">E-Commerce Associate</option>
+            <option value="Electrician">Electrician</option>
+            <option value="Engineering Manager">Engineering Manager</option>
+            <option value="Engineering Supervisor">Engineering Supervisor</option>
+            <option value="Finance Manager">Finance Manager</option>
+            <option value="Fullstack Web Developer / Software Engineer">Fullstack Web Developer / Software Engineer</option>
+            <option value="Graphic Artist">Graphic Artist</option>
+            <option value="HR Associate">HR Associate</option>
+            <option value="HR Assistant Manager">HR Assistant Manager</option>
+            <option value="HR Generalist">HR Generalist</option>
+            <option value="HR Manager">HR Manager</option>
+            <option value="HR Supervisor">HR Supervisor</option>
+            <option value="Inventory Associate">Inventory Associate</option>
+            <option value="Inventory Manager">Inventory Manager</option>
+            <option value="IT Associate">IT Associate</option>
+            <option value="IT Manager">IT Manager</option>
+            <option value="IT Senior Supervisor">IT Senior Supervisor</option>
+            <option value="Liaison Associate">Liaison Associate</option>
+            <option value="Logistics Assistant">Logistics Assistant</option>
+            <option value="Logistics Associate">Logistics Associate</option>
+            <option value="Logistics Manager">Logistics Manager</option>
+            <option value="Logistics Planner">Logistics Planner</option>
+            <option value="Logistics Supervisor">Logistics Supervisor</option>
+            <option value="Marketing Manager">Marketing Manager</option>
+            <option value="Messenger / Collector">Messenger / Collector</option>
+            <option value="Office Sales Associate">Office Sales Associate</option>
+            <option value="Office Sales Manager">Office Sales Manager</option>
+            <option value="Processing Associate - Ecommerce">Processing Associate - Ecommerce</option>
+            <option value="Processing Supervisor">Processing Supervisor</option>
+            <option value="Product Development Associate">Product Development Associate</option>
+            <option value="Procuct Replacement Associate">Product Replacement Associate</option>
+            <option value="Purchasing Associate">Purchasing Associate</option>
+            <option value="Purchasing Supervisor">Purchasing Supervisor</option>
+            <option value="Sales Coordinator">Sales Coordinator</option>
+            <option value="Sales Engineer">Sales Engineer</option>
+            <option value="Sales Order Associate">Sales Order Associate</option>
+            <option value="Sales Support Associate">Sales Support Associate</option>
+            <option value="Sales Support Head">Sales Support Head</option>
+            <option value="Sample Associate">Sample Associate</option>
+            <option value="Senior Sales Associate">Senior Sales Associate</option>
+            <option value="Seo Specialist">Seo Specialist</option>
+            <option value="Shipment Receiving Supervisor">Shipment Receiving Supervisor</option>
+            <option value="Technical Associate - Projects">Technical Associate - Projects</option>
+            <option value="Technical Associate - Quality Assurance">Technical Associate - Quality Assurance</option>
+            <option value="Technical Associate - Repair">Technical Associate - Repair</option>
+            <option value="Technical Associate - Return and Replacement">Technical Associate - Return and Replacement</option>
+            <option value="Technical Service Engineer - Operations">Technical Service Engineer - Operations</option>
+            <option value="Technical Service Engineer - Product Quality">Technical Service Engineer - Product Quality</option>
+            <option value="Technical Service Engineer - Product Training">Technical Service Engineer - Product Training</option>
+            <option value="Technical Service Engineer - Projects">Technical Service Engineer - Projects</option>
+            <option value="Technical Services - Team Lead">Technical Services - Team Lead</option>
+            <option value="Technical Support Engineer">Technical Support Engineer</option>
+            <option value="Territory Sales Associate">Territory Sales Associate</option>
+            <option value="Territory Sales Manager">Territory Sales Manager</option>
+            <option value="Warehouse Admin Supervisor">Warehouse Admin Supervisor</option>
+            <option value="Warehouse Operations Manager">Warehouse Operations Manager</option>
           </select>
         </div>
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Role">Department</label>
           <select id="Department" value={Department || ""} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs" required>
             <option>Select Department</option>
-            <option value="Admin">Admin</option>
-            <option value="IT Department">IT Department</option>
-            <option value="Engineering Department">Engineering Department</option>
-            <option value="Warehouse Department">Warehouse Department</option>
+            <option value="Accounting">Accounting Department</option>
+            <option value="Admin">Administration</option>
+            <option value="Business Devt">Business Devt</option>
+            <option value="CSR">Customer Service Department</option>
+            <option value="Ecommerce">Ecommerce Department</option>
+            <option value="Engineering">Engineering Department</option>
+            <option value="Human Resources">Human Resources Department</option>
+            <option value="Information Technology">IT Department</option>
+            <option value="Marketing">Engineering Marketing</option>
+            <option value="Procurement">Procurement Department</option>
+            <option value="Sales">Sales Department</option>
+            <option value="Warehouse Operations">Warehouse Operations</option>
           </select>
         </div>
         </div>
