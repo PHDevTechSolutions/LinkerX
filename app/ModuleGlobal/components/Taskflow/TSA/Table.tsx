@@ -197,7 +197,7 @@ const UsersCard: React.FC<UsersCardProps> = ({ posts, handleEdit, handleDelete, 
               </div>
 
               <div className="mt-auto border-t pt-2 text-xs text-gray-900">
-                <p><strong>Department:</strong> {post.Department}</p>
+                <p><strong>Department:</strong> {post.Department} / {post.Position}</p>
                 <p><strong>Location:</strong> {post.Location}</p>
                 <p className="mt-2">
                   <span className={`badge text-white text-[8px] px-2 py-1 mr-2 rounded-xl ${statusColors[post.Status] || 'bg-gray-400'}`}>

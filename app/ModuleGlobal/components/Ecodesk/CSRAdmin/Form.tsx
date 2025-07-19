@@ -20,6 +20,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
   const [userName, setuserName] = useState(editUser ? editUser.userName : "");
   const [Password, setPassword] = useState(editUser ? editUser.Password : "");
   const [Role, setRole] = useState(editUser ? editUser.Role : "");
+  const [Position, setPosition] = useState(editUser ? editUser.Position : "");
   const [Department, setDepartment] = useState(editUser ? editUser.Department : "");
   const [Location, setLocation] = useState(editUser ? editUser.Location : "");
   const [Company, setCompany] = useState(editUser ? editUser.Company : "");
@@ -34,7 +35,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const url = editUser ? `/api/ModuleSales/UserManagement/ManagerDirector/EditUser` : `/api/ModuleSales/UserManagement/ManagerDirector/CreateUser`; // API endpoint changes based on edit or add
+    const url = editUser ? `/api/UserManagement/Edit` : `/api/UserManagement/Create`; // API endpoint changes based on edit or add
     const method = editUser ? "PUT" : "POST"; // HTTP method changes based on edit or add
 
     const response = await fetch(url, {
@@ -43,7 +44,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Department, Location, Company, UserId, Status, LoginAttempts, LockUntil,
+        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Position, Department, Location, Company, UserId, Status, LoginAttempts, LockUntil,
         id: editUser ? editUser._id : undefined, // Send post ID if editing
       }),
     });
@@ -76,6 +77,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
           userName={userName} setuserName={setuserName}
           Password={Password} setPassword={setPassword}
           Role={Role} setRole={setRole}
+          Position={Position} setPosition={setPosition}
           Department={Department} setDepartment={setDepartment}
           Location={Location} setLocation={setLocation}
           Company={Company} setCompany={setCompany}

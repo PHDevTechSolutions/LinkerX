@@ -9,6 +9,7 @@ interface FormFieldsProps {
   userName: string; setuserName: (value: string) => void;
   Password: string; setPassword: (value: string) => void;
   Role: string; setRole: (value: string) => void;
+  Position: string; setPosition: (value: string) => void;
   Department: string; setDepartment: (value: string) => void;
   Location: string; setLocation: (value: string) => void;
   Company: string; setCompany: (value: string) => void;
@@ -28,6 +29,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   userName, setuserName,
   Password, setPassword,
   Role, setRole,
+  Position, setPosition,
   Department, setDepartment,
   Location, setLocation,
   Company, setCompany,
@@ -76,7 +78,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <label className="block text-xs font-bold mb-2" htmlFor="userName">Username</label>
           <input type="text" id="userName" value={userName} onChange={(e) => setuserName(e.target.value)} className="w-full px-3 py-2 border-b text-xs capitalize" required />
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Password">Password</label>
           <input type="password" id="Password" value={Password} onChange={(e) => setPassword(e.target.value)} className="w-full px-3 py-2 border-b text-xs" required />
         </div>
@@ -84,6 +86,14 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
           <label className="block text-xs font-bold mb-2" htmlFor="Role">Role</label>
           <select id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs" required>
             <option>Select Role</option>
+            <option value="User">User</option>
+            <option value="Manager">Manager</option>
+          </select>
+        </div>
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+          <label className="block text-xs font-bold mb-2" htmlFor="Role">Position</label>
+          <select id="Position" value={Position || ""} onChange={(e) => setPosition(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs" required>
+            <option>Select Position</option>
             <option value="Accounting Associate">Accounting Associate</option>
             <option value="Accounting Officer - CPA">Accounting Officer - CPA</option>
             <option value="Accounts Payable Supervisor">Accounts Payable Supervisor</option>
@@ -170,7 +180,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="Engineering">Engineering Department</option>
             <option value="Human Resources">Human Resources Department</option>
             <option value="Information Technology">IT Department</option>
-            <option value="Marketing">Engineering Marketing</option>
+            <option value="Marketing">Marketing Department</option>
             <option value="Procurement">Procurement Department</option>
             <option value="Sales">Sales Department</option>
             <option value="Warehouse Operations">Warehouse Operations</option>
@@ -207,8 +217,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
               setStatus(newStatus);
 
               if (newStatus === "Active") {
-                setLoginAttempts("0"); // Convert number to string
-                setLockUntil("0"); // Convert number to string
+                setLoginAttempts("0");
+                setLockUntil("0");
               }
             }}
             className="w-full px-3 py-2 border-b bg-white text-xs bg-gray-50"

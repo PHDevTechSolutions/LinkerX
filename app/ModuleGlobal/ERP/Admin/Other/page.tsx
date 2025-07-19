@@ -92,9 +92,10 @@ const ListofUser: React.FC = () => {
             "E-Commerce Staff",
             "Warehouse Manager",
             "Warehouse Staff",
-            "HR Manager",
+            "Manager",
             "Engineering Manager",
             "Driver",
+            "User",
             "Technical Service Engineer",
             "Admin Manager"
             

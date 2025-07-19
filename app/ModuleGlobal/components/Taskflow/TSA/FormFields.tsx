@@ -11,6 +11,7 @@ interface FormFieldsProps {
   userName: string; setuserName: (value: string) => void;
   Password: string; setPassword: (value: string) => void;
   Role: string; setRole: (value: string) => void;
+  Position: string; setPosition: (value: string) => void;
   TargetQuota: string; setTargetQuota: (value: string) => void;
   Department: string; setDepartment: (value: string) => void;
   Location: string; setLocation: (value: string) => void;
@@ -35,6 +36,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   userName, setuserName,
   Password, setPassword,
   Role, setRole,
+  Position, setPosition,
   TargetQuota, setTargetQuota,
   Department, setDepartment,
   Location, setLocation,
@@ -131,7 +133,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
   return (
     <>
       <div className="flex flex-wrap -mx-4">
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Manager">Manager Code</label>
           {isEditing ? (
             <input type="text" id="Manager" value={Manager} onChange={(e) => setManager(e.target.value)} className="w-full px-3 py-2 border-b text-xs capitalize" />
@@ -142,7 +144,8 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             }} className="text-xs capitalize" />
           )}
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="TSM">TSM Code</label>
           {isEditing ? (
             <input type="text" id="TSM" value={TSM} onChange={(e) => setTSM(e.target.value)} className="w-full px-3 py-2 border-b text-xs capitalize" />
@@ -153,42 +156,65 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             }} className="text-xs capitalize" />
           )}
         </div>
-      </div>
-      <div className="flex flex-wrap -mx-4">
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <input type="hidden" id="userId" value={UserId} onChange={(e) => setUserId(e.target.value)}/>
           <input type="hidden" id="ReferenceID" value={ReferenceID} onChange={(e) => setReferenceID(e.target.value)} />
           <label className="block text-xs font-bold mb-2" htmlFor="Firstname">Firstname</label>
           <input type="text" id="Firstname" value={Firstname} onChange={(e) => setFirstname(e.target.value)} className="w-full px-3 py-2 border-b text-xs capitalize"
           />
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Lastname">Lastname</label>
           <input type="text" id="Lastname" value={Lastname} onChange={(e) => setLastname(e.target.value)} className="w-full px-3 py-2 border-b text-xs capitalize" />
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Email">Email</label>
           <input type="text" id="Email" value={Email} onChange={(e) => setEmail(e.target.value)} className="w-full px-3 py-2 border-b text-xs" />
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="ContactNumber">Contact Number</label>
           <input type="text" id="ContactNumber" value={ContactNumber} onChange={(e) => setContactNumber(e.target.value)} className="w-full px-3 py-2 border-b text-xs" />
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="userName">Username</label>
           <input type="text" id="userName" value={userName} onChange={(e) => setuserName(e.target.value)} className="w-full px-3 py-2 border-b text-xs capitalize" required />
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/2 px-4 mb-4">
+
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Password">Password</label>
           <input type="text" id="Password" value={Password} onChange={(e) => setPassword(e.target.value)} className="w-full px-3 py-2 border-b text-xs" required />
         </div>
+
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Role">Role</label>
-          <select id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs bg-gray-50" required>
+          <select id="Role" value={Role || ""} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs" required>
             <option>Select Role</option>
-            <option value="Territory Sales Associate">Territory Sales Associate</option>
+            <option value="User">User</option>
           </select>
         </div>
+
+        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+          <label className="block text-xs font-bold mb-2" htmlFor="Role">Position</label>
+          <select id="Position" value={Position || ""} onChange={(e) => setPosition(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs" required>
+            <option>Select Position</option>
+            <option value="Office Sales Associate">Office Sales Associate</option>
+            <option value="Office Sales Manager">Office Sales Manager</option>
+            <option value="Sales Coordinator">Sales Coordinator</option>
+            <option value="Sales Engineer">Sales Engineer</option>
+            <option value="Sales Order Associate">Sales Order Associate</option>
+            <option value="Sales Support Associate">Sales Support Associate</option>
+            <option value="Sales Support Head">Sales Support Head</option>
+            <option value="Senior Sales Associate">Senior Sales Associate</option>
+            <option value="Territory Sales Associate">Territory Sales Associate</option>
+            <option value="Territory Sales Manager">Territory Sales Manager</option>
+          </select>
+        </div>
+
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Role">Department</label>
           <select id="Department" value={Department || ""} onChange={(e) => setDepartment(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs bg-gray-50" required>
@@ -196,8 +222,7 @@ const UserFormFields: React.FC<FormFieldsProps> = ({
             <option value="Sales">Sales Department</option>
           </select>
         </div>
-      </div>
-      <div className="flex flex-wrap -mx-4">
+
         <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
           <label className="block text-xs font-bold mb-2" htmlFor="Location">Location</label>
           <select id="Location" value={Location || ""} onChange={(e) => setLocation(e.target.value)} className="w-full px-3 py-2 border-b bg-white text-xs bg-gray-50" required>

@@ -21,6 +21,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
   const [ContactNumber, setContactNumber] = useState(editUser ? editUser.ContactNumber : "");
   const [userName, setuserName] = useState(editUser ? editUser.userName : "");
   const [Password, setPassword] = useState(editUser ? editUser.Password : "");
+  const [Position, setPosition] = useState(editUser ? editUser.Position : "");
   const [Role, setRole] = useState(editUser ? editUser.Role : "");
   const [TargetQuota, setTargetQuota] = useState(editUser ? editUser.TargetQuota : "");
   const [Department, setDepartment] = useState(editUser ? editUser.Department : "");
@@ -40,7 +41,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
     e.preventDefault();
 
     const url = editUser ? `/api/UserManagement/Edit` : `/api/UserManagement/Create`;
-    const method = editUser ? "PUT" : "POST"; // HTTP method changes based on edit or add
+    const method = editUser ? "PUT" : "POST";
 
     const response = await fetch(url, {
       method,
@@ -48,8 +49,8 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, ContactNumber, TargetQuota, Department, Location, Company, Manager, TSM, UserId, Status, LoginAttempts, LockUntil,
-        id: editUser ? editUser._id : undefined, // Send post ID if editing
+        ReferenceID, Firstname, Lastname, Email, userName, Password, Role, Position, ContactNumber, TargetQuota, Department, Location, Company, Manager, TSM, UserId, Status, LoginAttempts, LockUntil,
+        id: editUser ? editUser._id : undefined,
       }),
     });
 
@@ -82,6 +83,7 @@ const AddUserForm: React.FC<AddPostFormProps> = ({ userDetails, onCancel, refres
           userName={userName} setuserName={setuserName}
           Password={Password} setPassword={setPassword}
           Role={Role} setRole={setRole}
+          Position={Position} setPosition={setPosition}
           TargetQuota={TargetQuota} setTargetQuota={setTargetQuota}
           Department={Department} setDepartment={setDepartment}
           Location={Location} setLocation={setLocation}
