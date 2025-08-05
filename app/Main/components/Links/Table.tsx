@@ -169,7 +169,7 @@ const Table: React.FC<TableProps> = ({
             <div class="qr-container">
               <img id="qrCodeImg" class="qr-img" src="${qrUrl}" alt="QR Code" />
               <div class="logo-overlay">
-                <img src="https://your-logo-url.com/logo.png" alt="Logo" />
+                            <img src="/LinkerX-logo.png" className="h-6" />
               </div>
             </div>
             <button class="download-btn" onclick="downloadQR()">Download QR Code</button>
