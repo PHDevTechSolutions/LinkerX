@@ -259,7 +259,7 @@ const getCategoryBadgeClasses = (category: string) => {
 <p className="text-gray-400 text-[9px] italic mb-1">/{post.Slug}</p>
 
 {/* Description */}
-<p className="text-gray-600 text-[10px] font-bold capitalize border-t mt-2 pt-1">
+<p className="text-gray-600 text-[10px] font-bold capitalize border-t border-b mt-2 pt-1">
   {post.Description}
 </p>
 
@@ -267,7 +267,7 @@ const getCategoryBadgeClasses = (category: string) => {
 <p className="text-[10px] mt-1 text-purple-600 font-semibold uppercase tracking-wide">
   {post.Category && (
   <span
-    className={`inline-block mt-1 px-2 py-0.5 text-[10px] rounded-full font-semibold uppercase tracking-wide ${getCategoryBadgeClasses(post.Category)}`}
+    className={`inline-block mt-1 px-2 py-0.5 text-[9px] rounded-full font-semibold uppercase tracking-wide ${getCategoryBadgeClasses(post.Category)}`}
   >
     {post.Category}
   </span>
