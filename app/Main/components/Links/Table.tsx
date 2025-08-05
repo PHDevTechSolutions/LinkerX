@@ -12,6 +12,8 @@ export interface LinkPost {
   LinkName: string;
   Description: string;
   PhotoUrl?: string;
+  Slug: string;
+  Category: string;
 }
 
 interface TableProps {
