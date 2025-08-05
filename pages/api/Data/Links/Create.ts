@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';import { connectToDa
 
 // Extend payload interface to include PhotoUrl
 interface LinkPayload {
+Email: string;
 Url: string;
 LinkName: string;
 Description: string;
@@ -18,9 +19,9 @@ return res.status(405).end(Method ${req.method} Not Allowed);
 }
 
 try {
-const { Url, LinkName, Description, PhotoUrl } = req.body as Partial<LinkPayload>;
+const { Email, Url, LinkName, Description, PhotoUrl } = req.body as Partial<LinkPayload>;
 
-if (!Url || !LinkName || !Description) {  
+if (!Email || !Url || !LinkName || !Description) {  
   return res.status(400).json({ message: 'Url and LinkName are required.' });  
 }  
 
@@ -35,6 +36,7 @@ const db = await connectToDatabase();
 const LinksCollection = db.collection<LinkPayload & { createdAt: Date }>('links');  
 
 const newDoc = {  
+  Email,
   Url,  
   LinkName,  
   Description,  
