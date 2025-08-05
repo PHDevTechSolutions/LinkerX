@@ -20,7 +20,7 @@ export default async function addLink(
   }
 
   try {
-    const { Url, LinkName, Description, PhotoUrl } = req.body as Partial<LinkPayload>;
+    const { Url, LinkName, Description, Email, PhotoUrl } = req.body as Partial<LinkPayload>;
 
     if (!Url || !LinkName || !Description || !Email) {
       return res.status(400).json({ message: 'Url and LinkName are required.' });
