@@ -93,26 +93,104 @@ const Table: React.FC<TableProps> = ({
                       <FiShare2 /> Share
                     </button>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const qrWindow = window.open('', '_blank', 'width=300,height=300');
-                        if (qrWindow) {
-                          qrWindow.document.write(`
-                            <html>
-                              <head><title>QR Code</title></head>
-                              <body style="display:flex;justify-content:center;align-items:center;height:100vh;margin:0;">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(
-                            post.Url
-                          )}&size=200x200" />
-                              </body>
-                            </html>
-                          `);
-                        }
-                      }}
-                      className="text-left px-3 py-2 hover:bg-gray-100 flex items-center gap-2"
-                    >
-                      <HiOutlineQrcode /> QR Code
-                    </button>
+  onClick={(e) => {
+    e.stopPropagation();
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(post.Url)}&size=300x300`;
+
+    const qrWindow = window.open('', '_blank', 'width=450,height=520');
+    if (qrWindow) {
+      qrWindow.document.write(`
+        <html>
+          <head>
+            <title>QR Code</title>
+            <style>
+              body {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
+                background-color: #f3f4f6;
+                font-family: Arial, sans-serif;
+              }
+              h2 {
+                margin-bottom: 16px;
+                color: #4b5563;
+              }
+              .qr-container {
+                position: relative;
+                border: 4px solid #e5e7eb;
+                padding: 20px;
+                border-radius: 12px;
+                background-color: #ffffff;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+              }
+              .qr-img {
+                width: 300px;
+                height: 300px;
+              }
+              .logo-overlay {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background-color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+              }
+              .logo-overlay img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+              }
+              .download-btn {
+                margin-top: 20px;
+                padding: 10px 20px;
+                background-color: #6366f1;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-size: 14px;
+                cursor: pointer;
+              }
+              .download-btn:hover {
+                background-color: #4f46e5;
+              }
+            </style>
+          </head>
+          <body>
+            <h2>Scan this QR Code</h2>
+            <div class="qr-container">
+              <img id="qrCodeImg" class="qr-img" src="${qrUrl}" alt="QR Code" />
+              <div class="logo-overlay">
+                <img src="https://your-logo-url.com/logo.png" alt="Logo" />
+              </div>
+            </div>
+            <button class="download-btn" onclick="downloadQR()">Download QR Code</button>
+
+            <script>
+              function downloadQR() {
+                const link = document.createElement('a');
+                link.href = document.getElementById('qrCodeImg').src;
+                link.download = 'QRCode.png';
+                link.click();
+              }
+            </script>
+          </body>
+        </html>
+      `);
+    }
+  }}
+  className="text-left px-3 py-2 hover:bg-gray-100 flex items-center gap-2"
+>
+  <HiOutlineQrcode /> QR Code
+</button>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
