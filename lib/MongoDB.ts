@@ -1,6 +1,5 @@
 import { MongoClient, ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
-import { Server } from "socket.io";
 
 // Ensure the MONGODB_URI environment variable is defined
 if (!process.env.MONGODB_URI) {
@@ -31,13 +30,7 @@ export default clientPromise;
 // Connect to the database
 export async function connectToDatabase() {
   const client = await clientPromise;
-  return client.db("ecoshift"); // Return the 'ecoshift' database
-}
-
-// Function to broadcast new posts
-let io: Server | null = null;
-export function setSocketServer(server: Server) {
-  io = server;
+  return client.db("LinkerX"); // Return the 'ecoshift' database
 }
 
 // Register a new user
@@ -76,12 +69,11 @@ export async function validateUser({ Email, Password, Department,}: { Email: str
     return { success: false, message: "Invalid email or password" };
   }
 
-  // Compare the provided password with the stored hashed password
   const isValidPassword = await bcrypt.compare(Password, user.Password);
   if (!isValidPassword) {
     return { success: false, message: "Invalid email or password" };
   }
 
-  return { success: true, user }; // Return the user object along with success status
+  return { success: true, user };
 }
 

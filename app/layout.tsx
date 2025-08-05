@@ -15,10 +15,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "IT Portal",
+  title: "Linker-X",
   description: "Created in NextJs Developed By Leroux Y Xchire",
   icons: {
-    icon: "/xchire-logo.png",
+    icon: "/LinkerX-logo.png",
   },
 };
 

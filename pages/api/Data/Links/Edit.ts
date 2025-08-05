@@ -12,7 +12,7 @@ export default async function updateLink(
   }
 
   const { id } = req.query;
-  const { Url, LinkName, PhotoUrl } = req.body as { Url?: string; LinkName?: string; PhotoUrl?: string };
+  const { Url, LinkName, Description, PhotoUrl } = req.body as { Url?: string; LinkName?: string; Description?: string; PhotoUrl?: string };
 
   if (!id || typeof id !== 'string') {
     return res.status(400).json({ message: 'Missing link ID.' });
@@ -34,6 +34,7 @@ export default async function updateLink(
     const updateData = {
       Url,
       LinkName,
+      Description,
       PhotoUrl: PhotoUrl || '',
       updatedAt: new Date(),
     };

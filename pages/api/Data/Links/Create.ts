@@ -5,6 +5,7 @@ import { connectToDatabase } from '@/lib/MongoDB';
 interface LinkPayload {
   Url: string;
   LinkName: string;
+  Description: string;
   PhotoUrl?: string; // optional photo URL
 }
 
@@ -18,9 +19,9 @@ export default async function addLink(
   }
 
   try {
-    const { Url, LinkName, PhotoUrl } = req.body as Partial<LinkPayload>;
+    const { Url, LinkName, Description, PhotoUrl } = req.body as Partial<LinkPayload>;
 
-    if (!Url || !LinkName) {
+    if (!Url || !LinkName || !Description) {
       return res.status(400).json({ message: 'Url and LinkName are required.' });
     }
 
@@ -37,6 +38,7 @@ export default async function addLink(
     const newDoc = {
       Url,
       LinkName,
+      Description,
       PhotoUrl: PhotoUrl || '',  // Save empty string if no PhotoUrl given
       createdAt: new Date(),
     };

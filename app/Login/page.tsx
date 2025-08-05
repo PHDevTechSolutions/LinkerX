@@ -38,7 +38,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ userId }) => {
           audioRef.current.pause();
           audioRef.current.currentTime = 0;
         }
-        router.push(`/ModuleGlobal/ERP/Dashboard?id=${encodeURIComponent(userId)}`);
+        router.push(`/Main/LinkerX/Links?id=${encodeURIComponent(userId)}`);
       }
     }, intervalTime);
 
@@ -57,12 +57,12 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ userId }) => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white font-sans">
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#00ffcc33_1px,transparent_1px)] bg-[size:40px_40px] z-0" />
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#7c3aed33_1px,transparent_1px)] bg-[size:40px_40px] z-0" />
       <audio ref={audioRef} src="/binary-logout-sfx.mp3" preload="auto" />
 
       <svg width={120} height={120} className="mb-4">
         <circle
-          stroke="#0ff"
+          stroke="#7c3aed"
           fill="transparent"
           strokeWidth={8}
           r={radius}
@@ -71,7 +71,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ userId }) => {
           style={{ opacity: 0.2 }}
         />
         <motion.circle
-          stroke="#0ff"
+          stroke="#7c3aed"
           fill="transparent"
           strokeWidth={8}
           r={radius}
@@ -85,7 +85,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ userId }) => {
           transition={{ duration: 0.05, ease: 'linear' }}
         />
       </svg>
-      <p className="text-md tracking-wide">Loading IT Portal {progress}%</p>
+      <p className="text-md tracking-wide text-violet-400">Loading Linker X {progress}%</p>
     </div>
   );
 };
@@ -141,10 +141,13 @@ const Login: React.FC = () => {
     return <LoadingPage userId={loggedInUserId} />;
   }
 
+  const handleSignUp = () => {
+    router.push('/Register');
+  };
+
   return (
     <div
-      className={`min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-black via-gray-900 to-black ${isDark ? "text-white" : "text-black"
-        } transition-colors duration-300`}
+      className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-white via-gray-100 to-white text-black transition-colors duration-300 relative overflow-hidden"
     >
       <ToastContainer
         className="text-xs"
@@ -158,8 +161,6 @@ const Login: React.FC = () => {
         transition={Slide}
       />
 
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#00ffcc33_1px,transparent_1px)] bg-[size:40px_40px] z-0" />
-
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -167,10 +168,9 @@ const Login: React.FC = () => {
         className="bg-white dark:bg-black/10 p-6 rounded-xl shadow-lg w-full max-w-md relative z-10"
       >
         <div className="flex flex-col items-center mb-6 text-center">
-          <Image src="/itportal.png" alt="Fluxx-Tech Solutions" width={200} height={100} className="mb-4 rounded-md" />
-          <p className="text-xs mt-2 max-w-sm text-black dark:text-white">
-            Streamline operations, manage data intelligently, and experience the future of business management
-            with our ERP platform.
+          <Image src="/LinkerX.png" alt="Linker X Logo" width={180} height={80} className="mb-3 rounded" />
+          <p className="text-xs mt-2 max-w-sm text-gray-600 dark:text-gray-300">
+            Your smart URL management and linking platform — organize, access, and share links effortlessly.
           </p>
         </div>
 
@@ -204,7 +204,7 @@ const Login: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-8 text-cyan-400 hover:text-cyan-600 transition duration-200"
+              className="absolute right-3 top-8 text-violet-600 hover:text-violet-800 transition duration-200"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <VscEyeClosed className="w-5 h-5" /> : <VscEye className="w-5 h-5" />}
@@ -214,9 +214,17 @@ const Login: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-cyan-500 hover:bg-cyan-400 hover:scale-[1.02] text-white font-semibold text-xs rounded-lg transition-all duration-300 shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-violet-700 hover:bg-violet-600 hover:scale-[1.02] text-white font-semibold text-xs rounded-lg transition-all duration-300 shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {loading ? 'Signing In...' : 'Sign In'}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSignUp}
+            className="w-full py-2 text-violet-600 hover:text-black text-xs underline transition duration-200"
+          >
+            Don't have an account? Sign Up
           </button>
         </form>
       </motion.div>
