@@ -1,13 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '@/lib/MongoDB';
 
-// Extend payload interface to include PhotoUrl
 interface LinkPayload {
   Url: string;
   Email: string;
   LinkName: string;
   Description: string;
-  PhotoUrl?: string; // optional photo URL
+  PhotoUrl?: string;
 }
 
 export default async function addLink(
@@ -20,13 +19,19 @@ export default async function addLink(
   }
 
   try {
-    const { Url, LinkName, Description, Email, PhotoUrl } = req.body as Partial<LinkPayload>;
+    const { Url, LinkName, Description, Email, PhotoUrl } = req.body;
 
-    if (!Url || !LinkName || !Description || !Email) {
-      return res.status(400).json({ message: 'Url and LinkName are required.' });
+    // Validate required fields
+    if (
+      typeof Url !== 'string' ||
+      typeof LinkName !== 'string' ||
+      typeof Description !== 'string' ||
+      typeof Email !== 'string'
+    ) {
+      return res.status(400).json({ message: 'Url, LinkName, Description, and Email are required.' });
     }
 
-    // URL format validation
+    // Validate URL format
     try {
       new URL(Url);
     } catch (_) {
@@ -41,7 +46,7 @@ export default async function addLink(
       LinkName,
       Description,
       Email,
-      PhotoUrl: PhotoUrl || '',  // Save empty string if no PhotoUrl given
+      PhotoUrl: PhotoUrl || '',
       createdAt: new Date(),
     };
 
