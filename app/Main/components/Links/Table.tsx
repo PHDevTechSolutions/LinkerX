@@ -38,6 +38,24 @@ const Table: React.FC<TableProps> = ({
   onDelete,
 }) => {
   return (
+const getCategoryBadgeClasses = (category: string) => {
+  switch (category.toLowerCase()) {
+    case 'social':
+      return 'bg-violet-100 text-violet-700';
+    case 'tools':
+      return 'bg-blue-100 text-blue-700';
+    case 'news':
+      return 'bg-red-100 text-red-700';
+    case 'entertainment':
+      return 'bg-pink-100 text-pink-700';
+    case 'education':
+      return 'bg-green-100 text-green-700';
+    case 'business':
+      return 'bg-yellow-100 text-yellow-700';
+    default:
+      return 'bg-gray-100 text-gray-700';
+  }
+};
     <>
       {/* Page Length Selector */}
       <div className="flex justify-end items-center mb-3 gap-2 text-xs">
@@ -221,19 +239,38 @@ const Table: React.FC<TableProps> = ({
               )}
 
               {/* Info */}
-              <p className="text-gray-600 text-sm font-bold uppercase">{post.LinkName}</p>
-              <p className="font-semibold text-gray-700 break-all mb-1 text-[10px]">
-                <a
-                  href={post.Url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-[#5e17eb] hover:underline"
-                >
-                  {post.Url}
-                </a>
-              </p>
-              <p className="text-gray-600 text-[10px] font-bold capitalize border-t mt-2">{post.Description}</p>
+<p className="text-gray-600 text-sm font-bold uppercase">{post.LinkName}</p>
+
+<p className="font-semibold text-gray-700 break-all text-[10px] mb-1">
+  <a
+    href={post.Url}
+    target="_blank"
+    rel="noopener noreferrer"
+    onClick={(e) => e.stopPropagation()}
+    className="text-[#5e17eb] hover:underline"
+  >
+    {post.Url}
+  </a>
+</p>
+
+{/* Slug */}
+<p className="text-gray-400 text-[9px] italic mb-1">/{post.Slug}</p>
+
+{/* Description */}
+<p className="text-gray-600 text-[10px] font-bold capitalize border-t mt-2 pt-1">
+  {post.Description}
+</p>
+
+{/* Category */}
+<p className="text-[10px] mt-1 text-purple-600 font-semibold uppercase tracking-wide">
+  {post.Category && (
+  <span
+    className={`inline-block mt-1 px-2 py-0.5 text-[10px] rounded-full font-semibold uppercase tracking-wide ${getCategoryBadgeClasses(post.Category)}`}
+  >
+    {post.Category}
+  </span>
+)}
+</p>
             </div>
           ))}
         </div>
