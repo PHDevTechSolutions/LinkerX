@@ -8,6 +8,7 @@ import { HiOutlineQrcode } from 'react-icons/hi';
 export interface LinkPost {
   _id: string;
   Url: string;
+  Email: string;
   LinkName: string;
   Description: string;
   PhotoUrl?: string;
