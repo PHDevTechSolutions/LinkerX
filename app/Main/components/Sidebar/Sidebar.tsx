@@ -9,6 +9,7 @@ import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaRegTimesCircle } from 'react-icons/fa';
 import { FaArrowRight } from 'react-icons/fa6';
+import { BiSolidNotepad } from 'react-icons/bi';
 
 const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const [userId, setUserId] = useState<string | null>(null);
@@ -110,7 +111,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
     },
 {
       title: "Notes",
-      icon: <FcLink className="text-lg" />,
+      icon: <BiSolidNotepad className="text-lg" />,
       href: `/Main/LinkerX/Notes/${userId ? `?id=${encodeURIComponent(userId)}` : ""}`,
     },
   ];
