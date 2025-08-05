@@ -17,6 +17,8 @@ interface LinkPost {
   LinkName: string;
   Description: string;
   PhotoUrl?: string;
+  Slug: string;
+  Category: string;
 }
 
 interface UserDetails {
@@ -56,6 +58,8 @@ const Page: React.FC = () => {
     Url: '',
     LinkName: '',
     Description: '',
+    Slug: '',
+    Category: '',
     PhotoFile: null as File | null,
   });
 
@@ -66,6 +70,8 @@ const Page: React.FC = () => {
       Url: '',
       LinkName: '',
       Description: '',
+      Slug: '',
+      Category: '',
       PhotoFile: null,
     });
     setIsOpen(true);
@@ -79,6 +85,8 @@ const Page: React.FC = () => {
       Url: row.Url,
       LinkName: row.LinkName,
       Description: row.Description,
+      Slug: row.Slug,
+      Category: row.Category,
       PhotoFile: null,
     });
     setIsOpen(true);
@@ -212,6 +220,8 @@ const Page: React.FC = () => {
           Url: formData.Url,
           LinkName: formData.LinkName,
           Description: formData.Description,
+          Slug: formData.Slug,
+          Category: formData.Category,
           PhotoUrl: photoUrl,
         }),
       });
