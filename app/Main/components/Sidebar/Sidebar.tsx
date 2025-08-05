@@ -49,7 +49,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
           Firstname: data.Firstname || "Leroux",
           Lastname: data.Lastname || "Xchire",
           Location: data.Location || "Philippines",
-          Role: data.Role || "Admin",
+          Role: data.Role || "User",
           Position: data.Position || "Default",
           Company: data.Company || "PH Devtech Solutions",
           Status: data.Status || "None",
