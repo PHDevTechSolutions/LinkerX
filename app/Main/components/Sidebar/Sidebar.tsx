@@ -3,13 +3,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FcSettings, FcBullish, FcLink } from "react-icons/fc";
+import { FcSettings, FcBullish, FcLink, FcSurvey } from "react-icons/fc";
 import { GrPowerShutdown } from "react-icons/gr";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaRegTimesCircle } from 'react-icons/fa';
 import { FaArrowRight } from 'react-icons/fa6';
-import { BiSolidNotepad } from 'react-icons/bi';
 
 const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const [userId, setUserId] = useState<string | null>(null);
@@ -111,7 +110,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
     },
 {
       title: "Notes",
-      icon: <BiSolidNotepad className="text-lg" />,
+      icon: <FcSurvey className="text-lg" />,
       href: `/Main/LinkerX/Notes/${userId ? `?id=${encodeURIComponent(userId)}` : ""}`,
     },
   ];
