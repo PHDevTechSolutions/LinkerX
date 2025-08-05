@@ -37,7 +37,7 @@ const Table: React.FC<TableProps> = ({
   onEdit,
   onDelete,
 }) => {
-  return (
+
 const getCategoryBadgeClasses = (category: string) => {
   switch (category.toLowerCase()) {
     case 'social':
@@ -56,6 +56,8 @@ const getCategoryBadgeClasses = (category: string) => {
       return 'bg-gray-100 text-gray-700';
   }
 };
+
+  return (
     <>
       {/* Page Length Selector */}
       <div className="flex justify-end items-center mb-3 gap-2 text-xs">
