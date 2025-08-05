@@ -108,6 +108,11 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
       icon: <FcLink className="text-lg" />,
       href: `/Main/LinkerX/Links/${userId ? `?id=${encodeURIComponent(userId)}` : ""}`,
     },
+{
+      title: "Notes",
+      icon: <FcLink className="text-lg" />,
+      href: `/Main/LinkerX/Notes/${userId ? `?id=${encodeURIComponent(userId)}` : ""}`,
+    },
   ];
 
   return (
