@@ -30,7 +30,7 @@ const Form: React.FC<Props> = ({
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <label className="block text-xs mb-1">URL / Link</label>
+        <label className="block text-xs mb-1">URL/Link</label>
         <input
           type="url"
           required
