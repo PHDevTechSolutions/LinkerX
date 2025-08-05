@@ -114,7 +114,7 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/developerLogin", {
+      const response = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Email, Password }),

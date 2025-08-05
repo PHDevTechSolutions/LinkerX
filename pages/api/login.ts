@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { Email, Password, Department } = req.body;
+  const { Email, Password } = req.body;
 
   if (!Email || !Password) {
     return res.status(400).json({ message: "All fields are required." });
@@ -37,22 +37,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   // Validate user credentials
-  const result = await validateUser({ Email, Password, Department });
+  const result = await validateUser({ Email, Password });
 
   if (!result.success || !result.user) {
-    // Increment failed login attempts
     const attempts = (user.LoginAttempts || 0) + 1;
 
     if (attempts >= 3) {
-      const newLockUntil = new Date(now.getTime() + lockDuration); // Lock for 50 years
+      const newLockUntil = new Date(now.getTime() + lockDuration);
       await usersCollection.updateOne(
         { Email },
-        { 
-          $set: { 
-            LoginAttempts: attempts, 
-            Status: "Locked", 
-            LockUntil: newLockUntil.toISOString() 
-          } 
+        {
+          $set: {
+            LoginAttempts: attempts,
+            Status: "Locked",
+            LockUntil: newLockUntil.toISOString(),
+          },
         }
       );
 
@@ -72,20 +71,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
-  // Ensure the user belongs to the correct department
-  if (result.user.Department !== Department) {
-    return res.status(403).json({ message: "Department mismatch! Please check your selection." });
-  }
-
   // Reset login attempts on successful login
   await usersCollection.updateOne(
     { Email },
-    { 
-      $set: { 
-        LoginAttempts: 0, 
-        Status: "Active", 
-        LockUntil: null 
-      } 
+    {
+      $set: {
+        LoginAttempts: 0,
+        Status: "Active",
+        LockUntil: null,
+      },
     }
   );
 
@@ -106,6 +100,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   return res.status(200).json({
     message: "Login successful",
     userId,
-    Department: result.user.Department, // Return department for frontend validation
   });
 }

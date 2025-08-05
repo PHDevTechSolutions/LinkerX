@@ -18,6 +18,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
   const router = useRouter();
 
   const [userDetails, setUserDetails] = useState({
+    userName: "",
     Firstname: "",
     Lastname: "",
     Location: "",
@@ -44,6 +45,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
         if (!response.ok) throw new Error("Failed to fetch user details");
         const data = await response.json();
         setUserDetails({
+          userName: data.userName || "Linker X",
           Firstname: data.Firstname || "Leroux",
           Lastname: data.Lastname || "Xchire",
           Location: data.Location || "Philippines",
@@ -152,14 +154,14 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
                 {/* User Info + Logo */}
                 <div className="flex items-center gap-2">
                   <img
-                    src={userDetails.profilePicture || "/xchire-logo.png"}
+                    src={userDetails.profilePicture || "/LinkerX-logo.png"}
                     className="w-10 h-10 rounded-full object-cover"
                     alt="User"
                   />
                   <div className="text-xs leading-tight">
                     <div className="max-w-[150px] text-[10px]">
                       <p className="font-bold uppercase break-words whitespace-normal">
-                        {userDetails.Firstname}, {userDetails.Lastname}
+                        {userDetails.userName}
                       </p>
                     </div>
                     <p>{userDetails.Role}</p>
