@@ -7,6 +7,8 @@ interface LinkPayload {
   Url: string;
   LinkName: string;
   Description: string;
+  Slug: string;
+  Category: string;
   PhotoUrl?: string; // optional photo URL
 }
 
@@ -20,9 +22,9 @@ export default async function addLink(
   }
 
   try {
-    const { Email, Url, LinkName, Description, PhotoUrl } = req.body as Partial<LinkPayload>;
+    const { Email, Url, LinkName, Description, PhotoUrl, Slug, Category } = req.body as Partial<LinkPayload>;
 
-    if (!Email || !Url || !LinkName || !Description) {
+    if (!Email || !Url || !LinkName || !Description || !Slug || !Category) {
       return res.status(400).json({ message: 'Url and LinkName are required.' });
     }
 
@@ -41,6 +43,8 @@ export default async function addLink(
       Url,
       LinkName,
       Description,
+      Slug,
+      Category,
       PhotoUrl: PhotoUrl || '', // Save empty string if no PhotoUrl given
       createdAt: new Date(),
     };
