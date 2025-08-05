@@ -6,12 +6,14 @@ interface Props {
   mode: 'add' | 'edit';
   formData: {
     Url: string;
+    Email: string;
     LinkName: string;
     Description: string;
     PhotoFile: File | null;
   };
   setFormData: (data: {
     Url: string;
+    Email: string;
     LinkName: string;
     Description: string;
     PhotoFile: File | null;
