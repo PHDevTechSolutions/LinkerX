@@ -260,7 +260,9 @@ const getCategoryBadgeClasses = (category: string) => {
 
 {/* Description */}
 <p className="text-gray-600 text-[10px] font-bold capitalize border-t border-b mt-2 pt-1">
-  {post.Description}
+  {post.Description.length > 40
+    ? post.Description.slice(0, 40) + '...'
+    : post.Description}
 </p>
 
 {/* Category */}
