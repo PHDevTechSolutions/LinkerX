@@ -88,13 +88,11 @@ const GenerateCode: React.FC = () => {
     if (!userDetails) return;
 
     try {
-      const qrData = `Taskflow System | ERP Module - Ecoshift Corporation
-      AgentName: ${userDetails.Firstname} ${userDetails.Lastname}
-      Position: ${userDetails.Role || "N/A"}
-      ContactNumber: ${userDetails.ContactNumber || "N/A"}
+      const qrData = `Linker X
+      Name: ${userDetails.Firstname} ${userDetails.Lastname}
       Email: ${userDetails.Email || "N/A"}
       GeneratedCode: ${generatedCode}
-      Link: https://ecoshiftcorp.com`;
+      Link: https://linker-x.vercel.app`;
       const qr = await QRCode.toDataURL(qrData);
       setQrCode(qr);
     } catch (err) {
