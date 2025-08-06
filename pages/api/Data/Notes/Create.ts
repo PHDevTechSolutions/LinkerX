@@ -21,15 +21,9 @@ export default async function addLink(
   try {
     const { Email, Title, Description, PhotoUrl, Category } = req.body as Partial<LinkPayload>;
 
+    // Validate required fields
     if (!Email || !Title || !Description || !Category) {
-      return res.status(400).json({ message: 'Url and Title are required.' });
-    }
-
-    // URL format validation
-    try {
-      new URL(Url);
-    } catch (_) {
-      return res.status(400).json({ message: 'Invalid URL format.' });
+      return res.status(400).json({ message: 'Email, Title, Description, and Category are required.' });
     }
 
     const db = await connectToDatabase();
@@ -40,7 +34,7 @@ export default async function addLink(
       Title,
       Description,
       Category,
-      PhotoUrl: PhotoUrl || '', // Save empty string if no PhotoUrl given
+      PhotoUrl: PhotoUrl || '',
       createdAt: new Date(),
     };
 
