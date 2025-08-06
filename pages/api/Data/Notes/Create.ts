@@ -3,7 +3,6 @@ import { connectToDatabase } from '@/lib/MongoDB';
 
 interface LinkPayload {
   Email: string;
-  Url: string;
   Title: string;
   Description: string;
   Category: string;
@@ -20,9 +19,9 @@ export default async function addLink(
   }
 
   try {
-    const { Email, Url, Title, Description, PhotoUrl, Category } = req.body as Partial<LinkPayload>;
+    const { Email, Title, Description, PhotoUrl, Category } = req.body as Partial<LinkPayload>;
 
-    if (!Email || !Url || !Title || !Description || !Category) {
+    if (!Email || !Title || !Description || !Category) {
       return res.status(400).json({ message: 'Url and Title are required.' });
     }
 
@@ -38,7 +37,6 @@ export default async function addLink(
 
     const newDoc = {
       Email,
-      Url,
       Title,
       Description,
       Category,
