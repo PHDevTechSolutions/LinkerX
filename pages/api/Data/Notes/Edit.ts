@@ -12,19 +12,26 @@ export default async function update(
   }
 
   const { id } = req.query;
-  const { Title, Description, PhotoUrl, Email, Category } = req.body as { Title?: string; Description?: string; PhotoUrl?: string; Email?: string; Category?: string; };
+  const {
+    Title,
+    Description,
+    PhotoUrl,
+    Email,
+    Category
+  } = req.body as {
+    Title?: string;
+    Description?: string;
+    PhotoUrl?: string;
+    Email?: string;
+    Category?: string;
+  };
 
   if (!id || typeof id !== 'string') {
     return res.status(400).json({ message: 'Missing note ID.' });
   }
-  if (!Title) {
-    return res.status(400).json({ message: 'Url and Title are required.' });
-  }
 
-  try {
-    new URL(Url);
-  } catch (_) {
-    return res.status(400).json({ message: 'Invalid URL format.' });
+  if (!Title) {
+    return res.status(400).json({ message: 'Title is required.' });
   }
 
   try {
