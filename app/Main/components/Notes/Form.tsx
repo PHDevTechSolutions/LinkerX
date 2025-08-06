@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
 interface Props {
     mode: 'add' | 'edit';
@@ -17,15 +17,6 @@ interface Props {
     onCancel: () => void;
 }
 
-const BASE_URL = 'https://linker-x.vercel.app/Main/LinkerX/Notes';
-
-const slugify = (text: string) =>
-    text
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-');
-
 const Form: React.FC<Props> = ({
     mode,
     formData,
@@ -33,34 +24,11 @@ const Form: React.FC<Props> = ({
     onSubmit,
     onCancel,
 }) => {
-    // Auto-generate URL on Title change (only in add mode)
-    useEffect(() => {
-        if (mode === 'add' && formData.Title) {
-            const slug = slugify(formData.Title);
-            setFormData({ ...formData, Url: BASE_URL + slug });
-        }
-    }, [formData.Title]);
-
     return (
-        <form onSubmit={onSubmit} className="space-y-4">
-            <div>
-                <label className="block text-xs mb-1">URL / Link</label>
-                <input
-                    type="url"
-                    required
-                    value={formData.Url}
-                    readOnly={mode === 'add'}
-                    onChange={(e) =>
-                        mode === 'edit' &&
-                        setFormData({ ...formData, Url: e.target.value })
-                    }
-                    placeholder="https://linker-x.vercel.app/Main/LinkerX/my-title"
-                    className={`w-full border-b px-3 py-2 text-xs ${
-                        mode === 'add' ? 'bg-gray-100 cursor-not-allowed' : ''
-                    }`}
-                />
-            </div>
-
+        <form
+            onSubmit={onSubmit}
+            className="space-y-4"
+        >
             <div>
                 <label className="block text-xs mb-1">Title</label>
                 <input
@@ -83,8 +51,8 @@ const Form: React.FC<Props> = ({
                         setFormData({ ...formData, Description: e.target.value })
                     }
                     placeholder="Link Description.."
-                    className="w-full border-b px-3 py-2 text-xs capitalize"
-                    rows={5}
+                    className="w-full border-b px-3 py-2 text-xs capitalize resize-none"
+                    rows={3}
                 ></textarea>
             </div>
 

@@ -37,6 +37,7 @@ const Page: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageLength, setPageLength] = useState(8);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const [userDetails, setUserDetails] = useState<UserDetails>({
     id: '',
@@ -266,8 +267,24 @@ const Page: React.FC = () => {
             <div className="container mx-auto p-4 text-gray-900">
               <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
                 {isOpen && (
-                  <div className="fixed inset-0 z-[999] bg-black/40 flex items-center justify-center px-4">
-                    <div className="bg-white rounded-lg w-full max-w-md p-6 shadow-xl">
+                  <div
+                    className="fixed inset-0 z-[999] bg-black/40 flex items-end px-4"
+                    onClick={closeModal} // close when clicking outside
+                  >
+                    <div
+                      onClick={(e) => e.stopPropagation()} // prevent outside click when inside form
+                      className={`bg-white rounded-t-2xl w-full overflow-hidden p-6 shadow-xl transition-all duration-300 transform ${isExpanded ? 'max-h-[90vh] animate-slide-up' : 'max-h-[30vh] animate-slide-up'
+                        }`}
+                    >
+                      {/* Expand Handle / Button */}
+                      <div className="flex justify-center mb-2">
+                        <button
+                          onClick={() => setIsExpanded(!isExpanded)}
+                          className="w-10 h-1.5 bg-gray-300 rounded-full"
+                          title="Expand"
+                        />
+                      </div>
+
                       <h2 className="text-lg font-semibold mb-4">
                         {mode === 'add' ? 'Add New Link' : 'Update Link'}
                       </h2>

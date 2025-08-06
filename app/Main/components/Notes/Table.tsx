@@ -101,120 +101,6 @@ const Table: React.FC<TableProps> = ({
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                if (navigator.share) {
-                                                    navigator
-                                                        .share({ title: post.Title, url: post.Url })
-                                                        .catch(console.error);
-                                                } else {
-                                                    toast.info('Sharing not supported on this browser.');
-                                                }
-                                            }}
-                                            className="text-left px-3 py-2 hover:bg-gray-100 flex items-center gap-2"
-                                        >
-                                            <FiShare2 /> Share
-                                        </button>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(post.Url)}&size=300x300`;
-
-                                                const qrWindow = window.open('', '_blank', 'width=450,height=520');
-                                                if (qrWindow) {
-                                                    qrWindow.document.write(`
-        <html>
-          <head>
-            <title>QR Code</title>
-            <style>
-              body {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                height: 100vh;
-                margin: 0;
-                background-color: #f3f4f6;
-                font-family: Arial, sans-serif;
-              }
-              h2 {
-                margin-bottom: 16px;
-                color: #4b5563;
-              }
-              .qr-container {
-                position: relative;
-                border: 4px solid #e5e7eb;
-                padding: 20px;
-                border-radius: 12px;
-                background-color: #ffffff;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-              }
-              .qr-img {
-                width: 300px;
-                height: 300px;
-              }
-              .logo-overlay {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                background-color: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-              }
-              .logo-overlay img {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-              }
-              .download-btn {
-                margin-top: 20px;
-                padding: 10px 20px;
-                background-color: #6366f1;
-                color: white;
-                border: none;
-                border-radius: 6px;
-                font-size: 14px;
-                cursor: pointer;
-              }
-              .download-btn:hover {
-                background-color: #4f46e5;
-              }
-            </style>
-          </head>
-          <body>
-            <h2>Scan this QR Code</h2>
-            <div class="qr-container">
-              <img id="qrCodeImg" class="qr-img" src="${qrUrl}" alt="QR Code" />
-              <div class="logo-overlay">
-                            <img src="/LinkerX-logo.png" className="h-6" />
-              </div>
-            </div>
-            <button class="download-btn" onclick="downloadQR()">Download QR Code</button>
-
-            <script>
-              function downloadQR() {
-                const link = document.createElement('a');
-                link.href = document.getElementById('qrCodeImg').src;
-                link.download = 'QRCode.png';
-                link.click();
-              }
-            </script>
-          </body>
-        </html>
-      `);
-                                                }
-                                            }}
-                                            className="text-left px-3 py-2 hover:bg-gray-100 flex items-center gap-2"
-                                        >
-                                            <HiOutlineQrcode /> QR Code
-                                        </button>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
                                                 onDelete(post);
                                             }}
                                             className="text-left px-3 py-2 hover:bg-gray-100 flex items-center gap-2 text-red-600 border-t"
@@ -228,22 +114,10 @@ const Table: React.FC<TableProps> = ({
                             {/* Info */}
                             <p className="text-gray-600 text-sm font-bold uppercase">{post.Title}</p>
 
-                            <p className="font-semibold text-gray-700 break-all text-[10px] mb-1">
-                                <a
-                                    href={post.Url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="text-[#5e17eb] hover:underline"
-                                >
-                                    {post.Url}
-                                </a>
-                            </p>
-
                             {/* Description */}
                             <p className="text-gray-600 text-[10px] font-bold capitalize border-t border-b mt-2 pt-1">
-                                {post.Description.length > 40
-                                    ? post.Description.slice(0, 40) + '...'
+                                {post.Description.length > 400
+                                    ? post.Description.slice(0, 400) + '...'
                                     : post.Description}
                             </p>
 
