@@ -12,12 +12,12 @@ export default async function update(
   }
 
   const { id } = req.query;
-  const { Url, Title, Description, PhotoUrl, Email, Category } = req.body as { Url?: string; Title?: string; Description?: string; PhotoUrl?: string; Email?: string; Category?: string; };
+  const { Title, Description, PhotoUrl, Email, Category } = req.body as { Title?: string; Description?: string; PhotoUrl?: string; Email?: string; Category?: string; };
 
   if (!id || typeof id !== 'string') {
     return res.status(400).json({ message: 'Missing note ID.' });
   }
-  if (!Url || !Title) {
+  if (!Title) {
     return res.status(400).json({ message: 'Url and Title are required.' });
   }
 
@@ -32,7 +32,6 @@ export default async function update(
     const Links = db.collection('notes');
 
     const updateData = {
-      Url,
       Title,
       Description,
       PhotoUrl: PhotoUrl || '',
