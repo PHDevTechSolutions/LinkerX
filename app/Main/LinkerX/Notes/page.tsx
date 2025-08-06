@@ -13,7 +13,6 @@ import 'react-toastify/dist/ReactToastify.css';
 interface LinkPost {
     _id: string;
     Email: string;
-    Url: string;
     Title: string;
     Description: string;
     PhotoUrl?: string;
@@ -57,7 +56,6 @@ const Page: React.FC = () => {
         Email: '',
         Title: '',
         Description: '',
-        Url: '',
         Category: '',
         PhotoFile: null as File | null,
     });
@@ -66,7 +64,6 @@ const Page: React.FC = () => {
         setMode('add');
         setFormData({
             Email: userDetails.Email,
-            Url: '',
             Title: '',
             Description: '',
             Category: '',
@@ -80,7 +77,6 @@ const Page: React.FC = () => {
         setSelected(row);
         setFormData({
             Email: row.Email,
-            Url: row.Url,
             Title: row.Title,
             Description: row.Description,
             Category: row.Category,
@@ -158,7 +154,7 @@ const Page: React.FC = () => {
     }, [userDetails.Email]);
 
     const filtered = posts.filter((p) =>
-        [p.Url, p.Title].some((f) => f?.toLowerCase().includes(searchTerm.toLowerCase()))
+        [p.Title].some((f) => f?.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     const last = currentPage * pageLength;
@@ -188,7 +184,7 @@ const Page: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.Url || !formData.Title) {
+        if (!formData.Title) {
             toast.error('Please fill in all fields');
             return;
         }
@@ -214,7 +210,6 @@ const Page: React.FC = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     Email: formData.Email,
-                    Url: formData.Url,
                     Title: formData.Title,
                     Description: formData.Description,
                     Category: formData.Category,
