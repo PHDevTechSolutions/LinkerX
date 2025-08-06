@@ -5,7 +5,6 @@ import React from 'react';
 interface Props {
     mode: 'add' | 'edit';
     formData: {
-        Url: string;
         Email: string;
         Title: string;
         Description: string;
